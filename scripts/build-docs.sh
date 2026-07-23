@@ -1,80 +1,338 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 TEMPLATES_DIR="$PROJECT_ROOT/templates"
+MODULES_DIR="$PROJECT_ROOT/modules"
 IMAGES_DIR="$PROJECT_ROOT/docs/images"
-DOCS_DIR="$PROJECT_ROOT/docs/documents"
+DOCS_DIR="$PROJECT_ROOT/docs"
+MODULES_YAML="$PROJECT_ROOT/modules.yaml"
+
+# Get today's date
+TODAY=$(date +%Y-%m-%d)
 
 mkdir -p "$DOCS_DIR"
 
+# --- Parse modules.yaml ---
+parse_project_name() {
+    grep -E '^\s*name:\s+' "$MODULES_YAML" | head -1 | sed 's/.*name:\s*//' | tr -d '"' | tr -d "'"
+}
+
+parse_project_short_name() {
+    grep -E '^\s*short_name:\s+' "$MODULES_YAML" | head -1 | sed 's/.*short_name:\s*//' | tr -d '"' | tr -d "'"
+}
+
+parse_module_codes() {
+    grep -E '^\s+-\s+code:\s+' "$MODULES_YAML" | sed 's/.*code:\s*//' | tr -d '"' | tr -d "'" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+parse_module_field() {
+    local module_code="$1"
+    local field="$2"
+    # Find the module block and extract the field
+    awk "/code: $module_code/{found=1} found && /$field:/{print; exit}" "$MODULES_YAML" | sed "s/.*$field:\s*//" | tr -d '"' | tr -d "'" | tr -d '[]' | sed 's/,/ /g'
+}
+
+parse_module_tables() {
+    local module_code="$1"
+    # Extract tables array for the module
+    awk "/code: $module_code/{found=1; next} found && /^  - code:/{exit} found && /tables:/{intables=1; next} intables && /^      - /{print; next} intables && !/^      - /{intables=0}" "$MODULES_YAML" | sed 's/^ *- //' | tr '\n' ', ' | sed 's/,$//'
+}
+
+parse_webhooks_for_module() {
+    local module_code="$1"
+    # Extract webhooks where from or to matches the module
+    awk "/event:/{event=$0} /from: $module_code/{from=1} /to: $module_code/{to=1} from && to && event{print event; event=""; from=0; to=0} /^  - from:/{from=0; to=0}" "$MODULES_YAML" 2>/dev/null || true
+}
+
+# Module colors (using case statement for compatibility)
+get_module_color() {
+    local module_code="$1"
+    case "$module_code" in
+        AUTH) echo "#4CAF50" ;;
+        SMS) echo "#2196F3" ;;
+        PROD) echo "#FF9800" ;;
+        ECOM) echo "#E91E63" ;;
+        PAY) echo "#9C27B0" ;;
+        WAL) echo "#00BCD4" ;;
+        SHIP) echo "#795548" ;;
+        NOTI) echo "#607D8B" ;;
+        *) echo "#666666" ;;
+    esac
+}
+
 # --- Copy CSS ---
-cp "$TEMPLATES_DIR/style.css" "$DOCS_DIR/"
+cp "$TEMPLATES_DIR/style.css" "$DOCS_DIR/style.css"
 echo "  [OK] style.css"
 
 # --- Find first image in a diagram type directory ---
 find_first_image() {
-    local type="$1"
-    local dir="$IMAGES_DIR/$type"
-    find "$dir" -name "*.png" -o -name "*.svg" 2>/dev/null | head -1
+    local dir="$1"
+    find "$dir" \( -name "*.png" -o -name "*.svg" \) 2>/dev/null | head -1 || true
 }
 
-# --- Process each HTML template ---
-for html_file in "$TEMPLATES_DIR"/*.html; do
+# --- Process system-level templates (legacy flat docs) ---
+echo ""
+echo "Building system-level documents..."
+
+for html_file in "$TEMPLATES_DIR"/srs.html "$TEMPLATES_DIR"/tds.html "$TEMPLATES_DIR"/database-design.html "$TEMPLATES_DIR"/api-technical-spec.html; do
     [ -f "$html_file" ] || continue
     filename=$(basename "$html_file")
     output_file="$DOCS_DIR/$filename"
 
-    # Start with a copy
     cp "$html_file" "$output_file"
 
-    # Replace each image placeholder with actual path or placeholder div
     for type in usecase erd activity sequence class component deployment architecture; do
-        # Match: <img src="../images/TYPE/PLACEHOLDER.png" alt="...">
-        # The placeholder is everything after /TYPE/ and before .png
         while IFS= read -r line; do
-            # Extract the full img tag
             img_tag=$(echo "$line" | sed -n 's/.*\(<img src="[^"]*" alt="[^"]*">\).*/\1/p')
             [ -z "$img_tag" ] && continue
-
-            # Extract src path
             src=$(echo "$img_tag" | sed -n 's/.*src="\([^"]*\)".*/\1/p')
             [ -z "$src" ] && continue
-
-            # Check if this is a placeholder path (contains type directory)
             case "$src" in
                 ../images/${type}/*)
-                    # Find actual image
-                    actual=$(find_first_image "$type")
+                    actual=$(find_first_image "$IMAGES_DIR/$type")
                     if [ -n "$actual" ]; then
-                        # Convert to relative path from DOCS_DIR
                         rel_path="../images/$type/$(basename "$actual")"
-                        # Replace in file
                         sed -i '' "s|src=\"[^\"]*${type}/[^\"]*\"|src=\"${rel_path}\"|g" "$output_file"
-                        echo "  [OK] $filename -> $type image linked"
                     else
-                        # No image found - replace img with placeholder
-                        escaped_tag=$(echo "$img_tag" | sed 's/[[\.*^$()+?{|]/\\&/g')
                         sed -i '' "/<img src=\"..\/images\/${type}\//{
                             s|.*|<div style=\"border:2px dashed #ccc;padding:40px;text-align:center;color:#999;margin:20px 0;\">Diagram not generated yet. Run <code>make generate-${type}</code> then <code>make build-docs</code>.</div>|
                         }" "$output_file"
-                        echo "  [WARN] $filename -> $type placeholder shown"
                     fi
                     ;;
             esac
         done < <(grep -n "img src=\"../images/${type}/" "$output_file" 2>/dev/null || true)
     done
 
-    echo "  [OK] $filename -> $DOCS_DIR/"
+    echo "  [OK] $filename"
 done
+
+# --- Process per-module templates ---
+echo ""
+echo "Building per-module documents..."
+
+PROJECT_NAME=$(parse_project_name)
+PROJECT_SHORT=$(parse_project_short_name)
+AUTHOR="${AUTHOR:-Nam Nguyen}"
+MODULES=$(parse_module_codes)
+
+for module in $MODULES; do
+    echo ""
+    echo "  Module: $module"
+
+    MODULE_NAME=$(parse_module_field "$module" "name")
+    MODULE_DESC=$(parse_module_field "$module" "description")
+    MODULE_DB=$(parse_module_field "$module" "database")
+    MODULE_TABLES=$(parse_module_tables "$module")
+    MODULE_COLOR=$(get_module_color "$module")
+    MODULE_LOWER=$(echo "$module" | tr '[:upper:]' '[:lower:]')
+
+    MODULE_DOCS_DIR="$DOCS_DIR/$MODULE_LOWER"
+    MODULE_IMAGES_DIR="$MODULE_DOCS_DIR/images"
+    MODULE_SRC_DIR="$MODULES_DIR/$module"
+
+    mkdir -p "$MODULE_DOCS_DIR"
+
+    # Copy module images if they exist
+    if [ -d "$MODULE_SRC_DIR/diagrams" ]; then
+        mkdir -p "$MODULE_IMAGES_DIR"
+        for type in usecase erd activity sequence class component deployment architecture; do
+            type_images="$DOCS_DIR/$MODULE_LOWER/images/$type"
+            if [ -d "$type_images" ]; then
+                # Images already generated by generate.sh
+                :
+            fi
+        done
+    fi
+
+    # Build module dependencies string
+    DEPS=$(parse_module_field "$module" "depends_on")
+    if [ -z "$DEPS" ] || [ "$DEPS" = "[]" ]; then
+        MODULE_DEPS="None (standalone module)"
+    else
+        MODULE_DEPS="Depends on: $DEPS"
+    fi
+
+    # Process each module template
+    for template in module-srs.html module-tds.html module-database-design.html module-api-spec.html; do
+        template_file="$TEMPLATES_DIR/$template"
+        [ -f "$template_file" ] || continue
+
+        # Determine output filename
+        case "$template" in
+            module-srs.html) output_name="srs.html" ;;
+            module-tds.html) output_name="tds.html" ;;
+            module-database-design.html) output_name="database-design.html" ;;
+            module-api-spec.html) output_name="api-technical-spec.html" ;;
+        esac
+
+        output_file="$MODULE_DOCS_DIR/$output_name"
+        cp "$template_file" "$output_file"
+
+        # Replace placeholders
+        sed -i '' "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" "$output_file"
+        sed -i '' "s|{{MODULE_NAME}}|$MODULE_NAME|g" "$output_file"
+        sed -i '' "s|{{MODULE_CODE}}|$module|g" "$output_file"
+        sed -i '' "s|{{MODULE_CODE_LOWER}}|$MODULE_LOWER|g" "$output_file"
+        sed -i '' "s|{{MODULE_DESCRIPTION}}|$MODULE_DESC|g" "$output_file"
+        sed -i '' "s|{{MODULE_DATABASE}}|$MODULE_DB|g" "$output_file"
+        sed -i '' "s|{{MODULE_TABLES}}|$MODULE_TABLES|g" "$output_file"
+        sed -i '' "s|{{MODULE_DEPENDENCIES}}|$MODULE_DEPS|g" "$output_file"
+        sed -i '' "s|{{MODULE_COLOR}}|$MODULE_COLOR|g" "$output_file"
+        sed -i '' "s|{{TABLE_PREFIX}}|$MODULE_LOWER|g" "$output_file"
+        sed -i '' "s|{{DATE}}|$TODAY|g" "$output_file"
+        sed -i '' "s|{{AUTHOR}}|$AUTHOR|g" "$output_file"
+        sed -i '' "s|{{MODULE_TECH_STACK}}|NestJS, PostgreSQL, Drizzle ORM|g" "$output_file"
+
+        # Fix image paths for module docs (../../images/ -> ../images/)
+        for type in usecase erd activity sequence class component deployment architecture; do
+            while IFS= read -r line; do
+                img_tag=$(echo "$line" | sed -n 's/.*\(<img src="[^"]*" alt="[^"]*">\).*/\1/p')
+                [ -z "$img_tag" ] && continue
+                src=$(echo "$img_tag" | sed -n 's/.*src="\([^"]*\)".*/\1/p')
+                [ -z "$src" ] && continue
+                case "$src" in
+                    ../images/${type}/*)
+                        # Check module images first, then system images
+                        actual=$(find_first_image "$MODULE_IMAGES_DIR/$type")
+                        if [ -z "$actual" ]; then
+                            actual=$(find_first_image "$IMAGES_DIR/$type")
+                        fi
+                        if [ -n "$actual" ]; then
+                            # Calculate relative path from module docs to image
+                            if [[ "$actual" == *"$MODULE_IMAGES_DIR"* ]]; then
+                                rel_path="../images/$type/$(basename "$actual")"
+                            else
+                                rel_path="../../images/$type/$(basename "$actual")"
+                            fi
+                            sed -i '' "s|src=\"[^\"]*${type}/[^\"]*\"|src=\"${rel_path}\"|g" "$output_file"
+                        else
+                            sed -i '' "/<img src=\"..\/images\/${type}\//{
+                                s|.*|<div style=\"border:2px dashed #ccc;padding:40px;text-align:center;color:#999;margin:20px 0;\">Diagram not generated yet. Run <code>make generate-module $module ${type}</code>.</div>|
+                            }" "$output_file"
+                        fi
+                        ;;
+                esac
+            done < <(grep -n "img src=\"../images/${type}/" "$output_file" 2>/dev/null || true)
+        done
+
+        echo "    [OK] $output_name"
+    done
+done
+
+# --- Generate master index.html ---
+echo ""
+echo "Building master index..."
+
+INDEX_FILE="$DOCS_DIR/index.html"
+
+# Write the header part
+cat > "$INDEX_FILE" <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Documentation</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .module-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; background: #fafafa; }
+    .module-card h3 { margin-top: 0; }
+    .module-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; color: white; font-weight: 600; font-size: 12px; margin-right: 8px; }
+    .doc-links a { display: inline-block; margin-right: 12px; color: #1a5276; text-decoration: none; font-weight: 500; }
+    .doc-links a:hover { text-decoration: underline; }
+    .dep-tag { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>System Documentation</h1>
+  <div class="subtitle">$PROJECT_NAME</div>
+  <table class="meta-table">
+    <tr><td>Generated</td><td>$TODAY</td></tr>
+  </table>
+</div>
+
+<h1>Modules</h1>
+EOF
+
+# Generate module cards
+for module in $MODULES; do
+    MODULE_NAME=$(parse_module_field "$module" "name")
+    MODULE_DESC=$(parse_module_field "$module" "description")
+    MODULE_COLOR=$(get_module_color "$module")
+    DEPS=$(parse_module_field "$module" "depends_on")
+    MODULE_LOWER=$(echo "$module" | tr '[:upper:]' '[:lower:]')
+
+    cat >> "$INDEX_FILE" <<EOF
+<div class="module-card">
+  <h3><span class="module-badge" style="background:$MODULE_COLOR">$module</span> $MODULE_NAME</h3>
+  <p>$MODULE_DESC</p>
+EOF
+
+    if [ -n "$DEPS" ] && [ "$DEPS" != "[]" ]; then
+        echo "  <p>Dependencies: <span class=\"dep-tag\">$DEPS</span></p>" >> "$INDEX_FILE"
+    fi
+
+    cat >> "$INDEX_FILE" <<EOF
+  <div class="doc-links">
+    <a href="$MODULE_LOWER/srs.html">SRS</a>
+    <a href="$MODULE_LOWER/tds.html">TDS</a>
+    <a href="$MODULE_LOWER/database-design.html">Database Design</a>
+    <a href="$MODULE_LOWER/api-technical-spec.html">API Spec</a>
+  </div>
+</div>
+EOF
+done
+
+# Add system-level docs section
+cat >> "$INDEX_FILE" <<'EOF'
+
+<h1>System Architecture</h1>
+<ul>
+  <li><a href="srs.html">System SRS (Combined)</a></li>
+  <li><a href="tds.html">System TDS (Combined)</a></li>
+  <li><a href="database-design.html">System Database Design (Combined)</a></li>
+  <li><a href="api-technical-spec.html">System API Spec (Combined)</a></li>
+</ul>
+
+<h1>Inter-Module Communication</h1>
+<table class="trace-table">
+  <tr><th>From</th><th>To</th><th>Event</th><th>Protocol</th><th>Description</th></tr>
+EOF
+
+# Parse webhooks from modules.yaml
+awk '
+  /^webhooks:/ { in_webhooks=1; next }
+  in_webhooks && /^  - from:/ { from=$NF; next }
+  in_webhooks && /^    to:/ { to=$NF; next }
+  in_webhooks && /^    event:/ { event=$NF; next }
+  in_webhooks && /^    protocol:/ { protocol=$NF; next }
+  in_webhooks && /^    description:/ {
+    desc=$0; sub(/.*description: "?/, "", desc); sub(/"$/, "", desc);
+    if (from != "" && to != "") {
+      printf "  <tr><td>%s</td><td>%s</td><td><code>%s</code></td><td>%s</td><td>%s</td></tr>\n", from, to, event, protocol, desc
+      from=""; to=""; event=""; protocol=""
+    }
+  }
+' "$MODULES_YAML" >> "$INDEX_FILE" 2>/dev/null || true
+
+cat >> "$INDEX_FILE" <<'EOF'
+</table>
+
+</body>
+</html>
+EOF
+
+echo "  [OK] index.html"
 
 echo ""
 echo "HTML documents ready in $DOCS_DIR/"
 echo ""
 
-# Print first available doc
-first_doc=$(find "$DOCS_DIR" -name "*.html" -not -name "style.css" | head -1)
-if [ -n "$first_doc" ]; then
-    echo "Open: file://$(realpath "$first_doc")"
+# Print first module doc
+first_module=$(echo "$MODULES" | head -1)
+if [ -n "$first_module" ]; then
+    echo "Open: file://$(realpath "$DOCS_DIR/index.html")"
 fi

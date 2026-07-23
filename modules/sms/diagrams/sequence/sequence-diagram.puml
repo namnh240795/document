@@ -1,0 +1,60 @@
+@startuml
+' ============================================================
+' Sequence Diagram - SMS Delivery Flow
+' RabbitMQ + sms_db logging
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: SMS Delivery Flow
+
+participant "NestJS API" as API
+queue "RabbitMQ\n(verification.sms)" as MQ
+participant "SMS Worker" as Worker
+participant "Twilio" as Twilio
+database "sms_db\n(Drizzle ORM)" as DB
+
+== Step 1: Event Received ==
+
+MQ -> Worker : CONSUME verification.sms\n{ userId, phone, otp }
+activate Worker
+
+== Step 2: Send SMS ==
+
+Worker -> Twilio : Send OTP SMS\n(to: phone, body: otp)
+activate Twilio
+Twilio --> Worker : { sid: "SM123", status: "queued" }
+deactivate Twilio
+
+== Step 3: Log Delivery ==
+
+Worker -> DB : INSERT INTO sms_logs\n(user_id, phone, message_type,\n status, provider, provider_message_id)
+activate DB
+DB --> Worker : SMS log created
+deactivate DB
+
+== Step 4: Confirm ==
+
+Worker --> MQ : ACK (message processed)
+deactivate Worker
+
+== Step 5: Delivery Callback (optional) ==
+
+Twilio -> API : POST /webhooks/sms/delivered\n{ status: "delivered" }
+activate API
+
+API -> DB : UPDATE sms_logs\nSET status = 'delivered',\n    delivered_at = NOW()\nWHERE provider_message_id = ?
+activate DB
+DB --> API : Updated
+deactivate DB
+
+API --> Twilio : 200 OK
+deactivate API
+
+@enduml

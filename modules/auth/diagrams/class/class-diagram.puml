@@ -1,0 +1,98 @@
+@startuml
+' ============================================================
+' Class Diagram - Authentication System
+' NestJS + Better Auth + Drizzle ORM
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+
+title Authentication System - Domain Model
+
+' --- Classes ---
+class User {
+  - id: UUID
+  - name: string
+  - email: string
+  - phone: string
+  - emailVerified: boolean
+  - phoneVerified: boolean
+  - image: string
+  - createdAt: DateTime
+  - updatedAt: DateTime
+  + hasRole(role: string): boolean
+  + isEmailVerified(): boolean
+  + isPhoneVerified(): boolean
+}
+
+class Session {
+  - id: string
+  - userId: UUID
+  - expiresAt: DateTime
+  - token: string
+  - ipAddress: string
+  - userAgent: string
+  - createdAt: DateTime
+  - updatedAt: DateTime
+  + isExpired(): boolean
+  + invalidate(): void
+}
+
+class Account {
+  - id: string
+  - userId: UUID
+  - accountId: string
+  - providerId: string
+  - password: string
+  - createdAt: DateTime
+  - updatedAt: DateTime
+  + verifyPassword(password: string): boolean
+  + updatePassword(hashedPassword: string): void
+}
+
+class Verification {
+  - id: string
+  - identifier: string
+  - value: string
+  - expiresAt: DateTime
+  - createdAt: DateTime
+  - updatedAt: DateTime
+  + isExpired(): boolean
+  + verify(input: string): boolean
+}
+
+class Role {
+  - id: UUID
+  - name: string
+  - description: string
+  - createdAt: DateTime
+}
+
+class UserRole {
+  - id: UUID
+  - userId: UUID
+  - roleId: UUID
+  - createdAt: DateTime
+}
+
+' --- Enums ---
+enum Provider {
+  CREDENTIAL
+  GOOGLE
+  GITHUB
+}
+
+' --- Relationships ---
+User "1" -- "*" Session : has >
+User "1" -- "*" Account : has >
+User "1" -- "*" UserRole : assigned >
+Role "1" -- "*" UserRole : granted to >
+User --> Verification : verified via >
+Session --> User : belongs to >
+Account --> User : belongs to >
+
+@enduml

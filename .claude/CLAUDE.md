@@ -308,6 +308,77 @@ DB Design shows:
 
 ---
 
+## Rule: Multi-Module Document Sets
+
+Each module has its own document set (SRS, TDS, Database Design, API Spec). Modules are defined in `modules.yaml`.
+
+### Module Directory Structure
+
+```
+modules/
+  <module-code>/
+    diagrams/           # Module-specific PlantUML diagrams
+      erd/
+      sequence/
+      activity/
+      usecase/
+    srs.html            # Module SRS (only this module's requirements)
+    tds.html            # Module TDS (only this module's design)
+    database-design.html # Module DB design (only this module's tables)
+    api-technical-spec.html # Module API spec (only this module's endpoints)
+```
+
+### Creating a New Module
+
+1. Add module to `modules.yaml` with code, name, database, tables, depends_on
+2. Create `modules/<code>/diagrams/` directory
+3. Add module-specific diagrams (ERD, sequence, etc.)
+4. Create module docs (`srs.html`, `tds.html`, etc.) in `modules/<code>/`
+5. Run `make generate-module MODULE=<code>` to generate diagrams
+6. Run `make open-module MODULE=<code>` to build and view
+
+### Requirement ID Convention (Per-Module)
+
+When working with multiple modules, prefix requirement IDs with module code:
+
+| Module | Example IDs |
+|--------|-------------|
+| AUTH | AUTH-FR-001, AUTH-NFR-001 |
+| SMS | SMS-FR-001, SMS-NFR-001 |
+| ECOM | ECOM-FR-001, ECOM-NFR-001 |
+
+### Inter-Module Communication
+
+Modules communicate via webhook events defined in `modules.yaml`:
+
+```yaml
+webhooks:
+  - from: AUTH
+    to: SMS
+    event: verification.requested
+    protocol: RabbitMQ
+    queue: verification.sms
+    payload:
+      user_id: uuid
+      phone: string
+      otp: string
+```
+
+**Rules for webhook events:**
+- Define all events in `modules.yaml` under `webhooks:`
+- Each event has: from, to, event name, protocol, queue/URL, payload schema
+- Document events in module TDS under "Integration" section
+- Include webhook events in module SRS traceability matrix
+
+### Master Index
+
+The build system generates `docs/index.html` that:
+- Lists all modules with links to their document sets
+- Shows system-level architecture docs
+- Lists inter-module webhook events
+
+---
+
 ## When Creating or Editing Documents
 
 1. Always check if requirement IDs are present

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Software Requirements Specification - SMS Service</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .req-id { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    .trace-table td:first-child { white-space: nowrap; }
+    .module-badge { background: #2196F3; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 600; font-size: 14px; }
+    .back-link { margin-bottom: 20px; }
+    .back-link a { color: #1a5276; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="back-link"><a href="../index.html">&larr; Back to System Overview</a></div>
+
+<div class="cover">
+  <h1>Software Requirements Specification</h1>
+  <div class="subtitle">SMS Service Module</div>
+  <span class="module-badge">SMS</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>SMS - SMS Service</td></tr>
+    <tr><td>Database</td><td>sms_db</td></tr>
+    <tr><td>Date</td><td>2026-07-23</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+  </table>
+</div>
+
+<h1>1. Introduction</h1>
+<h2>1.1 Purpose</h2>
+<p>This document defines the software requirements for the <strong>SMS Service</strong> module. It handles SMS delivery logging, tracking, and audit trail for verification messages.</p>
+
+<h2>1.2 Scope</h2>
+<p>SMS delivery logging, status tracking, provider integration (Twilio), and delivery confirmation webhook.</p>
+
+<h2>1.3 Module Dependencies</h2>
+<p>Depends on: <strong>AUTH</strong> module (receives verification events via RabbitMQ).</p>
+
+<h1>2. Module Overview</h1>
+<table>
+  <tr><th>Aspect</th><th>Value</th></tr>
+  <tr><td>Module Code</td><td>SMS</td></tr>
+  <tr><td>Database</td><td>sms_db</td></tr>
+  <tr><td>Tables</td><td>sms_logs</td></tr>
+  <tr><td>Tech Stack</td><td>NestJS, Drizzle ORM, PostgreSQL, Twilio, RabbitMQ</td></tr>
+</table>
+
+<h1>3. Functional Requirements</h1>
+
+<h2>3.1 UC-01: Process SMS Verification</h2>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Requirement IDs</td><td><span class="req-id">SMS-FR-001</span></td></tr>
+  <tr><td>Actor</td><td>System (RabbitMQ consumer)</td></tr>
+  <tr><td>Precondition</td><td>Verification event received from AUTH module</td></tr>
+  <tr><td>Postcondition</td><td>SMS sent via Twilio, delivery logged to sms_logs</td></tr>
+</table>
+<h3>Main Flow</h3>
+<ol>
+  <li>SMS Worker consumes event from <code>verification.sms</code> queue</li>
+  <li>Worker extracts: userId, phone, otp, verificationId</li>
+  <li>Worker sends SMS via Twilio API</li>
+  <li>Worker logs delivery to sms_logs (status: sent)</li>
+  <li>On delivery confirmation: update sms_logs (status: delivered)</li>
+</ol>
+
+<h2>3.2 UC-02: Log SMS Delivery</h2>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Requirement IDs</td><td><span class="req-id">SMS-FR-002</span></td></tr>
+  <tr><td>Actor</td><td>System</td></tr>
+</table>
+
+<h2>3.3 UC-03: Handle SMS Failure</h2>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Requirement IDs</td><td><span class="req-id">SMS-FR-003</span></td></tr>
+  <tr><td>Actor</td><td>System</td></tr>
+</table>
+<h3>Main Flow</h3>
+<ol>
+  <li>If Twilio returns error: log failure to sms_logs (status: failed)</li>
+  <li>Route message to RabbitMQ dead-letter queue for retry</li>
+  <li>Increment retry_count in sms_logs</li>
+</ol>
+
+<h2>3.4 UC-04: Receive Delivery Callback</h2>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Requirement IDs</td><td><span class="req-id">SMS-FR-004</span></td></tr>
+  <tr><td>Actor</td><td>Twilio (webhook)</td></tr>
+</table>
+
+<h1>4. Requirements Detail</h1>
+<table class="trace-table">
+  <tr><th>Req ID</th><th>Requirement</th><th>Use Case</th><th>Priority</th></tr>
+  <tr><td><span class="req-id">SMS-FR-001</span></td><td>Process SMS Verification</td><td>UC-01</td><td>High</td></tr>
+  <tr><td><span class="req-id">SMS-FR-002</span></td><td>Log SMS Delivery</td><td>UC-02</td><td>High</td></tr>
+  <tr><td><span class="req-id">SMS-FR-003</span></td><td>Handle SMS Failure</td><td>UC-03</td><td>High</td></tr>
+  <tr><td><span class="req-id">SMS-FR-004</span></td><td>Receive Delivery Callback</td><td>UC-04</td><td>Medium</td></tr>
+</table>
+
+<h1>5. Data Model</h1>
+<div class="diagram">
+  <img src="../images/erd/erd-diagram.png" alt="ERD Diagram">
+  <div class="caption">Figure 1: SMS ERD</div>
+</div>
+
+<h1>6. Integration</h1>
+<h2>6.1 Inbound Events (from AUTH)</h2>
+<table class="trace-table">
+  <tr><th>Event</th><th>Queue</th><th>Payload</th></tr>
+  <tr>
+    <td><code>verification.requested</code></td>
+    <td>verification.sms</td>
+    <td>userId, phone, channel, otp, verificationId</td>
+  </tr>
+  <tr>
+    <td><code>verification.resent</code></td>
+    <td>verification.sms</td>
+    <td>userId, phone, channel, otp, verificationId</td>
+  </tr>
+</table>
+
+<h2>6.2 Outbound Webhooks (to AUTH)</h2>
+<table class="trace-table">
+  <tr><th>Event</th><th>URL</th><th>Payload</th></tr>
+  <tr>
+    <td><code>verification.delivered</code></td>
+    <td>POST /api/webhooks/sms/delivered</td>
+    <td>verificationId, status, providerMessageId, errorMessage</td>
+  </tr>
+</table>
+
+<h2>6.3 Sequence Diagram</h2>
+<div class="diagram">
+  <img src="../images/sequence/sequence-diagram.png" alt="Sequence Diagram">
+  <div class="caption">Figure 2: SMS Delivery Flow</div>
+</div>
+
+<h1>7. Non-Functional Requirements</h1>
+<table class="trace-table">
+  <tr><th>Req ID</th><th>Category</th><th>Requirement</th><th>Target</th></tr>
+  <tr><td><span class="req-id">SMS-NFR-001</span></td><td>Reliability</td><td>SMS delivery rate</td><td>&gt; 99%</td></tr>
+  <tr><td><span class="req-id">SMS-NFR-002</span></td><td>Performance</td><td>SMS send latency</td><td>&lt; 3s from event to Twilio API call</td></tr>
+  <tr><td><span class="req-id">SMS-NFR-003</span></td><td>Reliability</td><td>Retry mechanism</td><td>3 retries with exponential backoff via DLQ</td></tr>
+  <tr><td><span class="req-id">SMS-NFR-004</span></td><td>Audit</td><td>Delivery logging</td><td>100% of SMS attempts logged to sms_logs</td></tr>
+</table>
+
+<h1>8. Traceability Matrix</h1>
+<table class="trace-table">
+  <tr><th>Req ID</th><th>Requirement</th><th>DB Table</th><th>External</th></tr>
+  <tr><td><span class="req-id">SMS-FR-001</span></td><td>Process SMS Verification</td><td>sms_logs</td><td>Twilio, RabbitMQ</td></tr>
+  <tr><td><span class="req-id">SMS-FR-002</span></td><td>Log SMS Delivery</td><td>sms_logs</td><td>-</td></tr>
+  <tr><td><span class="req-id">SMS-FR-003</span></td><td>Handle SMS Failure</td><td>sms_logs</td><td>RabbitMQ DLQ</td></tr>
+  <tr><td><span class="req-id">SMS-FR-004</span></td><td>Receive Delivery Callback</td><td>sms_logs</td><td>Twilio Webhook</td></tr>
+</table>
+
+</body>
+</html>

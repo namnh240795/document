@@ -1,0 +1,103 @@
+@startuml
+' ============================================================
+' Deployment Diagram - Authentication System
+' Updated: RabbitMQ, Redis, SMS DB
+' ============================================================
+
+skinparam node {
+  BackgroundColor #E8F4E8
+  BorderColor #333333
+}
+skinparam artifact {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+}
+skinparam database {
+  BackgroundColor #FDE8E8
+  BorderColor #333333
+}
+skinparam queue {
+  BackgroundColor #FFF3E0
+  BorderColor #333333
+}
+skinparam cloud {
+  BackgroundColor #E8E8FD
+  BorderColor #333333
+}
+
+title Deployment Diagram - Authentication System
+
+' --- CDN / Edge ---
+cloud "CDN\n(CloudFront)" as cdn
+
+' --- Load Balancer ---
+node "Load Balancer\n(ALB / Nginx)" as alb
+
+' --- Application Server ---
+node "App Server\n(EC2 / ECS / Docker)" as app {
+  artifact "NestJS Application\n(Node.js 20+)" as nest
+  artifact "Better Auth\n(Core)" as ba
+  artifact "Drizzle ORM\n(Query Builder)" as drizzle
+}
+
+' --- Worker Server ---
+node "Worker Server\n(EC2 / ECS / Docker)" as workerNode {
+  artifact "Verification Worker\n(Node.js)" as vWorker
+  artifact "SMS Logger\n(Node.js)" as smsLogger
+}
+
+' --- Data Tier ---
+node "Primary DB - auth_db\n(RDS PostgreSQL 15)" as dbPrimary {
+  database "auth_db" as authDB
+}
+
+node "Read Replica\n(RDS PostgreSQL 15)" as dbReplica {
+  database "auth_db (read)" as authDBRead
+}
+
+node "SMS DB\n(RDS PostgreSQL 15)" as smsDBNode {
+  database "sms_db" as smsDB
+}
+
+' --- Cache ---
+node "Cache\n(ElastiCache Redis)" as redis {
+  database "Idempotency Keys" as idKeys
+  database "Rate Limiters" as rateLimit
+  database "Session Cache" as sessionCache
+}
+
+' --- Message Queue ---
+node "Message Queue\n(RabbitMQ)" as mq {
+  queue "verification.email" as emailQ
+  queue "verification.sms" as smsQ
+  queue "DLQ\n(Dead Letter)" as dlq
+}
+
+' --- External ---
+cloud "Email Provider\n(SendGrid / Resend)" as email
+cloud "SMS Provider\n(Twilio)" as sms
+
+' --- Relationships ---
+cdn --> alb : HTTPS
+alb --> app : HTTP
+
+nest --> ba
+nest --> drizzle
+drizzle --> authDB : TCP 5432
+authDB --> dbReplica : replication
+
+nest --> redis : idempotency check\n+ rate limiting
+nest --> mq : publish events
+
+mq --> vWorker : consume
+vWorker --> email : HTTPS
+vWorker --> smsDB : TCP 5432\n(log delivery)
+
+mq --> smsQ
+smsQ --> smsLogger : consume
+smsLogger --> sms : HTTPS
+smsLogger --> smsDB : TCP 5432\n(log delivery)
+
+smsDB --> mq : DLQ on failure
+
+@enduml

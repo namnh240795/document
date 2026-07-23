@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Software Requirements Specification -  Authentication</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .req-id { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    .trace-table td:first-child { white-space: nowrap; }
+    .module-badge { background: #4CAF50; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 600; font-size: 14px; }
+    .back-link { margin-bottom: 20px; }
+    .back-link a { color: #1a5276; text-decoration: none; }
+    .back-link a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Software Requirements Specification</h1>
+  <div class="subtitle"> Authentication Module</div>
+  <span class="module-badge">AUTH</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <td>System</td><td> Authentication System</td></tr>
+    <tr><td>Module</td><td>AUTH -  Authentication</td></tr>
+    <tr><td>Database</td><td> auth_db</td></tr>
+    <tr><td>Date</td><td>2026-07-23</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+  </table>
+</div>
+
+<!-- 1. INTRODUCTION -->
+<h1>1. Introduction</h1>
+
+<h2>1.1 Purpose</h2>
+<p>This document defines the software requirements for the <strong> Authentication</strong> module of the  Authentication System system.</p>
+
+<h2>1.2 Scope</h2>
+<p> User accounts  login  roles  sessions  verification</p>
+
+<h2>1.3 Module Dependencies</h2>
+<p>Depends on:  </p>
+
+<h2>1.4 Definitions</h2>
+<table>
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td>SRS</td><td>Software Requirements Specification</td></tr>
+  <tr><td>FR</td><td>Functional Requirement</td></tr>
+  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
+  <tr><td>UC</td><td>Use Case</td></tr>
+  <tr><td>DR</td><td>Data Requirement</td></tr>
+  <tr><td>IR</td><td>Integration Requirement</td></tr>
+</table>
+
+<!-- 2. MODULE OVERVIEW -->
+<h1>2. Module Overview</h1>
+
+<h2>2.1 Module Description</h2>
+<table>
+  <tr><th>Aspect</th><th>Value</th></tr>
+  <tr><td>Module Code</td><td>AUTH</td></tr>
+  <tr><td>Module Name</td><td> Authentication</td></tr>
+  <tr><td>Description</td><td> User accounts  login  roles  sessions  verification</td></tr>
+  <tr><td>Database</td><td> auth_db</td></tr>
+  <tr><td>Tables</td><td>auth_users,auth_sessions,auth_accounts,auth_verification,auth_roles,auth_user_roles</td></tr>
+  <tr><td>Tech Stack</td><td>NestJS, PostgreSQL, Drizzle ORM</td></tr>
+</table>
+
+<h2>2.2 Use Case Diagram</h2>
+<div class="diagram">
+  <img src="../images/usecase/usecase-diagram.png" alt="Use Case Diagram">
+  <div class="caption">Figure 1:  Authentication Use Case Diagram</div>
+</div>
+
+<!-- 3. FUNCTIONAL REQUIREMENTS -->
+<h1>3. Functional Requirements</h1>
+
+<!-- REQUIREMENTS_PLACEHOLDER -->
+<!-- The build script will inject module-specific requirements here -->
+
+<h2>3.1 Use Cases</h2>
+
+<!-- USECASES_PLACEHOLDER -->
+<!-- The build script will inject module-specific use cases here -->
+
+<!-- 4. DATA MODEL -->
+<h1>4. Data Model</h1>
+
+<h2>4.1 Entity Relationship Diagram</h2>
+<div class="diagram">
+  <img src="../images/erd/erd-diagram.png" alt="ERD Diagram">
+  <div class="caption">Figure 2:  Authentication ERD</div>
+</div>
+
+<h2>4.2 Data Requirements</h2>
+<!-- DATA_REQUIREMENTS_PLACEHOLDER -->
+
+<!-- 5. API SPECIFICATION -->
+<h1>5. API Specification</h1>
+
+<h2>5.1 Endpoint Summary</h2>
+<!-- ENDPOINTS_PLACEHOLDER -->
+
+<!-- 6. INTEGRATION -->
+<h1>6. Integration</h1>
+
+<h2>6.1 Sequence Diagram</h2>
+<div class="diagram">
+  <img src="../images/sequence/sequence-diagram.png" alt="Sequence Diagram">
+  <div class="caption">Figure 3:  Authentication Integration Flow</div>
+</div>
+
+<h2>6.2 Webhook Events</h2>
+<!-- WEBHOOKS_PLACEHOLDER -->
+<!-- The build script will inject webhook events from modules.yaml -->
+
+<!-- 7. NON-FUNCTIONAL REQUIREMENTS -->
+<h1>7. Non-Functional Requirements</h1>
+<!-- NFR_PLACEHOLDER -->
+
+<!-- 8. TRACEABILITY -->
+<h1>8. Requirements Traceability Matrix</h1>
+<!-- TRACEABILITY_PLACEHOLDER -->
+
+</body>
+</html>

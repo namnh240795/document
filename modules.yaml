@@ -1,0 +1,87 @@
+# ============================================================
+# Module Registry - BA Documentation Framework
+# Define all modules, their databases, tables, and dependencies
+# ============================================================
+
+project:
+  name: "Authentication System"
+  short_name: "auth"
+
+# ============================================================
+# Modules
+# ============================================================
+modules:
+  - code: AUTH
+    name: "Authentication"
+    description: "User accounts, login, roles, sessions, verification"
+    database: auth_db
+    tables:
+      - auth_users
+      - auth_sessions
+      - auth_accounts
+      - auth_verification
+      - auth_roles
+      - auth_user_roles
+    depends_on: []
+    tech_stack:
+      - NestJS
+      - Better Auth
+      - Drizzle ORM
+      - PostgreSQL
+
+  - code: SMS
+    name: "SMS Service"
+    description: "SMS delivery logging, tracking, and audit trail"
+    database: sms_db
+    tables:
+      - sms_logs
+    depends_on:
+      - AUTH
+    tech_stack:
+      - NestJS
+      - Drizzle ORM
+      - PostgreSQL
+      - Twilio
+
+# ============================================================
+# Inter-Module Communication (Webhook Events)
+# Modules communicate via webhook events
+# ============================================================
+webhooks:
+  - from: AUTH
+    to: SMS
+    event: verification.requested
+    description: "AUTH publishes when user requests account verification"
+    protocol: RabbitMQ
+    queue: verification.sms
+    payload:
+      user_id: uuid
+      phone: string
+      channel: "sms" | "email"
+      otp: string
+      verification_id: string
+
+  - from: AUTH
+    to: SMS
+    event: verification.resent
+    description: "AUTH publishes when user resends verification (rate-limited)"
+    protocol: RabbitMQ
+    queue: verification.sms
+    payload:
+      user_id: uuid
+      phone: string
+      channel: "sms" | "email"
+      otp: string
+      verification_id: string
+
+  - from: SMS
+    to: AUTH
+    event: verification.delivered
+    description: "SMS confirms delivery status back to AUTH"
+    protocol: Webhook (HTTP POST)
+    url: /api/webhooks/sms/delivered
+    payload:
+      verification_id: string
+      status: "delivered" | "failed"
+      provider_message_id: string
+      error_message: string | null

@@ -1,0 +1,101 @@
+@startuml
+' ============================================================
+' Activity Diagram - Account Verification Flow
+' RabbitMQ + Redis Idempotency + SMS DB
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+|#F0F0F0| User |
+|#E8F4E8| NestJS API |
+|#E8E8FD| Redis |
+|#FFF3E0| RabbitMQ |
+|#FDE8E8| Verification Worker |
+|#E0F7FA| SMS Provider |
+|#F3E5F5| SMS DB |
+
+|User|
+start
+:Request Account Verification;
+
+|NestJS API|
+:Generate idempotency key\n(user_id + channel);
+
+|Redis|
+:GET idempotency:{user_id}:{channel};
+
+if (Key exists?) then (yes)
+  |NestJS API|
+  :Return "Already sent"\n(idempotent response);
+
+  |User|
+  :Show "Verification already sent";
+  stop
+
+else (no)
+  |Redis|
+  :SET idempotency:{user_id}:{channel}\nEX 300 (5 min TTL);
+
+  |NestJS API|
+  :Generate verification token/OTP;
+
+  |NestJS API|
+  :Store in auth_verification;
+
+  |NestJS API|
+  :Publish event to\nverification.sms queue;
+
+  |NestJS API|
+  :Return 200 "Verification sent";
+
+  |User|
+  :Show "Verification sent";
+
+  |RabbitMQ|
+  :Queue message;
+
+  |Verification Worker|
+  :Consume event;
+
+  |SMS Provider|
+  :Send OTP via Twilio;
+
+  if (SMS sent?) then (yes)
+    |SMS Provider|
+    :Return success;
+
+    |Verification Worker|
+    :Log delivery to sms_db;
+
+    |SMS DB|
+    :INSERT INTO sms_logs\n(status: sent);
+
+  else (no)
+    |SMS Provider|
+    :Return error;
+
+    |Verification Worker|
+    :Log failure to sms_db;
+
+    |SMS DB|
+    :INSERT INTO sms_logs\n(status: failed);
+
+    |RabbitMQ|
+    :Route to Dead Letter Queue\nfor retry;
+
+  endif
+
+  |Verification Worker|
+  :Update auth_verification\nstatus = sent;
+
+endif
+
+stop
+
+@enduml
