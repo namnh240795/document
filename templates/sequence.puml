@@ -1,0 +1,65 @@
+@startuml
+' ============================================================
+' Sequence Diagram Template (Integration)
+' Copy and customize for your project
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Integration Flow: [Flow Name]
+
+actor User
+participant "Frontend" as FE
+participant "API Gateway" as GW
+participant "Service A" as SA
+participant "Service B" as SB
+database "Database" as DB
+queue "Message Queue" as MQ
+
+== Step 1: Request ==
+
+User -> FE : Action
+activate FE
+
+FE -> GW : POST /api/resource
+activate GW
+
+GW -> SA : Validate & Forward
+activate SA
+
+SA -> DB : Query Data
+activate DB
+DB --> SA : Result
+deactivate DB
+
+== Step 2: Processing ==
+
+SA -> SB : Process Data
+activate SB
+
+SB -> MQ : Publish Event
+activate MQ
+MQ --> SB : Ack
+deactivate MQ
+
+SB --> SA : Response
+deactivate SB
+
+== Step 3: Response ==
+
+SA --> GW : 200 OK
+deactivate SA
+
+GW --> FE : JSON Response
+deactivate GW
+
+FE --> User : Display Result
+deactivate FE
+
+@enduml

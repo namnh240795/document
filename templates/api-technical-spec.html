@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Technical Specification - [Project Name]</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .req-id { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    .trace-table td:first-child { white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>API Technical Specification</h1>
+  <div class="subtitle">[Project Name] API</div>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
+    <tr><td>Date</td><td>YYYY-MM-DD</td></tr>
+    <tr><td>Author</td><td>[Developer / BA Name]</td></tr>
+    <tr><td>OpenAPI Spec</td><td>openapi.yaml</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">SRS Document</a></td></tr>
+  </table>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1>1. Overview</h1>
+
+<h2>1.1 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
+  <tr><td><span class="req-id">FR-001</span> User Registration</td><td>POST /auth/register</td></tr>
+  <tr><td><span class="req-id">FR-002</span> User Login</td><td>POST /auth/login</td></tr>
+  <tr><td><span class="req-id">FR-003</span> View Products</td><td>GET /products, GET /products/:id</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Create Order</td><td>POST /orders</td></tr>
+  <tr><td><span class="req-id">FR-005</span> Process Payment</td><td>POST /payments</td></tr>
+  <tr><td><span class="req-id">FR-006</span> Manage Users</td><td>GET /users, GET/PUT /users/:id</td></tr>
+  <tr><td><span class="req-id">FR-007</span> Generate Reports</td><td>GET /reports/sales</td></tr>
+  <tr><td><span class="req-id">NFR-003</span> Authentication</td><td>All endpoints (JWT Bearer)</td></tr>
+  <tr><td><span class="req-id">NFR-004</span> Authorization</td><td>Role-based access per endpoint</td></tr>
+</table>
+
+<h2>1.1 API Principles</h2>
+<ul>
+  <li>RESTful design</li>
+  <li>JSON request/response</li>
+  <li>Versioned via URL path (<code>/v1/</code>, <code>/v2/</code>)</li>
+  <li>Stateless (JWT authentication)</li>
+  <li>Idempotent PUT/DELETE operations</li>
+</ul>
+
+<h2>1.2 Authentication</h2>
+<p>All endpoints require JWT Bearer token unless marked as <strong>Public</strong>.</p>
+<pre><code>Authorization: Bearer &lt;access_token&gt;</code></pre>
+
+<h2>1.3 Common Headers</h2>
+<table>
+  <tr><th>Header</th><th>Value</th><th>Required</th></tr>
+  <tr><td>Content-Type</td><td>application/json</td><td>Yes (for body)</td></tr>
+  <tr><td>Authorization</td><td>Bearer &lt;token&gt;</td><td>Yes</td></tr>
+  <tr><td>X-Request-ID</td><td>UUID</td><td>No (auto-generated)</td></tr>
+  <tr><td>Accept-Language</td><td>en / vi</td><td>No (default: en)</td></tr>
+</table>
+
+<!-- 2. RESPONSE FORMAT -->
+<h1>2. Response Format</h1>
+
+<h2>2.1 Success Response</h2>
+<pre><code>{
+  "success": true,
+  "data": { ... },
+  "meta": {
+    "requestId": "req-abc-123",
+    "timestamp": "2024-01-15T10:30:00Z"
+  }
+}</code></pre>
+
+<h2>2.2 List Response</h2>
+<pre><code>{
+  "success": true,
+  "data": [ ... ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 150,
+    "totalPages": 8
+  }
+}</code></pre>
+
+<h2>2.3 Error Response</h2>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      { "field": "email", "message": "Invalid email format" },
+      { "field": "password", "message": "Must be at least 8 characters" }
+    ]
+  },
+  "meta": {
+    "requestId": "req-abc-123",
+    "timestamp": "2024-01-15T10:30:00Z"
+  }
+}</code></pre>
+
+<!-- 3. ERROR CODES -->
+<h1>3. Error Codes</h1>
+<table>
+  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Request validation failed</td></tr>
+  <tr><td>400</td><td>MALFORMED_REQUEST</td><td>Invalid JSON body</td></tr>
+  <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid token</td></tr>
+  <tr><td>401</td><td>TOKEN_EXPIRED</td><td>JWT token expired</td></tr>
+  <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions</td></tr>
+  <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
+  <tr><td>409</td><td>CONFLICT</td><td>Resource already exists</td></tr>
+  <tr><td>422</td><td>UNPROCESSABLE</td><td>Business logic error</td></tr>
+  <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
+  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
+  <tr><td>503</td><td>SERVICE_UNAVAILABLE</td><td>Service temporarily down</td></tr>
+</table>
+
+<!-- 4. RATE LIMITING -->
+<h1>4. Rate Limiting</h1>
+<p>Resolves: <span class="req-id">NFR-002</span> Concurrent user handling</p>
+<table>
+  <tr><th>Tier</th><th>Requests/min</th><th>Burst</th></tr>
+  <tr><td>Public</td><td>60</td><td>10</td></tr>
+  <tr><td>Authenticated</td><td>100</td><td>20</td></tr>
+  <tr><td>Admin</td><td>500</td><td>50</td></tr>
+</table>
+<p>Headers returned:</p>
+<pre><code>X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1705315200</code></pre>
+
+<!-- 5. ENDPOINTS -->
+<h1>5. Endpoints</h1>
+
+<h2>5.1 Auth</h2>
+
+<h3>POST /auth/login <em>(Public)</em> <span class="req-id">FR-002</span></h3>
+<p>User login. Resolves: <span class="req-id">FR-002</span> User Login requirement</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "email": "user@example.com",
+  "password": "securepassword"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJSUzI1NiIs...",
+    "refreshToken": "dGhpcyBpcyBhIHJlZnJl...",
+    "expiresIn": 900,
+    "tokenType": "Bearer",
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "role": "customer"
+    }
+  }
+}</code></pre>
+<p><strong>Error 401:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "Invalid email or password"
+  }
+}</code></pre>
+
+<h3>POST /auth/register <em>(Public)</em> <span class="req-id">FR-001</span></h3>
+<p>Create new account. Resolves: <span class="req-id">FR-001</span> User Registration requirement</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "email": "newuser@example.com",
+  "password": "securepassword",
+  "fullName": "John Doe",
+  "phone": "+84901234567"
+}</code></pre>
+<p><strong>Response 201:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 2,
+    "email": "newuser@example.com",
+    "fullName": "John Doe",
+    "role": "customer",
+    "status": "active",
+    "createdAt": "2024-01-15T10:30:00Z"
+  }
+}</code></pre>
+
+<h3>POST /auth/refresh <em>(Public)</em></h3>
+<p>Refresh access token</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "refreshToken": "dGhpcyBpcyBhIHJlZnJl..."
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJSUzI1NiIs...",
+    "expiresIn": 900
+  }
+}</code></pre>
+
+<hr>
+
+<h2>5.2 Users</h2>
+
+<h3>GET /users <em>(Requires: admin/staff)</em> <span class="req-id">FR-006</span></h3>
+<p><strong>Query Parameters:</strong></p>
+<table>
+  <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+  <tr><td>page</td><td>int</td><td>1</td><td>Page number</td></tr>
+  <tr><td>limit</td><td>int</td><td>20</td><td>Items per page (max 100)</td></tr>
+  <tr><td>status</td><td>string</td><td>-</td><td>Filter by status</td></tr>
+  <tr><td>role</td><td>string</td><td>-</td><td>Filter by role</td></tr>
+  <tr><td>search</td><td>string</td><td>-</td><td>Search by name/email</td></tr>
+</table>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "email": "user@example.com",
+      "fullName": "John Doe",
+      "role": "customer",
+      "status": "active",
+      "createdAt": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1, "limit": 20, "total": 150, "totalPages": 8
+  }
+}</code></pre>
+
+<h3>GET /users/:id <em>(Requires: admin/staff)</em> <span class="req-id">FR-006</span></h3>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "email": "user@example.com",
+    "fullName": "John Doe",
+    "phone": "+84901234567",
+    "role": "customer",
+    "status": "active",
+    "addresses": [
+      { "id": 1, "label": "Home", "street": "123 Main St", "city": "Ho Chi Minh", "isDefault": true }
+    ],
+    "createdAt": "2024-01-15T10:30:00Z"
+  }
+}</code></pre>
+
+<h3>PUT /users/:id <em>(Requires: admin)</em> <span class="req-id">FR-006</span></h3>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "fullName": "John Updated",
+  "phone": "+84907654321"
+}</code></pre>
+
+<hr>
+
+<h2>5.3 Products</h2>
+
+<h3>GET /products <em>(Public)</em> <span class="req-id">FR-003</span></h3>
+<p><strong>Query Parameters:</strong></p>
+<table>
+  <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+  <tr><td>page</td><td>int</td><td>1</td><td>Page number</td></tr>
+  <tr><td>limit</td><td>int</td><td>20</td><td>Items per page</td></tr>
+  <tr><td>category</td><td>int</td><td>-</td><td>Filter by category ID</td></tr>
+  <tr><td>minPrice</td><td>decimal</td><td>-</td><td>Minimum price</td></tr>
+  <tr><td>maxPrice</td><td>decimal</td><td>-</td><td>Maximum price</td></tr>
+  <tr><td>sort</td><td>string</td><td>created_at</td><td>Sort: name, price, created_at</td></tr>
+  <tr><td>order</td><td>string</td><td>desc</td><td>Sort order: asc, desc</td></tr>
+  <tr><td>search</td><td>string</td><td>-</td><td>Search by name/description</td></tr>
+</table>
+
+<h3>POST /products <em>(Requires: admin/staff)</em> <span class="req-id">FR-003</span></h3>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "name": "New Product",
+  "description": "Product description",
+  "categoryId": 1,
+  "sku": "PROD-001",
+  "price": 299000,
+  "costPrice": 150000,
+  "stockQuantity": 100,
+  "weight": 0.5
+}</code></pre>
+
+<hr>
+
+<h2>5.4 Orders</h2>
+
+<h3>POST /orders <em>(Requires: customer)</em> <span class="req-id">FR-004</span></h3>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "items": [
+    { "productId": 1, "quantity": 2 },
+    { "productId": 3, "quantity": 1 }
+  ],
+  "shippingAddressId": 1,
+  "paymentMethod": "credit_card",
+  "notes": "Please deliver in the morning"
+}</code></pre>
+<p><strong>Response 201:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "orderNumber": "ORD-20240115-001",
+    "status": "pending",
+    "items": [
+      { "productId": 1, "quantity": 2, "unitPrice": 299000, "subtotal": 598000 },
+      { "productId": 3, "quantity": 1, "unitPrice": 149000, "subtotal": 149000 }
+    ],
+    "subtotal": 747000,
+    "taxAmount": 74700,
+    "shippingFee": 30000,
+    "totalAmount": 851700,
+    "paymentMethod": "credit_card",
+    "createdAt": "2024-01-15T10:30:00Z"
+  }
+}</code></pre>
+<p><strong>Error 422:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "UNPROCESSABLE",
+    "message": "Insufficient stock for product ID 1",
+    "details": [
+      { "productId": 1, "available": 1, "requested": 2 }
+    ]
+  }
+}</code></pre>
+
+<h3>GET /orders <em>(Requires: customer own, admin/staff all)</em> <span class="req-id">FR-004</span></h3>
+<p><strong>Query Parameters:</strong></p>
+<table>
+  <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+  <tr><td>page</td><td>int</td><td>1</td><td>Page number</td></tr>
+  <tr><td>limit</td><td>int</td><td>20</td><td>Items per page</td></tr>
+  <tr><td>status</td><td>string</td><td>-</td><td>Filter by status</td></tr>
+  <tr><td>from</td><td>date</td><td>-</td><td>Start date (YYYY-MM-DD)</td></tr>
+  <tr><td>to</td><td>date</td><td>-</td><td>End date (YYYY-MM-DD)</td></tr>
+</table>
+
+<h3>PATCH /orders/:id/status <em>(Requires: admin/staff)</em> <span class="req-id">FR-004</span></h3>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "status": "confirmed",
+  "notes": "Order confirmed, preparing for shipment"
+}</code></pre>
+
+<hr>
+
+<h2>5.5 Payments</h2>
+
+<h3>POST /payments <em>(Requires: customer)</em> <span class="req-id">FR-005</span></h3>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "orderId": 1,
+  "method": "credit_card",
+  "cardToken": "tok_visa_4242"
+}</code></pre>
+<p><strong>Response 201:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "orderId": 1,
+    "method": "credit_card",
+    "status": "completed",
+    "amount": 851700,
+    "transactionId": "txn_abc123",
+    "paidAt": "2024-01-15T10:35:00Z"
+  }
+}</code></pre>
+
+<!-- 6. PAGINATION -->
+<h1>6. Pagination</h1>
+<p>All list endpoints support offset pagination.</p>
+<pre><code>GET /users?page=2&amp;limit=20</code></pre>
+<p><strong>Response includes:</strong></p>
+<pre><code>{
+  "pagination": {
+    "page": 2,
+    "limit": 20,
+    "total": 150,
+    "totalPages": 8,
+    "hasNext": true,
+    "hasPrev": true
+  }
+}</code></pre>
+
+<!-- 7. FILTERING & SORTING -->
+<h1>7. Filtering &amp; Sorting</h1>
+
+<h2>7.1 Filter Syntax</h2>
+<pre><code>GET /products?category=1&amp;status=active&amp;minPrice=100000&amp;maxPrice=500000</code></pre>
+
+<h2>7.2 Sort Syntax</h2>
+<pre><code>GET /products?sort=price&amp;order=asc
+GET /products?sort=created_at&amp;order=desc</code></pre>
+
+<h2>7.3 Search</h2>
+<pre><code>GET /products?search=wireless+headphone</code></pre>
+
+<!-- 8. VERSIONING -->
+<h1>8. Versioning</h1>
+<table>
+  <tr><th>Version</th><th>Status</th><th>Base URL</th></tr>
+  <tr><td>v1</td><td>Current</td><td>/api/v1</td></tr>
+  <tr><td>v2</td><td>Planned</td><td>/api/v2</td></tr>
+</table>
+<p>Breaking changes require new version. Non-breaking additions are added to current version.</p>
+
+<!-- 9. SDK & INTEGRATION -->
+<h1>9. SDK &amp; Integration Examples</h1>
+
+<h2>cURL</h2>
+<pre><code># Login
+curl -X POST https://api.example.com/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"pass123"}'
+
+# Get products (with token)
+curl https://api.example.com/v1/products \
+  -H "Authorization: Bearer &lt;token&gt;"</code></pre>
+
+<h2>JavaScript (fetch)</h2>
+<pre><code>const response = await fetch('/api/v1/orders', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify({
+    items: [{ productId: 1, quantity: 2 }],
+    shippingAddressId: 1,
+    paymentMethod: 'credit_card'
+  })
+});
+const data = await response.json();</code></pre>
+
+<!-- 10. CHANGELOG -->
+<h1>10. Changelog</h1>
+<table>
+  <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
+  <tr><td>YYYY-MM-DD</td><td>1.0.0</td><td>Initial release</td></tr>
+</table>
+
+</body>
+</html>

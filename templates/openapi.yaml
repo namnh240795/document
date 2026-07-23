@@ -1,0 +1,173 @@
+openapi: 3.0.3
+info:
+  title: "[Project Name] API"
+  description: |
+    API documentation for [Project Name].
+    Generated from SRS and use case analysis.
+  version: "1.0.0"
+  contact:
+    name: "BA Team"
+    email: "ba@example.com"
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local Development
+  - url: https://staging-api.example.com/api/v1
+    description: Staging
+  - url: https://api.example.com/api/v1
+    description: Production
+
+tags:
+  - name: Users
+    description: User management operations
+  - name: Orders
+    description: Order management operations
+  - name: Products
+    description: Product catalog operations
+  - name: Auth
+    description: Authentication and authorization
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: "UC-01: User Login"
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          description: Invalid credentials
+
+  /users:
+    get:
+      tags: [Users]
+      summary: "UC-03: List Users"
+      operationId: listUsers
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: User list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserListResponse"
+
+  /orders:
+    post:
+      tags: [Orders]
+      summary: "Create Order"
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderRequest"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+
+    UserListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserDTO"
+        total:
+          type: integer
+        page:
+          type: integer
+
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, user]
+        status:
+          type: string
+          enum: [active, inactive]
+
+    CreateOrderRequest:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [productId, quantity]
+            properties:
+              productId:
+                type: integer
+              quantity:
+                type: integer
+
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        orderNumber:
+          type: string
+        totalAmount:
+          type: number
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time

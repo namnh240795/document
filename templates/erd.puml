@@ -1,0 +1,343 @@
+@startuml
+' ============================================================
+' ERD Template - Module-based with Project Prefix
+'
+' RULE: All tables MUST use <project_short_name>_<table_name>
+' Example: if project = "ecom", then: ecom_users, ecom_orders
+'
+' Replace "xxx" below with your project short name (3-4 chars)
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #666666
+}
+
+title [Project Name] - Entity Relationship Diagram
+' TODO: Replace "xxx" with your project short name (3-4 chars)
+
+' ============================================================
+' MODULE: Authentication
+' Handles: user accounts, roles, sessions, tokens
+' Resolves: FR-001, FR-002, NFR-003, NFR-004
+' ============================================================
+package "Authentication Module" #E8F4E8 {
+  entity "xxx_users" as users {
+    * id : bigint <<PK>>
+    --
+    * username : varchar(50) <<UNIQUE>>
+    * email : varchar(100) <<UNIQUE>>
+    * password_hash : varchar(255)
+    * full_name : varchar(100)
+    * phone : varchar(20)
+    * role : enum('admin','staff','customer')
+    * status : enum('active','inactive','banned')
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+
+  entity "xxx_user_sessions" as sessions {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>>
+    * refresh_token : varchar(255)
+    * ip_address : varchar(45)
+    * user_agent : text
+    * expires_at : timestamp
+    * created_at : timestamp
+  }
+
+  entity "xxx_roles" as roles {
+    * id : bigint <<PK>>
+    --
+    * name : varchar(50) <<UNIQUE>>
+    * permissions : jsonb
+    * description : text
+  }
+}
+
+' ============================================================
+' MODULE: Product Catalog
+' Handles: products, categories, inventory
+' Resolves: FR-003
+' ============================================================
+package "Product Catalog Module" #E8E8FD {
+  entity "xxx_categories" as categories {
+    * id : bigint <<PK>>
+    --
+    * name : varchar(100)
+    * slug : varchar(100) <<UNIQUE>>
+    * description : text
+    * parent_id : bigint <<FK>>
+    * sort_order : int
+    * is_active : boolean
+  }
+
+  entity "xxx_products" as products {
+    * id : bigint <<PK>>
+    --
+    * category_id : bigint <<FK>>
+    * name : varchar(200)
+    * slug : varchar(200) <<UNIQUE>>
+    * description : text
+    * sku : varchar(50) <<UNIQUE>>
+    * price : decimal(10,2)
+    * cost_price : decimal(10,2)
+    * stock_quantity : int
+    * status : enum('draft','active','archived')
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+
+  entity "xxx_product_images" as product_images {
+    * id : bigint <<PK>>
+    --
+    * product_id : bigint <<FK>>
+    * url : varchar(500)
+    * alt_text : varchar(200)
+    * sort_order : int
+    * is_primary : boolean
+  }
+}
+
+' ============================================================
+' MODULE: E-Commerce / Order Management
+' Handles: orders, order items, cart
+' Resolves: FR-004, FR-005
+' ============================================================
+package "E-Commerce Module" #FDE8E8 {
+  entity "xxx_orders" as orders {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>>
+    * order_number : varchar(20) <<UNIQUE>>
+    * status : enum('pending','confirmed','shipped','delivered','cancelled')
+    * subtotal : decimal(10,2)
+    * tax_amount : decimal(10,2)
+    * shipping_fee : decimal(10,2)
+    * discount_amount : decimal(10,2)
+    * total_amount : decimal(10,2)
+    * shipping_address_id : bigint <<FK>>
+    * notes : text
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+
+  entity "xxx_order_items" as order_items {
+    * id : bigint <<PK>>
+    --
+    * order_id : bigint <<FK>>
+    * product_id : bigint <<FK>>
+    * quantity : int
+    * unit_price : decimal(10,2)
+    * subtotal : decimal(10,2)
+  }
+
+  entity "xxx_cart_items" as cart {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>>
+    * product_id : bigint <<FK>>
+    * quantity : int
+    * created_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Payment
+' Handles: payments, refunds, transaction logs
+' Resolves: FR-005, IR-001
+' ============================================================
+package "Payment Module" #FFF3E0 {
+  entity "xxx_payments" as payments {
+    * id : bigint <<PK>>
+    --
+    * order_id : bigint <<FK>>
+    * method : enum('cod','bank_transfer','credit_card','e_wallet')
+    * status : enum('pending','completed','failed','refunded')
+    * amount : decimal(10,2)
+    * transaction_id : varchar(100)
+    * gateway_response : jsonb
+    * paid_at : timestamp
+    * created_at : timestamp
+  }
+
+  entity "xxx_refunds" as refunds {
+    * id : bigint <<PK>>
+    --
+    * payment_id : bigint <<FK>>
+    * order_id : bigint <<FK>>
+    * amount : decimal(10,2)
+    * reason : text
+    * status : enum('pending','approved','rejected','completed')
+    * processed_by : bigint <<FK>>
+    * processed_at : timestamp
+    * created_at : timestamp
+  }
+
+  entity "xxx_transaction_logs" as tx_logs {
+    * id : bigint <<PK>>
+    --
+    * payment_id : bigint <<FK>>
+    * action : varchar(50)
+    * amount : decimal(10,2)
+    * status : varchar(20)
+    * gateway_response : jsonb
+    * created_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Wallet
+' Handles: user wallets, top-up, transfers, transactions
+' Resolves: FR-008 (Wallet), IR-001 (Payment Gateway)
+' ============================================================
+package "Wallet Module" #E8F5E9 {
+  entity "xxx_wallets" as wallets {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>> <<UNIQUE>>
+    * balance : decimal(12,2) NOT NULL DEFAULT 0
+    * currency : varchar(3) DEFAULT 'VND'
+    * status : enum('active','frozen','closed')
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+
+  entity "xxx_wallet_transactions" as wallet_tx {
+    * id : bigint <<PK>>
+    --
+    * wallet_id : bigint <<FK>>
+    * type : enum('topup','payment','refund','transfer_in','transfer_out','withdrawal')
+    * amount : decimal(12,2)
+    * balance_after : decimal(12,2)
+    * reference_type : varchar(50)
+    * reference_id : bigint
+    * description : text
+    * created_at : timestamp
+  }
+
+  entity "xxx_wallet_topup_requests" as topup {
+    * id : bigint <<PK>>
+    --
+    * wallet_id : bigint <<FK>>
+    * amount : decimal(12,2)
+    * method : enum('bank_transfer','credit_card','e_wallet')
+    * status : enum('pending','completed','failed')
+    * transaction_id : varchar(100)
+    * created_at : timestamp
+    * completed_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Shipping / Address
+' Handles: addresses, shipping zones, delivery tracking
+' Resolves: FR-004 (Order - shipping address)
+' ============================================================
+package "Shipping Module" #F3E5F5 {
+  entity "xxx_addresses" as addresses {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>>
+    * label : varchar(50)
+    * street : varchar(255)
+    * city : varchar(100)
+    * state : varchar(100)
+    * zip_code : varchar(20)
+    * country : varchar(50)
+    * is_default : boolean
+    * created_at : timestamp
+  }
+
+  entity "xxx_shipments" as shipments {
+    * id : bigint <<PK>>
+    --
+    * order_id : bigint <<FK>>
+    * address_id : bigint <<FK>>
+    * carrier : varchar(50)
+    * tracking_number : varchar(100)
+    * status : enum('pending','picked_up','in_transit','delivered')
+    * estimated_delivery : date
+    * actual_delivery : timestamp
+    * created_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Notification
+' Handles: notification templates, delivery logs
+' Resolves: IR-002, IR-003
+' ============================================================
+package "Notification Module" #E0F7FA {
+  entity "xxx_notification_templates" as notif_templates {
+    * id : bigint <<PK>>
+    --
+    * name : varchar(100) <<UNIQUE>>
+    * type : enum('email','sms','push')
+    * subject : varchar(200)
+    * body : text
+    * is_active : boolean
+  }
+
+  entity "xxx_notification_logs" as notif_logs {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>>
+    * template_id : bigint <<FK>>
+    * channel : enum('email','sms','push')
+    * status : enum('pending','sent','failed','read')
+    * sent_at : timestamp
+    * read_at : timestamp
+    * created_at : timestamp
+  }
+}
+
+' ============================================================
+' RELATIONSHIPS
+' ============================================================
+
+' --- Authentication ---
+users ||--o{ sessions : "has"
+users }|--|| roles : "assigned to"
+
+' --- Product Catalog ---
+categories ||--o{ products : "categorizes"
+categories ||--o{ categories : "parent"
+products ||--o{ product_images : "has"
+
+' --- E-Commerce ---
+users ||--o{ orders : "places"
+users ||--o{ cart : "has in cart"
+orders ||--o{ order_items : "contains"
+products ||--o{ order_items : "included in"
+products ||--o{ cart : "added to cart"
+
+' --- Payment ---
+orders ||--o{ payments : "paid via"
+payments ||--o{ refunds : "may have"
+payments ||--o{ tx_logs : "logged"
+
+' --- Wallet ---
+users ||--|| wallets : "owns"
+wallets ||--o{ wallet_tx : "has transactions"
+wallets ||--o{ topup : "top-up requests"
+wallet_tx ..> payments : "reference (payment)"
+wallet_tx ..> refunds : "reference (refund)"
+
+' --- Shipping ---
+users ||--o{ addresses : "has"
+orders ||--o{ shipments : "shipped via"
+addresses ||--o{ shipments : "ship to"
+
+' --- Notification ---
+users ||--o{ notif_logs : "receives"
+notif_templates ||--o{ notif_logs : "uses"
+
+@enduml

@@ -1,0 +1,79 @@
+@startuml
+' ============================================================
+' Class Diagram Template (Domain Model)
+' Copy and customize for your project
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+
+' --- Classes ---
+class User {
+  - id: long
+  - username: String
+  - email: String
+  - role: Role
+  + login(): boolean
+  + logout(): void
+  + getProfile(): UserDTO
+}
+
+class Order {
+  - id: long
+  - orderNumber: String
+  - totalAmount: BigDecimal
+  - status: OrderStatus
+  - createdAt: DateTime
+  + calculateTotal(): BigDecimal
+  + updateStatus(status: OrderStatus): void
+  + cancel(): boolean
+}
+
+class OrderItem {
+  - quantity: int
+  - unitPrice: BigDecimal
+  + getSubtotal(): BigDecimal
+}
+
+class Product {
+  - id: long
+  - name: String
+  - price: BigDecimal
+  - stock: int
+  + reduceStock(qty: int): boolean
+  + isAvailable(): boolean
+}
+
+class Category {
+  - id: long
+  - name: String
+  + getProducts(): List<Product>
+}
+
+' --- Enums ---
+enum Role {
+  ADMIN
+  USER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+' --- Relationships ---
+User "1" -- "*" Order : places >
+User --> Role
+Order "1" -- "*" OrderItem : contains >
+Order --> OrderStatus
+OrderItem "*" -- "1" Product : references >
+Product "*" -- "1" Category : belongs to >
+
+@enduml

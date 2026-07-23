@@ -1,0 +1,93 @@
+@startuml
+' ============================================================
+' Deployment Diagram Template
+' Infrastructure và deployment topology
+' ============================================================
+
+skinparam node {
+  BackgroundColor #E8F4E8
+  BorderColor #333333
+}
+skinparam artifact {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+}
+skinparam database {
+  BackgroundColor #FDE8E8
+  BorderColor #333333
+}
+skinparam cloud {
+  BackgroundColor #E8E8FD
+  BorderColor #333333
+}
+
+title Deployment Diagram
+
+' --- CDN / Edge ---
+cloud "CDN\n(CloudFront)" as cdn
+
+' --- Load Balancer ---
+node "Load Balancer\n(ALB)" as alb
+
+' --- Application Servers ---
+node "App Server 1\n(EC2 / ECS)" as app1 {
+  artifact "API Gateway\n(Node.js)" as api1
+  artifact "Auth Service\n(Node.js)" as auth1
+}
+
+node "App Server 2\n(EC2 / ECS)" as app2 {
+  artifact "API Gateway\n(Node.js)" as api2
+  artifact "Auth Service\n(Node.js)" as auth2
+}
+
+' --- Worker Servers ---
+node "Worker Server\n(EC2)" as worker {
+  artifact "Order Processor\n(Node.js)" as processor
+  artifact "Notification Worker\n(Node.js)" as workerNotif
+}
+
+' --- Data Tier ---
+node "Primary DB\n(RDS PostgreSQL)" as dbPrimary {
+  database "users, orders" as dbData1
+}
+
+node "Read Replica\n(RDS PostgreSQL)" as dbReplica {
+  database "users, orders (read)" as dbData2
+}
+
+node "Cache\n(ElastiCache Redis)" as redis
+
+node "Message Queue\n(SQS / RabbitMQ)" as mq
+
+' --- Storage ---
+node "Object Storage\n(S3)" as s3
+
+' --- External ---
+cloud "External APIs" as external
+
+' --- Relationships ---
+cdn --> alb : HTTPS
+alb --> app1 : HTTP
+alb --> app2 : HTTP
+
+app1 --> dbPrimary : TCP 5432
+app2 --> dbPrimary : TCP 5432
+
+dbPrimary --> dbReplica : replication
+
+app1 --> redis : TCP 6379
+app2 --> redis : TCP 6379
+
+app1 --> mq : TCP 5672
+app2 --> mq : TCP 5672
+
+mq --> worker : consume
+
+worker --> dbPrimary : TCP 5432
+worker --> s3 : HTTPS
+workerNotif --> external : HTTPS
+
+app1 --> s3 : HTTPS
+app2 --> s3 : HTTPS
+
+@enduml

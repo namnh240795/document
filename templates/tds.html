@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Technical Design Specification - [Project Name]</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .req-id { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    .trace-table td:first-child { white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Technical Design Specification</h1>
+  <div class="subtitle">[Project Name]</div>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Date</td><td>YYYY-MM-DD</td></tr>
+    <tr><td>Author</td><td>[Tech Lead / BA Name]</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Related SRS</td><td>[Link to SRS]</td></tr>
+  </table>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1>1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>[Why this document exists - technical decisions and design rationale]</p>
+
+<h2>1.2 Scope</h2>
+<p>[What system/components this covers]</p>
+
+<h2>1.3 SRS Reference</h2>
+<table>
+  <tr><th>Document</th><th>Version</th><th>Description</th></tr>
+  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html">Software Requirements Specification</a></td></tr>
+  <tr><td>OpenAPI Spec</td><td>1.0</td><td><code>openapi.yaml</code></td></tr>
+</table>
+
+<h2>1.4 Requirements Addressed</h2>
+<p>This TDS addresses the following SRS requirements:</p>
+<table class="trace-table">
+  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
+  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-007</span></td><td>Section 3 (Components), Section 6 (API)</td></tr>
+  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-007</span></td><td>Section 7 (Security), Section 9 (Monitoring), Section 10 (Performance)</td></tr>
+  <tr><td>Data</td><td><span class="req-id">DR-001</span> - <span class="req-id">DR-004</span></td><td>Section 5 (Data Architecture)</td></tr>
+  <tr><td>Integration</td><td><span class="req-id">IR-001</span> - <span class="req-id">IR-003</span></td><td>Section 3.3 (Inter-Service), Section 8 (Error Handling)</td></tr>
+</table>
+
+<!-- 2. SYSTEM ARCHITECTURE -->
+<h1>2. System Architecture</h1>
+
+<h2>2.1 Architecture Overview</h2>
+<div class="diagram">
+  <img src="../images/architecture/architecture-overview.png" alt="Architecture Overview">
+  <div class="caption">Figure 1: System Context Diagram (C4 Level 1)</div>
+</div>
+
+<h2>2.2 Architecture Style</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th><th>Resolves</th></tr>
+  <tr><td>Pattern</td><td>[Monolith / Microservices]</td><td><span class="req-id">NFR-002</span> Scalability</td></tr>
+  <tr><td>Communication</td><td>[REST / Event-driven]</td><td><span class="req-id">IR-001</span>, <span class="req-id">IR-002</span></td></tr>
+  <tr><td>State Management</td><td>[Stateless]</td><td><span class="req-id">NFR-006</span> Availability</td></tr>
+</table>
+
+<h2>2.3 Key Design Decisions</h2>
+<table class="trace-table">
+  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th><th>Alternatives</th></tr>
+  <tr>
+    <td>1</td><td>Use PostgreSQL</td>
+    <td>ACID compliance, complex queries</td>
+    <td><span class="req-id">DR-001</span> - <span class="req-id">DR-004</span></td>
+    <td>MySQL, MongoDB</td>
+  </tr>
+  <tr>
+    <td>2</td><td>Redis for caching</td>
+    <td>Performance, TTL support</td>
+    <td><span class="req-id">NFR-001</span> Response time</td>
+    <td>Memcached</td>
+  </tr>
+  <tr>
+    <td>3</td><td>JWT authentication</td>
+    <td>Stateless, scalable</td>
+    <td><span class="req-id">NFR-003</span> Auth</td>
+    <td>Session-based, OAuth2</td>
+  </tr>
+  <tr>
+    <td>4</td><td>Event-driven for notifications</td>
+    <td>Decouple, async processing</td>
+    <td><span class="req-id">IR-002</span></td>
+    <td>Sync HTTP calls</td>
+  </tr>
+</table>
+
+<!-- 3. COMPONENT DESIGN -->
+<h1>3. Component Design</h1>
+
+<h2>3.1 Component Diagram</h2>
+<div class="diagram">
+  <img src="../images/component/component-diagram.png" alt="Component Diagram">
+  <div class="caption">Figure 2: Component Diagram</div>
+</div>
+
+<h2>3.2 Component to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th><th>Technology</th></tr>
+  <tr>
+    <td>API Gateway</td><td>Routing, rate limiting, auth</td>
+    <td><span class="req-id">NFR-003</span>, <span class="req-id">NFR-004</span></td>
+    <td>Node.js / Express</td>
+  </tr>
+  <tr>
+    <td>Auth Service</td><td>JWT, OAuth2, session management</td>
+    <td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">NFR-003</span></td>
+    <td>Node.js</td>
+  </tr>
+  <tr>
+    <td>User Service</td><td>User CRUD, profile management</td>
+    <td><span class="req-id">FR-006</span></td>
+    <td>Node.js</td>
+  </tr>
+  <tr>
+    <td>Product Service</td><td>Catalog, inventory management</td>
+    <td><span class="req-id">FR-003</span></td>
+    <td>Node.js</td>
+  </tr>
+  <tr>
+    <td>Order Service</td><td>Order lifecycle, checkout</td>
+    <td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td>
+    <td>Node.js</td>
+  </tr>
+  <tr>
+    <td>Notification Service</td><td>Email, SMS, push notifications</td>
+    <td><span class="req-id">IR-002</span>, <span class="req-id">IR-003</span></td>
+    <td>Node.js</td>
+  </tr>
+  <tr>
+    <td>Report Service</td><td>Analytics, report generation</td>
+    <td><span class="req-id">FR-007</span></td>
+    <td>Node.js</td>
+  </tr>
+</table>
+
+<h2>3.3 Inter-Service Communication</h2>
+<table class="trace-table">
+  <tr><th>From</th><th>To</th><th>Protocol</th><th>Purpose</th><th>Resolves</th></tr>
+  <tr>
+    <td>API Gateway</td><td>Auth Service</td><td>HTTP/REST</td><td>Validate token</td>
+    <td><span class="req-id">NFR-003</span></td>
+  </tr>
+  <tr>
+    <td>Order Service</td><td>Product Service</td><td>HTTP/REST</td><td>Check stock</td>
+    <td><span class="req-id">FR-004</span></td>
+  </tr>
+  <tr>
+    <td>Order Service</td><td>Message Queue</td><td>AMQP</td><td>Publish order events</td>
+    <td><span class="req-id">IR-002</span></td>
+  </tr>
+  <tr>
+    <td>Notification Service</td><td>Message Queue</td><td>AMQP</td><td>Consume events</td>
+    <td><span class="req-id">IR-002</span></td>
+  </tr>
+</table>
+
+<!-- 4. DEPLOYMENT ARCHITECTURE -->
+<h1>4. Deployment Architecture</h1>
+
+<h2>4.1 Deployment Diagram</h2>
+<div class="diagram">
+  <img src="../images/deployment/deployment-diagram.png" alt="Deployment Diagram">
+  <div class="caption">Figure 3: Deployment Diagram</div>
+</div>
+
+<h2>4.2 Infrastructure</h2>
+<table class="trace-table">
+  <tr><th>Resource</th><th>Specification</th><th>Quantity</th><th>Resolves</th></tr>
+  <tr><td>EC2 / ECS</td><td>t3.medium / 2 vCPU, 4GB</td><td>2</td><td><span class="req-id">NFR-002</span>, <span class="req-id">NFR-006</span></td></tr>
+  <tr><td>RDS PostgreSQL</td><td>db.t3.medium</td><td>1 primary + 1 replica</td><td><span class="req-id">DR-001</span> - <span class="req-id">DR-004</span>, <span class="req-id">NFR-007</span></td></tr>
+  <tr><td>ElastiCache Redis</td><td>cache.t3.micro</td><td>1</td><td><span class="req-id">NFR-001</span></td></tr>
+  <tr><td>S3</td><td>Standard</td><td>1 bucket</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>ALB</td><td>Application</td><td>1</td><td><span class="req-id">NFR-006</span></td></tr>
+</table>
+
+<h2>4.3 Environment Matrix</h2>
+<table>
+  <tr><th>Environment</th><th>Purpose</th><th>URL</th><th>DB</th></tr>
+  <tr><td>Development</td><td>Local dev</td><td>localhost:3000</td><td>Local PostgreSQL</td></tr>
+  <tr><td>Staging</td><td>Pre-production</td><td>staging-api.example.com</td><td>Staging RDS</td></tr>
+  <tr><td>Production</td><td>Live</td><td>api.example.com</td><td>Production RDS</td></tr>
+</table>
+
+<!-- 5. DATA ARCHITECTURE -->
+<h1>5. Data Architecture</h1>
+
+<h2>5.1 Database Design</h2>
+<p>Refer to: <a href="database-design.html">Database Design Document</a></p>
+
+<h2>5.2 Data Requirements Resolution</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
+  <tr>
+    <td><span class="req-id">DR-001</span> User data</td>
+    <td>users table with roles, status, audit timestamps</td>
+    <td>users, addresses</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">DR-002</span> Product catalog</td>
+    <td>products with categories, images, inventory tracking</td>
+    <td>products, categories, product_images</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">DR-003</span> Order transactions</td>
+    <td>orders with status workflow, order_items for line items</td>
+    <td>orders, order_items</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">DR-004</span> Payment records</td>
+    <td>payments with transaction IDs, status tracking</td>
+    <td>payments</td>
+  </tr>
+</table>
+
+<h2>5.3 Caching Strategy</h2>
+<table class="trace-table">
+  <tr><th>Cache Key Pattern</th><th>TTL</th><th>Invalidation</th><th>Resolves</th></tr>
+  <tr><td><code>user:{id}</code></td><td>15 min</td><td>On user update</td><td><span class="req-id">NFR-001</span></td></tr>
+  <tr><td><code>product:{id}</code></td><td>30 min</td><td>On product update</td><td><span class="req-id">NFR-001</span></td></tr>
+  <tr><td><code>cart:{userId}</code></td><td>24 hours</td><td>On checkout</td><td><span class="req-id">FR-004</span></td></tr>
+</table>
+
+<!-- 6. API DESIGN -->
+<h1>6. API Design</h1>
+
+<h2>6.1 API Gateway Configuration</h2>
+<table class="trace-table">
+  <tr><th>Setting</th><th>Value</th><th>Resolves</th></tr>
+  <tr><td>Rate Limiting</td><td>100 req/min per user</td><td><span class="req-id">NFR-002</span></td></tr>
+  <tr><td>CORS</td><td>[Allowed origins]</td><td><span class="req-id">NFR-005</span></td></tr>
+  <tr><td>Authentication</td><td>JWT Bearer token</td><td><span class="req-id">NFR-003</span></td></tr>
+</table>
+
+<h2>6.2 Endpoint to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
+  <tr><td>POST</td><td>/auth/register</td><td>Register</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>POST</td><td>/auth/login</td><td>Login</td><td><span class="req-id">FR-002</span></td></tr>
+  <tr><td>GET</td><td>/products</td><td>List products</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>POST</td><td>/orders</td><td>Create order</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>POST</td><td>/payments</td><td>Process payment</td><td><span class="req-id">FR-005</span></td></tr>
+  <tr><td>GET/PUT</td><td>/users/:id</td><td>User management</td><td><span class="req-id">FR-006</span></td></tr>
+  <tr><td>GET</td><td>/reports/sales</td><td>Sales report</td><td><span class="req-id">FR-007</span></td></tr>
+</table>
+
+<p>Full API documentation: <a href="api-technical-spec.html">API Technical Spec</a></p>
+<p>OpenAPI spec: <code>openapi.yaml</code></p>
+
+<!-- 7. SECURITY DESIGN -->
+<h1>7. Security Design</h1>
+
+<h2>7.1 Security Requirements Resolution</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
+  <tr>
+    <td><span class="req-id">NFR-003</span> Authentication</td>
+    <td>JWT with short-lived access tokens</td>
+    <td>RS256, 15min access + 7d refresh</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-004</span> Authorization</td>
+    <td>Role-Based Access Control (RBAC)</td>
+    <td>admin, staff, customer roles with permission matrix</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-005</span> Data encryption</td>
+    <td>Encrypt sensitive data at rest and in transit</td>
+    <td>AES-256 at rest, TLS 1.3 in transit</td>
+  </tr>
+</table>
+
+<h2>7.2 Data Security</h2>
+<table>
+  <tr><th>Data Type</th><th>At Rest</th><th>In Transit</th></tr>
+  <tr><td>Passwords</td><td>bcrypt hash</td><td>HTTPS</td></tr>
+  <tr><td>PII</td><td>AES-256 encryption</td><td>HTTPS</td></tr>
+  <tr><td>API Tokens</td><td>Encrypted storage</td><td>HTTPS</td></tr>
+</table>
+
+<h2>7.3 Security Checklist</h2>
+<ul>
+  <li>Input validation on all endpoints</li>
+  <li>SQL injection prevention (parameterized queries)</li>
+  <li>XSS prevention (output encoding)</li>
+  <li>CSRF protection (SameSite cookies)</li>
+  <li>Rate limiting per user/IP</li>
+  <li>Audit logging for sensitive operations</li>
+</ul>
+
+<!-- 8. ERROR HANDLING -->
+<h1>8. Error Handling</h1>
+
+<h2>8.1 Error Response Format</h2>
+<pre><code>{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input",
+    "details": [
+      { "field": "email", "message": "Invalid email format" }
+    ],
+    "requestId": "req-abc-123"
+  }
+}</code></pre>
+
+<h2>8.2 Error Codes</h2>
+<table>
+  <tr><th>HTTP Status</th><th>Code</th><th>Description</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Input validation failed</td></tr>
+  <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid token</td></tr>
+  <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions</td></tr>
+  <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
+  <tr><td>409</td><td>CONFLICT</td><td>Resource conflict</td></tr>
+  <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
+  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
+</table>
+
+<!-- 9. MONITORING -->
+<h1>9. Monitoring &amp; Observability</h1>
+
+<h2>9.1 Monitoring Requirements Resolution</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Monitoring Solution</th></tr>
+  <tr>
+    <td><span class="req-id">NFR-001</span> Response time &lt; 2s</td>
+    <td>API latency metrics (p50, p95, p99) with alerts at 2s/5s thresholds</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-002</span> 1000+ concurrent users</td>
+    <td>Connection count metrics, auto-scaling triggers</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-006</span> 99.9% uptime</td>
+    <td>Health check endpoints, uptime monitoring, PagerDuty alerts</td>
+  </tr>
+</table>
+
+<h2>9.2 Logging</h2>
+<table>
+  <tr><th>Log Type</th><th>Format</th><th>Destination</th></tr>
+  <tr><td>Application</td><td>JSON structured</td><td>CloudWatch / Datadog</td></tr>
+  <tr><td>Access</td><td>Combined</td><td>CloudWatch</td></tr>
+  <tr><td>Audit</td><td>JSON</td><td>Dedicated audit store</td></tr>
+</table>
+
+<h2>9.3 Metrics &amp; Alerts</h2>
+<table>
+  <tr><th>Metric</th><th>Threshold</th><th>Alert</th></tr>
+  <tr><td>API Response Time (p99)</td><td>&gt; 2s</td><td>Warning</td></tr>
+  <tr><td>API Response Time (p99)</td><td>&gt; 5s</td><td>Critical</td></tr>
+  <tr><td>Error Rate (5xx)</td><td>&gt; 1%</td><td>Warning</td></tr>
+  <tr><td>Error Rate (5xx)</td><td>&gt; 5%</td><td>Critical</td></tr>
+  <tr><td>CPU Usage</td><td>&gt; 80%</td><td>Warning</td></tr>
+  <tr><td>Memory Usage</td><td>&gt; 85%</td><td>Warning</td></tr>
+</table>
+
+<h2>9.4 Health Check Endpoints</h2>
+<table>
+  <tr><th>Endpoint</th><th>Purpose</th></tr>
+  <tr><td><code>/health</code></td><td>Basic liveness</td></tr>
+  <tr><td><code>/health/ready</code></td><td>Readiness (DB, cache connected)</td></tr>
+  <tr><td><code>/metrics</code></td><td>Prometheus metrics</td></tr>
+</table>
+
+<!-- 10. PERFORMANCE -->
+<h1>10. Performance Requirements</h1>
+
+<h2>10.1 Performance Requirements Resolution</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Target</th><th>Design Solution</th></tr>
+  <tr>
+    <td><span class="req-id">NFR-001</span> Response time</td>
+    <td>&lt; 200ms avg, &lt; 1s p99</td>
+    <td>Redis caching, database indexing, connection pooling</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-002</span> Concurrent users</td>
+    <td>1000+</td>
+    <td>Stateless services, horizontal scaling, load balancing</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-006</span> Availability</td>
+    <td>99.9%</td>
+    <td>Multi-AZ deployment, auto-scaling, health checks</td>
+  </tr>
+</table>
+
+<h2>10.2 Performance Targets</h2>
+<table>
+  <tr><th>Metric</th><th>Target</th></tr>
+  <tr><td>API Response Time (avg)</td><td>&lt; 200ms</td></tr>
+  <tr><td>API Response Time (p99)</td><td>&lt; 1s</td></tr>
+  <tr><td>Concurrent Users</td><td>1000+</td></tr>
+  <tr><td>Throughput</td><td>500 req/s</td></tr>
+  <tr><td>Database Query Time</td><td>&lt; 50ms</td></tr>
+</table>
+
+<!-- 11. TRACEABILITY SUMMARY -->
+<h1>11. Traceability Summary</h1>
+
+<p>Complete mapping of SRS requirements to technical design decisions:</p>
+
+<table class="trace-table">
+  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
+  <tr><td><span class="req-id">FR-001</span></td><td>User Registration</td><td>3.2, 6.2</td><td>Auth Service + POST /auth/register</td></tr>
+  <tr><td><span class="req-id">FR-002</span></td><td>User Login</td><td>3.2, 6.2, 7.1</td><td>Auth Service + JWT + POST /auth/login</td></tr>
+  <tr><td><span class="req-id">FR-003</span></td><td>View Products</td><td>3.2, 5.2, 6.2</td><td>Product Service + Cache + GET /products</td></tr>
+  <tr><td><span class="req-id">FR-004</span></td><td>Create Order</td><td>3.2, 3.3, 6.2</td><td>Order Service + Stock check + POST /orders</td></tr>
+  <tr><td><span class="req-id">FR-005</span></td><td>Process Payment</td><td>3.2, 6.2</td><td>Order Service + Payment Gateway + POST /payments</td></tr>
+  <tr><td><span class="req-id">FR-006</span></td><td>Manage Users</td><td>3.2, 6.2</td><td>User Service + GET/PUT /users/:id</td></tr>
+  <tr><td><span class="req-id">FR-007</span></td><td>Generate Reports</td><td>3.2, 6.2</td><td>Report Service + GET /reports/sales</td></tr>
+  <tr><td><span class="req-id">NFR-001</span></td><td>Response time &lt; 2s</td><td>5.3, 10.1</td><td>Redis caching + DB indexing</td></tr>
+  <tr><td><span class="req-id">NFR-002</span></td><td>1000+ users</td><td>2.2, 4.2, 10.1</td><td>Stateless + Horizontal scaling + ALB</td></tr>
+  <tr><td><span class="req-id">NFR-003</span></td><td>JWT Authentication</td><td>3.2, 6.1, 7.1</td><td>JWT RS256 + API Gateway validation</td></tr>
+  <tr><td><span class="req-id">NFR-004</span></td><td>RBAC</td><td>3.2, 7.1</td><td>Role-based permissions in Auth Service</td></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>Data encryption</td><td>7.2</td><td>AES-256 at rest + TLS 1.3 in transit</td></tr>
+  <tr><td><span class="req-id">NFR-006</span></td><td>99.9% uptime</td><td>4.2, 9.1, 10.1</td><td>Multi-AZ + Auto-scaling + Health checks</td></tr>
+  <tr><td><span class="req-id">NFR-007</span></td><td>Daily backup</td><td>4.2</td><td>RDS automated backups + snapshots</td></tr>
+  <tr><td><span class="req-id">DR-001</span></td><td>User data</td><td>5.2</td><td>users, addresses tables</td></tr>
+  <tr><td><span class="req-id">DR-002</span></td><td>Product catalog</td><td>5.2</td><td>products, categories, product_images tables</td></tr>
+  <tr><td><span class="req-id">DR-003</span></td><td>Order transactions</td><td>5.2</td><td>orders, order_items tables</td></tr>
+  <tr><td><span class="req-id">DR-004</span></td><td>Payment records</td><td>5.2</td><td>payments table</td></tr>
+  <tr><td><span class="req-id">IR-001</span></td><td>Payment Gateway</td><td>3.3</td><td>REST API integration in Order Service</td></tr>
+  <tr><td><span class="req-id">IR-002</span></td><td>Email Service</td><td>3.3</td><td>AMQP event-driven in Notification Service</td></tr>
+  <tr><td><span class="req-id">IR-003</span></td><td>SMS Service</td><td>3.3</td><td>REST API in Notification Service</td></tr>
+</table>
+
+<!-- 12. APPENDIX -->
+<h1>12. Appendix</h1>
+
+<h2>12.1 Tech Stack Summary</h2>
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Version</th></tr>
+  <tr><td>Frontend</td><td>React / Next.js</td><td>14.x</td></tr>
+  <tr><td>Backend</td><td>Node.js / Express</td><td>20.x / 4.x</td></tr>
+  <tr><td>Database</td><td>PostgreSQL</td><td>15.x</td></tr>
+  <tr><td>Cache</td><td>Redis</td><td>7.x</td></tr>
+  <tr><td>Queue</td><td>RabbitMQ</td><td>3.x</td></tr>
+  <tr><td>Container</td><td>Docker</td><td>24.x</td></tr>
+  <tr><td>Orchestration</td><td>ECS / K8s</td><td>-</td></tr>
+  <tr><td>CI/CD</td><td>GitHub Actions</td><td>-</td></tr>
+</table>
+
+</body>
+</html>

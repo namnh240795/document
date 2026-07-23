@@ -1,0 +1,86 @@
+@startuml
+' ============================================================
+' Architecture Overview Diagram (C4 Model - Level 1)
+' High-level system context
+' ============================================================
+
+skinparam actor {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+}
+skinparam component {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #666666
+}
+skinparam cloud {
+  BackgroundColor #E8E8FD
+  BorderColor #333333
+}
+
+title System Context Diagram (C4 Level 1)
+
+' --- People ---
+actor "Customer" as customer
+actor "Admin User" as admin
+actor "Support Staff" as support
+
+' --- Our System ---
+cloud "E-Commerce Platform" as system {
+  package "Frontend" {
+    [Web Application] as web
+    [Mobile Application] as mobile
+  }
+
+  package "Backend Services" {
+    [API Gateway] as gw
+    [Core Services] as core
+  }
+
+  package "Data & Infrastructure" {
+    database "Primary Database" as db
+    database "Cache Layer" as cache
+    queue "Event Bus" as mq
+    [File Storage] as storage
+  }
+}
+
+' --- External Systems ---
+cloud "Payment Provider\n(Stripe / VNPay)" as payment
+cloud "Email Provider\n(SendGrid)" as email
+cloud "SMS Provider\n(Twilio)" as sms
+cloud "CDN\n(CloudFront)" as cdn
+cloud "Monitoring\n(Datadog)" as monitoring
+
+' --- Relationships ---
+customer --> web
+customer --> mobile
+admin --> web
+support --> web
+
+web --> cdn
+mobile --> cdn
+cdn --> gw
+
+gw --> core
+
+core --> db
+core --> cache
+core --> mq
+core --> storage
+
+core ..> payment : <<HTTPS>>
+core ..> email : <<SMTP/HTTPS>>
+core ..> sms : <<HTTPS>>
+
+core --> monitoring : metrics/logs
+
+note bottom of system
+  C4 Level 1: System Context
+  Shows actors and external system interactions
+end note
+
+@enduml

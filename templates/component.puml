@@ -1,0 +1,95 @@
+@startuml
+' ============================================================
+' Component Diagram Template
+' System architecture - components và relationships
+' ============================================================
+
+skinparam component {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  InterfaceBackgroundColor #FFFFFF
+  InterfaceBorderColor #333333
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #666666
+}
+
+title System Component Diagram
+
+' --- External Users ---
+actor "User" as user
+actor "Admin" as admin
+
+' --- Client Layer ---
+package "Client Layer" {
+  [Web Application] as web
+  [Mobile App] as mobile
+}
+
+' --- API Layer ---
+package "API Layer" {
+  [API Gateway] as gw
+  [Load Balancer] as lb
+}
+
+' --- Service Layer ---
+package "Service Layer" {
+  [Auth Service] as auth
+  [User Service] as userSvc
+  [Order Service] as orderSvc
+  [Product Service] as productSvc
+  [Notification Service] as notifSvc
+}
+
+' --- Data Layer ---
+package "Data Layer" {
+  database "User DB\n(PostgreSQL)" as userDB
+  database "Order DB\n(PostgreSQL)" as orderDB
+  database "Product DB\n(PostgreSQL)" as productDB
+  database "Cache\n(Redis)" as cache
+  queue "Message Queue\n(RabbitMQ)" as mq
+}
+
+' --- External Services ---
+package "External Services" {
+  [Payment Gateway] as payment
+  [Email Service\n(SendGrid)] as email
+  [SMS Service] as sms
+}
+
+' --- Relationships ---
+user --> web
+admin --> web
+user --> mobile
+
+web --> lb
+mobile --> lb
+lb --> gw
+
+gw --> auth
+gw --> userSvc
+gw --> orderSvc
+gw --> productSvc
+
+auth --> userDB
+auth --> cache
+
+userSvc --> userDB
+userSvc --> cache
+
+orderSvc --> orderDB
+orderSvc --> mq
+
+productSvc --> productDB
+productSvc --> cache
+
+mq --> notifSvc
+
+notifSvc --> email
+notifSvc --> sms
+
+orderSvc ..> payment : <<REST>>
+
+@enduml

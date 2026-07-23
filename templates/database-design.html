@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Design - [Project Name]</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .req-id { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    .trace-table td:first-child { white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Database Design Document</h1>
+  <div class="subtitle">[Project Name]</div>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Date</td><td>YYYY-MM-DD</td></tr>
+    <tr><td>Author</td><td>[DBA / Developer Name]</td></tr>
+    <tr><td>Database</td><td>PostgreSQL 15</td></tr>
+    <tr><td>Related ERD</td><td>[Link to ERD diagram]</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">SRS Document</a></td></tr>
+  </table>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1>1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>[Muc dich thiet ke database, scope]</p>
+
+<h2>1.2 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Database Solution</th></tr>
+  <tr><td><span class="req-id">DR-001</span> User data</td><td>users, addresses tables</td></tr>
+  <tr><td><span class="req-id">DR-002</span> Product catalog</td><td>products, categories, product_images tables</td></tr>
+  <tr><td><span class="req-id">DR-003</span> Order transactions</td><td>orders, order_items tables</td></tr>
+  <tr><td><span class="req-id">DR-004</span> Payment records</td><td>payments table</td></tr>
+  <tr><td><span class="req-id">NFR-007</span> Daily backup</td><td>RDS automated backups + WAL archiving</td></tr>
+</table>
+
+<h2>1.3 ERD Diagram</h2>
+<div class="diagram">
+  <img src="../images/erd/erd-diagram.png" alt="ERD Diagram">
+  <div class="caption">Figure 1: Entity Relationship Diagram</div>
+</div>
+
+<!-- 2. SCHEMA DESIGN -->
+<h1>2. Schema Design</h1>
+
+<h2>2.1 Database Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Architecture</td><td>[Single Database / Multi-Database per module]</td></tr>
+  <tr><td>Table naming</td><td><code>&lt;project_short_name&gt;_&lt;table_name&gt;</code> (e.g., <code>ecom_users</code>)</td></tr>
+  <tr><td>Project short name</td><td><strong>TODO: Replace <code>xxx</code> with your project short name (3-4 chars)</strong></td></tr>
+  <tr><td>Plural or singular</td><td>[e.g., <code>xxx_users</code> not <code>xxx_user</code>]</td></tr>
+</table>
+
+<h2>2.2 Database-to-Module Mapping</h2>
+<table>
+  <tr><th>Database</th><th>Modules</th><th>Purpose</th></tr>
+  <tr><td>auth_db</td><td>AUTH</td><td>User accounts, authentication, authorization</td></tr>
+  <tr><td>ecom_db</td><td>PROD, ECOM, SHIP</td><td>Product catalog, orders, shipping</td></tr>
+  <tr><td>pay_db</td><td>PAY</td><td>Payment processing, refunds</td></tr>
+  <tr><td>wallet_db</td><td>WAL</td><td>User wallets, top-up, transfers</td></tr>
+  <tr><td>noti_db</td><td>NOTI</td><td>Notification templates, logs</td></tr>
+</table>
+<p><em>Note: Cross-database references use application-level IDs (no foreign keys across databases).</em></p>
+
+<!-- ============================================================ -->
+<!-- DATABASE: auth_db -->
+<!-- MODULE: Authentication -->
+<!-- ============================================================ -->
+<h2>2.3 Database: <code>auth_db</code> - Authentication Module</h2>
+<p>Modules: AUTH | Resolves: <span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-006</span>, <span class="req-id">NFR-003</span>, <span class="req-id">NFR-004</span></p>
+
+<h3>Table: <code>xxx_users</code></h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Default</th><th>Description</th></tr>
+  <tr><td>id</td><td>bigint</td><td>NO</td><td>auto-increment</td><td>Primary key</td></tr>
+  <tr><td>username</td><td>varchar(50)</td><td>NO</td><td>-</td><td>Unique username</td></tr>
+  <tr><td>email</td><td>varchar(100)</td><td>NO</td><td>-</td><td>Unique email</td></tr>
+  <tr><td>password_hash</td><td>varchar(255)</td><td>NO</td><td>-</td><td>bcrypt hashed password</td></tr>
+  <tr><td>full_name</td><td>varchar(100)</td><td>YES</td><td>NULL</td><td>Display name</td></tr>
+  <tr><td>phone</td><td>varchar(20)</td><td>YES</td><td>NULL</td><td>Phone number</td></tr>
+  <tr><td>role</td><td>enum</td><td>NO</td><td>'customer'</td><td>User role</td></tr>
+  <tr><td>status</td><td>enum</td><td>NO</td><td>'active'</td><td>Account status</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Creation time</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Last update time</td></tr>
+</table>
+
+<pre><code>CREATE TABLE xxx_users (
+  id            BIGSERIAL PRIMARY KEY,
+  username      VARCHAR(50) NOT NULL UNIQUE,
+  email         VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  full_name     VARCHAR(100),
+  phone         VARCHAR(20),
+  role          VARCHAR(20) NOT NULL DEFAULT 'customer'
+                CHECK (role IN ('admin', 'staff', 'customer')),
+  status        VARCHAR(20) NOT NULL DEFAULT 'active'
+                CHECK (status IN ('active', 'inactive', 'banned')),
+  created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<!-- ============================================================ -->
+<!-- DATABASE: ecom_db -->
+<!-- MODULE: E-Commerce -->
+<!-- ============================================================ -->
+<h2>2.4 Database: <code>ecom_db</code> - E-Commerce Module</h2>
+<p>Modules: ECOM | Resolves: <span class="req-id">FR-004</span>, <span class="req-id">FR-012</span></p>
+
+<h3>Table: <code>xxx_orders</code></h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Default</th><th>Description</th></tr>
+  <tr><td>id</td><td>bigint</td><td>NO</td><td>auto-increment</td><td>Primary key</td></tr>
+  <tr><td>user_id</td><td>bigint</td><td>NO</td><td>-</td><td>FK &rarr; users.id</td></tr>
+  <tr><td>order_number</td><td>varchar(20)</td><td>NO</td><td>-</td><td>Unique order number</td></tr>
+  <tr><td>status</td><td>enum</td><td>NO</td><td>'pending'</td><td>Order status</td></tr>
+  <tr><td>subtotal</td><td>decimal(10,2)</td><td>NO</td><td>0</td><td>Sum of items</td></tr>
+  <tr><td>tax_amount</td><td>decimal(10,2)</td><td>NO</td><td>0</td><td>Tax total</td></tr>
+  <tr><td>shipping_fee</td><td>decimal(10,2)</td><td>NO</td><td>0</td><td>Shipping cost</td></tr>
+  <tr><td>discount_amount</td><td>decimal(10,2)</td><td>NO</td><td>0</td><td>Discount total</td></tr>
+  <tr><td>total_amount</td><td>decimal(10,2)</td><td>NO</td><td>0</td><td>Final amount</td></tr>
+  <tr><td>shipping_address_id</td><td>bigint</td><td>YES</td><td>NULL</td><td>FK &rarr; addresses.id</td></tr>
+  <tr><td>notes</td><td>text</td><td>YES</td><td>NULL</td><td>Customer notes</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>-</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>-</td></tr>
+</table>
+
+<pre><code>CREATE TABLE xxx_orders (
+  id                    BIGSERIAL PRIMARY KEY,
+  user_id               BIGINT NOT NULL REFERENCES xxx_users(id),
+  order_number          VARCHAR(20) NOT NULL UNIQUE,
+  status                VARCHAR(20) NOT NULL DEFAULT 'pending'
+                        CHECK (status IN ('pending','confirmed','processing','shipped','delivered','cancelled')),
+  subtotal              DECIMAL(10,2) NOT NULL DEFAULT 0,
+  tax_amount            DECIMAL(10,2) NOT NULL DEFAULT 0,
+  shipping_fee          DECIMAL(10,2) NOT NULL DEFAULT 0,
+  discount_amount       DECIMAL(10,2) NOT NULL DEFAULT 0,
+  total_amount          DECIMAL(10,2) NOT NULL DEFAULT 0,
+  shipping_address_id   BIGINT REFERENCES xxx_addresses(id),
+  notes                 TEXT,
+  created_at            TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at            TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h3>Table: <code>xxx_order_items</code></h3>
+<pre><code>CREATE TABLE xxx_order_items (
+  id          BIGSERIAL PRIMARY KEY,
+  order_id    BIGINT NOT NULL REFERENCES xxx_orders(id) ON DELETE CASCADE,
+  product_id  BIGINT NOT NULL REFERENCES xxx_products(id),
+  quantity    INTEGER NOT NULL CHECK (quantity &gt; 0),
+  unit_price  DECIMAL(10,2) NOT NULL,
+  subtotal    DECIMAL(10,2) NOT NULL,
+  created_at  TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<!-- ============================================================ -->
+<!-- DATABASE: ecom_db -->
+<!-- MODULE: Product Catalog -->
+<!-- ============================================================ -->
+<h2>2.5 Database: <code>ecom_db</code> - Product Catalog Module</h2>
+<p>Modules: PROD | Resolves: <span class="req-id">FR-003</span></p>
+
+<h3>Table: <code>xxx_products</code></h3>
+<pre><code>CREATE TABLE xxx_products (
+  id              BIGSERIAL PRIMARY KEY,
+  category_id     BIGINT NOT NULL REFERENCES xxx_categories(id),
+  name            VARCHAR(200) NOT NULL,
+  slug            VARCHAR(200) NOT NULL UNIQUE,
+  description     TEXT,
+  sku             VARCHAR(50) NOT NULL UNIQUE,
+  price           DECIMAL(10,2) NOT NULL CHECK (price &gt;= 0),
+  cost_price      DECIMAL(10,2) NOT NULL DEFAULT 0,
+  stock_quantity  INTEGER NOT NULL DEFAULT 0 CHECK (stock_quantity &gt;= 0),
+  weight          DECIMAL(8,2),
+  status          VARCHAR(20) NOT NULL DEFAULT 'draft'
+                  CHECK (status IN ('draft','active','archived')),
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h3>Table: <code>xxx_categories</code></h3>
+<pre><code>CREATE TABLE xxx_categories (
+  id          BIGSERIAL PRIMARY KEY,
+  name        VARCHAR(100) NOT NULL,
+  slug        VARCHAR(100) NOT NULL UNIQUE,
+  description TEXT,
+  parent_id   BIGINT REFERENCES xxx_categories(id),
+  sort_order  INTEGER NOT NULL DEFAULT 0,
+  is_active   BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at  TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<!-- ============================================================ -->
+<!-- DATABASE: pay_db -->
+<!-- MODULE: Payment -->
+<!-- ============================================================ -->
+<h2>2.6 Database: <code>pay_db</code> - Payment Module</h2>
+<p>Modules: PAY | Resolves: <span class="req-id">FR-005</span>, <span class="req-id">FR-011</span>, <span class="req-id">IR-001</span></p>
+
+<h3>Table: <code>xxx_payments</code></h3>
+<pre><code>CREATE TABLE xxx_payments (
+  id              BIGSERIAL PRIMARY KEY,
+  order_id        BIGINT NOT NULL REFERENCES xxx_orders(id),
+  method          VARCHAR(20) NOT NULL
+                  CHECK (method IN ('cod','bank_transfer','credit_card','e_wallet')),
+  status          VARCHAR(20) NOT NULL DEFAULT 'pending'
+                  CHECK (status IN ('pending','completed','failed','refunded')),
+  amount          DECIMAL(10,2) NOT NULL,
+  transaction_id  VARCHAR(100),
+  paid_at         TIMESTAMP,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<!-- ============================================================ -->
+<!-- DATABASE: wallet_db -->
+<!-- MODULE: Wallet -->
+<!-- ============================================================ -->
+<h2>2.7 Database: <code>wallet_db</code> - Wallet Module</h2>
+<p>Modules: WAL | Resolves: <span class="req-id">FR-008</span>, <span class="req-id">FR-009</span>, <span class="req-id">FR-010</span></p>
+
+<h3>Table: <code>xxx_wallets</code></h3>
+<pre><code>CREATE TABLE xxx_wallets (
+  id          BIGSERIAL PRIMARY KEY,
+  user_id     BIGINT NOT NULL REFERENCES xxx_users(id) UNIQUE,
+  balance     DECIMAL(12,2) NOT NULL DEFAULT 0 CHECK (balance >= 0),
+  currency    VARCHAR(3) NOT NULL DEFAULT 'VND',
+  status      VARCHAR(20) NOT NULL DEFAULT 'active'
+              CHECK (status IN ('active','frozen','closed')),
+  created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at  TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h3>Table: <code>xxx_wallet_transactions</code></h3>
+<pre><code>CREATE TABLE xxx_wallet_transactions (
+  id              BIGSERIAL PRIMARY KEY,
+  wallet_id       BIGINT NOT NULL REFERENCES xxx_wallets(id),
+  type            VARCHAR(20) NOT NULL
+                  CHECK (type IN ('topup','payment','refund','transfer_in','transfer_out','withdrawal')),
+  amount          DECIMAL(12,2) NOT NULL,
+  balance_after   DECIMAL(12,2) NOT NULL,
+  reference_type  VARCHAR(50),
+  reference_id    BIGINT,
+  description     TEXT,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h3>Table: <code>xxx_wallet_topup_requests</code></h3>
+<pre><code>CREATE TABLE xxx_wallet_topup_requests (
+  id            BIGSERIAL PRIMARY KEY,
+  wallet_id     BIGINT NOT NULL REFERENCES xxx_wallets(id),
+  amount        DECIMAL(12,2) NOT NULL CHECK (amount > 0),
+  method        VARCHAR(20) NOT NULL
+                CHECK (method IN ('bank_transfer','credit_card','e_wallet')),
+  status        VARCHAR(20) NOT NULL DEFAULT 'pending'
+                CHECK (status IN ('pending','completed','failed')),
+  transaction_id VARCHAR(100),
+  created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
+  completed_at  TIMESTAMP
+);</code></pre>
+
+<!-- 3. INDEXES -->
+<h1>3. Indexes</h1>
+
+<h2>3.1 Index Strategy</h2>
+<ul>
+  <li>Primary keys: auto-created</li>
+  <li>Foreign keys: always index</li>
+  <li>Frequently queried columns: index</li>
+  <li>UNIQUE constraints: auto-create index</li>
+</ul>
+
+<h2>3.2 Index Definitions</h2>
+<pre><code>-- MODULE: Authentication
+CREATE INDEX idx_xxx_users_email ON xxx_users(email);
+CREATE INDEX idx_xxx_users_role ON xxx_users(role);
+CREATE INDEX idx_xxx_users_status ON xxx_users(status);
+
+-- MODULE: E-Commerce
+CREATE INDEX idx_xxx_orders_user_id ON xxx_orders(user_id);
+CREATE INDEX idx_xxx_orders_status ON xxx_orders(status);
+CREATE INDEX idx_xxx_orders_created_at ON xxx_orders(created_at DESC);
+CREATE INDEX idx_xxx_orders_user_status ON xxx_orders(user_id, status);
+CREATE INDEX idx_xxx_order_items_order_id ON xxx_order_items(order_id);
+CREATE INDEX idx_xxx_order_items_product_id ON xxx_order_items(product_id);
+
+-- MODULE: Product Catalog
+CREATE INDEX idx_xxx_products_category_id ON xxx_products(category_id);
+CREATE INDEX idx_xxx_products_status ON xxx_products(status);
+CREATE INDEX idx_xxx_products_price ON xxx_products(price);
+CREATE INDEX idx_xxx_products_sku ON xxx_products(sku);
+CREATE INDEX idx_xxx_categories_parent_id ON xxx_categories(parent_id);
+CREATE INDEX idx_xxx_categories_slug ON xxx_categories(slug);
+
+-- MODULE: Payment
+CREATE INDEX idx_xxx_payments_order_id ON xxx_payments(order_id);
+CREATE INDEX idx_xxx_payments_status ON xxx_payments(status);
+
+-- MODULE: Wallet
+CREATE INDEX idx_xxx_wallets_user_id ON xxx_wallets(user_id);
+CREATE INDEX idx_xxx_wallet_tx_wallet_id ON xxx_wallet_transactions(wallet_id);
+CREATE INDEX idx_xxx_wallet_tx_type ON xxx_wallet_transactions(type);
+CREATE INDEX idx_xxx_wallet_tx_created ON xxx_wallet_transactions(created_at DESC);
+CREATE INDEX idx_xxx_topup_wallet_id ON xxx_wallet_topup_requests(wallet_id);
+CREATE INDEX idx_xxx_topup_status ON xxx_wallet_topup_requests(status);</code></pre>
+
+<!-- 4. MIGRATIONS -->
+<h1>4. Migrations</h1>
+
+<h2>4.1 Migration Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Tool</td><td>[Knex / Prisma / TypeORM / Flyway]</td></tr>
+  <tr><td>Naming</td><td><code>{timestamp}_{description}.sql</code></td></tr>
+  <tr><td>Rollback</td><td>Required for every migration</td></tr>
+</table>
+
+<h2>4.2 Migration File Structure</h2>
+<pre><code>migrations/
+  20240101_001_create_users.sql
+  20240101_002_create_categories.sql
+  20240101_003_create_products.sql
+  20240101_004_create_orders.sql
+  20240101_005_create_payments.sql
+  20240101_006_create_indexes.sql</code></pre>
+
+<!-- 5. DATA DICTIONARY -->
+<h1>5. Data Dictionary</h1>
+<table class="trace-table">
+  <tr><th>Module</th><th>Table</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
+  <tr><td>AUTH</td><td>xxx_users</td><td>User accounts</td><td><span class="req-id">DR-001</span></td><td>10,000</td></tr>
+  <tr><td>AUTH</td><td>xxx_user_sessions</td><td>User sessions & tokens</td><td><span class="req-id">NFR-003</span></td><td>20,000</td></tr>
+  <tr><td>AUTH</td><td>xxx_roles</td><td>User roles & permissions</td><td><span class="req-id">NFR-004</span></td><td>10</td></tr>
+  <tr><td>PROD</td><td>xxx_categories</td><td>Product categories</td><td><span class="req-id">DR-002</span></td><td>100</td></tr>
+  <tr><td>PROD</td><td>xxx_products</td><td>Product catalog</td><td><span class="req-id">DR-002</span></td><td>1,000</td></tr>
+  <tr><td>PROD</td><td>xxx_product_images</td><td>Product images</td><td><span class="req-id">DR-002</span></td><td>5,000</td></tr>
+  <tr><td>ECOM</td><td>xxx_orders</td><td>Customer orders</td><td><span class="req-id">DR-003</span></td><td>50,000</td></tr>
+  <tr><td>ECOM</td><td>xxx_order_items</td><td>Order line items</td><td><span class="req-id">DR-003</span></td><td>150,000</td></tr>
+  <tr><td>ECOM</td><td>xxx_cart_items</td><td>Shopping cart</td><td><span class="req-id">FR-004</span></td><td>5,000</td></tr>
+  <tr><td>PAY</td><td>xxx_payments</td><td>Payment records</td><td><span class="req-id">DR-004</span></td><td>50,000</td></tr>
+  <tr><td>PAY</td><td>xxx_refunds</td><td>Refund records</td><td><span class="req-id">FR-011</span></td><td>2,000</td></tr>
+  <tr><td>PAY</td><td>xxx_transaction_logs</td><td>Payment audit trail</td><td><span class="req-id">FR-005</span></td><td>100,000</td></tr>
+  <tr><td>WAL</td><td>xxx_wallets</td><td>User wallets</td><td><span class="req-id">FR-008</span></td><td>8,000</td></tr>
+  <tr><td>WAL</td><td>xxx_wallet_transactions</td><td>Wallet transaction history</td><td><span class="req-id">FR-009</span></td><td>100,000</td></tr>
+  <tr><td>WAL</td><td>xxx_wallet_topup_requests</td><td>Top-up requests</td><td><span class="req-id">FR-008</span></td><td>20,000</td></tr>
+  <tr><td>SHIP</td><td>xxx_addresses</td><td>User addresses</td><td><span class="req-id">DR-001</span></td><td>15,000</td></tr>
+  <tr><td>SHIP</td><td>xxx_shipments</td><td>Delivery tracking</td><td><span class="req-id">FR-012</span></td><td>50,000</td></tr>
+  <tr><td>NOTI</td><td>xxx_notification_templates</td><td>Message templates</td><td><span class="req-id">IR-002</span></td><td>20</td></tr>
+  <tr><td>NOTI</td><td>xxx_notification_logs</td><td>Notification history</td><td><span class="req-id">IR-002</span></td><td>200,000</td></tr>
+</table>
+
+<!-- 6. BACKUP & RECOVERY -->
+<h1>6. Backup &amp; Recovery</h1>
+
+<h2>6.1 Backup Strategy</h2>
+<p>Resolves: <span class="req-id">NFR-007</span> Daily backup requirement</p>
+<table>
+  <tr><th>Type</th><th>Frequency</th><th>Retention</th><th>Method</th></tr>
+  <tr><td>Full backup</td><td>Daily</td><td>30 days</td><td>pg_dump / RDS automated</td></tr>
+  <tr><td>WAL archive</td><td>Continuous</td><td>7 days</td><td>pg_basebackup</td></tr>
+  <tr><td>Snapshot</td><td>Weekly</td><td>90 days</td><td>RDS snapshot</td></tr>
+</table>
+
+<h2>6.2 Recovery Procedures</h2>
+<table>
+  <tr><th>Scenario</th><th>RTO</th><th>RPO</th><th>Procedure</th></tr>
+  <tr><td>Data corruption</td><td>1 hour</td><td>0 (point-in-time)</td><td>Restore from WAL</td></tr>
+  <tr><td>Table drop</td><td>30 min</td><td>0</td><td>pg_restore single table</td></tr>
+  <tr><td>Full restore</td><td>4 hours</td><td>1 hour</td><td>Restore from daily backup</td></tr>
+  <tr><td>Region failure</td><td>1 hour</td><td>5 min</td><td>Failover to read replica</td></tr>
+</table>
+
+<!-- 7. PERFORMANCE TUNING -->
+<h1>7. Performance Tuning</h1>
+
+<h2>7.1 PostgreSQL Configuration</h2>
+<pre><code># postgresql.conf
+shared_buffers = 4GB            # 25% of RAM
+effective_cache_size = 12GB     # 75% of RAM
+work_mem = 64MB
+maintenance_work_mem = 1GB
+max_connections = 200
+random_page_cost = 1.1          # SSD
+effective_io_concurrency = 200  # SSD</code></pre>
+
+<h2>7.2 Query Optimization Notes</h2>
+<ul>
+  <li>Use EXPLAIN ANALYZE for slow queries</li>
+  <li>Avoid N+1 queries (use JOIN or batch loading)</li>
+  <li>Use connection pooling (PgBouncer)</li>
+  <li>Monitor slow query log (&gt; 100ms)</li>
+</ul>
+
+</body>
+</html>

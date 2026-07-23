@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Software Requirements Specification - [Project Name]</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .req-id { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    .trace-table td:first-child { white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Software Requirements Specification</h1>
+  <div class="subtitle">[Project Name]</div>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Date</td><td>YYYY-MM-DD</td></tr>
+    <tr><td>Author</td><td>[BA Name]</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+  </table>
+</div>
+
+<!-- 1. INTRODUCTION -->
+<h1>1. Introduction</h1>
+
+<h2>1.1 Purpose</h2>
+<p>[Describe the purpose of this document]</p>
+
+<h2>1.2 Scope</h2>
+<p>[Define the scope of the system]</p>
+
+<h2>1.3 Definitions</h2>
+<table>
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td>SRS</td><td>Software Requirements Specification</td></tr>
+  <tr><td>UC</td><td>Use Case</td></tr>
+  <tr><td>FR</td><td>Functional Requirement</td></tr>
+  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
+</table>
+
+<h2>1.4 Requirement ID Convention</h2>
+<table>
+  <tr><th>Prefix</th><th>Type</th><th>Example</th></tr>
+  <tr><td>FR-</td><td>Functional Requirement</td><td>FR-001, FR-002</td></tr>
+  <tr><td>NFR-</td><td>Non-Functional Requirement</td><td>NFR-001, NFR-002</td></tr>
+  <tr><td>UC-</td><td>Use Case</td><td>UC-01, UC-02</td></tr>
+  <tr><td>DR-</td><td>Data Requirement</td><td>DR-001, DR-002</td></tr>
+  <tr><td>IR-</td><td>Integration Requirement</td><td>IR-001, IR-002</td></tr>
+</table>
+
+<!-- 2. OVERALL DESCRIPTION -->
+<h1>2. Overall Description</h1>
+
+<h2>2.1 Product Perspective</h2>
+<p>[System context diagram or description]</p>
+
+<h2>2.2 User Classes</h2>
+<table>
+  <tr><th>Role</th><th>Description</th></tr>
+  <tr><td>Admin</td><td>[Description]</td></tr>
+  <tr><td>User</td><td>[Description]</td></tr>
+</table>
+
+<h2>2.3 Operating Environment</h2>
+<ul>
+  <li>Platform: [Web/Mobile/Desktop]</li>
+  <li>Browser: [Chrome, Firefox, Safari...]</li>
+  <li>OS: [Windows, macOS, Linux]</li>
+</ul>
+
+<h2>2.4 System Modules</h2>
+<p>The system is divided into modules. Each feature belongs to one or more modules.</p>
+<table class="trace-table">
+  <tr><th>Module</th><th>Code</th><th>Description</th><th>Key Tables</th></tr>
+  <tr><td>Authentication</td><td>AUTH</td><td>User accounts, login, roles, permissions</td><td>users, roles, user_sessions</td></tr>
+  <tr><td>Product Catalog</td><td>PROD</td><td>Products, categories, inventory</td><td>products, categories, product_images</td></tr>
+  <tr><td>E-Commerce</td><td>ECOM</td><td>Orders, cart, checkout</td><td>orders, order_items, cart_items</td></tr>
+  <tr><td>Payment</td><td>PAY</td><td>Payment processing, refunds, transaction logs</td><td>payments, refunds, transaction_logs</td></tr>
+  <tr><td>Wallet</td><td>WAL</td><td>User wallets, top-up, transfers</td><td>wallets, wallet_transactions, wallet_topup_requests</td></tr>
+  <tr><td>Shipping</td><td>SHIP</td><td>Addresses, delivery tracking</td><td>addresses, shipments</td></tr>
+  <tr><td>Notification</td><td>NOTI</td><td>Email, SMS, push notifications</td><td>notification_templates, notification_logs</td></tr>
+</table>
+
+<!-- 3. FUNCTIONAL REQUIREMENTS -->
+<h1>3. Functional Requirements</h1>
+
+<h2>3.1 Use Case Diagram</h2>
+<div class="diagram">
+  <img src="../images/usecase/usecase-diagram.png" alt="Use Case Diagram">
+  <div class="caption">Figure 1: Use Case Diagram</div>
+</div>
+
+<!-- Each use case maps to functional requirements -->
+<h2>3.2 UC-01: [Use Case Name]</h2>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Requirement IDs</td><td><span class="req-id">FR-001</span> <span class="req-id">FR-002</span></td></tr>
+  <tr><td>Actor</td><td>[Actor]</td></tr>
+  <tr><td>Precondition</td><td>[Precondition]</td></tr>
+  <tr><td>Postcondition</td><td>[Postcondition]</td></tr>
+</table>
+
+<h3>Main Flow</h3>
+<ol>
+  <li>[Step 1]</li>
+  <li>[Step 2]</li>
+  <li>[Step 3]</li>
+</ol>
+
+<h3>Alternative Flow</h3>
+<ol>
+  <li>[Alternative step]</li>
+</ol>
+
+<h3>Exception Flow</h3>
+<ol>
+  <li>[Exception handling]</li>
+</ol>
+
+<!-- 4. FUNCTIONAL REQUIREMENTS TABLE -->
+<h1>4. Functional Requirements Detail</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-001</span></td>
+    <td>AUTH</td>
+    <td>User Registration</td>
+    <td>UC-01</td>
+    <td>High</td>
+    <td>System shall allow users to register with email and password</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-002</span></td>
+    <td>AUTH</td>
+    <td>User Login</td>
+    <td>UC-01</td>
+    <td>High</td>
+    <td>System shall authenticate users via email/password</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-003</span></td>
+    <td>PROD</td>
+    <td>View Products</td>
+    <td>UC-02</td>
+    <td>High</td>
+    <td>System shall display product catalog with search and filter</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-004</span></td>
+    <td>ECOM</td>
+    <td>Create Order</td>
+    <td>UC-03</td>
+    <td>High</td>
+    <td>System shall allow users to checkout with selected items</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-005</span></td>
+    <td>PAY</td>
+    <td>Process Payment</td>
+    <td>UC-03</td>
+    <td>High</td>
+    <td>System shall integrate with payment gateway for transactions</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-006</span></td>
+    <td>AUTH</td>
+    <td>Manage Users</td>
+    <td>UC-04</td>
+    <td>Medium</td>
+    <td>Admin shall be able to create, edit, deactivate users</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-007</span></td>
+    <td>ECOM</td>
+    <td>Generate Reports</td>
+    <td>UC-05</td>
+    <td>Medium</td>
+    <td>System shall generate sales and user reports</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-008</span></td>
+    <td>WAL</td>
+    <td>Wallet Top-up</td>
+    <td>UC-06</td>
+    <td>High</td>
+    <td>System shall allow users to top-up wallet via bank transfer or credit card</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-009</span></td>
+    <td>WAL</td>
+    <td>Wallet Payment</td>
+    <td>UC-03</td>
+    <td>High</td>
+    <td>System shall allow users to pay orders using wallet balance</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-010</span></td>
+    <td>WAL</td>
+    <td>Wallet Transfer</td>
+    <td>UC-07</td>
+    <td>Medium</td>
+    <td>System shall allow users to transfer balance to other users</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-011</span></td>
+    <td>PAY</td>
+    <td>Refund Payment</td>
+    <td>UC-08</td>
+    <td>Medium</td>
+    <td>System shall process refunds to original payment method or wallet</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-012</span></td>
+    <td>SHIP</td>
+    <td>Track Order</td>
+    <td>UC-09</td>
+    <td>High</td>
+    <td>System shall provide real-time order tracking with carrier integration</td>
+  </tr>
+</table>
+
+<!-- 5. DATA MODEL -->
+<h1>5. Data Model</h1>
+
+<h2>5.1 Entity Relationship Diagram</h2>
+<div class="diagram">
+  <img src="../images/erd/erd-diagram.png" alt="ERD Diagram">
+  <div class="caption">Figure 2: Entity Relationship Diagram</div>
+</div>
+
+<h2>5.2 Data Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Entity</th>
+    <th>Description</th>
+    <th>Related FR</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">DR-001</span></td>
+    <td>users</td>
+    <td>Store user accounts, profiles, credentials</td>
+    <td>FR-001, FR-002, FR-006</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">DR-002</span></td>
+    <td>products</td>
+    <td>Store product catalog, pricing, inventory</td>
+    <td>FR-003, FR-004</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">DR-003</span></td>
+    <td>orders</td>
+    <td>Store order transactions and status</td>
+    <td>FR-004, FR-005</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">DR-004</span></td>
+    <td>payments</td>
+    <td>Store payment records and transaction IDs</td>
+    <td>FR-005</td>
+  </tr>
+</table>
+
+<!-- 6. SYSTEM FUNCTION FLOW -->
+<h1>6. System Function Flow</h1>
+
+<h2>6.1 Activity Diagram</h2>
+<div class="diagram">
+  <img src="../images/activity/activity-diagram.png" alt="Activity Diagram">
+  <div class="caption">Figure 3: Activity Diagram</div>
+</div>
+
+<!-- 7. API SPECIFICATION -->
+<h1>7. API Specification</h1>
+
+<h2>7.1 OpenAPI Specification</h2>
+<p>See: <code>openapi.yaml</code></p>
+
+<h2>7.2 Endpoint Summary</h2>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr>
+    <td>POST</td><td>/auth/register</td><td>Register</td>
+    <td><span class="req-id">FR-001</span></td>
+  </tr>
+  <tr>
+    <td>POST</td><td>/auth/login</td><td>Login</td>
+    <td><span class="req-id">FR-002</span></td>
+  </tr>
+  <tr>
+    <td>GET</td><td>/products</td><td>List products</td>
+    <td><span class="req-id">FR-003</span></td>
+  </tr>
+  <tr>
+    <td>POST</td><td>/orders</td><td>Create order</td>
+    <td><span class="req-id">FR-004</span></td>
+  </tr>
+  <tr>
+    <td>POST</td><td>/payments</td><td>Process payment</td>
+    <td><span class="req-id">FR-005</span></td>
+  </tr>
+  <tr>
+    <td>GET</td><td>/users</td><td>List users</td>
+    <td><span class="req-id">FR-006</span></td>
+  </tr>
+  <tr>
+    <td>GET</td><td>/reports/sales</td><td>Sales report</td>
+    <td><span class="req-id">FR-007</span></td>
+  </tr>
+</table>
+
+<!-- 8. INTEGRATION -->
+<h1>8. Integration</h1>
+
+<h2>8.1 Sequence Diagram</h2>
+<div class="diagram">
+  <img src="../images/sequence/sequence-diagram.png" alt="Sequence Diagram">
+  <div class="caption">Figure 4: Integration Sequence Diagram</div>
+</div>
+
+<h2>8.2 Integration Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Integration</th>
+    <th>Protocol</th>
+    <th>Purpose</th>
+    <th>Related FR</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">IR-001</span></td>
+    <td>Payment Gateway</td>
+    <td>REST API</td>
+    <td>Process payments</td>
+    <td>FR-005</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">IR-002</span></td>
+    <td>Email Service</td>
+    <td>SMTP</td>
+    <td>Send notifications</td>
+    <td>FR-004</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">IR-003</span></td>
+    <td>SMS Service</td>
+    <td>REST API</td>
+    <td>Send OTP, alerts</td>
+    <td>FR-001, FR-002</td>
+  </tr>
+</table>
+
+<!-- 9. NON-FUNCTIONAL REQUIREMENTS -->
+<h1>9. Non-Functional Requirements</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Category</th>
+    <th>Requirement</th>
+    <th>Target</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-001</span></td>
+    <td>Performance</td>
+    <td>API response time</td>
+    <td>&lt; 2 seconds (p99)</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-002</span></td>
+    <td>Performance</td>
+    <td>Concurrent users</td>
+    <td>1000+ simultaneous</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-003</span></td>
+    <td>Security</td>
+    <td>Authentication</td>
+    <td>JWT with 15min expiry</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-004</span></td>
+    <td>Security</td>
+    <td>Authorization</td>
+    <td>Role-based (RBAC)</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-005</span></td>
+    <td>Security</td>
+    <td>Data encryption</td>
+    <td>AES-256 at rest, TLS in transit</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-006</span></td>
+    <td>Availability</td>
+    <td>System uptime</td>
+    <td>99.9%</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-007</span></td>
+    <td>Availability</td>
+    <td>Backup frequency</td>
+    <td>Daily automated</td>
+  </tr>
+</table>
+
+<!-- 10. TRACEABILITY MATRIX -->
+<h1>10. Requirements Traceability Matrix</h1>
+
+<p>This matrix maps requirements to system components and design decisions. Use this to verify all requirements are addressed in technical design.</p>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>API Endpoint</th>
+    <th>DB Table</th>
+    <th>External System</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-001</span></td>
+    <td>User Registration</td>
+    <td>UC-01</td>
+    <td>POST /auth/register</td>
+    <td>users</td>
+    <td>SMS Service</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-002</span></td>
+    <td>User Login</td>
+    <td>UC-01</td>
+    <td>POST /auth/login</td>
+    <td>users</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-003</span></td>
+    <td>View Products</td>
+    <td>UC-02</td>
+    <td>GET /products</td>
+    <td>products</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-004</span></td>
+    <td>Create Order</td>
+    <td>UC-03</td>
+    <td>POST /orders</td>
+    <td>orders, order_items</td>
+    <td>Email Service</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-005</span></td>
+    <td>Process Payment</td>
+    <td>UC-03</td>
+    <td>POST /payments</td>
+    <td>payments</td>
+    <td>Payment Gateway</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-006</span></td>
+    <td>Manage Users</td>
+    <td>UC-04</td>
+    <td>GET/PUT /users/:id</td>
+    <td>users</td>
+    <td>-</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-007</span></td>
+    <td>Generate Reports</td>
+    <td>UC-05</td>
+    <td>GET /reports/sales</td>
+    <td>orders, order_items</td>
+    <td>-</td>
+  </tr>
+</table>
+
+<!-- 11. APPENDICES -->
+<h1>11. Appendices</h1>
+
+<h2>11.1 Glossary</h2>
+<p>[Additional terms and definitions]</p>
+
+<h2>11.2 References</h2>
+<ul>
+  <li>[Related documents]</li>
+</ul>
+
+</body>
+</html>

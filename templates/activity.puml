@@ -1,0 +1,57 @@
+@startuml
+' ============================================================
+' Activity Diagram Template (Function Flow)
+' Copy and customize for your project
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+|#F0F0F0| User |
+|#E8F4E8| System |
+|#FDE8E8| Database |
+
+|User|
+start
+:Access Application;
+
+|System|
+:Validate Request;
+
+if (Is Authenticated?) then (yes)
+  :Load User Data;
+
+  |Database|
+  :Query User Record;
+
+  |System|
+  if (User Active?) then (yes)
+    :Generate Response;
+
+    |User|
+    :View Dashboard;
+
+  else (no)
+    |System|
+    :Return Error;
+
+    |User|
+    :Show Access Denied;
+  endif
+
+else (no)
+  |System|
+  :Redirect to Login;
+
+  |User|
+  :Enter Credentials;
+endif
+
+stop
+
+@enduml
