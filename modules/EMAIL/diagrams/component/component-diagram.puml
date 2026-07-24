@@ -1,0 +1,50 @@
+@startuml
+' ============================================================
+' Component Diagram - Email Notification Module (Simplified)
+' ============================================================
+
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #666666
+}
+
+title Email Notification Module - Component Diagram
+
+' --- External ---
+queue "RabbitMQ\n(verification.email)" as mq
+component "SendGrid/SMTP" as provider
+component "AUTH Module" as auth
+component "LOG Module" as log
+
+' --- Service Layer ---
+package "Service Layer" {
+  component "Email Consumer" as consumer
+  component "Email Service" as emailSvc
+  component "Email Controller\n(Webhook)" as ctrl
+  component "Log Producer" as logProd
+}
+
+' --- Data Layer ---
+package "Data Layer" {
+  database "email_db\n(PostgreSQL)" as db
+}
+
+' --- Relationships ---
+auth --> mq : publish\nverification.email
+mq --> consumer : consume
+consumer --> emailSvc
+emailSvc --> provider : send email
+provider --> ctrl : delivery callback
+ctrl --> emailSvc : update status
+emailSvc --> db : log email
+emailSvc --> logProd
+logProd --> mq : publish\nlog.events
+mq --> log : consume
+
+@enduml

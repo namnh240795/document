@@ -42,10 +42,32 @@
   <h2>Table of Contents</h2>
   <ul>
     <li><a href="#section-1">1. Overview</a></li>
-    <li><a href="#section-2">2. Architecture</a></li>
-    <li><a href="#section-3">3. Component Design</a></li>
-    <li><a href="#section-4">4. Data Architecture</a></li>
-    <li><a href="#section-5">5. Integration Flows</a></li>
+    <li><a href="#section-2">2. Architecture</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Architecture Style</a></li>
+        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Component Design</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 Component Diagram</a></li>
+        <li><a href="#section-3-3">3.3 Module Structure</a></li>
+        <li><a href="#section-3-4">3.4 Component to Requirements Mapping</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Data Architecture</a>
+      <ul>
+        <li><a href="#section-4-1">4.1 Database</a></li>
+        <li><a href="#section-4-2">4.2 Data Requirements Resolution</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Integration Flows</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 SMS Delivery Flow</a></li>
+        <li><a href="#section-5-2">5.2 Webhook Events</a></li>
+        <li><a href="#section-5-3">5.3 External Services</a></li>
+      </ul>
+    </li>
     <li><a href="#section-6">6. Traceability Summary</a></li>
   </ul>
 </div>
@@ -98,7 +120,13 @@
 <!-- 3. COMPONENT DESIGN -->
 <h1 id="section-3">3. Component Design</h1>
 
-<h2>3.1 Module Structure</h2>
+<h2>3.1 Component Diagram</h2>
+<div class="diagram">
+  <img src="./images/component/component-diagram.png" alt="SMS Component Diagram">
+  <div class="caption">Figure 1: SMS Module Components</div>
+</div>
+
+<h2 id="section-3-3">3.3 Module Structure</h2>
 <pre><code>src/
   sms/
     sms.module.ts
@@ -110,7 +138,7 @@
   external/
     twilio.service.ts      # Twilio API wrapper</code></pre>
 
-<h2>3.2 Component to Requirements Mapping</h2>
+<h2 id="section-3-4">3.4 Component to Requirements Mapping</h2>
 <table class="trace-table">
   <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
   <tr><td>SmsService</td><td>Send SMS, verify OTP, log delivery</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-003</span></td></tr>
@@ -143,13 +171,14 @@
 </div>
 
 <h2>5.2 Webhook Events</h2>
+
 <table>
   <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
   <tr><td>verification.requested</td><td>Inbound (from AUTH)</td><td>RabbitMQ</td><td>Receive SMS send request from AUTH module</td></tr>
   <tr><td>verification.delivered</td><td>Outbound (to AUTH)</td><td>Webhook HTTP</td><td>Notify AUTH of SMS delivery status</td></tr>
 </table>
 
-<h2>5.2 External Services</h2>
+<h2 id="section-5-3">5.3 External Services</h2>
 <table>
   <tr><th>Service</th><th>Protocol</th><th>Purpose</th></tr>
   <tr><td>Twilio</td><td>REST API</td><td>Send SMS messages</td></tr>

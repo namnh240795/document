@@ -2,9 +2,7 @@
 ' ============================================================
 ' ERD: Authentication Database (auth_db)
 ' Modules: AUTH
-' Tables: xxx_users, xxx_user_sessions, xxx_roles, xxx_user_roles
-'
-' RULE: Replace "xxx" with your project short name
+' Tables: auth_users, auth_sessions, auth_accounts, auth_roles, auth_user_roles, auth_verification
 ' ============================================================
 
 skinparam class {
@@ -16,7 +14,7 @@ skinparam class {
 
 title Authentication Database (auth_db)
 
-entity "xxx_users" as users {
+entity "auth_users" as users {
   * id : uuid <<PK>>
   --
   * email : varchar(255) <<UNIQUE>>
@@ -30,7 +28,7 @@ entity "xxx_users" as users {
   * updated_at : timestamp
 }
 
-entity "xxx_user_sessions" as sessions {
+entity "auth_sessions" as sessions {
   * id : uuid <<PK>>
   --
   * user_id : uuid <<FK>>
@@ -42,7 +40,16 @@ entity "xxx_user_sessions" as sessions {
   * created_at : timestamp
 }
 
-entity "xxx_roles" as roles {
+entity "auth_accounts" as accounts {
+  * id : uuid <<PK>>
+  --
+  * user_id : uuid <<FK>>
+  * provider : varchar(50)
+  * provider_id : varchar(255)
+  * created_at : timestamp
+}
+
+entity "auth_roles" as roles {
   * id : uuid <<PK>>
   --
   * name : varchar(50) <<UNIQUE>>
@@ -51,7 +58,7 @@ entity "xxx_roles" as roles {
   * created_at : timestamp
 }
 
-entity "xxx_user_roles" as user_roles {
+entity "auth_user_roles" as user_roles {
   * id : uuid <<PK>>
   --
   * user_id : uuid <<FK>>
@@ -60,7 +67,7 @@ entity "xxx_user_roles" as user_roles {
   * assigned_by : uuid <<FK>>
 }
 
-entity "xxx_verification_codes" as verification {
+entity "auth_verification" as verification {
   * id : uuid <<PK>>
   --
   * user_id : uuid <<FK>>
@@ -73,6 +80,7 @@ entity "xxx_verification_codes" as verification {
 
 ' --- Relationships ---
 users ||--o{ sessions : "has"
+users ||--o{ accounts : "linked to"
 users ||--o{ user_roles : "assigned"
 roles ||--o{ user_roles : "granted to"
 users ||--o{ verification : "receives"

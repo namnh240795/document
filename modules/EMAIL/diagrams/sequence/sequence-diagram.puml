@@ -1,0 +1,77 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Email Delivery Flow
+' RabbitMQ + SendGrid/SMTP + email_db logging
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Email Delivery Flow
+
+participant "AUTH Module" as AUTH
+queue "RabbitMQ\n(verification.email)" as MQ
+participant "Email Worker" as Worker
+participant "SendGrid/SMTP" as Provider
+database "email_db\n(Drizzle ORM)" as DB
+participant "LOG Module" as LOG
+
+== Step 1: Event Received ==
+
+MQ -> Worker : CONSUME verification.email\n{ userId, email, otp, verificationId }
+activate Worker
+
+== Step 2: Prepare Email ==
+
+Worker -> Worker : Render email template\nwith OTP code
+
+== Step 3: Send Email ==
+
+Worker -> Provider : Send email\n(to: email, subject: "Verify your account")
+activate Provider
+Provider --> Worker : { messageId: "abc123", status: "queued" }
+deactivate Provider
+
+== Step 4: Log Delivery ==
+
+Worker -> DB : INSERT INTO email_logs\n(user_id, email, subject, template_id,\n status, provider, provider_message_id)
+activate DB
+DB --> Worker : Email log created
+deactivate DB
+
+== Step 5: Publish to Logger ==
+
+Worker -> LOG : PUBLISH email.event.logged\n{ eventId, action: "email.sent", status }
+activate LOG
+LOG --> Worker : Event logged
+deactivate LOG
+
+== Step 6: ACK ==
+
+Worker --> MQ : ACK (message processed)
+deactivate Worker
+
+== Step 7: Delivery Callback ==
+
+Provider -> Worker : POST /webhooks/email/delivered\n{ verificationId, status: "delivered" }
+activate Worker
+
+Worker -> DB : UPDATE email_logs\nSET status = 'delivered',\n    delivered_at = NOW()\nWHERE provider_message_id = ?
+activate DB
+DB --> Worker : Updated
+deactivate DB
+
+Worker -> LOG : PUBLISH email.event.logged\n{ eventId, action: "email.delivered" }
+activate LOG
+LOG --> Worker : Event logged
+deactivate LOG
+
+Worker --> Provider : 200 OK
+deactivate Worker
+
+@enduml

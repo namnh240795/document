@@ -1,0 +1,53 @@
+@startuml
+' ============================================================
+' Activity Diagram - Email Verification Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Email Verification Flow
+
+start
+
+:Receive verification request\nfrom AUTH via RabbitMQ;
+
+if (Rate limit exceeded?) then (yes)
+  :Reject request;
+  stop
+endif
+
+:Generate email content\nfrom template;
+
+:Send email via\nSendGrid/SMTP;
+
+if (Email sent?) then (yes)
+  :Log as 'sent'\nin email_logs;
+else (no)
+  :Log as 'failed'\nin email_logs;
+  if (Retry count < 3?) then (yes)
+    :Increment retry count;
+    :Requeue to RabbitMQ;
+  else (no)
+    :Log permanent failure;
+  endif
+endif
+
+:Wait for delivery callback;
+
+if (Delivery callback\nreceived?) then (yes)
+  :Update status to 'delivered';
+else (no)
+  :Update status to 'failed';
+endif
+
+:Publish event to\nLOG module;
+
+stop
+
+@enduml

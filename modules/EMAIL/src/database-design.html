@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Design - Email Notification</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Database Design</h1>
+  <div class="subtitle">Email Notification Module</div>
+  <span class="module-badge">EMAIL</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>EMAIL - Email Notification</td></tr>
+    <tr><td>Database</td><td>email_db</td></tr>
+    <tr><td>Date</td><td>2026-07-24</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Email Notification SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Introduction</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 Database Overview</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-2">2. Entity Relationship Diagram</a></li>
+    <li><a href="#section-3">3. Table Definitions</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 email_logs</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Indexes</a></li>
+    <li><a href="#section-5">5. Migration Scripts</a></li>
+  </ul>
+</div>
+
+<!-- 1. INTRODUCTION -->
+<h1 id="section-1">1. Introduction</h1>
+
+<h2 id="section-1-1">1.1 Purpose</h2>
+<p>This document describes the database design for the <strong>Email Notification</strong> module, including schema, indexes, and migration scripts.</p>
+
+<h2 id="section-1-2">1.2 Database Overview</h2>
+<table>
+  <tr><th>Property</th><th>Value</th></tr>
+  <tr><td>Database Name</td><td>email_db</td></tr>
+  <tr><td>Module</td><td>EMAIL - Email Notification</td></tr>
+  <tr><td>Tables</td><td>email_logs</td></tr>
+  <tr><td>Engine</td><td>PostgreSQL</td></tr>
+</table>
+
+<!-- 2. ERD -->
+<h1 id="section-2">2. Entity Relationship Diagram</h1>
+
+<div class="diagram">
+  <img src="./images/erd/erd-diagram.png" alt="ERD Diagram">
+  <div class="caption">Figure 1: Email Notification ERD</div>
+</div>
+
+<!-- 3. TABLE DEFINITIONS -->
+<h1 id="section-3">3. Table Definitions</h1>
+
+<h2 id="section-3-1">3.1 email_logs</h2>
+<p>Stores email delivery logs including recipient, subject, status, and provider details.</p>
+
+<table>
+  <tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr>
+  <tr><td>id</td><td>uuid</td><td>PK, NOT NULL, DEFAULT gen_random_uuid()</td><td>Unique identifier</td></tr>
+  <tr><td>user_id</td><td>uuid</td><td>NOT NULL</td><td>Associated user ID</td></tr>
+  <tr><td>email</td><td>varchar(255)</td><td>NOT NULL</td><td>Recipient email address</td></tr>
+  <tr><td>subject</td><td>varchar(500)</td><td>NOT NULL</td><td>Email subject line</td></tr>
+  <tr><td>template_id</td><td>varchar(100)</td><td>NOT NULL</td><td>Email template identifier</td></tr>
+  <tr><td>status</td><td>enum('pending','sent','delivered','failed')</td><td>NOT NULL, DEFAULT 'pending'</td><td>Delivery status</td></tr>
+  <tr><td>provider</td><td>varchar(50)</td><td>NOT NULL</td><td>Email provider name (sendgrid, smtp)</td></tr>
+  <tr><td>provider_message_id</td><td>varchar(100)</td><td>NULL</td><td>Provider's message ID for tracking</td></tr>
+  <tr><td>error_message</td><td>text</td><td>NULL</td><td>Error details if delivery failed</td></tr>
+  <tr><td>retry_count</td><td>integer</td><td>NOT NULL, DEFAULT 0</td><td>Number of retry attempts</td></tr>
+  <tr><td>metadata</td><td>jsonb</td><td>NULL</td><td>Additional context data (OTP, template vars)</td></tr>
+  <tr><td>sent_at</td><td>timestamp</td><td>NULL</td><td>When email was sent to provider</td></tr>
+  <tr><td>delivered_at</td><td>timestamp</td><td>NULL</td><td>When email was delivered to recipient</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>NOT NULL, DEFAULT NOW()</td><td>Record creation time</td></tr>
+</table>
+
+<h3>SQL CREATE TABLE</h3>
+<pre>
+CREATE TABLE email_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  subject VARCHAR(500) NOT NULL,
+  template_id VARCHAR(100) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'sent', 'delivered', 'failed')),
+  provider VARCHAR(50) NOT NULL,
+  provider_message_id VARCHAR(100),
+  error_message TEXT,
+  retry_count INTEGER NOT NULL DEFAULT 0,
+  metadata JSONB,
+  sent_at TIMESTAMP,
+  delivered_at TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+</pre>
+
+<!-- 4. INDEXES -->
+<h1 id="section-4">4. Indexes</h1>
+
+<table>
+  <tr><th>Index Name</th><th>Table</th><th>Columns</th><th>Purpose</th></tr>
+  <tr><td>idx_email_logs_user_id</td><td>email_logs</td><td>user_id</td><td>Query emails by user</td></tr>
+  <tr><td>idx_email_logs_status</td><td>email_logs</td><td>status</td><td>Filter by delivery status</td></tr>
+  <tr><td>idx_email_logs_created_at</td><td>email_logs</td><td>created_at</td><td>Time-based queries and cleanup</td></tr>
+  <tr><td>idx_email_logs_provider_message_id</td><td>email_logs</td><td>provider_message_id</td><td>Look up by provider message ID</td></tr>
+</table>
+
+<h3>SQL CREATE INDEXES</h3>
+<pre>
+CREATE INDEX idx_email_logs_user_id ON email_logs (user_id);
+CREATE INDEX idx_email_logs_status ON email_logs (status);
+CREATE INDEX idx_email_logs_created_at ON email_logs (created_at);
+CREATE INDEX idx_email_logs_provider_message_id ON email_logs (provider_message_id);
+</pre>
+
+<!-- 5. MIGRATION SCRIPTS -->
+<h1 id="section-5">5. Migration Scripts</h1>
+
+<h2>5.1 Initial Migration</h2>
+<pre>
+-- Migration: Create email_logs table
+-- Date: 2026-07-24
+-- Module: EMAIL
+
+BEGIN;
+
+CREATE TABLE email_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  subject VARCHAR(500) NOT NULL,
+  template_id VARCHAR(100) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'sent', 'delivered', 'failed')),
+  provider VARCHAR(50) NOT NULL,
+  provider_message_id VARCHAR(100),
+  error_message TEXT,
+  retry_count INTEGER NOT NULL DEFAULT 0,
+  metadata JSONB,
+  sent_at TIMESTAMP,
+  delivered_at TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_email_logs_user_id ON email_logs (user_id);
+CREATE INDEX idx_email_logs_status ON email_logs (status);
+CREATE INDEX idx_email_logs_created_at ON email_logs (created_at);
+CREATE INDEX idx_email_logs_provider_message_id ON email_logs (provider_message_id);
+
+COMMIT;
+</pre>
+
+</body>
+</html>
