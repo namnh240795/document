@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Software Requirements Specification - {{MODULE_NAME}}</title>
+  <title>Software Requirements Specification -  Logger</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -24,15 +24,15 @@
 <!-- COVER PAGE -->
 <div class="cover">
   <h1>Software Requirements Specification</h1>
-  <div class="subtitle">{{MODULE_NAME}} Module</div>
-  <span class="module-badge">{{MODULE_CODE}}</span>
+  <div class="subtitle"> Logger Module</div>
+  <span class="module-badge">LOG</span>
   <table class="meta-table">
     <tr><td>Version</td><td>1.0</td></tr>
-    <td>System</td><td>{{PROJECT_NAME}}</td></tr>
-    <tr><td>Module</td><td>{{MODULE_CODE}} - {{MODULE_NAME}}</td></tr>
-    <tr><td>Database</td><td>{{MODULE_DATABASE}}</td></tr>
-    <tr><td>Date</td><td>{{DATE}}</td></tr>
-    <tr><td>Author</td><td>{{AUTHOR}}</td></tr>
+    <td>System</td><td> Authentication System</td></tr>
+    <tr><td>Module</td><td>LOG -  Logger</td></tr>
+    <tr><td>Database</td><td> opensearch</td></tr>
+    <tr><td>Date</td><td>2026-07-24</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
   </table>
 </div>
@@ -41,13 +41,13 @@
 <h1>1. Introduction</h1>
 
 <h2>1.1 Purpose</h2>
-<p>This document defines the software requirements for the <strong>{{MODULE_NAME}}</strong> module of the {{PROJECT_NAME}} system.</p>
+<p>This document defines the software requirements for the <strong> Logger</strong> module of the  Authentication System system.</p>
 
 <h2>1.2 Scope</h2>
-<p>{{MODULE_DESCRIPTION}}</p>
+<p> Centralized event logging — receives log events from all services via RabbitMQ  stores in OpenSearch for full-text search  analytics  and dashboards</p>
 
 <h2>1.3 Module Dependencies</h2>
-<p>{{MODULE_DEPENDENCIES}}</p>
+<p>None (standalone module)</p>
 
 <h2>1.4 Definitions</h2>
 <table>
@@ -66,18 +66,18 @@
 <h2>2.1 Module Description</h2>
 <table>
   <tr><th>Aspect</th><th>Value</th></tr>
-  <tr><td>Module Code</td><td>{{MODULE_CODE}}</td></tr>
-  <tr><td>Module Name</td><td>{{MODULE_NAME}}</td></tr>
-  <tr><td>Description</td><td>{{MODULE_DESCRIPTION}}</td></tr>
-  <tr><td>Database</td><td>{{MODULE_DATABASE}}</td></tr>
-  <tr><td>Tables</td><td>{{MODULE_TABLES}}</td></tr>
-  <tr><td>Tech Stack</td><td>{{MODULE_TECH_STACK}}</td></tr>
+  <tr><td>Module Code</td><td>LOG</td></tr>
+  <tr><td>Module Name</td><td> Logger</td></tr>
+  <tr><td>Description</td><td> Centralized event logging — receives log events from all services via RabbitMQ  stores in OpenSearch for full-text search  analytics  and dashboards</td></tr>
+  <tr><td>Database</td><td> opensearch</td></tr>
+  <tr><td>Tables</td><td></td></tr>
+  <tr><td>Tech Stack</td><td>NestJS,RabbitMQ (amqplib),OpenSearch (@opensearch-project/opensearch)</td></tr>
 </table>
 
 <h2>2.2 Use Case Diagram</h2>
 <div class="diagram">
-  <img src="../images/usecase/usecase-diagram.png" alt="Use Case Diagram">
-  <div class="caption">Figure 1: {{MODULE_NAME}} Use Case Diagram</div>
+<div style="border:2px dashed #ccc;padding:40px;text-align:center;color:#999;margin:20px 0;">Diagram not generated yet. Run <code>make generate-module LOG usecase</code>.</div>
+  <div class="caption">Figure 1:  Logger Use Case Diagram</div>
 </div>
 
 <!-- 3. FUNCTIONAL REQUIREMENTS -->
@@ -96,8 +96,8 @@
 
 <h2>4.1 Entity Relationship Diagram</h2>
 <div class="diagram">
-  <img src="../images/erd/erd-diagram.png" alt="ERD Diagram">
-  <div class="caption">Figure 2: {{MODULE_NAME}} ERD</div>
+<div style="border:2px dashed #ccc;padding:40px;text-align:center;color:#999;margin:20px 0;">Diagram not generated yet. Run <code>make generate-module LOG erd</code>.</div>
+  <div class="caption">Figure 2:  Logger ERD</div>
 </div>
 
 <h2>4.2 Data Requirements</h2>
@@ -114,8 +114,8 @@
 
 <h2>6.1 Sequence Diagram</h2>
 <div class="diagram">
-  <img src="../images/sequence/sequence-diagram.png" alt="Sequence Diagram">
-  <div class="caption">Figure 3: {{MODULE_NAME}} Integration Flow</div>
+<div style="border:2px dashed #ccc;padding:40px;text-align:center;color:#999;margin:20px 0;">Diagram not generated yet. Run <code>make generate-module LOG sequence</code>.</div>
+  <div class="caption">Figure 3:  Logger Integration Flow</div>
 </div>
 
 <h2>6.2 Webhook Events</h2>

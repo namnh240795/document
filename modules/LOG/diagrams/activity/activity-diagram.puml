@@ -1,0 +1,47 @@
+@startuml
+' ============================================================
+' Activity Diagram - Log Consumer Flow
+' RabbitMQ → Consumer → OpenSearch (no PostgreSQL)
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Activity Diagram: Log Consumer Processing
+
+start
+
+:Receive message from\nRabbitMQ queue\nlog.events;
+
+:Parse JSON message\ninto LogEvent;
+
+if (Valid JSON?) then (no)
+  :Log warning\n"Invalid message format";
+  :ACK message\n(prevent poison pill);
+  stop
+endif
+
+:Index to OpenSearch\n(index: log-events);
+note right
+  Fields: eventId, source,
+  level, action, message,
+  input, output, error,
+  exception, traceId,
+  userId, timestamp
+end note
+
+if (OpenSearch indexing\nsuccessful?) then (no)
+  :Retry with exponential\nbackoff (3 attempts);
+  if (Max retries reached?) then (yes)
+    :Log error\n"Failed to index to OpenSearch";
+  endif
+endif
+
+:ACK message\nto RabbitMQ;
+
+stop
+
+@enduml

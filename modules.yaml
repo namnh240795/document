@@ -43,6 +43,49 @@ modules:
       - PostgreSQL
       - Twilio
 
+  - code: LOG
+    name: "Logger"
+    description: "Centralized event logging — receives log events from all services via RabbitMQ, stores in OpenSearch for full-text search, analytics, and dashboards"
+    database: opensearch
+    index: log-events
+    tables: []
+    depends_on:
+      - AUTH
+    tech_stack:
+      - NestJS
+      - RabbitMQ (amqplib)
+      - OpenSearch (@opensearch-project/opensearch)
+    architecture:
+      description: |
+        Event-driven logging pipeline (OpenSearch as primary store):
+        Any Service → RabbitMQ (queue: log.events) → Logger Consumer → OpenSearch
+      components:
+        - name: Log Producer
+          role: "Publishes log events to RabbitMQ queue 'log.events'"
+          implemented_in: "Each service (AUTH, SMS, etc.)"
+        - name: Log Consumer
+          role: "Consumes from RabbitMQ, indexes to OpenSearch"
+          implemented_in: "Logger Worker"
+        - name: OpenSearch
+          role: "Primary store — full-text search, analytics, dashboards"
+          index: "log-events"
+        - name: Log Query API
+          role: "REST API to query logs from OpenSearch"
+      log_schema:
+        eventId: "keyword — unique event identifier (UUID)"
+        source: "text + keyword — producing service name (auth, sms, etc.)"
+        level: "keyword — debug, info, warn, error"
+        action: "keyword — event action (login, register, send_otp, etc.)"
+        message: "text — human-readable log message"
+        input: "text — input data as JSON string"
+        output: "text — success output as JSON string"
+        error: "text — error message on failure"
+        exception: "text — exception with stack trace"
+        metadata: "object — additional context data"
+        traceId: "keyword — distributed trace ID"
+        userId: "keyword — associated user ID"
+        timestamp: "date — event timestamp (ISO 8601)"
+
 # ============================================================
 # Inter-Module Communication (Webhook Events)
 # Modules communicate via webhook events
@@ -85,3 +128,39 @@ webhooks:
       status: "delivered" | "failed"
       provider_message_id: string
       error_message: string | null
+
+  # ============================================================
+  # Logger Module Events (all services -> LOG)
+  # ============================================================
+
+  - from: AUTH
+    to: LOG
+    event: auth.event.logged
+    description: "AUTH publishes any auth event (login, logout, register, password change) to Logger"
+    protocol: RabbitMQ
+    queue: log.events
+    payload:
+      event_id: uuid
+      level: "info" | "warn" | "error"
+      action: string
+      user_id: uuid | null
+      ip_address: string
+      user_agent: string
+      metadata: jsonb
+      timestamp: iso8601
+
+  - from: SMS
+    to: LOG
+    event: sms.event.logged
+    description: "SMS publishes delivery events (sent, delivered, failed) to Logger"
+    protocol: RabbitMQ
+    queue: log.events
+    payload:
+      event_id: uuid
+      level: "info" | "warn" | "error"
+      action: string
+      user_id: uuid | null
+      provider_message_id: string
+      status: string
+      metadata: jsonb
+      timestamp: iso8601

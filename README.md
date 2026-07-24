@@ -7,7 +7,7 @@ Framework for creating technical documentation with PlantUML diagrams and HTML o
 ```bash
 make pull           # Download PlantUML Docker image
 make build-all      # Generate diagrams + build HTML docs
-open docs/documents/srs.html  # Open in browser
+open modules/index.html  # Open in browser
 ```
 
 ## Features
@@ -63,9 +63,17 @@ ba/
 │   ├── deployment/
 │   └── architecture/
 │
-├── docs/
-│   ├── images/                    # GENERATED images (auto)
-│   └── documents/                 # GENERATED HTML docs (auto)
+├── modules/
+│   ├── <code>/                    # Per-module docs + images (auto)
+│   │   ├── diagrams/              # Source PlantUML files
+│   │   ├── images/                # Generated diagrams (auto)
+│   │   ├── srs.html               # Module SRS content
+│   │   ├── tds.html               # Generated TDS
+│   │   ├── database-design.html   # Generated DB design
+│   │   └── api-technical-spec.html # Generated API spec
+│   ├── images/                    # System-level generated images
+│   ├── index.html                 # Generated master index
+│   └── style.css                  # Generated stylesheet
 │
 ├── examples/                      # Sample files
 └── CLAUDE.md                      # Rules (copy to project root)
@@ -149,6 +157,7 @@ Every technical document MUST trace back to SRS requirements:
 | Wallet | WAL | Wallets, top-up, transfers |
 | Shipping | SHIP | Addresses, delivery |
 | Notification | NOTI | Email, SMS, push |
+| Logger | LOG | Application logging, audit trail, error tracking (OpenSearch) |
 
 ### Multi-Database Architecture
 
@@ -159,6 +168,7 @@ Every technical document MUST trace back to SRS requirements:
 | pay_db | PAY | Payment processing, refunds |
 | wallet_db | WAL | User wallets, top-up, transfers |
 | noti_db | NOTI | Notification templates, logs |
+| opensearch | LOG | Application logs, audit trail (OpenSearch as primary store) |
 
 Cross-database references use application-level IDs (no foreign keys across databases).
 
@@ -190,6 +200,17 @@ Cross-database references use application-level IDs (no foreign keys across data
 | Component | `component.puml` | System components |
 | Deployment | `deployment.puml` | Infrastructure topology |
 | Architecture | `architecture.puml` | C4 Level 1 context |
+
+### ERD Per Database
+
+| File | Database | Modules |
+|------|----------|---------|
+| `erd-auth.puml` | auth_db | AUTH |
+| `erd-ecom.puml` | ecom_db | PROD, ECOM, SHIP |
+| `erd-pay.puml` | pay_db | PAY |
+| `erd-wallet.puml` | wallet_db | WAL |
+| `erd-noti.puml` | noti_db | NOTI |
+| `erd-log.puml` | opensearch | LOG |
 
 ## Examples
 

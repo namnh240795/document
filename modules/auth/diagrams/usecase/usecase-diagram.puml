@@ -12,44 +12,46 @@ skinparam usecase {
   BorderColor #333333
   ArrowColor #333333
 }
-skinparam package {
-  BackgroundColor #FFFFFF
-  BorderColor #666666
-}
+
+' --- Spacing ---
+skinparam nodesep 60
+skinparam ranksep 40
 
 ' --- Actors ---
 actor "User" as user
 actor "Admin" as admin
 actor "System" as system
 
-' --- System Boundary ---
-rectangle "Authentication System" {
-  ' --- Use Cases ---
-  usecase "UC-01: Register\n(Email/Phone + Password)" as UC01
-  usecase "UC-02: Login\n(Email/Phone + Password)" as UC02
-  usecase "UC-03: Logout" as UC03
-  usecase "UC-04: Refresh Token" as UC04
-  usecase "UC-05: Reset Password\n(Email)" as UC05
-  usecase "UC-06: Reset Password\n(Phone/OTP)" as UC06
-  usecase "UC-07: Change Password" as UC07
-  usecase "UC-08: Verify Email" as UC08
-  usecase "UC-09: Verify Phone" as UC09
-  usecase "UC-10: Manage Users" as UC10
-  usecase "UC-11: Manage Roles" as UC11
-}
+' --- Force actor order ---
+user -[hidden]down- admin
+admin -[hidden]down- system
 
-' --- Relationships ---
+' --- Use Cases ---
+usecase "UC-01: Register\n(Email/Phone + Password)" as UC01
+usecase "UC-02: Login\n(Email/Phone + Password)" as UC02
+usecase "UC-03: Logout" as UC03
+usecase "UC-04: Refresh Token" as UC04
+usecase "UC-05: Reset Password (Email)" as UC05
+usecase "UC-06: Reset Password (Phone/OTP)" as UC06
+usecase "UC-07: Change Password" as UC07
+usecase "UC-08: Verify Email" as UC08
+usecase "UC-09: Verify Phone" as UC09
+usecase "UC-10: Manage Users" as UC10
+usecase "UC-11: Manage Roles" as UC11
+
+' --- User Relationships ---
 user --> UC01
 user --> UC02
 user --> UC03
-user --> UC04
 user --> UC05
 user --> UC06
 user --> UC07
 
+' --- Admin Relationships ---
 admin --> UC10
 admin --> UC11
 
+' --- System Relationships ---
 system --> UC08
 system --> UC09
 

@@ -1,0 +1,64 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Log Query Flow
+' Admin/System → Log Query API → OpenSearch
+' (no PostgreSQL — OpenSearch is primary store)
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Log Query Flow
+
+actor "Admin / System" as Client
+participant "Log Query\nAPI" as API
+database "OpenSearch\n(index: log-events)" as OS
+
+== Full-Text Search ==
+
+Client -> API : GET /logs\n?search=error&source=auth&level=error\n&from=2026-07-01&to=2026-07-24\n&page=1&size=20
+activate API
+
+API -> API : Validate query parameters
+API -> API : Construct OpenSearch bool query\n{ must: [...], filter: [...] }
+
+API -> OS : SEARCH log-events\n{ query: { bool: { must, filter } },\n  sort: [{ timestamp: desc }],\n  from: 0, size: 20 }
+activate OS
+OS --> API : { hits: [...], total: 150 }
+deactivate OS
+
+API --> Client : 200 { logs: [...], total: 150 }
+deactivate API
+
+== Query by Trace ID ==
+
+Client -> API : GET /logs/trace/:traceId
+activate API
+
+API -> OS : SEARCH log-events\n{ query: { term: { traceId: "abc-123" } } }
+activate OS
+OS --> API : { hits: [...] }
+deactivate OS
+
+API --> Client : 200 { logs: [...] }
+deactivate API
+
+== Query Error Logs ==
+
+Client -> API : GET /logs/errors
+activate API
+
+API -> OS : SEARCH log-events\n{ query: { bool: { must: [\n  { term: { level: "error" } },\n  { term: { level: "fatal" } }\n] } } }
+activate OS
+OS --> API : { hits: [...] }
+deactivate OS
+
+API --> Client : 200 { errors: [...] }
+deactivate API
+
+@enduml

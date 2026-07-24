@@ -25,6 +25,7 @@ All technical documents MUST trace back to SRS requirements. This is mandatory.
 | WAL | Wallet | User wallets, top-up, transfers |
 | SHIP | Shipping | Addresses, delivery tracking |
 | NOTI | Notification | Email, SMS, push notifications |
+| LOG | Logger | Application logging, audit trail, error tracking |
 
 ---
 
@@ -66,7 +67,8 @@ templates/
   ├── erd-ecom.puml      # ecom_db ERD (PROD, ECOM, SHIP modules)
   ├── erd-pay.puml       # pay_db ERD (PAY module)
   ├── erd-wallet.puml    # wallet_db ERD (WAL module)
-  └── erd-noti.puml      # noti_db ERD (NOTI module)
+  ├── erd-noti.puml      # noti_db ERD (NOTI module)
+  └── erd-log.puml       # log_db ERD (LOG module)
 ```
 
 ### ERD Per Database
@@ -78,6 +80,7 @@ templates/
 | `erd-pay.puml` | pay_db | PAY | payments, refunds, transaction_logs |
 | `erd-wallet.puml` | wallet_db | WAL | wallets, wallet_transactions, wallet_topup_requests |
 | `erd-noti.puml` | noti_db | NOTI | notification_templates, notification_logs, sms_logs |
+| `erd-log.puml` | opensearch | LOG | log-events (OpenSearch index) |
 
 ### Rules for ERD
 
@@ -101,6 +104,7 @@ templates/
 | WAL | ecom_wallets, ecom_wallet_transactions, ecom_wallet_topup_requests |
 | SHIP | ecom_addresses, ecom_shipments |
 | NOTI | ecom_notification_templates, ecom_notification_logs |
+| LOG | log-events (OpenSearch index) |
 
 ---
 
@@ -179,6 +183,7 @@ Database changes MUST be done step by step using migration scripts. Never modify
    6. SHIP (addresses, shipments) - depends on AUTH, ECOM
    7. NOTI (templates, logs) - depends on AUTH
    ```
+   Note: LOG module uses OpenSearch as primary store — no SQL migrations needed.
 
 5. **Database Design document MUST include:**
    - Migration file structure
@@ -217,6 +222,7 @@ System MAY use multiple databases for different modules. Each database serves a 
 | pay_db | PAY | Payment processing, refunds |
 | wallet_db | WAL | User wallets, top-up, transfers |
 | noti_db | NOTI | Notification templates, logs |
+| opensearch | LOG | Application logs, audit trail, error tracking (OpenSearch as primary store) |
 
 ### Multi-Database Rules
 
@@ -270,6 +276,9 @@ Database: wallet_db
 Database: noti_db
   - ecom_notification_templates
   - ecom_notification_logs
+
+OpenSearch: log-events
+  (Primary store for all log data — full-text search, analytics, dashboards)
 ```
 
 ---
@@ -323,7 +332,26 @@ Every page MUST have a logo header at the top:
 - Left side: Your company logo
 - Right side: Partner/client logo
 - Use placeholder div until actual logos are provided
-- Logos appear on every page (system docs and module docs)
+
+### Document Structure
+
+Documents are organized PER MODULE (no combined system-level docs):
+
+```
+modules/
+  index.html              # Master index with module links
+  auth/                   # AUTH module docs
+    srs.html
+    tds.html
+    database-design.html
+    api-technical-spec.html
+  sms/                    # SMS module docs
+    srs.html
+    tds.html
+    ...
+```
+
+Each module has its own set of 4 documents (SRS, TDS, DB Design, API Spec).
 
 ### Table of Contents
 
@@ -381,9 +409,9 @@ TOC link to FR:
 ### Logo Header Locations
 
 Logo header MUST appear in:
-- All system-level docs (srs.html, tds.html, database-design.html, api-technical-spec.html)
-- All module-level docs (module-srs.html, module-tds.html, etc.)
 - Index page (index.html)
+- All module-level docs (auth/srs.html, auth/tds.html, etc.)
+- All module templates (module-srs.html, module-tds.html, etc.)
 
 Logo header MUST NOT appear in:
 - style.css (only referenced)
@@ -475,7 +503,7 @@ webhooks:
 
 ### Master Index
 
-The build system generates `docs/index.html` that:
+The build system generates `modules/index.html` that:
 - Lists all modules with links to their document sets
 - Shows system-level architecture docs
 - Lists inter-module webhook events

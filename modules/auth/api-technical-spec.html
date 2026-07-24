@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>API Technical Specification - {{MODULE_NAME}}</title>
+  <title>API Technical Specification -  Authentication</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -24,16 +24,16 @@
 <!-- COVER PAGE -->
 <div class="cover">
   <h1>API Technical Specification</h1>
-  <div class="subtitle">{{MODULE_NAME}} API</div>
-  <span class="module-badge">{{MODULE_CODE}}</span>
+  <div class="subtitle"> Authentication API</div>
+  <span class="module-badge">AUTH</span>
   <table class="meta-table">
     <tr><td>Version</td><td>1.0</td></tr>
     <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
-    <tr><td>System</td><td>{{PROJECT_NAME}}</td></tr>
-    <tr><td>Module</td><td>{{MODULE_CODE}} - {{MODULE_NAME}}</td></tr>
-    <tr><td>Date</td><td>{{DATE}}</td></tr>
-    <tr><td>Author</td><td>{{AUTHOR}}</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">{{MODULE_NAME}} SRS</a></td></tr>
+    <tr><td>System</td><td> Authentication System</td></tr>
+    <tr><td>Module</td><td>AUTH -  Authentication</td></tr>
+    <tr><td>Date</td><td>2026-07-24</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html"> Authentication SRS</a></td></tr>
   </table>
 </div>
 
@@ -64,7 +64,7 @@
   "data": { ... },
   "meta": {
     "requestId": "req-abc-123",
-    "timestamp": "{{DATE}}T10:30:00Z"
+    "timestamp": "2026-07-24T10:30:00Z"
   }
 }</code></pre>
 
@@ -96,7 +96,7 @@
 <!-- 6. PAGINATION -->
 <h1>6. Pagination</h1>
 <p>All list endpoints support offset pagination.</p>
-<pre><code>GET /{{MODULE_CODE_LOWER}}?page=2&amp;limit=20</code></pre>
+<pre><code>GET /auth?page=2&amp;limit=20</code></pre>
 
 <!-- 7. WEBHOOK EVENTS -->
 <h1>7. Webhook Events</h1>
@@ -106,7 +106,7 @@
 <h1>8. Changelog</h1>
 <table>
   <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
-  <tr><td>{{DATE}}</td><td>1.0.0</td><td>Initial release</td></tr>
+  <tr><td>2026-07-24</td><td>1.0.0</td><td>Initial release</td></tr>
 </table>
 
 </body>

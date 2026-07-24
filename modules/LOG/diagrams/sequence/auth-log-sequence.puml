@@ -1,0 +1,100 @@
+@startuml
+' ============================================================
+' Sequence Diagram - AUTH → LOG Integration
+' AUTH publishes log events to RabbitMQ, LOG indexes to OpenSearch
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: AUTH → LOG Integration
+
+actor User
+participant "AUTH\nService" as AUTH
+queue "RabbitMQ\n(queue: log.events)" as MQ
+participant "LOG\nConsumer" as LOG
+database "OpenSearch\n(index: log-events)" as OS
+
+== Login Success ==
+
+User -> AUTH : POST /auth/sign-in\n{ email, password }
+activate AUTH
+
+AUTH -> AUTH : Validate credentials
+AUTH -> AUTH : Create session
+
+AUTH -> MQ : PUBLISH log.events\n{ eventId: uuid,\n  source: "auth",\n  level: "info",\n  action: "login.success",\n  userId: "user-123",\n  metadata: { email, ip, userAgent } }
+activate MQ
+
+AUTH --> User : 200 { accessToken, refreshToken }
+deactivate AUTH
+
+MQ -> LOG : CONSUME
+activate LOG
+
+LOG -> OS : INDEX log-events\n{ eventId, source, level,\n  action, userId, metadata }
+activate OS
+OS --> LOG : Indexed
+deactivate OS
+
+LOG -> MQ : ACK
+deactivate LOG
+deactivate MQ
+
+== Login Failed ==
+
+User -> AUTH : POST /auth/sign-in\n{ email, password: "wrong" }
+activate AUTH
+
+AUTH -> AUTH : Validate credentials\n(incorrect password)
+
+AUTH -> MQ : PUBLISH log.events\n{ level: "warn",\n  action: "login.failed",\n  metadata: { error: "invalid credentials" } }
+activate MQ
+
+AUTH --> User : 401 Unauthorized
+deactivate AUTH
+
+MQ -> LOG : CONSUME
+activate LOG
+
+LOG -> OS : INDEX log-events
+activate OS
+OS --> LOG : Indexed
+deactivate OS
+
+LOG -> MQ : ACK
+deactivate LOG
+deactivate MQ
+
+== Registration ==
+
+User -> AUTH : POST /auth/sign-up\n{ email, password, name }
+activate AUTH
+
+AUTH -> AUTH : Create user
+AUTH -> AUTH : Send verification
+
+AUTH -> MQ : PUBLISH log.events\n{ level: "info",\n  action: "register",\n  userId: "new-user-456",\n  metadata: { email, phone } }
+activate MQ
+
+AUTH --> User : 201 Created
+deactivate AUTH
+
+MQ -> LOG : CONSUME
+activate LOG
+
+LOG -> OS : INDEX log-events
+activate OS
+OS --> LOG : Indexed
+deactivate OS
+
+LOG -> MQ : ACK
+deactivate LOG
+deactivate MQ
+
+@enduml

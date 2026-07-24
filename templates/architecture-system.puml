@@ -1,0 +1,94 @@
+@startuml
+' ============================================================
+' System Architecture - Authentication System
+' Shows all modules and their interactions
+' ============================================================
+
+skinparam component {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+skinparam database {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+}
+
+skinparam queue {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+}
+
+title System Architecture: Authentication System
+
+package "Clients" as clients {
+  component "Web App" as web
+  component "Mobile App" as mobile
+}
+
+package "API Gateway" as gw {
+  component "NestJS Gateway" as gateway
+}
+
+package "Services" as services {
+  component "AUTH Service\n(auth_db)" as auth
+  component "SMS Service\n(sms_db)" as sms
+  component "LOG Service\n(OpenSearch)" as log
+}
+
+package "Message Broker" as broker {
+  queue "RabbitMQ" as mq
+}
+
+package "Storage" as storage {
+  database "PostgreSQL\nauth_db" as pgAuth
+  database "PostgreSQL\nsms_db" as pgSms
+  database "OpenSearch\nlog-events" as os
+}
+
+' --- Client to Gateway ---
+web --> gateway
+mobile --> gateway
+
+' --- Gateway to Services ---
+gateway --> auth : "REST API"
+gateway --> sms : "REST API"
+gateway --> log : "REST API"
+
+' --- AUTH to Database ---
+auth --> pgAuth
+
+' --- SMS to Database ---
+sms --> pgSms
+
+' --- Inter-Module Communication ---
+auth --> mq : "verification.requested\nverification.resent\nauth.event.logged"
+sms --> mq : "sms.event.logged"
+
+mq --> auth : "verification.delivered"
+mq --> log : "auth.event.logged\nsms.event.logged"
+
+' --- LOG to OpenSearch ---
+log --> os : "INDEX / SEARCH"
+
+note right of auth
+  AUTH publishes:
+  - verification events → SMS
+  - log events → LOG
+end note
+
+note right of log
+  LOG receives events from
+  all services via RabbitMQ,
+  indexes to OpenSearch
+end note
+
+note bottom of os
+  OpenSearch handles:
+  - Full-text search
+  - Analytics
+  - Dashboards
+end note
+
+@enduml

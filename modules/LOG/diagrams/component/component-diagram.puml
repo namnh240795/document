@@ -1,0 +1,69 @@
+@startuml
+' ============================================================
+' Component Diagram - Logger Module Architecture
+' OpenSearch as primary store (no PostgreSQL)
+' ============================================================
+
+skinparam component {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Component Diagram: Logger Module Architecture
+
+package "Producer Services" as producers {
+  component "AUTH Service" as auth
+  component "SMS Service" as sms
+  component "Other Services" as other
+}
+
+package "Logger Module" as logger {
+  component "Log Producer\n(RabbitMQ Publisher)" as producer
+  component "Log Consumer\n(RabbitMQ Consumer)" as consumer
+  component "Log Query API\n(NestJS REST)" as api
+  component "Log Retention\n(Cron Job)" as retention
+}
+
+package "Infrastructure" as infra {
+  queue "RabbitMQ\n(queue: log.events)" as mq
+  database "OpenSearch\n(index: log-events)" as os
+  component "OpenSearch\nDashboards" as dashboards
+}
+
+' --- Producer Flow ---
+auth --> mq : Publish log events
+sms --> mq : Publish log events
+other --> mq : Publish log events
+
+' --- Consumer Flow ---
+mq --> consumer : Consume log events
+consumer --> os : Index log events
+
+' --- Query Flow ---
+api --> os : Search logs
+dashboards --> os : Visualize logs
+
+' --- Retention Flow ---
+retention --> os : Delete old logs
+
+note right of producers
+  Each service publishes
+  log events to RabbitMQ
+  queue: log.events
+end note
+
+note bottom of mq
+  RabbitMQ buffers log events.
+  Persistent messages ensure
+  no data loss on restart.
+end note
+
+note bottom of os
+  OpenSearch is the primary store.
+  Handles storage, full-text search,
+  analytics, and dashboards.
+  No PostgreSQL needed.
+end note
+
+@enduml

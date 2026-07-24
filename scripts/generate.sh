@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 DIAGRAMS_DIR="$PROJECT_ROOT/diagrams"
 MODULES_DIR="$PROJECT_ROOT/modules"
-IMAGES_DIR="$PROJECT_ROOT/docs/images"
+IMAGES_DIR="$PROJECT_ROOT/modules/images"
 FORMAT="${PLANTUML_FORMAT:-png}"
 
 # Diagram types to process
@@ -87,7 +87,7 @@ generate_module_diagram() {
     local type="$2"
     local module_lower=$(echo "$module" | tr '[:upper:]' '[:lower:]')
     local src_dir="$MODULES_DIR/$module/diagrams/$type"
-    local out_dir="$PROJECT_ROOT/docs/$module_lower/images/$type"
+    local out_dir="$PROJECT_ROOT/modules/$module_lower/images/$type"
 
     if [ ! -d "$src_dir" ]; then
         echo "  [SKIP] No directory: $src_dir"

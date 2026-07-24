@@ -1,0 +1,73 @@
+@startuml
+' ============================================================
+' Component Diagram - AUTH → LOG Integration
+' Shows how AUTH publishes log events to LOG module
+' ============================================================
+
+skinparam component {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Component Diagram: AUTH → LOG Integration
+
+package "AUTH Module" as auth {
+  component "Auth Controller" as authCtrl
+  component "Auth Service" as authSvc
+  component "Auth Log Service\n(Log Producer)" as authLog
+}
+
+package "LOG Module" as log {
+  component "Log Consumer" as logConsumer
+  component "OpenSearch Service" as osSvc
+  component "Log Query API" as logApi
+}
+
+package "Infrastructure" as infra {
+  queue "RabbitMQ\n(queue: log.events)" as mq
+  database "OpenSearch\n(index: log-events)" as os
+  component "OpenSearch\nDashboards" as dashboards
+}
+
+' --- AUTH Flow ---
+authCtrl --> authSvc
+authSvc --> authLog : "Log auth events\n(login, logout, register, etc.)"
+
+' --- Publish to RabbitMQ ---
+authLog --> mq : "PUBLISH\n(log.events)"
+
+' --- LOG Flow ---
+mq --> logConsumer : "CONSUME\n(log.events)"
+logConsumer --> osSvc
+osSvc --> os : "INDEX"
+
+' --- Query Flow ---
+logApi --> os : "SEARCH"
+dashboards --> os : "VISUALIZE"
+
+note right of authLog
+  Auth Log Service wraps
+  LogProducerService with
+  AUTH-specific methods:
+  - logLogin()
+  - logLogout()
+  - logRegister()
+  - logPasswordChange()
+  - logVerification()
+  - logRoleChange()
+end note
+
+note bottom of mq
+  Queue: log.events
+  Durable: true
+  Persistent messages
+end note
+
+note bottom of os
+  Index: log-events
+  Handles storage, search,
+  analytics, dashboards
+end note
+
+@enduml

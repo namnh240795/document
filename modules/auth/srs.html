@@ -2,220 +2,133 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Software Requirements Specification - Authentication</title>
+  <title>Software Requirements Specification -  Authentication</title>
   <link rel="stylesheet" href="../style.css">
-  <style>
-    .req-id { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
-    .trace-table td:first-child { white-space: nowrap; }
-    .module-badge { background: #4CAF50; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 600; font-size: 14px; }
-    .back-link { margin-bottom: 20px; }
-    .back-link a { color: #1a5276; text-decoration: none; }
-  </style>
 </head>
 <body>
 
-<div class="back-link"><a href="../index.html">&larr; Back to System Overview</a></div>
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
 
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
 <div class="cover">
   <h1>Software Requirements Specification</h1>
-  <div class="subtitle">Authentication Module</div>
+  <div class="subtitle"> Authentication Module</div>
   <span class="module-badge">AUTH</span>
   <table class="meta-table">
     <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>Authentication System</td></tr>
-    <tr><td>Module</td><td>AUTH - Authentication</td></tr>
-    <tr><td>Database</td><td>auth_db</td></tr>
-    <tr><td>Date</td><td>2026-07-23</td></tr>
+    <td>System</td><td> Authentication System</td></tr>
+    <tr><td>Module</td><td>AUTH -  Authentication</td></tr>
+    <tr><td>Database</td><td> auth_db</td></tr>
+    <tr><td>Date</td><td>2026-07-24</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
   </table>
 </div>
 
+<!-- 1. INTRODUCTION -->
 <h1>1. Introduction</h1>
+
 <h2>1.1 Purpose</h2>
-<p>This document defines the software requirements for the <strong>Authentication</strong> module. It covers user registration, login, session management, verification, password management, and role-based access control.</p>
+<p>This document defines the software requirements for the <strong> Authentication</strong> module of the  Authentication System system.</p>
 
 <h2>1.2 Scope</h2>
-<p>User accounts, login (email/phone + password), sessions, roles, email/phone verification, password reset, and RBAC.</p>
+<p> User accounts  login  roles  sessions  verification</p>
 
 <h2>1.3 Module Dependencies</h2>
-<p>None (standalone module).</p>
+<p>Depends on:  </p>
 
+<h2>1.4 Definitions</h2>
+<table>
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td>SRS</td><td>Software Requirements Specification</td></tr>
+  <tr><td>FR</td><td>Functional Requirement</td></tr>
+  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
+  <tr><td>UC</td><td>Use Case</td></tr>
+  <tr><td>DR</td><td>Data Requirement</td></tr>
+  <tr><td>IR</td><td>Integration Requirement</td></tr>
+</table>
+
+<!-- 2. MODULE OVERVIEW -->
 <h1>2. Module Overview</h1>
+
+<h2>2.1 Module Description</h2>
 <table>
   <tr><th>Aspect</th><th>Value</th></tr>
   <tr><td>Module Code</td><td>AUTH</td></tr>
-  <tr><td>Database</td><td>auth_db</td></tr>
-  <tr><td>Tables</td><td>auth_users, auth_sessions, auth_accounts, auth_verification, auth_roles, auth_user_roles</td></tr>
-  <tr><td>Tech Stack</td><td>NestJS, Better Auth, Drizzle ORM, PostgreSQL</td></tr>
+  <tr><td>Module Name</td><td> Authentication</td></tr>
+  <tr><td>Description</td><td> User accounts  login  roles  sessions  verification</td></tr>
+  <tr><td>Database</td><td> auth_db</td></tr>
+  <tr><td>Tables</td><td>auth_users,auth_sessions,auth_accounts,auth_verification,auth_roles,auth_user_roles</td></tr>
+  <tr><td>Tech Stack</td><td>NestJS,Better Auth,Drizzle ORM,PostgreSQL</td></tr>
 </table>
 
-<h2>2.1 Use Case Diagram</h2>
+<h2>2.2 Use Case Diagram</h2>
 <div class="diagram">
   <img src="../images/usecase/usecase-diagram.png" alt="Use Case Diagram">
-  <div class="caption">Figure 1: AUTH Use Case Diagram</div>
+  <div class="caption">Figure 1:  Authentication Use Case Diagram</div>
 </div>
 
+<!-- 3. FUNCTIONAL REQUIREMENTS -->
 <h1>3. Functional Requirements</h1>
 
-<h2>3.1 UC-01: User Registration</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-001</span></td></tr>
-  <tr><td>Actor</td><td>User</td></tr>
-  <tr><td>Precondition</td><td>User is not authenticated</td></tr>
-  <tr><td>Postcondition</td><td>User account created, verification sent via RabbitMQ</td></tr>
-</table>
-<h3>Main Flow</h3>
-<ol>
-  <li>User provides email (or phone) + password + name</li>
-  <li>System validates input format</li>
-  <li>System checks idempotency key in Redis</li>
-  <li>System creates user record in auth_users</li>
-  <li>System creates account record in auth_accounts</li>
-  <li>System publishes verification event to RabbitMQ</li>
-  <li>System returns success response</li>
-</ol>
+<!-- REQUIREMENTS_PLACEHOLDER -->
+<!-- The build script will inject module-specific requirements here -->
 
-<h2>3.2 UC-02: User Login</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-002</span></td></tr>
-  <tr><td>Actor</td><td>User</td></tr>
-  <tr><td>Precondition</td><td>User account exists</td></tr>
-  <tr><td>Postcondition</td><td>User authenticated, session created, tokens issued</td></tr>
-</table>
+<h2>3.1 Use Cases</h2>
 
-<h2>3.3 UC-03: Logout</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-003</span></td></tr>
-  <tr><td>Actor</td><td>User</td></tr>
-</table>
+<!-- USECASES_PLACEHOLDER -->
+<!-- The build script will inject module-specific use cases here -->
 
-<h2>3.4 UC-04: Refresh Token</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-004</span></td></tr>
-</table>
+<!-- 4. DATA MODEL -->
+<h1>4. Data Model</h1>
 
-<h2>3.5 UC-05: Reset Password (Email)</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-005</span></td></tr>
-</table>
-
-<h2>3.6 UC-06: Reset Password (Phone)</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-006</span></td></tr>
-</table>
-
-<h2>3.7 UC-07: Change Password</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-007</span></td></tr>
-</table>
-
-<h2>3.8 UC-08: Verify Email</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-008</span></td></tr>
-</table>
-
-<h2>3.9 UC-09: Verify Phone</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-009</span></td></tr>
-</table>
-
-<h2>3.10 UC-10: Manage Users (Admin)</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-010</span></td></tr>
-</table>
-
-<h2>3.11 UC-11: Manage Roles (Admin)</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-011</span></td></tr>
-</table>
-
-<h2>3.12 UC-12: Request Account Verification</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-012</span></td></tr>
-  <tr><td>Actor</td><td>User / System</td></tr>
-</table>
-<h3>Main Flow</h3>
-<ol>
-  <li>System checks Redis idempotency key: <code>idempotency:{user_id}:{channel}</code></li>
-  <li>If key exists: return "already sent" (idempotent response)</li>
-  <li>If no key: set key in Redis with 5-min TTL</li>
-  <li>System generates verification token/OTP</li>
-  <li>System stores token in auth_verification</li>
-  <li>System publishes event to RabbitMQ <code>verification.{channel}</code></li>
-  <li>System returns success immediately</li>
-</ol>
-
-<h2>3.13 UC-13: Resend Verification</h2>
-<table>
-  <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">AUTH-FR-013</span></td></tr>
-</table>
-
-<h1>4. Requirements Detail</h1>
-<table class="trace-table">
-  <tr><th>Req ID</th><th>Requirement</th><th>Use Case</th><th>Priority</th></tr>
-  <tr><td><span class="req-id">AUTH-FR-001</span></td><td>User Registration</td><td>UC-01</td><td>High</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-002</span></td><td>User Login</td><td>UC-02</td><td>High</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-003</span></td><td>Logout</td><td>UC-03</td><td>High</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-004</span></td><td>Refresh Token</td><td>UC-04</td><td>High</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-005</span></td><td>Reset Password (Email)</td><td>UC-05</td><td>Medium</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-006</span></td><td>Reset Password (Phone)</td><td>UC-06</td><td>Medium</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-007</span></td><td>Change Password</td><td>UC-07</td><td>High</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-008</span></td><td>Verify Email</td><td>UC-08</td><td>Medium</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-009</span></td><td>Verify Phone</td><td>UC-09</td><td>Medium</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-010</span></td><td>Manage Users</td><td>UC-10</td><td>Medium</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-011</span></td><td>Manage Roles</td><td>UC-11</td><td>Medium</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-012</span></td><td>Request Verification (Idempotent)</td><td>UC-12</td><td>High</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-013</span></td><td>Resend Verification</td><td>UC-13</td><td>Medium</td></tr>
-</table>
-
-<h1>5. Data Model</h1>
+<h2>4.1 Entity Relationship Diagram</h2>
 <div class="diagram">
   <img src="../images/erd/erd-diagram.png" alt="ERD Diagram">
-  <div class="caption">Figure 2: AUTH ERD</div>
+  <div class="caption">Figure 2:  Authentication ERD</div>
 </div>
 
-<h1>6. Non-Functional Requirements</h1>
-<table class="trace-table">
-  <tr><th>Req ID</th><th>Category</th><th>Requirement</th><th>Target</th></tr>
-  <tr><td><span class="req-id">AUTH-NFR-001</span></td><td>Performance</td><td>API response time</td><td>&lt; 500ms (p99)</td></tr>
-  <tr><td><span class="req-id">AUTH-NFR-002</span></td><td>Security</td><td>Password hashing</td><td>bcrypt 12 rounds</td></tr>
-  <tr><td><span class="req-id">AUTH-NFR-003</span></td><td>Security</td><td>Token expiry</td><td>Access: 15min, Refresh: 7d</td></tr>
-  <tr><td><span class="req-id">AUTH-NFR-004</span></td><td>Security</td><td>Rate limiting</td><td>10 req/min for auth endpoints</td></tr>
-  <tr><td><span class="req-id">AUTH-NFR-005</span></td><td>Reliability</td><td>Idempotency</td><td>Duplicate requests within 5 min produce same result</td></tr>
-  <tr><td><span class="req-id">AUTH-NFR-006</span></td><td>Reliability</td><td>Message queue</td><td>RabbitMQ persistent messages + DLQ</td></tr>
-</table>
+<h2>4.2 Data Requirements</h2>
+<!-- DATA_REQUIREMENTS_PLACEHOLDER -->
 
-<h1>7. Traceability Matrix</h1>
-<table class="trace-table">
-  <tr><th>Req ID</th><th>Requirement</th><th>API Endpoint</th><th>DB Table</th><th>External</th></tr>
-  <tr><td><span class="req-id">AUTH-FR-001</span></td><td>User Registration</td><td>POST /auth/sign-up</td><td>auth_users, auth_accounts</td><td>RabbitMQ</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-002</span></td><td>User Login</td><td>POST /auth/sign-in</td><td>auth_users, auth_accounts, auth_sessions</td><td>-</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-003</span></td><td>Logout</td><td>POST /auth/sign-out</td><td>auth_sessions</td><td>-</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-004</span></td><td>Refresh Token</td><td>POST /auth/refresh</td><td>auth_sessions</td><td>-</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-005</span></td><td>Reset Password (Email)</td><td>POST /auth/forgot-password</td><td>auth_verification</td><td>Email Provider</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-006</span></td><td>Reset Password (Phone)</td><td>POST /auth/forgot-password-phone</td><td>auth_verification</td><td>SMS Provider</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-007</span></td><td>Change Password</td><td>POST /auth/change-password</td><td>auth_accounts</td><td>-</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-008</span></td><td>Verify Email</td><td>GET /auth/verify-email</td><td>auth_verification</td><td>-</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-009</span></td><td>Verify Phone</td><td>POST /auth/verify-phone</td><td>auth_verification</td><td>-</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-010</span></td><td>Manage Users</td><td>GET/PATCH/DELETE /users/:id</td><td>auth_users</td><td>-</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-011</span></td><td>Manage Roles</td><td>GET/POST /roles</td><td>auth_roles, auth_user_roles</td><td>-</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-012</span></td><td>Request Verification</td><td>POST /auth/send-verification</td><td>auth_verification</td><td>Redis, RabbitMQ</td></tr>
-  <tr><td><span class="req-id">AUTH-FR-013</span></td><td>Resend Verification</td><td>POST /auth/resend-verification</td><td>auth_verification</td><td>Redis, RabbitMQ</td></tr>
-</table>
+<!-- 5. API SPECIFICATION -->
+<h1>5. API Specification</h1>
+
+<h2>5.1 Endpoint Summary</h2>
+<!-- ENDPOINTS_PLACEHOLDER -->
+
+<!-- 6. INTEGRATION -->
+<h1>6. Integration</h1>
+
+<h2>6.1 Sequence Diagram</h2>
+<div class="diagram">
+  <img src="../images/sequence/sequence-diagram.png" alt="Sequence Diagram">
+  <div class="caption">Figure 3:  Authentication Integration Flow</div>
+</div>
+
+<h2>6.2 Webhook Events</h2>
+<!-- WEBHOOKS_PLACEHOLDER -->
+<!-- The build script will inject webhook events from modules.yaml -->
+
+<!-- 7. NON-FUNCTIONAL REQUIREMENTS -->
+<h1>7. Non-Functional Requirements</h1>
+<!-- NFR_PLACEHOLDER -->
+
+<!-- 8. TRACEABILITY -->
+<h1>8. Requirements Traceability Matrix</h1>
+<!-- TRACEABILITY_PLACEHOLDER -->
 
 </body>
 </html>

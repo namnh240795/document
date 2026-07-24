@@ -1,0 +1,64 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Log Event Pipeline
+' Any Service → RabbitMQ → Logger Consumer → OpenSearch
+' (no PostgreSQL — OpenSearch is primary store)
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Log Event Pipeline (Event-Driven)
+
+actor "Any Service\n(AUTH, SMS, etc.)" as Service
+queue "RabbitMQ\n(queue: log.events)" as MQ
+participant "Logger\nConsumer" as Consumer
+database "OpenSearch\n(index: log-events)" as OS
+
+== Step 1: Publish Log Event ==
+
+Service -> MQ : PUBLISH log.events\n{ eventId, source, level, action,\n  message, timestamp }
+activate MQ
+
+note right of Service
+  Service generates UUID
+  Non-blocking publish
+  Returns eventId immediately
+end note
+
+Service --> Service : Return eventId
+
+== Step 2: Consumer Receives Message ==
+
+MQ -> Consumer : CONSUME log.events
+activate Consumer
+
+Consumer -> Consumer : Parse JSON message\ninto LogEvent
+
+== Step 3: Index to OpenSearch ==
+
+Consumer -> OS : INDEX log-events\n{ eventId, source, level, action,\n  message, input, output,\n  error, exception, traceId,\n  userId, timestamp }
+activate OS
+OS --> Consumer : Indexed
+deactivate OS
+
+== Step 4: Acknowledge Message ==
+
+Consumer -> MQ : ACK
+deactivate Consumer
+deactivate MQ
+
+== Error Handling ==
+
+note over Consumer
+  If OpenSearch indexing fails:
+  - Retry with exponential backoff (3 attempts)
+  - Log error and ACK to prevent poison pill
+end note
+
+@enduml

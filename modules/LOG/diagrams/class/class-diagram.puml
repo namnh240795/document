@@ -1,0 +1,158 @@
+@startuml
+' ============================================================
+' Class Diagram - Logger Module
+' NestJS Services, DTOs, Interfaces
+' OpenSearch as primary store (no PostgreSQL)
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+
+title Class Diagram: Logger Module Services
+
+package "Logs Module" as logs {
+  class LogsController {
+    +createLog(dto: CreateLogDto): Promise
+    +queryLogs(query: QueryLogDto): Promise
+    +getLogsByTraceId(traceId: string): Promise
+    +getLogsByUserId(userId: string): Promise
+    +getErrorLogs(): Promise
+    +resolveError(id: string, dto: ResolveErrorDto): Promise
+    +healthCheck(): Promise
+  }
+
+  class LogsService {
+    -producerService: LogProducerService
+    -openSearchService: OpenSearchService
+    +createLog(dto: CreateLogDto): Promise
+    +queryLogs(query: QueryLogDto): Promise
+    +getLogsByTraceId(traceId: string): Promise
+    +getLogsByUserId(userId: string): Promise
+    +getErrorLogs(): Promise
+    +resolveError(id: string, dto: ResolveErrorDto): Promise
+  }
+
+  class LogProducerService {
+    -channel: Channel
+    +publishLog(log: LogEvent): Promise
+    +connect(): Promise
+    +disconnect(): Promise
+  }
+
+  class LogConsumerService {
+    -openSearchService: OpenSearchService
+    +consume(): Promise
+    +handleMessage(msg: Message): Promise
+  }
+
+  class OpenSearchService {
+    -client: Client
+    -indexName: string
+    +indexLog(log: LogDocument): Promise
+    +searchLogs(query: LogQuery): Promise
+    +getLogsByTraceId(traceId: string): Promise
+    +getLogsByUserId(userId: string): Promise
+    +getErrorLogs(): Promise
+    +resolveError(id: string, dto: ResolveErrorDto): Promise
+    +deleteOldLogs(cutoff: Date): Promise
+    +healthCheck(): Promise
+  }
+}
+
+package "DTOs" as dtos {
+  class CreateLogDto {
+    +source: string
+    +level: LogLevel
+    +action: string
+    +message: string
+    +input?: string
+    +output?: string
+    +error?: string
+    +exception?: string
+    +metadata?: object
+    +traceId?: string
+    +userId?: string
+  }
+
+  class QueryLogDto {
+    +source?: string
+    +level?: string
+    +action?: string
+    +from?: string
+    +to?: string
+    +search?: string
+    +page?: string
+    +size?: string
+  }
+
+  class ResolveErrorDto {
+    +resolution?: string
+  }
+}
+
+package "Interfaces" as interfaces {
+  class LogEvent {
+    +eventId: string
+    +source: string
+    +level: LogLevel
+    +action: string
+    +message: string
+    +input?: string
+    +output?: string
+    +error?: string
+    +exception?: string
+    +metadata?: object
+    +traceId?: string
+    +userId?: string
+    +timestamp: string
+  }
+
+  class LogDocument {
+    +eventId: string
+    +source: string
+    +level: string
+    +action: string
+    +message: string
+    +timestamp: Date
+  }
+
+  class LogQuery {
+    +source?: string
+    +level?: string
+    +action?: string
+    +from?: string
+    +to?: string
+    +search?: string
+    +page?: number
+    +size?: number
+  }
+
+  enum LogLevel {
+    DEBUG
+    INFO
+    WARN
+    ERROR
+  }
+}
+
+' --- Relationships ---
+LogsController --> LogsService
+LogsService --> LogProducerService
+LogsService --> OpenSearchService
+LogConsumerService --> OpenSearchService
+
+LogsController ..> CreateLogDto
+LogsController ..> QueryLogDto
+LogsController ..> ResolveErrorDto
+LogsService ..> LogEvent
+LogProducerService ..> LogEvent
+LogConsumerService ..> LogEvent
+OpenSearchService ..> LogDocument
+OpenSearchService ..> LogQuery
+LogEvent ..> LogLevel
+
+@enduml

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Technical Design Specification - {{MODULE_NAME}}</title>
+  <title>Technical Design Specification -  Logger</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -24,16 +24,16 @@
 <!-- COVER PAGE -->
 <div class="cover">
   <h1>Technical Design Specification</h1>
-  <div class="subtitle">{{MODULE_NAME}} Module</div>
-  <span class="module-badge">{{MODULE_CODE}}</span>
+  <div class="subtitle"> Logger Module</div>
+  <span class="module-badge">LOG</span>
   <table class="meta-table">
     <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>{{PROJECT_NAME}}</td></tr>
-    <tr><td>Module</td><td>{{MODULE_CODE}} - {{MODULE_NAME}}</td></tr>
-    <tr><td>Date</td><td>{{DATE}}</td></tr>
-    <tr><td>Author</td><td>{{AUTHOR}}</td></tr>
+    <tr><td>System</td><td> Authentication System</td></tr>
+    <tr><td>Module</td><td>LOG -  Logger</td></tr>
+    <tr><td>Date</td><td>2026-07-24</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">{{MODULE_NAME}} SRS</a></td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html"> Logger SRS</a></td></tr>
   </table>
 </div>
 
@@ -41,14 +41,14 @@
 <h1>1. Overview</h1>
 
 <h2>1.1 Purpose</h2>
-<p>This document describes the technical design decisions for the <strong>{{MODULE_NAME}}</strong> module.</p>
+<p>This document describes the technical design decisions for the <strong> Logger</strong> module.</p>
 
 <h2>1.2 SRS Reference</h2>
 <table>
   <tr><th>Document</th><th>Version</th><th>Description</th></tr>
-  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html">{{MODULE_NAME}} SRS</a></td></tr>
-  <tr><td>API Spec</td><td>1.0</td><td><a href="api-technical-spec.html">{{MODULE_NAME}} API Spec</a></td></tr>
-  <tr><td>Database Design</td><td>1.0</td><td><a href="database-design.html">{{MODULE_NAME}} Database Design</a></td></tr>
+  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html"> Logger SRS</a></td></tr>
+  <tr><td>API Spec</td><td>1.0</td><td><a href="api-technical-spec.html"> Logger API Spec</a></td></tr>
+  <tr><td>Database Design</td><td>1.0</td><td><a href="database-design.html"> Logger Database Design</a></td></tr>
 </table>
 
 <h2>1.3 Requirements Addressed</h2>
@@ -59,7 +59,7 @@
 
 <h2>2.1 Architecture Overview</h2>
 <div class="diagram">
-  <img src="../images/architecture/architecture-overview.png" alt="Architecture Overview">
+  <img src="../../images/architecture/architecture-system.png" alt="Architecture Overview">
   <div class="caption">Figure 1: System Context</div>
 </div>
 
@@ -71,8 +71,8 @@
 
 <h2>3.1 Component Diagram</h2>
 <div class="diagram">
-  <img src="../images/component/component-diagram.png" alt="Component Diagram">
-  <div class="caption">Figure 2: {{MODULE_NAME}} Components</div>
+<div style="border:2px dashed #ccc;padding:40px;text-align:center;color:#999;margin:20px 0;">Diagram not generated yet. Run <code>make generate-module LOG component</code>.</div>
+  <div class="caption">Figure 2:  Logger Components</div>
 </div>
 
 <h2>3.2 Component to Requirements Mapping</h2>
@@ -85,7 +85,7 @@
 <h1>4. Data Architecture</h1>
 
 <h2>4.1 Database Design</h2>
-<p>Refer to: <a href="database-design.html">{{MODULE_NAME}} Database Design</a></p>
+<p>Refer to: <a href="database-design.html"> Logger Database Design</a></p>
 
 <h2>4.2 Data Requirements Resolution</h2>
 <!-- DATA_RESOLUTION_PLACEHOLDER -->
