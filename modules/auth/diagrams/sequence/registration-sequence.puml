@@ -1,0 +1,121 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Registration Flow
+' User Registration + Email/Phone Verification
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: User Registration Flow
+
+actor User
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+queue "RabbitMQ" as MQ
+participant "Notification\nWorker" as Worker
+participant "Email/SMS\nService" as Notif
+
+== Step 1: Registration Request ==
+
+User -> FE : Fill registration form\n(name, email/phone, password)
+activate FE
+
+FE -> API : POST /auth/register\n{ name, email, phone, password }
+activate API
+
+== Step 2: Validate Input ==
+
+API -> API : Validate input format\n(email format, password strength)
+
+alt Validation failed
+  API --> FE : 400 VALIDATION_ERROR
+  FE --> User : Show validation errors
+end
+
+== Step 3: Check Duplicate ==
+
+API -> DB : SELECT * FROM auth_users\nWHERE email = ? OR phone = ?
+activate DB
+DB --> API : Result
+deactivate DB
+
+alt Email/phone already exists
+  API --> FE : 409 CONFLICT
+  FE --> User : Show "Already registered"
+end
+
+== Step 4: Hash Password ==
+
+API -> API : bcrypt.hash(password, 12)
+
+== Step 5: Create User ==
+
+API -> DB : INSERT INTO auth_users\n(name, email, phone, password_hash)
+activate DB
+DB --> API : User created (id: uuid)
+deactivate DB
+
+== Step 6: Create Account Record ==
+
+API -> DB : INSERT INTO auth_accounts\n(user_id, provider: 'credential')
+activate DB
+DB --> API : Account created
+deactivate DB
+
+== Step 7: Create Default Role ==
+
+API -> DB : INSERT INTO auth_user_roles\n(user_id, role_id: 'customer')
+activate DB
+DB --> API : Role assigned
+deactivate DB
+
+== Step 8: Generate Verification ==
+
+API -> API : Generate verification code\n(6-digit OTP)
+
+API -> DB : INSERT INTO auth_verification\n(user_id, code, type, expires_at)
+activate DB
+DB --> API : Verification record
+deactivate DB
+
+== Step 9: Send Verification ==
+
+API -> MQ : PUBLISH verification.requested\n{ userId, phone, channel, otp }
+activate MQ
+MQ --> API : Queued
+deactivate MQ
+
+== Step 10: Response ==
+
+API --> FE : 201 { user: { id, name, email, emailVerified: false } }
+deactivate API
+
+FE --> User : Show "Registration successful"\n+ "Please verify your account"
+deactivate FE
+
+== Step 11: Async - Send Verification ==
+
+MQ -> Worker : CONSUME verification.requested
+activate Worker
+
+Worker -> Notif : Send OTP to phone\nor verification email
+activate Notif
+Notif --> Worker : Sent
+deactivate Notif
+
+Worker -> DB : UPDATE auth_verification\nSET status = 'sent'
+activate DB
+DB --> Worker : Updated
+deactivate DB
+
+Worker -> MQ : ACK
+deactivate Worker
+
+@enduml

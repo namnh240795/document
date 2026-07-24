@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
 ' Activity Diagram - Account Verification Flow
-' RabbitMQ + Redis Idempotency + SMS DB
+' Simplified without swimlanes
 ' ============================================================
 
 skinparam activity {
@@ -12,89 +12,44 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-|#F0F0F0| User |
-|#E8F4E8| NestJS API |
-|#E8E8FD| Redis |
-|#FFF3E0| RabbitMQ |
-|#FDE8E8| Verification Worker |
-|#E0F7FA| SMS Provider |
-|#F3E5F5| SMS DB |
+title Account Verification Flow
 
-|User|
 start
-:Request Account Verification;
 
-|NestJS API|
-:Generate idempotency key\n(user_id + channel);
+:User requests account verification;
 
-|Redis|
-:GET idempotency:{user_id}:{channel};
+:Check idempotency key in Redis;
 
-if (Key exists?) then (yes)
-  |NestJS API|
-  :Return "Already sent"\n(idempotent response);
-
-  |User|
+if (Already sent within 5 min?) then (yes)
+  :Return "Already sent" (idempotent);
   :Show "Verification already sent";
   stop
-
-else (no)
-  |Redis|
-  :SET idempotency:{user_id}:{channel}\nEX 300 (5 min TTL);
-
-  |NestJS API|
-  :Generate verification token/OTP;
-
-  |NestJS API|
-  :Store in auth_verification;
-
-  |NestJS API|
-  :Publish event to\nverification.sms queue;
-
-  |NestJS API|
-  :Return 200 "Verification sent";
-
-  |User|
-  :Show "Verification sent";
-
-  |RabbitMQ|
-  :Queue message;
-
-  |Verification Worker|
-  :Consume event;
-
-  |SMS Provider|
-  :Send OTP via Twilio;
-
-  if (SMS sent?) then (yes)
-    |SMS Provider|
-    :Return success;
-
-    |Verification Worker|
-    :Log delivery to sms_db;
-
-    |SMS DB|
-    :INSERT INTO sms_logs\n(status: sent);
-
-  else (no)
-    |SMS Provider|
-    :Return error;
-
-    |Verification Worker|
-    :Log failure to sms_db;
-
-    |SMS DB|
-    :INSERT INTO sms_logs\n(status: failed);
-
-    |RabbitMQ|
-    :Route to Dead Letter Queue\nfor retry;
-
-  endif
-
-  |Verification Worker|
-  :Update auth_verification\nstatus = sent;
-
 endif
+
+:Set idempotency key (Redis, 5 min TTL);
+
+:Generate verification token/OTP;
+
+:Store in auth_verification;
+
+:Publish event to verification.sms queue;
+
+:Return "Verification sent";
+
+:Show "Verification sent";
+
+:Worker consumes event from RabbitMQ;
+
+:Send OTP via Twilio;
+
+if (SMS sent?) then (yes)
+  :Log delivery to sms_db (status: sent);
+else (no)
+  :Log failure to sms_db (status: failed);
+  :Route to Dead Letter Queue for retry;
+endif
+
+:Update auth_verification status = sent;
 
 stop
 

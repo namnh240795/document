@@ -1,0 +1,58 @@
+@startuml
+' ============================================================
+' Activity Diagram - Registration Flow
+' Simplified without swimlanes
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Registration Flow
+
+start
+
+:Fill registration form
+(name, email/phone, password);
+
+:Validate input format;
+
+if (Input valid?) then (no)
+  :Show validation errors;
+  stop
+endif
+
+:Check if email/phone exists;
+
+if (Already registered?) then (yes)
+  :Show "Already registered" error;
+  stop
+endif
+
+:Hash password (bcrypt, 12 rounds);
+
+:Create user record in auth_users;
+
+:Create account record in auth_accounts;
+
+:Assign default role (customer);
+
+:Generate verification code (6-digit OTP);
+
+:Store verification in auth_verification;
+
+:Publish verification event to RabbitMQ;
+
+:Return "Registration successful";
+
+:Send OTP to phone or verification email;
+
+:Update verification status = sent;
+
+stop
+
+@enduml

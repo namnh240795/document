@@ -1,13 +1,13 @@
 # BA Documentation Framework
 
-Framework for creating technical documentation with PlantUML diagrams and HTML output. Supports modular architecture, multi-database design, and requirements traceability.
+Framework for creating technical documentation with PlantUML diagrams and HTML output.
 
 ## Quick Start
 
 ```bash
 make pull           # Download PlantUML Docker image
 make build-all      # Generate diagrams + build HTML docs
-open modules/index.html  # Open in browser
+make serve          # Start local web server (http://localhost:8080)
 ```
 
 ## Features
@@ -15,9 +15,11 @@ open modules/index.html  # Open in browser
 - PlantUML diagrams (Use Case, ERD, Activity, Sequence, Component, Deployment, Architecture)
 - HTML documents with print-optimized CSS (A4 paper)
 - Requirements traceability (SRS -> TDS -> DB Design -> API Spec)
-- Modular architecture (AUTH, PROD, ECOM, PAY, WAL, SHIP, NOTI)
-- Multi-database support (auth_db, ecom_db, pay_db, wallet_db, noti_db)
+- Modular architecture (AUTH, SMS, LOG)
+- Multi-database support (auth_db, sms_db, OpenSearch)
 - Table naming convention: `<project_short_name>_<table_name>`
+- Logo header (company + partner)
+- Table of contents with FR links
 - Export to PDF via browser Print
 
 ## Project Structure
@@ -37,46 +39,36 @@ ba/
 │   ├── generate.sh                # PlantUML -> images
 │   └── build-docs.sh              # Templates -> HTML docs
 │
-├── templates/                     # EDIT THESE (source files)
+├── templates/                     # Source templates
 │   ├── style.css                  # Print CSS
-│   ├── usecase.puml               # Use Case diagram
-│   ├── erd.puml                   # ERD (modular, with xxx_ prefix)
-│   ├── activity.puml              # Activity diagram
-│   ├── sequence.puml              # Sequence diagram
-│   ├── class-diagram.puml         # Class diagram
-│   ├── component.puml             # Component diagram
-│   ├── deployment.puml            # Deployment diagram
-│   ├── architecture.puml          # Architecture C4
-│   ├── openapi.yaml               # OpenAPI 3.0 spec
-│   ├── srs.html                   # SRS document
-│   ├── tds.html                   # TDS document
-│   ├── database-design.html       # Database design
-│   └── api-technical-spec.html    # API specification
+│   ├── srs.html                   # SRS template
+│   ├── tds.html                   # TDS template
+│   ├── database-design.html       # Database design template
+│   ├── api-technical-spec.html    # API spec template
+│   ├── erd-auth.puml              # Auth ERD template
+│   ├── erd-log.puml              # Log ERD template
+│   └── ...
 │
-├── diagrams/                      # YOUR PlantUML files
-│   ├── usecase/
-│   ├── erd/
-│   ├── activity/
-│   ├── sequence/
-│   ├── class/
-│   ├── component/
-│   ├── deployment/
-│   └── architecture/
-│
-├── modules/
-│   ├── <code>/                    # Per-module docs + images (auto)
-│   │   ├── diagrams/              # Source PlantUML files
-│   │   ├── images/                # Generated diagrams (auto)
-│   │   ├── srs.html               # Module SRS content
+├── modules/                       # Module docs + images
+│   ├── auth/                      # AUTH module
+│   │   ├── src/                   # Custom HTML (overrides templates)
+│   │   ├── diagrams/              # PlantUML source files
+│   │   │   ├── usecase/
+│   │   │   ├── erd/
+│   │   │   ├── activity/
+│   │   │   └── sequence/
+│   │   ├── images/                # Generated diagrams
+│   │   ├── srs.html               # Generated SRS
 │   │   ├── tds.html               # Generated TDS
 │   │   ├── database-design.html   # Generated DB design
 │   │   └── api-technical-spec.html # Generated API spec
-│   ├── images/                    # System-level generated images
-│   ├── index.html                 # Generated master index
+│   ├── sms/                       # SMS module
+│   ├── log/                       # Logger module
+│   ├── index.html                 # Master index
 │   └── style.css                  # Generated stylesheet
 │
 ├── examples/                      # Sample files
-└── CLAUDE.md                      # Rules (copy to project root)
+└── CLAUDE.md                      # Rules
 ```
 
 ## Build Commands
@@ -85,20 +77,19 @@ ba/
 |---------|-------------|
 | `make help` | Show all commands |
 | `make pull` | Pull PlantUML Docker image |
-| `make generate` | Generate all diagrams |
-| `make generate-erd` | Generate ERD only |
-| `make generate-usecase` | Generate usecase only |
-| `make generate-activity` | Generate activity only |
-| `make generate-sequence` | Generate sequence only |
-| `make generate-class` | Generate class diagram only |
-| `make generate-component` | Generate component diagram only |
-| `make generate-deployment` | Generate deployment only |
-| `make generate-architecture` | Generate architecture only |
-| `make build-docs` | Build HTML documents |
-| `make build-all` | Generate diagrams + build docs |
-| `make open` | Build docs and open in browser |
+| `make build-all` | Generate all diagrams + build HTML docs |
+| `make build-docs` | Build HTML documents only |
+| `make serve` | Start local web server (http://localhost:8080) |
 | `make clean` | Remove generated files |
 | `make watch` | Auto-rebuild on file change |
+
+### Generate Specific Diagrams
+
+| Command | Description |
+|---------|-------------|
+| `make generate MODULE=auth TYPE=sequence` | Generate sequence diagrams for AUTH |
+| `make generate MODULE=auth TYPE=activity` | Generate activity diagrams for AUTH |
+| `make generate-erd-all` | Generate all ERD diagrams |
 
 ## Claude Commands
 
@@ -108,89 +99,12 @@ ba/
 | `/ba-setup` | Step-by-step setup guide |
 | `/ba-guide` | Interactive walkthrough |
 | `/ba-trace` | Verify traceability and module mapping |
-| `/ba-new-module` | Add a new module step by step |
-| `/ba-new-requirement` | Add requirements to SRS |
-| `/ba-erd` | Create or edit ERD diagrams |
-| `/ba-srs` | Work on SRS document |
-| `/ba-review` | Review all documents for compliance |
 
-## BA Workflow
+## Document Structure
 
-See `BA-WORKFLOW.md` for the complete step-by-step guide for Business Analysts.
+Each module has 4 documents with full traceability:
 
-## Workflow
-
-```
-1. Define modules (AUTH, PROD, ECOM, PAY, WAL, SHIP, NOTI)
-2. Create Use Case Diagram -> define actors and functions
-3. Create ERD (modular) -> define entities per module
-4. Create Sequence Diagram -> map integration flows
-5. Fill SRS -> add requirements with IDs and module mapping
-6. Fill TDS -> add design decisions with traceability
-7. Fill Database Design -> add schema per database
-8. Fill API Spec -> add endpoints with requirement IDs
-9. Build and view -> make build-all
-10. Export PDF -> Browser > Print > Save as PDF
-```
-
-## Rules
-
-### Table Naming Convention
-
-All tables MUST use: `<project_short_name>_<table_name>`
-
-```
-Wrong:  users, orders, payments
-Correct: ecom_users, ecom_orders, ecom_payments
-```
-
-### Requirements Traceability
-
-Every technical document MUST trace back to SRS requirements:
-
-| Prefix | Type | Example |
-|--------|------|---------|
-| FR- | Functional Requirement | FR-001, FR-002 |
-| NFR- | Non-Functional Requirement | NFR-001, NFR-002 |
-| DR- | Data Requirement | DR-001, DR-002 |
-| IR- | Integration Requirement | IR-001, IR-002 |
-
-### Module ID Convention
-
-| Module | Code | Purpose |
-|--------|------|---------|
-| Authentication | AUTH | User accounts, login, roles |
-| Product Catalog | PROD | Products, categories |
-| E-Commerce | ECOM | Orders, cart, checkout |
-| Payment | PAY | Payments, refunds |
-| Wallet | WAL | Wallets, top-up, transfers |
-| Shipping | SHIP | Addresses, delivery |
-| Notification | NOTI | Email, SMS, push |
-| Logger | LOG | Application logging, audit trail, error tracking (OpenSearch) |
-
-### Multi-Database Architecture
-
-| Database | Modules | Purpose |
-|----------|---------|---------|
-| auth_db | AUTH | User accounts, authentication |
-| ecom_db | PROD, ECOM, SHIP | Product catalog, orders, shipping |
-| pay_db | PAY | Payment processing, refunds |
-| wallet_db | WAL | User wallets, top-up, transfers |
-| noti_db | NOTI | Notification templates, logs |
-| opensearch | LOG | Application logs, audit trail (OpenSearch as primary store) |
-
-Cross-database references use application-level IDs (no foreign keys across databases).
-
-### Migration Rules
-
-- Every schema change MUST have a migration script
-- File naming: `{timestamp}_{database}_{module}_{description}.sql`
-- Every migration MUST have a rollback script
-- Migrations organized per database
-
-## Document Templates
-
-| Template | Purpose |
+| Document | Purpose |
 |----------|---------|
 | `srs.html` | Software Requirements Specification |
 | `tds.html` | Technical Design Specification |
@@ -199,42 +113,43 @@ Cross-database references use application-level IDs (no foreign keys across data
 
 ## Diagram Types
 
-| Type | Template | Use Case |
-|------|----------|----------|
-| Use Case | `usecase.puml` | Actor & system interactions |
-| ERD | `erd.puml` | Entity relationships (modular) |
-| Activity | `activity.puml` | Function/process flow |
-| Sequence | `sequence.puml` | Integration flow |
-| Class | `class-diagram.puml` | Domain model |
-| Component | `component.puml` | System components |
-| Deployment | `deployment.puml` | Infrastructure topology |
-| Architecture | `architecture.puml` | C4 Level 1 context |
+| Type | Use For | Example |
+|------|---------|---------|
+| Use Case | Actor-system interactions | What users can do |
+| Activity | Process flow (simplified, no swimlanes) | Login, Registration, Password Reset |
+| Sequence | Integration between services | AUTH -> RabbitMQ -> SMS -> Twilio |
+| ERD | Data model (entities, relationships) | Database schema |
+| Class | Domain model | Class relationships |
+| Component | System components | Service architecture |
+| Deployment | Infrastructure | Server topology |
+| Architecture | C4 Level 1 | System context |
 
-### ERD Per Database
+## Diagram Order
 
-| File | Database | Modules |
-|------|----------|---------|
-| `erd-auth.puml` | auth_db | AUTH |
-| `erd-ecom.puml` | ecom_db | PROD, ECOM, SHIP |
-| `erd-pay.puml` | pay_db | PAY |
-| `erd-wallet.puml` | wallet_db | WAL |
-| `erd-noti.puml` | noti_db | NOTI |
-| `erd-log.puml` | opensearch | LOG |
+In documents, diagrams appear in this order:
+1. **Activity Diagram** (process flow) - first
+2. **Sequence Diagram** (integration flow) - second
+
+## Template Customization
+
+To customize a module's HTML, create files in `modules/<code>/src/`:
+
+```bash
+# Example: Custom AUTH SRS
+cp modules/auth/srs.html modules/auth/src/srs.html
+# Edit modules/auth/src/srs.html
+# The build script will use your custom file instead of the template
+```
 
 ## Examples
 
-See `examples/` for sample PlantUML files:
-- `erd-sample.puml` - ERD for e-commerce system
-- `usecase-sample.puml` - UseCase for e-commerce system
-- `sequence-sample.puml` - Sequence diagram for checkout flow
+See `examples/` for sample PlantUML files.
 
-## Tips
+## Rules
 
-- Edit `.puml` files in `diagrams/` for diagrams
-- Edit `.html` files in `templates/` for documents
-- Run `make build-all` after any changes
-- All HTML is print-optimized for A4 paper
-- Use `make clean` to remove generated files
-- Replace `xxx` in templates with your project short name
-- See `CLAUDE.md` for full rules
-# document
+See `CLAUDE.md` for framework rules including:
+- Requirements traceability (FR-xxx, NFR-xxx)
+- Table naming convention (`<project>_<table>`)
+- Logo header (company + partner)
+- Table of contents with FR links
+- Document structure per module

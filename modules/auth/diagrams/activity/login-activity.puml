@@ -1,0 +1,61 @@
+@startuml
+' ============================================================
+' Activity Diagram - Login Flow
+' Simplified without swimlanes
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Login Flow
+
+start
+
+:User enters email/phone + password;
+
+:Validate input format;
+
+:Find user by email/phone;
+
+if (User found?) then (no)
+  :Return INVALID_CREDENTIALS;
+  :Show "Invalid credentials" error;
+  stop
+endif
+
+:Verify password (bcrypt compare);
+
+if (Password correct?) then (no)
+  :Return INVALID_CREDENTIALS;
+  :Show "Invalid credentials" error;
+  stop
+endif
+
+if (Account verified?) then (no)
+  :Return ACCOUNT_NOT_VERIFIED;
+  :Show "Please verify account" message;
+  stop
+endif
+
+:Create session in auth_sessions;
+
+:Generate JWT access token (15 min);
+
+:Generate refresh token (7 days);
+
+:Cache session in Redis;
+
+:Return tokens + user info;
+
+:Store tokens in httpOnly cookie;
+
+:Redirect to Dashboard;
+
+stop
+
+@enduml

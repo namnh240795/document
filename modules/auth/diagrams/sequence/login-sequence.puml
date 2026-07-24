@@ -1,0 +1,93 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Login Flow
+' JWT Token Generation + Session Management
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: User Login Flow
+
+actor User
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+database "Redis\n(Cache)" as Redis
+
+== Step 1: Login Request ==
+
+User -> FE : Enter email/phone + password
+activate FE
+
+FE -> API : POST /auth/login\n{ identifier, password }
+activate API
+
+== Step 2: Parse Identifier ==
+
+API -> API : Detect identifier type\n(email or phone)
+
+== Step 3: Find User ==
+
+API -> DB : SELECT * FROM auth_users\nWHERE email = ? OR phone = ?
+activate DB
+DB --> API : User record
+deactivate DB
+
+alt User not found
+  API --> FE : 401 INVALID_CREDENTIALS
+  FE --> User : Show "Invalid credentials"
+end
+
+== Step 4: Verify Password ==
+
+API -> API : bcrypt.compare(password, user.password_hash)
+
+alt Wrong password
+  API --> FE : 401 INVALID_CREDENTIALS
+  FE --> User : Show "Invalid credentials"
+end
+
+== Step 5: Check Verification ==
+
+API -> API : Check email_verified / phone_verified
+
+alt Not verified
+  API --> FE : 403 ACCOUNT_NOT_VERIFIED
+  FE --> User : Show "Please verify your account"
+end
+
+== Step 6: Create Session ==
+
+API -> DB : INSERT INTO auth_sessions\n(user_id, token, refresh_token, expires_at)
+activate DB
+DB --> API : Session created
+deactivate DB
+
+== Step 7: Generate Tokens ==
+
+API -> API : Generate JWT access token\n(expiry: 15 min)
+API -> API : Generate refresh token\n(expiry: 7 days)
+
+== Step 8: Cache Session ==
+
+API -> Redis : SET session:{userId}:{tokenId}\nEX 900 (15 min)
+activate Redis
+Redis --> API : Cached
+deactivate Redis
+
+== Step 9: Response ==
+
+API --> FE : 200 { accessToken, refreshToken, user }
+deactivate API
+
+FE --> FE : Store tokens in memory/httpOnly cookie
+FE --> User : Redirect to Dashboard
+deactivate FE
+
+@enduml

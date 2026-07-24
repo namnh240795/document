@@ -48,6 +48,11 @@ build-all: generate-erd-all generate-all-modules build-docs ## Generate all ERDs
 open: build-docs ## Build docs and open index
 	@open modules/index.html
 
+serve: build-docs ## Start local web server (http://localhost:8080)
+	@echo "Starting server at http://localhost:8080"
+	@echo "Press Ctrl+C to stop"
+	@cd modules && python3 -m http.server 8080
+
 # ============================================================
 # Utilities
 # ============================================================
