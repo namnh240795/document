@@ -23,7 +23,7 @@
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>Software Requirements Specification</h1>
+  <h1 id="page-title">Software Requirements Specification</h1>
   <div class="subtitle">Authentication Module</div>
   <span class="module-badge">AUTH</span>
   <table class="meta-table">
@@ -41,7 +41,14 @@
 <div class="toc">
   <h2>Table of Contents</h2>
   <ul>
-    <li><a href="#section-1">1. Introduction</a></li>
+    <li><a href="#section-1">1. Introduction</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 Scope</a></li>
+        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
+        <li><a href="#section-1-4">1.4 Definitions</a></li>
+      </ul>
+    </li>
     <li><a href="#section-2">2. Module Overview</a></li>
     <li><a href="#section-3">3. Functional Requirements</a>
       <ul>
@@ -58,27 +65,62 @@
         <li><a href="#fr-011">FR-011: Manage Roles</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. System Flows</a>
+    <li><a href="#section-3a">4. Use Cases</a>
       <ul>
-        <li><a href="#section-4-1">4.1 Registration Flow</a></li>
-        <li><a href="#section-4-2">4.2 Login Flow</a></li>
-        <li><a href="#section-4-3">4.3 Password Reset Flow</a></li>
-        <li><a href="#section-4-4">4.4 Logout Flow</a></li>
-        <li><a href="#section-4-5">4.5 Account Verification Flow</a></li>
+        <li><a href="#uc-01">UC-01: User Registration</a></li>
+        <li><a href="#uc-02">UC-02: User Login</a></li>
+        <li><a href="#uc-03">UC-03: User Logout</a></li>
+        <li><a href="#uc-04">UC-04: Refresh Token</a></li>
+        <li><a href="#uc-05">UC-05: Reset Password via Email</a></li>
+        <li><a href="#uc-06">UC-06: Reset Password via Phone</a></li>
+        <li><a href="#uc-07">UC-07: Change Password</a></li>
+        <li><a href="#uc-08">UC-08: Verify Email</a></li>
+        <li><a href="#uc-09">UC-09: Verify Phone</a></li>
+        <li><a href="#uc-10">UC-10: Manage Users</a></li>
+        <li><a href="#uc-11">UC-11: Manage Roles</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">5. Non-Functional Requirements</a></li>
-    <li><a href="#section-6">6. Traceability Matrix</a></li>
+    <li><a href="#section-4">5. System Flows</a>
+      <ul>
+        <li><a href="#section-4-1">5.1 Registration Flow</a></li>
+        <li><a href="#section-4-2">5.2 Login Flow</a></li>
+        <li><a href="#section-4-3">5.3 Password Reset Flow</a></li>
+        <li><a href="#section-4-4">5.4 Logout Flow</a></li>
+        <li><a href="#section-4-5">5.5 Account Verification Flow</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">6. Non-Functional Requirements</a>
+      <ul>
+        <li><a href="#nfr-001">NFR-001: Performance</a></li>
+        <li><a href="#nfr-002">NFR-002: Security</a></li>
+        <li><a href="#nfr-003">NFR-003: Availability</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">7. Traceability Matrix</a>
+      <ul>
+        <li><a href="#trace-fr-001">FR-001: User Registration</a></li>
+        <li><a href="#trace-fr-002">FR-002: User Login</a></li>
+        <li><a href="#trace-fr-003">FR-003: Logout</a></li>
+        <li><a href="#trace-fr-004">FR-004: Refresh Token</a></li>
+        <li><a href="#trace-fr-005">FR-005: Reset Password (Email)</a></li>
+        <li><a href="#trace-fr-006">FR-006: Reset Password (Phone)</a></li>
+        <li><a href="#trace-fr-007">FR-007: Change Password</a></li>
+        <li><a href="#trace-fr-008">FR-008: Verify Email</a></li>
+        <li><a href="#trace-fr-009">FR-009: Verify Phone</a></li>
+        <li><a href="#trace-fr-010">FR-010: Manage Users</a></li>
+        <li><a href="#trace-fr-011">FR-011: Manage Roles</a></li>
+      </ul>
+    </li>
   </ul>
 </div>
 
 <!-- 1. INTRODUCTION -->
 <h1 id="section-1">1. Introduction</h1>
 
-<h2>1.1 Purpose</h2>
+<h2 id="section-1-1">1.1 Purpose</h2>
 <p>This document defines the software requirements for the <strong>Authentication</strong> module of the Authentication System.</p>
 
-<h2>1.2 Scope</h2>
+<h2 id="section-1-2">1.2 Scope</h2>
 <p>The Authentication module handles:</p>
 <ul>
   <li>User registration with email or phone + password</li>
@@ -90,10 +132,15 @@
   <li>User management (admin CRUD)</li>
 </ul>
 
-<h2>1.3 Module Dependencies</h2>
-<p>None (standalone module)</p>
+<h2 id="section-1-3">1.3 Module Dependencies</h2>
+<table>
+  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
+  <tr><td>SMS</td><td>Async (RabbitMQ)</td><td>Send verification SMS via SMS module</td></tr>
+  <tr><td>EMAIL</td><td>Async (RabbitMQ)</td><td>Send verification/reset emails via EMAIL module</td></tr>
+  <tr><td>LOG</td><td>Async (RabbitMQ)</td><td>Publish auth events to Logger module</td></tr>
+</table>
 
-<h2>1.4 Definitions</h2>
+<h2 id="section-1-4">1.4 Definitions</h2>
 <table>
   <tr><th>Term</th><th>Definition</th></tr>
   <tr><td>FR</td><td>Functional Requirement</td></tr>
@@ -167,7 +214,7 @@
     <td>Reset Password (Email)</td>
     <td>UC-05</td>
     <td>Medium</td>
-    <td>System shall send password reset link to user's email</td>
+    <td>System shall send password reset link to user's email via EMAIL module</td>
   </tr>
   <tr id="fr-006">
     <td><span class="req-id">FR-006</span></td>
@@ -191,7 +238,7 @@
     <td>Verify Email</td>
     <td>UC-08</td>
     <td>High</td>
-    <td>System shall verify email via verification link</td>
+    <td>System shall send verification email via EMAIL module and verify via link</td>
   </tr>
   <tr id="fr-009">
     <td><span class="req-id">FR-009</span></td>
@@ -219,18 +266,142 @@
   </tr>
 </table>
 
-<!-- 4. SYSTEM FLOWS -->
-<h1 id="section-4">4. System Flows</h1>
+<!-- 4. USE CASES -->
+<h1 id="section-3a">4. Use Cases</h1>
+
+<h2 id="uc-01">UC-01: User Registration</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Guest (unauthenticated user)</td></tr>
+  <tr><td>Preconditions</td><td>User is not logged in; user does not have an existing account</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to registration page<br>2. User enters name, email (or phone), and password<br>3. System validates input (email/phone format, password strength)<br>4. System creates user account with hashed password<br>5. System sends verification email/SMS via EMAIL/SMS module<br>6. System returns success response with user ID</td></tr>
+  <tr><td>Alternative Flows</td><td>4a. Email/phone already exists → System returns 409 Conflict<br>4b. Password too weak → System returns 400 Validation Error<br>5a. Verification service unavailable → Account created, verification queued</td></tr>
+  <tr><td>Postconditions</td><td>User account created (unverified); verification email/SMS sent</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-001</span></td></tr>
+</table>
+
+<h2 id="uc-02">UC-02: User Login</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user</td></tr>
+  <tr><td>Preconditions</td><td>User has a registered account; account is active</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to login page<br>2. User enters email/phone and password<br>3. System validates credentials against database<br>4. System generates JWT access token (15min) and refresh token (7 days)<br>5. System creates session record<br>6. System returns tokens and user profile</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Invalid credentials → System returns 401 Unauthorized<br>3b. Account banned → System returns 403 Forbidden<br>3c. Account inactive → System returns 403 Forbidden</td></tr>
+  <tr><td>Postconditions</td><td>User is authenticated; session created; tokens issued</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-002</span></td></tr>
+</table>
+
+<h2 id="uc-03">UC-03: User Logout</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in with valid session</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks logout button<br>2. System receives logout request with access token<br>3. System invalidates current session (deletes session record)<br>4. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Token expired → Session already invalid, return success</td></tr>
+  <tr><td>Postconditions</td><td>Session invalidated; tokens no longer valid</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-003</span></td></tr>
+</table>
+
+<h2 id="uc-04">UC-04: Refresh Token</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user (token expired)</td></tr>
+  <tr><td>Preconditions</td><td>User has a valid refresh token; access token expired</td></tr>
+  <tr><td>Main Flow</td><td>1. Client detects access token expired<br>2. Client sends refresh token to /auth/refresh<br>3. System validates refresh token and session<br>4. System generates new access token<br>5. System returns new access token</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Refresh token expired → System returns 401, user must re-login<br>3b. Session not found → System returns 401</td></tr>
+  <tr><td>Postconditions</td><td>New access token issued; session remains valid</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-004</span></td></tr>
+</table>
+
+<h2 id="uc-05">UC-05: Reset Password via Email</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user (forgot password)</td></tr>
+  <tr><td>Preconditions</td><td>User has a registered email; user is not logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks "Forgot Password"<br>2. User enters email address<br>3. System generates password reset token<br>4. System sends reset link via EMAIL module<br>5. User clicks link in email<br>6. User enters new password<br>7. System updates password hash<br>8. System invalidates all existing sessions</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Email not found → System returns success (don't reveal if email exists)<br>4a. Email delivery failed → System logs error, user can retry</td></tr>
+  <tr><td>Postconditions</td><td>Password updated; all sessions invalidated</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h2 id="uc-06">UC-06: Reset Password via Phone</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user (forgot password)</td></tr>
+  <tr><td>Preconditions</td><td>User has a registered phone; user is not logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks "Forgot Password"<br>2. User selects phone option and enters phone number<br>3. System generates OTP code<br>4. System sends OTP via SMS module<br>5. User enters OTP and new password<br>6. System verifies OTP<br>7. System updates password hash<br>8. System invalidates all existing sessions</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Phone not found → System returns success (don't reveal if phone exists)<br>6a. OTP expired → System returns 422, user can request new OTP<br>6b. OTP invalid → System returns 422</td></tr>
+  <tr><td>Postconditions</td><td>Password updated; all sessions invalidated</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-006</span></td></tr>
+</table>
+
+<h2 id="uc-07">UC-07: Change Password</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to change password page<br>2. User enters current password and new password<br>3. System verifies current password<br>4. System updates password hash<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Current password incorrect → System returns 401<br>4a. New password same as current → System returns 400</td></tr>
+  <tr><td>Postconditions</td><td>Password updated; existing sessions remain valid</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-007</span></td></tr>
+</table>
+
+<h2 id="uc-08">UC-08: Verify Email</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user</td></tr>
+  <tr><td>Preconditions</td><td>User has registered email; email not yet verified</td></tr>
+  <tr><td>Main Flow</td><td>1. User registers or requests verification<br>2. System sends verification email with link/token via EMAIL module<br>3. User clicks verification link<br>4. System validates token<br>5. System marks email_verified = true<br>6. System returns success</td></tr>
+  <tr><td>Alternative Flows</td><td>4a. Token expired → System returns 400, user can request new verification<br>4b. Token invalid → System returns 400</td></tr>
+  <tr><td>Postconditions</td><td>Email verified; user can access email-based features</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-008</span></td></tr>
+</table>
+
+<h2 id="uc-09">UC-09: Verify Phone</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user</td></tr>
+  <tr><td>Preconditions</td><td>User has registered phone; phone not yet verified</td></tr>
+  <tr><td>Main Flow</td><td>1. User requests phone verification<br>2. System sends OTP via SMS module<br>3. User enters OTP code<br>4. System verifies OTP<br>5. System marks phone_verified = true<br>6. System returns success</td></tr>
+  <tr><td>Alternative Flows</td><td>4a. OTP expired → System returns 422, user can request new OTP<br>4b. OTP invalid → System returns 422</td></tr>
+  <tr><td>Postconditions</td><td>Phone verified; user can access phone-based features</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-009</span></td></tr>
+</table>
+
+<h2 id="uc-10">UC-10: Manage Users</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Admin user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in with admin role</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin navigates to user management<br>2. System displays list of users (with pagination, search)<br>3. Admin can view user details, update user, or delete user<br>4. System performs requested operation<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. User not found → System returns 404<br>3b. Unauthorized → System returns 403</td></tr>
+  <tr><td>Postconditions</td><td>User record updated or deleted</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-010</span></td></tr>
+</table>
+
+<h2 id="uc-11">UC-11: Manage Roles</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Admin user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in with admin role</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin navigates to role management<br>2. System displays list of roles<br>3. Admin can create new role, assign role to user, or remove role<br>4. System performs requested operation<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Role name already exists → System returns 409<br>3b. User not found → System returns 404</td></tr>
+  <tr><td>Postconditions</td><td>Role created/assigned/removed; permissions updated</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-011</span></td></tr>
+</table>
+
+<!-- 5. SYSTEM FLOWS -->
+<h1 id="section-4">5. System Flows</h1>
 
 <h2 id="section-4-1">4.1 Registration Flow</h2>
 
-<h3>Activity Diagram</h3>
+<h3 id="activity">Activity Diagram</h3>
 <div class="diagram">
   <img src="./images/activity/registration-activity.png" alt="Registration Activity Diagram">
   <div class="caption">Figure 1: User Registration Activity Diagram</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3 id="sequence">Sequence Diagram</h3>
 <div class="diagram">
   <img src="./images/sequence/registration-sequence.png" alt="Registration Sequence Diagram">
   <div class="caption">Figure 2: User Registration Sequence Diagram</div>
@@ -238,13 +409,13 @@
 
 <h2 id="section-4-2">4.2 Login Flow</h2>
 
-<h3>Activity Diagram</h3>
+<h3 id="activity">Activity Diagram</h3>
 <div class="diagram">
   <img src="./images/activity/login-activity.png" alt="Login Activity Diagram">
   <div class="caption">Figure 3: User Login Activity Diagram</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3 id="sequence">Sequence Diagram</h3>
 <div class="diagram">
   <img src="./images/sequence/login-sequence.png" alt="Login Sequence Diagram">
   <div class="caption">Figure 4: User Login Sequence Diagram</div>
@@ -252,13 +423,13 @@
 
 <h2 id="section-4-3">4.3 Password Reset Flow</h2>
 
-<h3>Activity Diagram</h3>
+<h3 id="activity">Activity Diagram</h3>
 <div class="diagram">
   <img src="./images/activity/password-reset-activity.png" alt="Password Reset Activity Diagram">
   <div class="caption">Figure 5: Password Reset Activity Diagram</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3 id="sequence">Sequence Diagram</h3>
 <div class="diagram">
   <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
   <div class="caption">Figure 6: Password Reset Sequence Diagram</div>
@@ -266,13 +437,13 @@
 
 <h2 id="section-4-4">4.4 Logout Flow</h2>
 
-<h3>Activity Diagram</h3>
+<h3 id="activity">Activity Diagram</h3>
 <div class="diagram">
   <img src="./images/activity/logout-activity.png" alt="Logout Activity Diagram">
   <div class="caption">Figure 7: User Logout Activity Diagram</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3 id="sequence">Sequence Diagram</h3>
 <div class="diagram">
   <img src="./images/sequence/logout-sequence.png" alt="Logout Sequence Diagram">
   <div class="caption">Figure 8: User Logout Sequence Diagram</div>
@@ -280,20 +451,20 @@
 
 <h2 id="section-4-5">4.5 Account Verification Flow</h2>
 
-<h3>Activity Diagram</h3>
+<h3 id="activity">Activity Diagram</h3>
 <div class="diagram">
   <img src="./images/activity/activity-diagram.png" alt="Verification Activity Diagram">
   <div class="caption">Figure 9: Account Verification Activity Diagram</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3 id="sequence">Sequence Diagram</h3>
 <div class="diagram">
   <img src="./images/sequence/sequence-diagram.png" alt="Verification Sequence Diagram">
   <div class="caption">Figure 10: Account Verification Sequence Diagram</div>
 </div>
 
-<!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-5">5. Non-Functional Requirements</h1>
+<!-- 6. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-5">6. Non-Functional Requirements</h1>
 
 <table class="trace-table">
   <tr>
@@ -302,43 +473,43 @@
     <th>Requirement</th>
     <th>Target</th>
   </tr>
-  <tr>
+  <tr id="nfr-001">
     <td><span class="req-id">NFR-001</span></td>
     <td>Performance</td>
     <td>Login response time</td>
     <td>&lt; 500ms (p95)</td>
   </tr>
-  <tr>
+  <tr id="nfr-002">
     <td><span class="req-id">NFR-002</span></td>
     <td>Performance</td>
     <td>Registration response time</td>
     <td>&lt; 1s (p95)</td>
   </tr>
-  <tr>
+  <tr id="nfr-003">
     <td><span class="req-id">NFR-003</span></td>
     <td>Security</td>
     <td>Password hashing</td>
     <td>bcrypt with 12 rounds</td>
   </tr>
-  <tr>
+  <tr id="nfr-004">
     <td><span class="req-id">NFR-004</span></td>
     <td>Security</td>
     <td>Token expiry</td>
     <td>Access: 15min, Refresh: 7 days</td>
   </tr>
-  <tr>
+  <tr id="nfr-005">
     <td><span class="req-id">NFR-005</span></td>
     <td>Security</td>
     <td>Rate limiting</td>
     <td>10 req/min for auth endpoints</td>
   </tr>
-  <tr>
+  <tr id="nfr-006">
     <td><span class="req-id">NFR-006</span></td>
     <td>Availability</td>
     <td>Service uptime</td>
     <td>99.9%</td>
   </tr>
-  <tr>
+  <tr id="nfr-007">
     <td><span class="req-id">NFR-007</span></td>
     <td>Scalability</td>
     <td>Concurrent users</td>
@@ -346,8 +517,8 @@
   </tr>
 </table>
 
-<!-- 6. TRACEABILITY -->
-<h1 id="section-6">6. Requirements Traceability Matrix</h1>
+<!-- 7. TRACEABILITY -->
+<h1 id="section-6">7. Requirements Traceability Matrix</h1>
 
 <table class="trace-table">
   <tr>
@@ -356,17 +527,17 @@
     <th>DB Table</th>
     <th>API Endpoint</th>
   </tr>
-  <tr><td><span class="req-id">FR-001</span></td><td>User Registration</td><td>auth_users, auth_accounts</td><td>POST /auth/register</td></tr>
-  <tr><td><span class="req-id">FR-002</span></td><td>User Login</td><td>auth_users, auth_sessions</td><td>POST /auth/login</td></tr>
-  <tr><td><span class="req-id">FR-003</span></td><td>Logout</td><td>auth_sessions</td><td>POST /auth/logout</td></tr>
-  <tr><td><span class="req-id">FR-004</span></td><td>Refresh Token</td><td>auth_sessions</td><td>POST /auth/refresh</td></tr>
-  <tr><td><span class="req-id">FR-005</span></td><td>Reset Password (Email)</td><td>auth_verification</td><td>POST /auth/forgot-password</td></tr>
-  <tr><td><span class="req-id">FR-006</span></td><td>Reset Password (Phone)</td><td>auth_verification</td><td>POST /auth/forgot-password-phone</td></tr>
-  <tr><td><span class="req-id">FR-007</span></td><td>Change Password</td><td>auth_users</td><td>POST /auth/change-password</td></tr>
-  <tr><td><span class="req-id">FR-008</span></td><td>Verify Email</td><td>auth_verification, auth_users</td><td>GET /auth/verify-email</td></tr>
-  <tr><td><span class="req-id">FR-009</span></td><td>Verify Phone</td><td>auth_verification, auth_users</td><td>POST /auth/verify-phone</td></tr>
-  <tr><td><span class="req-id">FR-010</span></td><td>Manage Users</td><td>auth_users</td><td>GET/PUT/DELETE /users/:id</td></tr>
-  <tr><td><span class="req-id">FR-011</span></td><td>Manage Roles</td><td>auth_roles, auth_user_roles</td><td>GET/POST /roles</td></tr>
+  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>User Registration</td><td>auth_users, auth_accounts</td><td>POST /auth/register</td></tr>
+  <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>User Login</td><td>auth_users, auth_sessions</td><td>POST /auth/login</td></tr>
+  <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>Logout</td><td>auth_sessions</td><td>POST /auth/logout</td></tr>
+  <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Refresh Token</td><td>auth_sessions</td><td>POST /auth/refresh</td></tr>
+  <tr id="trace-fr-005"><td><span class="req-id">FR-005</span></td><td>Reset Password (Email)</td><td>auth_verification</td><td>POST /auth/forgot-password</td></tr>
+  <tr id="trace-fr-006"><td><span class="req-id">FR-006</span></td><td>Reset Password (Phone)</td><td>auth_verification</td><td>POST /auth/forgot-password-phone</td></tr>
+  <tr id="trace-fr-007"><td><span class="req-id">FR-007</span></td><td>Change Password</td><td>auth_users</td><td>POST /auth/change-password</td></tr>
+  <tr id="trace-fr-008"><td><span class="req-id">FR-008</span></td><td>Verify Email</td><td>auth_verification, auth_users</td><td>GET /auth/verify-email</td></tr>
+  <tr id="trace-fr-009"><td><span class="req-id">FR-009</span></td><td>Verify Phone</td><td>auth_verification, auth_users</td><td>POST /auth/verify-phone</td></tr>
+  <tr id="trace-fr-010"><td><span class="req-id">FR-010</span></td><td>Manage Users</td><td>auth_users</td><td>GET/PUT/DELETE /users/:id</td></tr>
+  <tr id="trace-fr-011"><td><span class="req-id">FR-011</span></td><td>Manage Roles</td><td>auth_roles, auth_user_roles</td><td>GET/POST /roles</td></tr>
 </table>
 
 </body>

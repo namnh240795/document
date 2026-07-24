@@ -56,11 +56,18 @@
       </ul>
     </li>
     <li><a href="#section-3">3. Functional Requirements</a></li>
-    <li><a href="#section-4">4. Data Model</a></li>
-    <li><a href="#section-5">5. API Specification</a></li>
-    <li><a href="#section-6">6. Integration</a></li>
-    <li><a href="#section-7">7. Non-Functional Requirements</a></li>
-    <li><a href="#section-8">8. Requirements Traceability Matrix</a></li>
+    <li><a href="#section-3a">4. Use Cases</a>
+      <ul>
+        <li><a href="#uc-01">UC-01: Send Verification Email</a></li>
+        <li><a href="#uc-02">UC-02: Track Email Delivery</a></li>
+        <li><a href="#uc-03">UC-03: Retry Failed Emails</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">5. Data Model</a></li>
+    <li><a href="#section-5">6. API Specification</a></li>
+    <li><a href="#section-6">7. Integration</a></li>
+    <li><a href="#section-7">8. Non-Functional Requirements</a></li>
+    <li><a href="#section-8">9. Requirements Traceability Matrix</a></li>
   </ul>
 </div>
 
@@ -161,8 +168,44 @@
   </tr>
 </table>
 
-<!-- 4. DATA MODEL -->
-<h1 id="section-4">4. Data Model</h1>
+<!-- 4. USE CASES -->
+<h1 id="section-3a">4. Use Cases</h1>
+
+<h2 id="uc-01">UC-01: Send Verification Email</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>AUTH module (via RabbitMQ)</td></tr>
+  <tr><td>Preconditions</td><td>User has requested email verification; RabbitMQ queue verification.email is available</td></tr>
+  <tr><td>Main Flow</td><td>1. AUTH module publishes verification.email.requested event<br>2. Email Consumer receives event from queue<br>3. System validates email address format<br>4. System creates email log record (status: pending)<br>5. System sends email via SendGrid/SMTP provider<br>6. System updates log (status: sent, sent_at)<br>7. Provider sends delivery confirmation webhook<br>8. System updates log (status: delivered, delivered_at)</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Invalid email → System logs error, returns to queue<br>5a. Provider fails → System updates log (status: failed, error_message)<br>5b. Retry up to 3 times with exponential backoff (1min, 5min, 15min)<br>8a. Delivery failed → System updates log with error_message</td></tr>
+  <tr><td>Postconditions</td><td>Email sent; log record updated with delivery status; AUTH notified via webhook</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
+</table>
+
+<h2 id="uc-02">UC-02: Track Email Delivery</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Email provider (SendGrid/SMTP), Admin user</td></tr>
+  <tr><td>Preconditions</td><td>Email has been sent via provider</td></tr>
+  <tr><td>Main Flow</td><td>1. Provider sends delivery status callback to /api/webhooks/email/delivered<br>2. System receives webhook with verification_id and status<br>3. System validates webhook signature (HMAC-SHA256)<br>4. System finds email log by verification_id<br>5. System updates log with delivery status and delivered_at timestamp<br>6. System sends verification.email.delivered event back to AUTH module<br>7. System publishes email.event.logged to LOG module</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Invalid signature → System returns 401 EMAIL_005<br>4a. Log not found → System returns 404<br>5a. Delivery failed → System updates log with error_message</td></tr>
+  <tr><td>Postconditions</td><td>Email log updated with final delivery status; AUTH and LOG notified</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-003</span>, <span class="req-id">FR-004</span></td></tr>
+</table>
+
+<h2 id="uc-03">UC-03: Retry Failed Emails</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Internal scheduler</td></tr>
+  <tr><td>Preconditions</td><td>Failed email logs exist with retry_count < 3</td></tr>
+  <tr><td>Main Flow</td><td>1. Scheduler runs every 5 minutes<br>2. System queries email_logs for failed status with retry_count < 3<br>3. For each failed email, System increments retry_count<br>4. System re-queues email to RabbitMQ<br>5. Consumer processes retry with exponential backoff delay<br>6. System updates log with new status</td></tr>
+  <tr><td>Alternative Flows</td><td>5a. Retry succeeds → System updates log (status: sent/delivered)<br>5b. Max retries reached (3) → System marks as permanently failed</td></tr>
+  <tr><td>Postconditions</td><td>Failed emails retried; permanently failed emails marked for review</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-005</span></td></tr>
+</table>
+
+<!-- 5. DATA MODEL -->
+<h1 id="section-4">5. Data Model</h1>
 
 <h2>4.1 Entity Relationship Diagram</h2>
 <div class="diagram">
@@ -186,8 +229,8 @@
   </tr>
 </table>
 
-<!-- 5. API SPECIFICATION -->
-<h1 id="section-5">5. API Specification</h1>
+<!-- 6. API SPECIFICATION -->
+<h1 id="section-5">6. API Specification</h1>
 
 <h2>5.1 Endpoint Summary</h2>
 <table class="trace-table">
@@ -205,8 +248,8 @@
   </tr>
 </table>
 
-<!-- 6. INTEGRATION -->
-<h1 id="section-6">6. Integration</h1>
+<!-- 7. INTEGRATION -->
+<h1 id="section-6">7. Integration</h1>
 
 <h2>6.1 Sequence Diagram</h2>
 <div class="diagram">
@@ -243,8 +286,8 @@
   </tr>
 </table>
 
-<!-- 7. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-7">7. Non-Functional Requirements</h1>
+<!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-7">8. Non-Functional Requirements</h1>
 
 <table class="trace-table">
   <tr>
@@ -279,8 +322,8 @@
   </tr>
 </table>
 
-<!-- 8. TRACEABILITY -->
-<h1 id="section-8">8. Requirements Traceability Matrix</h1>
+<!-- 9. TRACEABILITY -->
+<h1 id="section-8">9. Requirements Traceability Matrix</h1>
 
 <table class="trace-table">
   <tr>
