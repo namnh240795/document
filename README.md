@@ -1,97 +1,149 @@
 # BA Documentation Framework
 
-Framework for creating technical documentation with PlantUML diagrams and HTML output.
+Framework for creating technical documentation (SRS, TDS, Database Design, API Spec) with PlantUML diagrams. Outputs HTML documents print-optimized for A4 paper.
+
+## Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) (for PlantUML diagram generation)
+- [GNU Make](https://www.gnu.org/software/make/) (macOS: `xcode-select --install`)
 
 ## Quick Start
 
 ```bash
-make pull           # Download PlantUML Docker image
-make build-all      # Generate diagrams + build HTML docs
-make serve          # Start local web server (http://localhost:8080)
+# 1. Pull PlantUML Docker image (one-time setup)
+make pull
+
+# 2. Generate all diagrams + build HTML docs
+make build-all
+
+# 3. Open in browser
+make open
 ```
 
-## Features
+This builds everything and opens `modules/index.html` in your browser — the master index linking to all module documents.
 
-- PlantUML diagrams (Use Case, ERD, Activity, Sequence, Component, Deployment, Architecture)
-- HTML documents with print-optimized CSS (A4 paper)
-- Requirements traceability (SRS -> TDS -> DB Design -> API Spec)
-- Modular architecture (AUTH, SMS, LOG)
-- Multi-database support (auth_db, sms_db, OpenSearch)
-- Table naming convention: `<project_short_name>_<table_name>`
-- Logo header (company + partner)
-- Table of contents with FR links
-- Export to PDF via browser Print
+## Viewing Documents
 
-## Project Structure
+### Option 1: Use the Makefile (recommended)
 
+```bash
+make serve    # Starts http://localhost:8080
 ```
-ba/
-├── .claude/
-│   ├── CLAUDE.md                  # Framework rules
-│   └── commands/                  # Claude commands
-│       ├── ba-structure.md        # Show folder structure
-│       ├── ba-setup.md            # Step-by-step setup
-│       ├── ba-guide.md            # Interactive walkthrough
-│       └── ba-trace.md            # Verify traceability
-│
-├── Makefile                       # Build commands
-├── scripts/
-│   ├── generate.sh                # PlantUML -> images
-│   └── build-docs.sh              # Templates -> HTML docs
-│
-├── templates/                     # Source templates
-│   ├── style.css                  # Print CSS
-│   ├── srs.html                   # SRS template
-│   ├── tds.html                   # TDS template
-│   ├── database-design.html       # Database design template
-│   ├── api-technical-spec.html    # API spec template
-│   ├── erd-auth.puml              # Auth ERD template
-│   ├── erd-log.puml              # Log ERD template
-│   └── ...
-│
-├── modules/                       # Module docs + images
-│   ├── auth/                      # AUTH module
-│   │   ├── src/                   # Custom HTML (overrides templates)
-│   │   ├── diagrams/              # PlantUML source files
-│   │   │   ├── usecase/
-│   │   │   ├── erd/
-│   │   │   ├── activity/
-│   │   │   └── sequence/
-│   │   ├── images/                # Generated diagrams
-│   │   ├── srs.html               # Generated SRS
-│   │   ├── tds.html               # Generated TDS
-│   │   ├── database-design.html   # Generated DB design
-│   │   └── api-technical-spec.html # Generated API spec
-│   ├── sms/                       # SMS module
-│   ├── log/                       # Logger module
-│   ├── index.html                 # Master index
-│   └── style.css                  # Generated stylesheet
-│
-├── examples/                      # Sample files
-└── CLAUDE.md                      # Rules
+
+Then open [http://localhost:8080](http://localhost:8080) in your browser. Browse modules and click any document to view it.
+
+### Option 2: Open directly in browser
+
+After running `make build-all`, open any HTML file directly:
+
+```bash
+# Open the master index
+open modules/index.html
+
+# Open a specific module's SRS
+open modules/auth/srs.html
 ```
+
+### Option 3: Export to PDF
+
+1. Open any HTML document in your browser
+2. Press `Cmd+P` (macOS) or `Ctrl+P` (Windows/Linux)
+3. Select "Save as PDF" as the destination
+4. The CSS is optimized for A4 paper — margins and page breaks are handled automatically
+
+## What You Get
+
+Each module produces 4 documents:
+
+| Document | Content |
+|----------|---------|
+| `srs.html` | Functional requirements, use cases with activity/sequence diagrams, NFRs, traceability |
+| `tds.html` | Technical design, architecture, API endpoints, integration flows |
+| `database-design.html` | ERD, table schemas, indexes, migration scripts |
+| `api-technical-spec.html` | API endpoints with request/response examples, error codes |
+
+### Modules
+
+| Module | Description | Database |
+|--------|-------------|----------|
+| AUTH | User accounts, login, roles, sessions, verification | auth_db |
+| SMS | SMS delivery, logging, audit trail | sms_db |
+| LOG | Application logging, audit trail, error tracking | OpenSearch |
 
 ## Build Commands
 
 | Command | Description |
 |---------|-------------|
-| `make help` | Show all commands |
-| `make pull` | Pull PlantUML Docker image |
+| `make help` | Show all available commands |
+| `make pull` | Pull PlantUML Docker image (required once) |
 | `make build-all` | Generate all diagrams + build HTML docs |
-| `make build-docs` | Build HTML documents only |
-| `make serve` | Start local web server (http://localhost:8080) |
-| `make clean` | Remove generated files |
-| `make watch` | Auto-rebuild on file change |
+| `make build-docs` | Build HTML documents only (skip diagram generation) |
+| `make open` | Build and open `modules/index.html` in browser |
+| `make serve` | Start local web server at http://localhost:8080 |
+| `make clean` | Remove all generated files |
+| `make watch` | Auto-rebuild on file change (requires `fswatch`) |
 
-### Generate Specific Diagrams
+### Per-module
 
-| Command | Description |
-|---------|-------------|
-| `make generate MODULE=auth TYPE=sequence` | Generate sequence diagrams for AUTH |
-| `make generate MODULE=auth TYPE=activity` | Generate activity diagrams for AUTH |
-| `make generate-erd-all` | Generate all ERD diagrams |
+```bash
+make generate MODULE=auth TYPE=erd       # Single module + diagram type
+make generate-erd-auth                    # Auth ERD only
+make generate-erd-all                     # All ERDs
+make generate-all-modules                 # All modules, all types
+```
 
-## Claude Commands
+## Project Structure
+
+```
+ba/
+├── Makefile                       # Build commands
+├── scripts/
+│   ├── generate.sh                # PlantUML -> PNG images
+│   └── build-docs.sh              # Templates -> HTML docs
+│
+├── templates/                     # Source templates
+│   ├── style.css                  # Print-optimized CSS
+│   ├── srs.html                   # SRS template
+│   ├── tds.html                   # TDS template
+│   ├── database-design.html       # DB design template
+│   ├── api-technical-spec.html    # API spec template
+│   └── erd-*.puml                 # ERD PlantUML templates
+│
+├── modules/                       # Module output
+│   ├── index.html                 # Master index (start here)
+│   ├── auth/                      # AUTH module docs + diagrams
+│   ├── sms/                       # SMS module docs + diagrams
+│   ├── log/                       # LOG module docs + diagrams
+│   └── style.css                  # Shared stylesheet
+│
+└── CLAUDE.md                      # Framework rules
+```
+
+## Customizing Documents
+
+To override a module's template HTML, create a file in `modules/<code>/src/`:
+
+```
+modules/auth/src/srs.html          # Overrides templates/srs.html for AUTH
+modules/auth/src/tds.html          # Overrides templates/tds.html for AUTH
+```
+
+The build script uses your custom file when it exists, otherwise falls back to the template.
+
+## Diagram Types
+
+| Type | Use For | File Location |
+|------|---------|---------------|
+| Use Case | Actor-system interactions | `diagrams/usecase/` |
+| Activity | Process flow (no swimlanes) | `diagrams/activity/` |
+| Sequence | Integration between services | `diagrams/sequence/` |
+| ERD | Data model (entities, relationships) | `diagrams/erd/` or `templates/erd-*.puml` |
+| Component | System components | `diagrams/component/` |
+| Architecture | C4 Level 1 context | `templates/architecture-system.puml` |
+
+## Claude Code Commands
+
+These slash commands are available when using Claude Code in this repo:
 
 | Command | Purpose |
 |---------|---------|
@@ -99,57 +151,18 @@ ba/
 | `/ba-setup` | Step-by-step setup guide |
 | `/ba-guide` | Interactive walkthrough |
 | `/ba-trace` | Verify traceability and module mapping |
+| `/ba-new-module` | Add a new module step by step |
+| `/ba-new-requirement` | Add requirements to SRS |
+| `/ba-erd` | Create or edit ERD diagrams |
+| `/ba-srs` | Work on SRS document |
+| `/ba-review` | Review all documents for compliance |
 
-## Document Structure
+## Troubleshooting
 
-Each module has 4 documents with full traceability:
+**"docker: command not found"** — Install [Docker](https://docs.docker.com/get-docker/) and ensure it's running.
 
-| Document | Purpose |
-|----------|---------|
-| `srs.html` | Software Requirements Specification |
-| `tds.html` | Technical Design Specification |
-| `database-design.html` | Database schema, indexes, migrations |
-| `api-technical-spec.html` | API endpoints, request/response |
+**"make: command not found"** — Install Make: `xcode-select --install` (macOS) or `sudo apt install make` (Linux).
 
-## Diagram Types
+**Diagrams not updating** — Run `make clean` then `make build-all` to regenerate from scratch.
 
-| Type | Use For | Example |
-|------|---------|---------|
-| Use Case | Actor-system interactions | What users can do |
-| Activity | Process flow (simplified, no swimlanes) | Login, Registration, Password Reset |
-| Sequence | Integration between services | AUTH -> RabbitMQ -> SMS -> Twilio |
-| ERD | Data model (entities, relationships) | Database schema |
-| Class | Domain model | Class relationships |
-| Component | System components | Service architecture |
-| Deployment | Infrastructure | Server topology |
-| Architecture | C4 Level 1 | System context |
-
-## Diagram Order
-
-In documents, diagrams appear in this order:
-1. **Activity Diagram** (process flow) - first
-2. **Sequence Diagram** (integration flow) - second
-
-## Template Customization
-
-To customize a module's HTML, create files in `modules/<code>/src/`:
-
-```bash
-# Example: Custom AUTH SRS
-cp modules/auth/srs.html modules/auth/src/srs.html
-# Edit modules/auth/src/srs.html
-# The build script will use your custom file instead of the template
-```
-
-## Examples
-
-See `examples/` for sample PlantUML files.
-
-## Rules
-
-See `CLAUDE.md` for framework rules including:
-- Requirements traceability (FR-xxx, NFR-xxx)
-- Table naming convention (`<project>_<table>`)
-- Logo header (company + partner)
-- Table of contents with FR links
-- Document structure per module
+**Linux build failure** — The build script uses macOS `sed -i ''`. On Linux, edit `scripts/build-docs.sh` to use `sed -i` (without the empty string argument).
