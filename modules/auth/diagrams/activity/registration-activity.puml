@@ -1,7 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Registration Flow
-' Simplified without swimlanes
+' Activity Diagram - Registration Flow (Compact for A4)
 ' ============================================================
 
 skinparam activity {
@@ -16,42 +15,31 @@ title Registration Flow
 
 start
 
-:Fill registration form
-(name, email/phone, password);
+:Fill registration form;
 
-:Validate input format;
+:Validate input;
 
 if (Input valid?) then (no)
-  :Show validation errors;
+  :Show errors;
   stop
 endif
 
 :Check if email/phone exists;
 
 if (Already registered?) then (yes)
-  :Show "Already registered" error;
+  :Show "Already registered";
   stop
 endif
 
-:Hash password (bcrypt, 12 rounds);
+:Hash password + Create user record;
 
-:Create user record in auth_users;
+:Assign default role + Generate OTP;
 
-:Create account record in auth_accounts;
-
-:Assign default role (customer);
-
-:Generate verification code (6-digit OTP);
-
-:Store verification in auth_verification;
-
-:Publish verification event to RabbitMQ;
+:Send verification via RabbitMQ;
 
 :Return "Registration successful";
 
-:Send OTP to phone or verification email;
-
-:Update verification status = sent;
+:Send OTP to phone/email;
 
 stop
 

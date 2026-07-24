@@ -1,7 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Account Verification Flow
-' Simplified without swimlanes
+' Activity Diagram - Account Verification (Compact for A4)
 ' ============================================================
 
 skinparam activity {
@@ -16,40 +15,26 @@ title Account Verification Flow
 
 start
 
-:User requests account verification;
-
-:Check idempotency key in Redis;
+:Request verification;
 
 if (Already sent within 5 min?) then (yes)
-  :Return "Already sent" (idempotent);
-  :Show "Verification already sent";
+  :Show "Already sent";
   stop
 endif
 
-:Set idempotency key (Redis, 5 min TTL);
+:Generate OTP + Store verification;
 
-:Generate verification token/OTP;
+:Publish event to RabbitMQ;
 
-:Store in auth_verification;
-
-:Publish event to verification.sms queue;
-
-:Return "Verification sent";
-
-:Show "Verification sent";
-
-:Worker consumes event from RabbitMQ;
-
-:Send OTP via Twilio;
+:Worker sends SMS via Twilio;
 
 if (SMS sent?) then (yes)
-  :Log delivery to sms_db (status: sent);
+  :Log as sent;
 else (no)
-  :Log failure to sms_db (status: failed);
-  :Route to Dead Letter Queue for retry;
+  :Log as failed + Retry;
 endif
 
-:Update auth_verification status = sent;
+:Update verification status;
 
 stop
 

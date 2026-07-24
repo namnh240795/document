@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Component Diagram - LOG Module (Simplified)
+' Component Diagram - SMS Module (Simplified)
 ' ============================================================
 
 skinparam component {
@@ -14,33 +14,32 @@ skinparam package {
   BorderColor #666666
 }
 
-title LOG Module - Component Diagram
+title SMS Module - Component Diagram
 
 ' --- External ---
-component "AUTH Module" as auth
-component "SMS Module" as sms
 queue "RabbitMQ" as mq
+component "Twilio" as twilio
+component "AUTH Module" as auth
 
 ' --- Service Layer ---
 package "Service Layer" {
-  component "Log Consumer" as consumer
-  component "Log Service" as logSvc
-  component "Log Controller" as logCtrl
-  component "Log Gateway" as gateway
+  component "SMS Consumer" as consumer
+  component "SMS Service" as smsSvc
+  component "SMS Controller" as smsCtrl
 }
 
 ' --- Data Layer ---
 package "Data Layer" {
-  database "OpenSearch\n(log-events)" as os
+  database "sms_db\n(PostgreSQL)" as db
 }
 
 ' --- Relationships ---
 auth --> mq
-sms --> mq
 mq --> consumer
-consumer --> logSvc
-logSvc --> os
-logCtrl --> logSvc
-gateway --> logSvc
+consumer --> smsSvc
+smsSvc --> twilio
+twilio --> smsCtrl
+smsCtrl --> smsSvc
+smsSvc --> db
 
 @enduml

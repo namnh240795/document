@@ -1,7 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Login Flow
-' Simplified without swimlanes
+' Activity Diagram - Login Flow (Compact for A4)
 ' ============================================================
 
 skinparam activity {
@@ -16,45 +15,32 @@ title Login Flow
 
 start
 
-:User enters email/phone + password;
-
-:Validate input format;
+:Enter email/phone + password;
 
 :Find user by email/phone;
 
 if (User found?) then (no)
   :Return INVALID_CREDENTIALS;
-  :Show "Invalid credentials" error;
   stop
 endif
 
-:Verify password (bcrypt compare);
+:Verify password;
 
 if (Password correct?) then (no)
   :Return INVALID_CREDENTIALS;
-  :Show "Invalid credentials" error;
   stop
 endif
 
 if (Account verified?) then (no)
   :Return ACCOUNT_NOT_VERIFIED;
-  :Show "Please verify account" message;
   stop
 endif
 
-:Create session in auth_sessions;
+:Create session + Generate JWT tokens;
 
-:Generate JWT access token (15 min);
+:Return tokens to client;
 
-:Generate refresh token (7 days);
-
-:Cache session in Redis;
-
-:Return tokens + user info;
-
-:Store tokens in httpOnly cookie;
-
-:Redirect to Dashboard;
+:Store tokens + Redirect to Dashboard;
 
 stop
 

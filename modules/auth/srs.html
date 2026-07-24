@@ -10,10 +10,10 @@
 <!-- LOGO HEADER -->
 <div class="logo-header">
   <div class="logo-left">
-    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
   </div>
   <div class="logo-right">
-    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
   </div>
 </div>
 
@@ -65,38 +65,30 @@
         <li><a href="#fr-011">FR-011: Manage Roles</a></li>
       </ul>
     </li>
-    <li><a href="#section-3a">4. Use Cases</a>
+    <li><a href="#section-4">4. Use Cases</a>
       <ul>
-        <li><a href="#uc-01">UC-01: User Registration</a></li>
-        <li><a href="#uc-02">UC-02: User Login</a></li>
-        <li><a href="#uc-03">UC-03: User Logout</a></li>
-        <li><a href="#uc-04">UC-04: Refresh Token</a></li>
-        <li><a href="#uc-05">UC-05: Reset Password via Email</a></li>
-        <li><a href="#uc-06">UC-06: Reset Password via Phone</a></li>
-        <li><a href="#uc-07">UC-07: Change Password</a></li>
-        <li><a href="#uc-08">UC-08: Verify Email</a></li>
-        <li><a href="#uc-09">UC-09: Verify Phone</a></li>
-        <li><a href="#uc-10">UC-10: Manage Users</a></li>
-        <li><a href="#uc-11">UC-11: Manage Roles</a></li>
+        <li><a href="#section-4-0">4.0 Use Case Diagram</a></li>
+        <li><a href="#uc-01">4.1 UC-01: User Registration</a></li>
+        <li><a href="#uc-02">4.2 UC-02: User Login</a></li>
+        <li><a href="#uc-03">4.3 UC-03: User Logout</a></li>
+        <li><a href="#uc-04">4.4 UC-04: Refresh Token</a></li>
+        <li><a href="#uc-05">4.5 UC-05: Reset Password via Email</a></li>
+        <li><a href="#uc-06">4.6 UC-06: Reset Password via Phone</a></li>
+        <li><a href="#uc-07">4.7 UC-07: Change Password</a></li>
+        <li><a href="#uc-08">4.8 UC-08: Verify Email</a></li>
+        <li><a href="#uc-09">4.9 UC-09: Verify Phone</a></li>
+        <li><a href="#uc-10">4.10 UC-10: Manage Users</a></li>
+        <li><a href="#uc-11">4.11 UC-11: Manage Roles</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">5. System Flows</a>
-      <ul>
-        <li><a href="#section-4-1">5.1 Registration Flow</a></li>
-        <li><a href="#section-4-2">5.2 Login Flow</a></li>
-        <li><a href="#section-4-3">5.3 Password Reset Flow</a></li>
-        <li><a href="#section-4-4">5.4 Logout Flow</a></li>
-        <li><a href="#section-4-5">5.5 Account Verification Flow</a></li>
-      </ul>
-    </li>
-    <li><a href="#section-5">6. Non-Functional Requirements</a>
+    <li><a href="#section-5">5. Non-Functional Requirements</a>
       <ul>
         <li><a href="#nfr-001">NFR-001: Performance</a></li>
         <li><a href="#nfr-002">NFR-002: Security</a></li>
         <li><a href="#nfr-003">NFR-003: Availability</a></li>
       </ul>
     </li>
-    <li><a href="#section-6">7. Traceability Matrix</a>
+    <li><a href="#section-6">6. Traceability Matrix</a>
       <ul>
         <li><a href="#trace-fr-001">FR-001: User Registration</a></li>
         <li><a href="#trace-fr-002">FR-002: User Login</a></li>
@@ -267,9 +259,15 @@
 </table>
 
 <!-- 4. USE CASES -->
-<h1 id="section-3a">4. Use Cases</h1>
+<h1 id="section-4">4. Use Cases</h1>
 
-<h2 id="uc-01">UC-01: User Registration</h2>
+<h2 id="section-4-0">4.0 Use Case Diagram</h2>
+<div class="diagram">
+  <img src="./images/usecase/usecase-diagram.png" alt="Use Case Diagram">
+  <div class="caption">Figure 1: Use Case Diagram</div>
+</div>
+
+<h2 id="uc-01">4.1 UC-01: User Registration</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Guest (unauthenticated user)</td></tr>
@@ -280,7 +278,19 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-001</span></td></tr>
 </table>
 
-<h2 id="uc-02">UC-02: User Login</h2>
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/registration-activity.png" alt="Registration Activity Diagram">
+  <div class="caption">Figure 2: User Registration Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/registration-sequence.png" alt="Registration Sequence Diagram">
+  <div class="caption">Figure 3: User Registration Sequence Diagram</div>
+</div>
+
+<h2 id="uc-02">4.2 UC-02: User Login</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Registered user</td></tr>
@@ -291,7 +301,19 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-002</span></td></tr>
 </table>
 
-<h2 id="uc-03">UC-03: User Logout</h2>
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/login-activity.png" alt="Login Activity Diagram">
+  <div class="caption">Figure 4: User Login Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/login-sequence.png" alt="Login Sequence Diagram">
+  <div class="caption">Figure 5: User Login Sequence Diagram</div>
+</div>
+
+<h2 id="uc-03">4.3 UC-03: User Logout</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Authenticated user</td></tr>
@@ -302,7 +324,19 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-003</span></td></tr>
 </table>
 
-<h2 id="uc-04">UC-04: Refresh Token</h2>
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/logout-activity.png" alt="Logout Activity Diagram">
+  <div class="caption">Figure 6: User Logout Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/logout-sequence.png" alt="Logout Sequence Diagram">
+  <div class="caption">Figure 7: User Logout Sequence Diagram</div>
+</div>
+
+<h2 id="uc-04">4.4 UC-04: Refresh Token</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Authenticated user (token expired)</td></tr>
@@ -313,7 +347,7 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-004</span></td></tr>
 </table>
 
-<h2 id="uc-05">UC-05: Reset Password via Email</h2>
+<h2 id="uc-05">4.5 UC-05: Reset Password via Email</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Registered user (forgot password)</td></tr>
@@ -324,7 +358,19 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-005</span></td></tr>
 </table>
 
-<h2 id="uc-06">UC-06: Reset Password via Phone</h2>
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/password-reset-activity.png" alt="Password Reset Activity Diagram">
+  <div class="caption">Figure 8: Password Reset Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
+  <div class="caption">Figure 9: Password Reset Sequence Diagram</div>
+</div>
+
+<h2 id="uc-06">4.6 UC-06: Reset Password via Phone</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Registered user (forgot password)</td></tr>
@@ -335,7 +381,19 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-006</span></td></tr>
 </table>
 
-<h2 id="uc-07">UC-07: Change Password</h2>
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/password-reset-activity.png" alt="Password Reset Activity Diagram">
+  <div class="caption">Figure 10: Password Reset via Phone Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
+  <div class="caption">Figure 11: Password Reset via Phone Sequence Diagram</div>
+</div>
+
+<h2 id="uc-07">4.7 UC-07: Change Password</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Authenticated user</td></tr>
@@ -346,7 +404,7 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-007</span></td></tr>
 </table>
 
-<h2 id="uc-08">UC-08: Verify Email</h2>
+<h2 id="uc-08">4.8 UC-08: Verify Email</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Registered user</td></tr>
@@ -357,7 +415,19 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-008</span></td></tr>
 </table>
 
-<h2 id="uc-09">UC-09: Verify Phone</h2>
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/activity-diagram.png" alt="Verification Activity Diagram">
+  <div class="caption">Figure 12: Account Verification Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/sequence-diagram.png" alt="Verification Sequence Diagram">
+  <div class="caption">Figure 13: Account Verification Sequence Diagram</div>
+</div>
+
+<h2 id="uc-09">4.9 UC-09: Verify Phone</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Registered user</td></tr>
@@ -368,7 +438,19 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-009</span></td></tr>
 </table>
 
-<h2 id="uc-10">UC-10: Manage Users</h2>
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/activity-diagram.png" alt="Verification Activity Diagram">
+  <div class="caption">Figure 14: Phone Verification Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/sequence-diagram.png" alt="Verification Sequence Diagram">
+  <div class="caption">Figure 15: Phone Verification Sequence Diagram</div>
+</div>
+
+<h2 id="uc-10">4.10 UC-10: Manage Users</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Admin user</td></tr>
@@ -379,7 +461,7 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-010</span></td></tr>
 </table>
 
-<h2 id="uc-11">UC-11: Manage Roles</h2>
+<h2 id="uc-11">4.11 UC-11: Manage Roles</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Admin user</td></tr>
@@ -390,81 +472,8 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-011</span></td></tr>
 </table>
 
-<!-- 5. SYSTEM FLOWS -->
-<h1 id="section-4">5. System Flows</h1>
-
-<h2 id="section-4-1">4.1 Registration Flow</h2>
-
-<h3 id="activity">Activity Diagram</h3>
-<div class="diagram">
-  <img src="./images/activity/registration-activity.png" alt="Registration Activity Diagram">
-  <div class="caption">Figure 1: User Registration Activity Diagram</div>
-</div>
-
-<h3 id="sequence">Sequence Diagram</h3>
-<div class="diagram">
-  <img src="./images/sequence/registration-sequence.png" alt="Registration Sequence Diagram">
-  <div class="caption">Figure 2: User Registration Sequence Diagram</div>
-</div>
-
-<h2 id="section-4-2">4.2 Login Flow</h2>
-
-<h3 id="activity">Activity Diagram</h3>
-<div class="diagram">
-  <img src="./images/activity/login-activity.png" alt="Login Activity Diagram">
-  <div class="caption">Figure 3: User Login Activity Diagram</div>
-</div>
-
-<h3 id="sequence">Sequence Diagram</h3>
-<div class="diagram">
-  <img src="./images/sequence/login-sequence.png" alt="Login Sequence Diagram">
-  <div class="caption">Figure 4: User Login Sequence Diagram</div>
-</div>
-
-<h2 id="section-4-3">4.3 Password Reset Flow</h2>
-
-<h3 id="activity">Activity Diagram</h3>
-<div class="diagram">
-  <img src="./images/activity/password-reset-activity.png" alt="Password Reset Activity Diagram">
-  <div class="caption">Figure 5: Password Reset Activity Diagram</div>
-</div>
-
-<h3 id="sequence">Sequence Diagram</h3>
-<div class="diagram">
-  <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
-  <div class="caption">Figure 6: Password Reset Sequence Diagram</div>
-</div>
-
-<h2 id="section-4-4">4.4 Logout Flow</h2>
-
-<h3 id="activity">Activity Diagram</h3>
-<div class="diagram">
-  <img src="./images/activity/logout-activity.png" alt="Logout Activity Diagram">
-  <div class="caption">Figure 7: User Logout Activity Diagram</div>
-</div>
-
-<h3 id="sequence">Sequence Diagram</h3>
-<div class="diagram">
-  <img src="./images/sequence/logout-sequence.png" alt="Logout Sequence Diagram">
-  <div class="caption">Figure 8: User Logout Sequence Diagram</div>
-</div>
-
-<h2 id="section-4-5">4.5 Account Verification Flow</h2>
-
-<h3 id="activity">Activity Diagram</h3>
-<div class="diagram">
-  <img src="./images/activity/activity-diagram.png" alt="Verification Activity Diagram">
-  <div class="caption">Figure 9: Account Verification Activity Diagram</div>
-</div>
-
-<h3 id="sequence">Sequence Diagram</h3>
-<div class="diagram">
-  <img src="./images/sequence/sequence-diagram.png" alt="Verification Sequence Diagram">
-  <div class="caption">Figure 10: Account Verification Sequence Diagram</div>
-</div>
-
-<!-- 6. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-5">6. Non-Functional Requirements</h1>
+<!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-5">5. Non-Functional Requirements</h1>
 
 <table class="trace-table">
   <tr>
@@ -517,8 +526,8 @@
   </tr>
 </table>
 
-<!-- 7. TRACEABILITY -->
-<h1 id="section-6">7. Requirements Traceability Matrix</h1>
+<!-- 6. TRACEABILITY -->
+<h1 id="section-6">6. Requirements Traceability Matrix</h1>
 
 <table class="trace-table">
   <tr>

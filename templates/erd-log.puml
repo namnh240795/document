@@ -1,17 +1,6 @@
 @startuml
 ' ============================================================
 ' ERD: Logger Module (OpenSearch as Primary Store)
-' Modules: LOG
-' Index: log-events
-'
-' Architecture (based on nestjs-kafka-opensearch):
-'   Any Service → RabbitMQ (queue: log.events) → Logger Consumer → OpenSearch
-'
-' OpenSearch is the single source of truth for all log data.
-' No PostgreSQL needed — OpenSearch handles storage, search,
-' analytics, and dashboards natively.
-'
-' RULE: No table prefix needed — OpenSearch index name is fixed.
 ' ============================================================
 
 skinparam class {
@@ -21,44 +10,31 @@ skinparam class {
   AttributeFontSize 12
 }
 
-title Logger Module — OpenSearch Index Schema
+title Logger Module - OpenSearch Index Schema
 
 package "OpenSearch (index: log-events)" as os {
   entity "log-events" as log_index {
     * eventId : keyword <<PK>>
     --
-    * source : text + keyword <<full-text search>>
-    * level : keyword <<debug, info, warn, error>>
-    * action : keyword <<login, register, send_otp, ...>>
-    * message : text <<full-text search>>
-    * input : text <<full-text search>>
-    * output : text <<full-text search>>
-    * error : text <<full-text search>>
-    * exception : text <<full-text search>>
-    * traceId : keyword <<distributed trace>>
-    * userId : keyword <<associated user>>
-    * metadata : object <<additional context>>
-    * timestamp : date <<ISO 8601>>
+    * source : text + keyword
+    * level : keyword
+    * action : keyword
+    * message : text
+    * input : text
+    * output : text
+    * error : text
+    * exception : text
+    * traceId : keyword
+    * userId : keyword
+    * metadata : object
+    * timestamp : date
   }
 }
 
 note top of os
-  OpenSearch is the primary store for all log data.
-  Handles full-text search, analytics, and dashboards.
-  No PostgreSQL — single storage layer simplifies architecture.
-
-  Index mappings:
-  - keyword fields: exact match, filtering, aggregations
-  - text fields: full-text search with analyzers
-  - date field: range queries, time-based aggregations
+  OpenSearch is the primary store.
+  Handles search, analytics, dashboards.
+  No PostgreSQL needed.
 end note
-
-' --- Indexes (OpenSearch auto-creates these from mappings) ---
-index "idx_source" on (log_index.source)
-index "idx_level" on (log_index.level)
-index "idx_action" on (log_index.action)
-index "idx_traceId" on (log_index.traceId)
-index "idx_userId" on (log_index.userId)
-index "idx_timestamp" on (log_index.timestamp)
 
 @enduml

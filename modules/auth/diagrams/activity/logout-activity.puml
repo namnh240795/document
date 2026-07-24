@@ -1,7 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Logout Flow
-' Simplified without swimlanes
+' Activity Diagram - Logout Flow (Compact for A4)
 ' ============================================================
 
 skinparam activity {
@@ -16,17 +15,11 @@ title Logout Flow
 
 start
 
-:Click "Logout";
+:Click Logout;
 
-:Decode JWT token (extract session ID);
+:Delete session + Clear cache;
 
-:Delete session from auth_sessions;
-
-:Clear cached session in Redis;
-
-:Return success;
-
-:Clear tokens from memory/cookie;
+:Clear tokens from client;
 
 :Redirect to Login page;
 

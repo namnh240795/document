@@ -41,7 +41,14 @@
 <div class="toc">
   <h2>Table of Contents</h2>
   <ul>
-    <li><a href="#section-1">1. Introduction</a></li>
+    <li><a href="#section-1">1. Introduction</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 Scope</a></li>
+        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
+        <li><a href="#section-1-4">1.4 Definitions</a></li>
+      </ul>
+    </li>
     <li><a href="#section-2">2. Module Overview</a></li>
     <li><a href="#section-3">3. Functional Requirements</a>
       <ul>
@@ -51,18 +58,32 @@
         <li><a href="#fr-004">FR-004: Get SMS Status</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. Non-Functional Requirements</a></li>
-    <li><a href="#section-5">5. Traceability Matrix</a></li>
+    <li><a href="#section-4">4. Non-Functional Requirements</a>
+      <ul>
+        <li><a href="#nfr-001">NFR-001: SMS Send Latency</a></li>
+        <li><a href="#nfr-002">NFR-002: Delivery Rate</a></li>
+        <li><a href="#nfr-003">NFR-003: OTP Expiry</a></li>
+        <li><a href="#nfr-004">NFR-004: Log Retention</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Traceability Matrix</a>
+      <ul>
+        <li><a href="#trace-fr-001">FR-001: Send SMS OTP</a></li>
+        <li><a href="#trace-fr-002">FR-002: Verify OTP</a></li>
+        <li><a href="#trace-fr-003">FR-003: Log SMS Delivery</a></li>
+        <li><a href="#trace-fr-004">FR-004: Get SMS Status</a></li>
+      </ul>
+    </li>
   </ul>
 </div>
 
 <!-- 1. INTRODUCTION -->
 <h1 id="section-1">1. Introduction</h1>
 
-<h2>1.1 Purpose</h2>
+<h2 id="section-1-1">1.1 Purpose</h2>
 <p>This document defines the software requirements for the <strong>SMS Service</strong> module of the Authentication System.</p>
 
-<h2>1.2 Scope</h2>
+<h2 id="section-1-2">1.2 Scope</h2>
 <p>The SMS Service module handles:</p>
 <ul>
   <li>Sending SMS OTP for verification and password reset</li>
@@ -71,10 +92,10 @@
   <li>Audit trail for all SMS operations</li>
 </ul>
 
-<h2>1.3 Module Dependencies</h2>
+<h2 id="section-1-3">1.3 Module Dependencies</h2>
 <p>Depends on: AUTH (receives verification events from AUTH module)</p>
 
-<h2>1.4 Definitions</h2>
+<h2 id="section-1-4">1.4 Definitions</h2>
 <table>
   <tr><th>Term</th><th>Definition</th></tr>
   <tr><td>FR</td><td>Functional Requirement</td></tr>
@@ -143,25 +164,25 @@
 
 <table class="trace-table">
   <tr><th>Req ID</th><th>Category</th><th>Requirement</th><th>Target</th></tr>
-  <tr>
+  <tr id="nfr-001">
     <td><span class="req-id">NFR-001</span></td>
     <td>Performance</td>
     <td>SMS send latency</td>
     <td>&lt; 3s (p95)</td>
   </tr>
-  <tr>
+  <tr id="nfr-002">
     <td><span class="req-id">NFR-002</span></td>
     <td>Reliability</td>
     <td>SMS delivery rate</td>
     <td>&gt; 99%</td>
   </tr>
-  <tr>
+  <tr id="nfr-003">
     <td><span class="req-id">NFR-003</span></td>
     <td>Security</td>
     <td>OTP expiry</td>
     <td>5 minutes</td>
   </tr>
-  <tr>
+  <tr id="nfr-004">
     <td><span class="req-id">NFR-004</span></td>
     <td>Audit</td>
     <td>Log retention</td>
@@ -174,10 +195,10 @@
 
 <table class="trace-table">
   <tr><th>Req ID</th><th>Requirement</th><th>DB Table</th><th>Integration</th></tr>
-  <tr><td><span class="req-id">FR-001</span></td><td>Send SMS OTP</td><td>sms_logs</td><td>AUTH verification.requested</td></tr>
-  <tr><td><span class="req-id">FR-002</span></td><td>Verify OTP</td><td>sms_logs</td><td>AUTH verification.delivered</td></tr>
-  <tr><td><span class="req-id">FR-003</span></td><td>Log SMS Delivery</td><td>sms_logs</td><td>Twilio webhook</td></tr>
-  <tr><td><span class="req-id">FR-004</span></td><td>Get SMS Status</td><td>sms_logs</td><td>Internal API</td></tr>
+  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>Send SMS OTP</td><td>sms_logs</td><td>AUTH verification.requested</td></tr>
+  <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>Verify OTP</td><td>sms_logs</td><td>AUTH verification.delivered</td></tr>
+  <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>Log SMS Delivery</td><td>sms_logs</td><td>Twilio webhook</td></tr>
+  <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Get SMS Status</td><td>sms_logs</td><td>Internal API</td></tr>
 </table>
 
 </body>

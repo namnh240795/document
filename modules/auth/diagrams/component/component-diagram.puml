@@ -1,0 +1,75 @@
+@startuml
+' ============================================================
+' Component Diagram - AUTH Module (Simplified)
+' ============================================================
+
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #666666
+}
+
+title AUTH Module - Component Diagram
+
+' --- Clients ---
+component "Web App" as web
+component "Mobile App" as mobile
+
+' --- API Layer ---
+package "API Layer" {
+  component "Auth Controller" as authCtrl
+  component "Users Controller" as usersCtrl
+  component "Roles Controller" as rolesCtrl
+}
+
+' --- Service Layer ---
+package "Service Layer" {
+  component "Auth Service" as authSvc
+  component "Users Service" as usersSvc
+  component "Roles Service" as rolesSvc
+}
+
+' --- Security ---
+package "Security" {
+  component "JWT Guard" as jwtGuard
+  component "RBAC Guard" as rbacGuard
+}
+
+' --- Data Layer ---
+package "Data Layer" {
+  database "auth_db\n(PostgreSQL)" as db
+}
+
+' --- External ---
+queue "RabbitMQ" as mq
+database "Redis" as redis
+
+' --- Relationships ---
+web --> authCtrl
+mobile --> authCtrl
+web --> usersCtrl
+
+authCtrl --> jwtGuard
+usersCtrl --> jwtGuard
+rolesCtrl --> jwtGuard
+
+jwtGuard --> authSvc
+rbacGuard --> rolesSvc
+
+authCtrl --> authSvc
+usersCtrl --> usersSvc
+rolesCtrl --> rolesSvc
+
+authSvc --> db
+usersSvc --> db
+rolesSvc --> db
+
+authSvc --> mq
+authSvc --> redis
+
+@enduml

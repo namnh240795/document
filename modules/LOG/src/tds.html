@@ -42,10 +42,34 @@
   <h2>Table of Contents</h2>
   <ul>
     <li><a href="#section-1">1. Overview</a></li>
-    <li><a href="#section-2">2. Architecture</a></li>
-    <li><a href="#section-3">3. Component Design</a></li>
-    <li><a href="#section-4">4. Data Architecture</a></li>
-    <li><a href="#section-5">5. Integration Flows</a></li>
+    <li><a href="#section-2">2. Architecture</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Architecture Style</a></li>
+        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Component Design</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 Component Diagram</a></li>
+        <li><a href="#section-3-2">3.2 Module Structure</a></li>
+        <li><a href="#section-3-3">3.3 Component to Requirements Mapping</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Data Architecture</a>
+      <ul>
+        <li><a href="#section-4-1">4.1 Database</a></li>
+        <li><a href="#section-4-2">4.2 Index Schema</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Integration Flows</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 Log Ingestion Flow</a></li>
+        <li><a href="#section-5-2">5.2 AUTH to LOG Integration</a></li>
+        <li><a href="#section-5-3">5.3 Log Query Flow</a></li>
+        <li><a href="#section-5-4">5.4 Log Ingestion Activity</a></li>
+        <li><a href="#section-5-5">5.5 Inbound Events</a></li>
+      </ul>
+    </li>
     <li><a href="#section-6">6. Traceability Summary</a></li>
   </ul>
 </div>
@@ -98,7 +122,13 @@
 <!-- 3. COMPONENT DESIGN -->
 <h1 id="section-3">3. Component Design</h1>
 
-<h2>3.1 Module Structure</h2>
+<h2>3.1 Component Diagram</h2>
+<div class="diagram">
+  <img src="./images/component/component-diagram.png" alt="LOG Component Diagram">
+  <div class="caption">Figure 1: LOG Module Components</div>
+</div>
+
+<h2>3.2 Module Structure</h2>
 <pre><code>src/
   log/
     log.module.ts
@@ -178,6 +208,7 @@
   <tr><th>Event</th><th>From</th><th>Protocol</th><th>Description</th></tr>
   <tr><td>auth.event.logged</td><td>AUTH</td><td>RabbitMQ</td><td>Auth events (login, logout, register)</td></tr>
   <tr><td>sms.event.logged</td><td>SMS</td><td>RabbitMQ</td><td>SMS delivery events</td></tr>
+  <tr><td>email.event.logged</td><td>EMAIL</td><td>RabbitMQ</td><td>Email delivery events</td></tr>
 </table>
 
 <h2>5.3 External Services</h2>
