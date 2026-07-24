@@ -147,12 +147,26 @@ CREATE INDEX idx_sms_logs_provider_message_id ON sms_logs(provider_message_id);<
   <tr><td>2</td><td>002_create_indexes</td><td>Create all indexes</td></tr>
 </table>
 
+<h2>4.3 Rollback Scripts</h2>
+
+<h3>001_create_sms_logs (Rollback)</h3>
+<pre><code>-- Rollback: Drop sms_logs table
+DROP TABLE IF EXISTS sms_logs CASCADE;</code></pre>
+
+<h3>002_create_indexes (Rollback)</h3>
+<pre><code>-- Rollback: Drop all indexes
+DROP INDEX IF EXISTS idx_sms_logs_user_id;
+DROP INDEX IF EXISTS idx_sms_logs_phone;
+DROP INDEX IF EXISTS idx_sms_logs_status;
+DROP INDEX IF EXISTS idx_sms_logs_created_at;
+DROP INDEX IF EXISTS idx_sms_logs_provider_message_id;</code></pre>
+
 <!-- 5. DATA DICTIONARY -->
 <h1 id="section-5">5. Data Dictionary</h1>
 
 <table class="trace-table">
-  <tr><th>Table</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
-  <tr><td>sms_logs</td><td>SMS delivery logs and audit trail</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-003</span></td><td>500,000</td></tr>
+  <tr><th>Table</th><th>Module</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
+  <tr><td>sms_logs</td><td>SMS</td><td>SMS delivery logs and audit trail</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-003</span></td><td>500,000</td></tr>
 </table>
 
 </body>

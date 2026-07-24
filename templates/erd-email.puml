@@ -2,6 +2,7 @@
 ' ============================================================
 ' ERD: Email Database (email_db)
 ' Tables: email_logs
+' Note: user_id references auth_users in auth_db (application-level, no FK constraint)
 ' ============================================================
 
 skinparam class {
@@ -16,7 +17,7 @@ title Email Database (email_db)
 entity "email_logs" as email_logs {
   * id : uuid <<PK>>
   --
-  * user_id : uuid <<FK>>
+  * user_id : uuid <<APP-LEVEL REF>>
   * email : varchar(255)
   * subject : varchar(500)
   * template_id : varchar(100)
@@ -30,5 +31,11 @@ entity "email_logs" as email_logs {
   * delivered_at : timestamp
   * created_at : timestamp
 }
+
+note bottom of email_logs
+  user_id references auth_users.id in auth_db.
+  Cross-database reference — no FK constraint.
+  Enforced at application level only.
+end note
 
 @enduml

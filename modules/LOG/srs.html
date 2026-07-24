@@ -52,10 +52,10 @@
     <li><a href="#section-2">2. Module Overview</a></li>
     <li><a href="#section-3">3. Functional Requirements</a>
       <ul>
-        <li><a href="#fr-001">FR-001: Ingest Log Events</a></li>
-        <li><a href="#fr-002">FR-002: Query Logs</a></li>
-        <li><a href="#fr-003">FR-003: Log Analytics</a></li>
-        <li><a href="#fr-004">FR-004: Real-time Monitoring</a></li>
+        <li><a href="#fr-001">FR-001: Ingest Log Events (UC-01)</a></li>
+        <li><a href="#fr-002">FR-002: Query Logs (UC-02)</a></li>
+        <li><a href="#fr-003">FR-003: Log Analytics (UC-03)</a></li>
+        <li><a href="#fr-004">FR-004: Real-time Monitoring (UC-04)</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Non-Functional Requirements</a>
@@ -124,6 +124,7 @@
     <th>Req ID</th>
     <th>Module</th>
     <th>Requirement</th>
+    <th>Use Case</th>
     <th>Priority</th>
     <th>Description</th>
   </tr>
@@ -131,6 +132,7 @@
     <td><span class="req-id">FR-001</span></td>
     <td>LOG</td>
     <td>Ingest Log Events</td>
+    <td>UC-01</td>
     <td>High</td>
     <td>System shall consume log events from RabbitMQ and index to OpenSearch</td>
   </tr>
@@ -138,6 +140,7 @@
     <td><span class="req-id">FR-002</span></td>
     <td>LOG</td>
     <td>Query Logs</td>
+    <td>UC-02</td>
     <td>High</td>
     <td>System shall provide API to query logs with filters (level, source, time range)</td>
   </tr>
@@ -145,6 +148,7 @@
     <td><span class="req-id">FR-003</span></td>
     <td>LOG</td>
     <td>Log Analytics</td>
+    <td>UC-03</td>
     <td>Medium</td>
     <td>System shall provide analytics on log data (error rates, response times)</td>
   </tr>
@@ -152,6 +156,7 @@
     <td><span class="req-id">FR-004</span></td>
     <td>LOG</td>
     <td>Real-time Monitoring</td>
+    <td>UC-04</td>
     <td>Medium</td>
     <td>System shall support real-time log streaming via WebSocket</td>
   </tr>
