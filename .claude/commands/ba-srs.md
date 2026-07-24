@@ -13,7 +13,7 @@ Ask: "Which module's SRS are you working on?"
 Current modules:
 - AUTH - `modules/auth/srs.html`
 - SMS - `modules/sms/srs.html`
-- LOG - `modules/LOG/srs.html`
+- LOG - `modules/log/srs.html`
 
 ### Step 2: Identify Task
 
