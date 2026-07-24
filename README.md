@@ -13,43 +13,41 @@ Framework for creating technical documentation (SRS, TDS, Database Design, API S
 # 1. Pull PlantUML Docker image (one-time setup)
 make pull
 
-# 2. Generate all diagrams + build HTML docs
+# 2. Build everything (diagrams + HTML docs)
 make build-all
 
-# 3. Open in browser
-make open
+# 3. Serve and view in browser
+make serve
 ```
 
-This builds everything and opens `modules/index.html` in your browser — the master index linking to all module documents.
+Then open [http://localhost:8080](http://localhost:8080) — click any module to browse its documents (SRS, TDS, Database Design, API Spec).
 
 ## Viewing Documents
 
-### Option 1: Use the Makefile (recommended)
+### `make serve` (recommended)
 
 ```bash
-make serve    # Starts http://localhost:8080
+make serve
 ```
 
-Then open [http://localhost:8080](http://localhost:8080) in your browser. Browse modules and click any document to view it.
+This rebuilds docs and starts a local server at **http://localhost:8080**. The index page lists all modules — click a module name to see its documents, then click any document to view it.
 
-### Option 2: Open directly in browser
+To stop the server, press `Ctrl+C`.
 
-After running `make build-all`, open any HTML file directly:
+### `make open`
 
 ```bash
-# Open the master index
-open modules/index.html
-
-# Open a specific module's SRS
-open modules/auth/srs.html
+make open
 ```
 
-### Option 3: Export to PDF
+Builds docs and opens `modules/index.html` directly in your default browser. Quick one-time view — no server needed.
 
-1. Open any HTML document in your browser
+### Export to PDF
+
+1. Open any HTML document in your browser (via `make serve` or `make open`)
 2. Press `Cmd+P` (macOS) or `Ctrl+P` (Windows/Linux)
-3. Select "Save as PDF" as the destination
-4. The CSS is optimized for A4 paper — margins and page breaks are handled automatically
+3. Select "Save as PDF"
+4. The CSS is print-optimized for A4 paper
 
 ## What You Get
 
@@ -82,6 +80,20 @@ Each module produces 4 documents:
 | `make serve` | Start local web server at http://localhost:8080 |
 | `make clean` | Remove all generated files |
 | `make watch` | Auto-rebuild on file change (requires `fswatch`) |
+
+### Development workflow
+
+Use `make watch` alongside `make serve` for live editing:
+
+```bash
+# Terminal 1: serve documents
+make serve
+
+# Terminal 2: watch for changes and auto-rebuild
+make watch
+```
+
+Edit any `.puml` or `src/*.html` file — changes are rebuilt automatically and reflected on refresh.
 
 ### Per-module
 
