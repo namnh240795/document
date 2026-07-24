@@ -1,4 +1,4 @@
-.PHONY: help pull generate generate-usecase generate-erd generate-activity generate-sequence generate-class generate-component generate-deployment generate-architecture generate-module generate-all-modules build-docs build-docs-module build-all clean open open-module watch
+.PHONY: help pull generate generate-usecase generate-erd generate-erd-auth generate-erd-ecom generate-erd-pay generate-erd-wallet generate-erd-noti generate-activity generate-sequence generate-class generate-component generate-deployment generate-architecture generate-module generate-all-modules build-docs build-docs-module build-all clean open open-module watch
 
 PLANTUML_FORMAT ?= png
 
@@ -21,6 +21,24 @@ generate-usecase: ## Generate usecase diagrams only
 
 generate-erd: ## Generate ERD diagrams only
 	@bash scripts/generate.sh -f $(PLANTUML_FORMAT) erd
+
+generate-erd-auth: ## Generate auth_db ERD only
+	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/docs/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-auth.puml
+
+generate-erd-ecom: ## Generate ecom_db ERD only
+	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/docs/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-ecom.puml
+
+generate-erd-pay: ## Generate pay_db ERD only
+	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/docs/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-pay.puml
+
+generate-erd-wallet: ## Generate wallet_db ERD only
+	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/docs/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-wallet.puml
+
+generate-erd-noti: ## Generate noti_db ERD only
+	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/docs/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-noti.puml
+
+generate-erd-all: ## Generate all ERD diagrams (all databases)
+	@make generate-erd-auth && make generate-erd-ecom && make generate-erd-pay && make generate-erd-wallet && make generate-erd-noti
 
 generate-activity: ## Generate activity diagrams only
 	@bash scripts/generate.sh -f $(PLANTUML_FORMAT) activity

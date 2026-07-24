@@ -1,0 +1,60 @@
+@startuml
+' ============================================================
+' ERD: Wallet Database (wallet_db)
+' Modules: WAL
+' Tables: xxx_wallets, xxx_wallet_transactions, xxx_wallet_topup_requests
+'
+' RULE: Replace "xxx" with your project short name
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+
+title Wallet Database (wallet_db)
+
+entity "xxx_wallets" as wallets {
+  * id : uuid <<PK>>
+  --
+  * user_id : uuid <<UNIQUE>>  ' Application-level reference to auth_db.xxx_users
+  * balance : decimal(12,2) DEFAULT 0
+  * currency : varchar(3) DEFAULT 'VND'
+  * status : enum('active','frozen','closed')
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "xxx_wallet_transactions" as wallet_tx {
+  * id : uuid <<PK>>
+  --
+  * wallet_id : uuid <<FK>>
+  * type : enum('topup','payment','refund','transfer_in','transfer_out','withdrawal')
+  * amount : decimal(12,2)
+  * balance_after : decimal(12,2)
+  * reference_type : varchar(50)
+  * reference_id : uuid
+  * description : text
+  * created_at : timestamp
+}
+
+entity "xxx_wallet_topup_requests" as topup {
+  * id : uuid <<PK>>
+  --
+  * wallet_id : uuid <<FK>>
+  * amount : decimal(12,2)
+  * method : enum('bank_transfer','credit_card','e_wallet')
+  * status : enum('pending','completed','failed')
+  * transaction_id : varchar(100)
+  * gateway_response : jsonb
+  * created_at : timestamp
+  * completed_at : timestamp
+}
+
+' --- Relationships ---
+wallets ||--o{ wallet_tx : "has transactions"
+wallets ||--o{ topup : "top-up requests"
+
+@enduml

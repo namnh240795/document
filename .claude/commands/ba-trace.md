@@ -7,9 +7,20 @@ Guide the user to add or verify requirements traceability and module mapping bet
 1. Check if SRS has requirement IDs AND module codes defined
 2. Verify all technical docs trace back to SRS requirements
 3. Verify all tables/endpoints are assigned to modules
-4. Help user add missing traceability
+4. Verify logo header and TOC exist in all documents
+5. Help user add missing traceability
 
-## Step 1: Check SRS Requirements & Modules
+## Step 1: Check Logo Header & TOC
+
+Read each HTML template and verify:
+- Logo header exists with company logo (left) and partner logo (right)
+- Table of contents exists after cover page
+- All headings have `id` attributes for TOC links
+- TOC links point to correct section IDs
+
+Ask: "Do you want to update logos or TOC? (yes/no)"
+
+## Step 2: Check SRS Requirements & Modules
 
 Read `templates/srs.html` and verify:
 - All requirements have IDs (FR-xxx, NFR-xxx, DR-xxx, IR-xxx)
@@ -19,12 +30,19 @@ Read `templates/srs.html` and verify:
 
 If missing, help user add requirement IDs and module codes to SRS first.
 
-## Step 2: Verify Modular ERD
+## Step 3: Verify Modular ERD
 
 Read `templates/erd.puml` and verify:
 - Entities are grouped by module (package/box per module)
 - Each module shows which requirements it resolves
 - Cross-module relationships are clearly marked
+
+Also verify per-database ERDs exist:
+- `erd-auth.puml` (auth_db)
+- `erd-ecom.puml` (ecom_db)
+- `erd-pay.puml` (pay_db)
+- `erd-wallet.puml` (wallet_db)
+- `erd-noti.puml` (noti_db)
 
 Ask: "Do you want to update the ERD modules? (yes/no)"
 

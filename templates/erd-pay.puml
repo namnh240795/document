@@ -1,0 +1,64 @@
+@startuml
+' ============================================================
+' ERD: Payment Database (pay_db)
+' Modules: PAY
+' Tables: xxx_payments, xxx_refunds, xxx_transaction_logs
+'
+' RULE: Replace "xxx" with your project short name
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+
+title Payment Database (pay_db)
+
+entity "xxx_payments" as payments {
+  * id : uuid <<PK>>
+  --
+  * order_id : uuid  ' Application-level reference to ecom_db.xxx_orders
+  * user_id : uuid  ' Application-level reference to auth_db.xxx_users
+  * method : enum('cod','bank_transfer','credit_card','e_wallet')
+  * status : enum('pending','completed','failed','refunded')
+  * amount : decimal(12,2)
+  * currency : varchar(3) DEFAULT 'VND'
+  * transaction_id : varchar(100)
+  * gateway_response : jsonb
+  * paid_at : timestamp
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "xxx_refunds" as refunds {
+  * id : uuid <<PK>>
+  --
+  * payment_id : uuid <<FK>>
+  * order_id : uuid  ' Application-level reference
+  * amount : decimal(12,2)
+  * reason : text
+  * status : enum('pending','approved','rejected','completed')
+  * processed_by : uuid  ' Application-level reference
+  * processed_at : timestamp
+  * created_at : timestamp
+}
+
+entity "xxx_transaction_logs" as tx_logs {
+  * id : uuid <<PK>>
+  --
+  * payment_id : uuid <<FK>>
+  * action : varchar(50)
+  * amount : decimal(12,2)
+  * status : varchar(20)
+  * gateway_response : jsonb
+  * ip_address : varchar(45)
+  * created_at : timestamp
+}
+
+' --- Relationships ---
+payments ||--o{ refunds : "may have"
+payments ||--o{ tx_logs : "logged"
+
+@enduml

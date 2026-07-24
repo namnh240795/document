@@ -1,0 +1,81 @@
+@startuml
+' ============================================================
+' ERD: Authentication Database (auth_db)
+' Modules: AUTH
+' Tables: xxx_users, xxx_user_sessions, xxx_roles, xxx_user_roles
+'
+' RULE: Replace "xxx" with your project short name
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+
+title Authentication Database (auth_db)
+
+entity "xxx_users" as users {
+  * id : uuid <<PK>>
+  --
+  * email : varchar(255) <<UNIQUE>>
+  * phone : varchar(20) <<UNIQUE>>
+  * name : varchar(100)
+  * password_hash : varchar(255)
+  * email_verified : boolean DEFAULT false
+  * phone_verified : boolean DEFAULT false
+  * status : enum('active','inactive','banned')
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "xxx_user_sessions" as sessions {
+  * id : uuid <<PK>>
+  --
+  * user_id : uuid <<FK>>
+  * token : varchar(500)
+  * refresh_token : varchar(500)
+  * ip_address : varchar(45)
+  * user_agent : text
+  * expires_at : timestamp
+  * created_at : timestamp
+}
+
+entity "xxx_roles" as roles {
+  * id : uuid <<PK>>
+  --
+  * name : varchar(50) <<UNIQUE>>
+  * description : text
+  * permissions : jsonb
+  * created_at : timestamp
+}
+
+entity "xxx_user_roles" as user_roles {
+  * id : uuid <<PK>>
+  --
+  * user_id : uuid <<FK>>
+  * role_id : uuid <<FK>>
+  * assigned_at : timestamp
+  * assigned_by : uuid <<FK>>
+}
+
+entity "xxx_verification_codes" as verification {
+  * id : uuid <<PK>>
+  --
+  * user_id : uuid <<FK>>
+  * code : varchar(10)
+  * type : enum('email','phone','password_reset')
+  * expires_at : timestamp
+  * used : boolean DEFAULT false
+  * created_at : timestamp
+}
+
+' --- Relationships ---
+users ||--o{ sessions : "has"
+users ||--o{ user_roles : "assigned"
+roles ||--o{ user_roles : "granted to"
+users ||--o{ verification : "receives"
+users ||--o{ user_roles : "assigned by"
+
+@enduml

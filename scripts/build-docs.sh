@@ -246,6 +246,16 @@ cat > "$INDEX_FILE" <<EOF
 </head>
 <body>
 
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <div class="logo-placeholder">Your Logo</div>
+  </div>
+  <div class="logo-right">
+    <div class="logo-placeholder">Partner Logo</div>
+  </div>
+</div>
+
 <div class="cover">
   <h1>System Documentation</h1>
   <div class="subtitle">$PROJECT_NAME</div>

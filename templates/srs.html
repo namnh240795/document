@@ -4,12 +4,20 @@
   <meta charset="UTF-8">
   <title>Software Requirements Specification - Authentication System</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    .req-id { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
-    .trace-table td:first-child { white-space: nowrap; }
-  </style>
 </head>
 <body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <!-- TODO: Replace with your company logo -->
+    <div class="logo-placeholder">Your Logo</div>
+  </div>
+  <div class="logo-right">
+    <!-- TODO: Replace with partner logo -->
+    <div class="logo-placeholder">Partner Logo</div>
+  </div>
+</div>
 
 <!-- COVER PAGE -->
 <div class="cover">
@@ -17,20 +25,103 @@
   <div class="subtitle">Authentication System</div>
   <table class="meta-table">
     <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>Date</td><td>2026-07-23</td></tr>
+    <tr><td>Date</td><td>2026-07-24</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
     <tr><td>Tech Stack</td><td>NestJS, Better Auth, PostgreSQL, Drizzle ORM, RabbitMQ, Redis</td></tr>
   </table>
 </div>
 
-<!-- 1. INTRODUCTION -->
-<h1>1. Introduction</h1>
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Introduction</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 Scope</a></li>
+        <li><a href="#section-1-3">1.3 Definitions</a></li>
+        <li><a href="#section-1-4">1.4 Requirement ID Convention</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-2">2. Overall Description</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Product Perspective</a></li>
+        <li><a href="#section-2-2">2.2 User Classes</a></li>
+        <li><a href="#section-2-3">2.3 Operating Environment</a></li>
+        <li><a href="#section-2-4">2.4 System Modules</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Functional Requirements</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 Use Case Diagram</a></li>
+        <li><a href="#section-3-2">3.2 UC-01: User Registration</a></li>
+        <li><a href="#section-3-3">3.3 UC-02: User Login</a></li>
+        <li><a href="#section-3-4">3.4 UC-03: Logout</a></li>
+        <li><a href="#section-3-5">3.5 UC-04: Refresh Token</a></li>
+        <li><a href="#section-3-6">3.6 UC-05: Reset Password via Email</a></li>
+        <li><a href="#section-3-7">3.7 UC-06: Reset Password via Phone/OTP</a></li>
+        <li><a href="#section-3-8">3.8 UC-07: Change Password</a></li>
+        <li><a href="#section-3-9">3.9 UC-08: Verify Email</a></li>
+        <li><a href="#section-3-10">3.10 UC-09: Verify Phone</a></li>
+        <li><a href="#section-3-11">3.11 UC-10: Manage Users (Admin)</a></li>
+        <li><a href="#section-3-12">3.12 UC-11: Manage Roles (Admin)</a></li>
+        <li><a href="#section-3-13">3.13 UC-12: Request Account Verification</a></li>
+        <li><a href="#section-3-14">3.14 UC-13: Resend Verification</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Functional Requirements Detail</a>
+      <ul>
+        <li><a href="#fr-001">FR-001: User Registration</a></li>
+        <li><a href="#fr-002">FR-002: User Login</a></li>
+        <li><a href="#fr-003">FR-003: Logout</a></li>
+        <li><a href="#fr-004">FR-004: Refresh Token</a></li>
+        <li><a href="#fr-005">FR-005: Reset Password (Email)</a></li>
+        <li><a href="#fr-006">FR-006: Reset Password (Phone)</a></li>
+        <li><a href="#fr-007">FR-007: Change Password</a></li>
+        <li><a href="#fr-008">FR-008: Verify Email</a></li>
+        <li><a href="#fr-009">FR-009: Verify Phone</a></li>
+        <li><a href="#fr-010">FR-010: Manage Users</a></li>
+        <li><a href="#fr-011">FR-011: Manage Roles</a></li>
+        <li><a href="#fr-012">FR-012: Request Verification</a></li>
+        <li><a href="#fr-013">FR-013: Resend Verification</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Data Model</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 Entity Relationship Diagram</a></li>
+        <li><a href="#section-5-2">5.2 Data Requirements</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. System Function Flow</a>
+      <ul>
+        <li><a href="#section-6-1">6.1 Activity Diagram</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-7">7. API Specification</a>
+      <ul>
+        <li><a href="#section-7-1">7.1 OpenAPI Specification</a></li>
+        <li><a href="#section-7-2">7.2 Endpoint Summary</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-8">8. Integration</a>
+      <ul>
+        <li><a href="#section-8-1">8.1 Sequence Diagram</a></li>
+        <li><a href="#section-8-2">8.2 Integration Requirements</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-9">9. Non-Functional Requirements</a></li>
+    <li><a href="#section-10">10. Requirements Traceability Matrix</a></li>
+  </ul>
+</div>
 
-<h2>1.1 Purpose</h2>
+<!-- 1. INTRODUCTION -->
+<h1 id="section-1">1. Introduction</h1>
+
+<h2 id="section-1-1">1.1 Purpose</h2>
 <p>This document defines the software requirements for the Authentication System. It provides a comprehensive set of functional and non-functional requirements for user registration, login, session management, and role-based access control using Better Auth with NestJS, PostgreSQL, and Drizzle ORM.</p>
 
-<h2>1.2 Scope</h2>
+<h2 id="section-1-2">1.2 Scope</h2>
 <p>The Authentication System handles:</p>
 <ul>
   <li>User registration with email or phone number + password</li>
@@ -44,7 +135,7 @@
   <li>User management (admin CRUD)</li>
 </ul>
 
-<h2>1.3 Definitions</h2>
+<h2 id="section-1-3">1.3 Definitions</h2>
 <table>
   <tr><th>Term</th><th>Definition</th></tr>
   <tr><td>SRS</td><td>Software Requirements Specification</td></tr>
@@ -62,7 +153,7 @@
   <tr><td>Idempotency</td><td>Property ensuring duplicate requests produce the same result</td></tr>
 </table>
 
-<h2>1.4 Requirement ID Convention</h2>
+<h2 id="section-1-4">1.4 Requirement ID Convention</h2>
 <table>
   <tr><th>Prefix</th><th>Type</th><th>Example</th></tr>
   <tr><td>FR-</td><td>Functional Requirement</td><td>FR-001, FR-002</td></tr>
@@ -73,22 +164,22 @@
 </table>
 
 <!-- 2. OVERALL DESCRIPTION -->
-<h1>2. Overall Description</h1>
+<h1 id="section-2">2. Overall Description</h1>
 
-<h2>2.1 Product Perspective</h2>
+<h2 id="section-2-1">2.1 Product Perspective</h2>
 <div class="diagram">
   <img src="../images/architecture/architecture-overview.png" alt="Architecture Overview">
   <div class="caption">Figure 1: System Context Diagram (C4 Level 1)</div>
 </div>
 
-<h2>2.2 User Classes</h2>
+<h2 id="section-2-2">2.2 User Classes</h2>
 <table>
   <tr><th>Role</th><th>Description</th></tr>
   <tr><td>User</td><td>Regular user who can register, login, manage their profile</td></tr>
   <tr><td>Admin</td><td>Administrator who can manage all users and roles</td></tr>
 </table>
 
-<h2>2.3 Operating Environment</h2>
+<h2 id="section-2-3">2.3 Operating Environment</h2>
 <ul>
   <li>Platform: Web (REST API)</li>
   <li>Backend: NestJS (Node.js 20+)</li>
@@ -98,7 +189,7 @@
   <li>Language: TypeScript</li>
 </ul>
 
-<h2>2.4 System Modules</h2>
+<h2 id="section-2-4">2.4 System Modules</h2>
 <p>The system is divided into modules. Each feature belongs to one or more modules.</p>
 <table class="trace-table">
   <tr><th>Module</th><th>Code</th><th>Description</th><th>Key Tables</th></tr>
@@ -107,18 +198,18 @@
 </table>
 
 <!-- 3. FUNCTIONAL REQUIREMENTS -->
-<h1>3. Functional Requirements</h1>
+<h1 id="section-3">3. Functional Requirements</h1>
 
-<h2>3.1 Use Case Diagram</h2>
+<h2 id="section-3-1">3.1 Use Case Diagram</h2>
 <div class="diagram">
   <img src="../images/usecase/usecase-diagram.png" alt="Use Case Diagram">
   <div class="caption">Figure 2: Use Case Diagram</div>
 </div>
 
-<h2>3.2 UC-01: User Registration</h2>
+<h2 id="section-3-2">3.2 UC-01: User Registration</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-001"><span class="req-id">FR-001</span></td></tr>
   <tr><td>Actor</td><td>User</td></tr>
   <tr><td>Precondition</td><td>User is not authenticated</td></tr>
   <tr><td>Postcondition</td><td>User account created, verification email/OTP sent</td></tr>
@@ -147,10 +238,10 @@
   <li>Server error: return 500 Internal Error</li>
 </ol>
 
-<h2>3.3 UC-02: User Login</h2>
+<h2 id="section-3-3">3.3 UC-02: User Login</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-002</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-002"><span class="req-id">FR-002</span></td></tr>
   <tr><td>Actor</td><td>User</td></tr>
   <tr><td>Precondition</td><td>User account exists</td></tr>
   <tr><td>Postcondition</td><td>User authenticated, session created, tokens issued</td></tr>
@@ -173,10 +264,10 @@
   <li>Account not verified: return 403 Account Not Verified</li>
 </ol>
 
-<h2>3.4 UC-03: Logout</h2>
+<h2 id="section-3-4">3.4 UC-03: Logout</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-003"><span class="req-id">FR-003</span></td></tr>
   <tr><td>Actor</td><td>User</td></tr>
   <tr><td>Precondition</td><td>User is authenticated</td></tr>
   <tr><td>Postcondition</td><td>Session invalidated</td></tr>
@@ -190,82 +281,82 @@
   <li>System returns success response</li>
 </ol>
 
-<h2>3.5 UC-04: Refresh Token</h2>
+<h2 id="section-3-5">3.5 UC-04: Refresh Token</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-004"><span class="req-id">FR-004</span></td></tr>
   <tr><td>Actor</td><td>System (automatic)</td></tr>
   <tr><td>Precondition</td><td>Refresh token is valid</td></tr>
   <tr><td>Postcondition</td><td>New access token issued</td></tr>
 </table>
 
-<h2>3.6 UC-05: Reset Password via Email</h2>
+<h2 id="section-3-6">3.6 UC-05: Reset Password via Email</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-005</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-005"><span class="req-id">FR-005</span></td></tr>
   <tr><td>Actor</td><td>User</td></tr>
   <tr><td>Precondition</td><td>User has verified email</td></tr>
   <tr><td>Postcondition</td><td>Password reset email sent</td></tr>
 </table>
 
-<h2>3.7 UC-06: Reset Password via Phone/OTP</h2>
+<h2 id="section-3-7">3.7 UC-06: Reset Password via Phone/OTP</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-006</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-006"><span class="req-id">FR-006</span></td></tr>
   <tr><td>Actor</td><td>User</td></tr>
   <tr><td>Precondition</td><td>User has verified phone</td></tr>
   <tr><td>Postcondition</td><td>OTP sent to phone</td></tr>
 </table>
 
-<h2>3.8 UC-07: Change Password</h2>
+<h2 id="section-3-8">3.8 UC-07: Change Password</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-007</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-007"><span class="req-id">FR-007</span></td></tr>
   <tr><td>Actor</td><td>User</td></tr>
   <tr><td>Precondition</td><td>User is authenticated</td></tr>
   <tr><td>Postcondition</td><td>Password updated, all sessions invalidated</td></tr>
 </table>
 
-<h2>3.9 UC-08: Verify Email</h2>
+<h2 id="section-3-9">3.9 UC-08: Verify Email</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-008</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-008"><span class="req-id">FR-008</span></td></tr>
   <tr><td>Actor</td><td>System / User</td></tr>
   <tr><td>Precondition</td><td>Verification token is valid</td></tr>
   <tr><td>Postcondition</td><td>email_verified set to true</td></tr>
 </table>
 
-<h2>3.10 UC-09: Verify Phone</h2>
+<h2 id="section-3-10">3.10 UC-09: Verify Phone</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-009</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-009"><span class="req-id">FR-009</span></td></tr>
   <tr><td>Actor</td><td>User</td></tr>
   <tr><td>Precondition</td><td>OTP sent to phone</td></tr>
   <tr><td>Postcondition</td><td>phone_verified set to true</td></tr>
 </table>
 
-<h2>3.11 UC-10: Manage Users (Admin)</h2>
+<h2 id="section-3-11">3.11 UC-10: Manage Users (Admin)</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-010</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-010"><span class="req-id">FR-010</span></td></tr>
   <tr><td>Actor</td><td>Admin</td></tr>
   <tr><td>Precondition</td><td>Admin is authenticated with admin role</td></tr>
   <tr><td>Postcondition</td><td>User created/updated/deleted</td></tr>
 </table>
 
-<h2>3.12 UC-11: Manage Roles (Admin)</h2>
+<h2 id="section-3-12">3.12 UC-11: Manage Roles (Admin)</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-011</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-011"><span class="req-id">FR-011</span></td></tr>
   <tr><td>Actor</td><td>Admin</td></tr>
   <tr><td>Precondition</td><td>Admin is authenticated</td></tr>
   <tr><td>Postcondition</td><td>Role created/updated/deleted, assigned to users</td></tr>
 </table>
 
-<h2>3.13 UC-12: Request Account Verification</h2>
+<h2 id="section-3-13">3.13 UC-12: Request Account Verification</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-012"><span class="req-id">FR-012</span></td></tr>
   <tr><td>Actor</td><td>User / System (on registration)</td></tr>
   <tr><td>Precondition</td><td>User exists, email or phone not yet verified</td></tr>
   <tr><td>Postcondition</td><td>Verification email/SMS sent asynchronously via RabbitMQ</td></tr>
@@ -297,10 +388,10 @@
   <li>Redis unavailable: bypass idempotency check, log warning, proceed with send</li>
 </ol>
 
-<h2>3.14 UC-13: Resend Verification</h2>
+<h2 id="section-3-14">3.14 UC-13: Resend Verification</h2>
 <table>
   <tr><th>Field</th><th>Value</th></tr>
-  <tr><td>Requirement IDs</td><td><span class="req-id">FR-013</span></td></tr>
+  <tr><td>Requirement IDs</td><td id="fr-013"><span class="req-id">FR-013</span></td></tr>
   <tr><td>Actor</td><td>User</td></tr>
   <tr><td>Precondition</td><td>User exists, previous verification expired or not received</td></tr>
   <tr><td>Postcondition</td><td>New verification email/SMS sent with rate limiting</td></tr>
@@ -316,7 +407,7 @@
 </ol>
 
 <!-- 4. FUNCTIONAL REQUIREMENTS TABLE -->
-<h1>4. Functional Requirements Detail</h1>
+<h1 id="section-4">4. Functional Requirements Detail</h1>
 
 <table class="trace-table">
   <tr>
@@ -328,7 +419,7 @@
     <th>Description</th>
   </tr>
   <tr>
-    <td><span class="req-id">FR-001</span></td>
+    <td id="fr-001"><span class="req-id">FR-001</span></td>
     <td>AUTH</td>
     <td>User Registration</td>
     <td>UC-01</td>
@@ -336,7 +427,7 @@
     <td>System shall allow users to register with email or phone + password</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-002</span></td>
+    <td id="fr-002"><span class="req-id">FR-002</span></td>
     <td>AUTH</td>
     <td>User Login</td>
     <td>UC-02</td>
@@ -344,7 +435,7 @@
     <td>System shall authenticate users via email or phone + password</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-003</span></td>
+    <td id="fr-003"><span class="req-id">FR-003</span></td>
     <td>AUTH</td>
     <td>Logout</td>
     <td>UC-03</td>
@@ -352,7 +443,7 @@
     <td>System shall invalidate user session on logout</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-004</span></td>
+    <td id="fr-004"><span class="req-id">FR-004</span></td>
     <td>AUTH</td>
     <td>Refresh Token</td>
     <td>UC-04</td>
@@ -360,7 +451,7 @@
     <td>System shall issue new access token using refresh token</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-005</span></td>
+    <td id="fr-005"><span class="req-id">FR-005</span></td>
     <td>AUTH</td>
     <td>Reset Password (Email)</td>
     <td>UC-05</td>
@@ -368,7 +459,7 @@
     <td>System shall send password reset link to verified email</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-006</span></td>
+    <td id="fr-006"><span class="req-id">FR-006</span></td>
     <td>AUTH</td>
     <td>Reset Password (Phone)</td>
     <td>UC-06</td>
@@ -376,7 +467,7 @@
     <td>System shall send OTP to verified phone for password reset</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-007</span></td>
+    <td id="fr-007"><span class="req-id">FR-007</span></td>
     <td>AUTH</td>
     <td>Change Password</td>
     <td>UC-07</td>
@@ -384,7 +475,7 @@
     <td>System shall allow authenticated users to change password</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-008</span></td>
+    <td id="fr-008"><span class="req-id">FR-008</span></td>
     <td>AUTH</td>
     <td>Verify Email</td>
     <td>UC-08</td>
@@ -392,7 +483,7 @@
     <td>System shall verify email via token link</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-009</span></td>
+    <td id="fr-009"><span class="req-id">FR-009</span></td>
     <td>AUTH</td>
     <td>Verify Phone</td>
     <td>UC-09</td>
@@ -400,7 +491,7 @@
     <td>System shall verify phone via OTP code</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-010</span></td>
+    <td id="fr-010"><span class="req-id">FR-010</span></td>
     <td>AUTH</td>
     <td>Manage Users</td>
     <td>UC-10</td>
@@ -408,7 +499,7 @@
     <td>Admin shall be able to create, edit, deactivate users</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-011</span></td>
+    <td id="fr-011"><span class="req-id">FR-011</span></td>
     <td>AUTH</td>
     <td>Manage Roles</td>
     <td>UC-11</td>
@@ -416,7 +507,7 @@
     <td>Admin shall be able to create, assign, revoke roles</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-012</span></td>
+    <td id="fr-012"><span class="req-id">FR-012</span></td>
     <td>AUTH</td>
     <td>Request Account Verification</td>
     <td>UC-12</td>
@@ -424,7 +515,7 @@
     <td>System shall send verification email/SMS asynchronously via RabbitMQ with idempotency check using Redis</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-013</span></td>
+    <td id="fr-013"><span class="req-id">FR-013</span></td>
     <td>AUTH</td>
     <td>Resend Verification</td>
     <td>UC-13</td>
@@ -434,15 +525,15 @@
 </table>
 
 <!-- 5. DATA MODEL -->
-<h1>5. Data Model</h1>
+<h1 id="section-5">5. Data Model</h1>
 
-<h2>5.1 Entity Relationship Diagram</h2>
+<h2 id="section-5-1">5.1 Entity Relationship Diagram</h2>
 <div class="diagram">
   <img src="../images/erd/erd-diagram.png" alt="ERD Diagram">
   <div class="caption">Figure 3: Entity Relationship Diagram</div>
 </div>
 
-<h2>5.2 Data Requirements</h2>
+<h2 id="section-5-2">5.2 Data Requirements</h2>
 <table class="trace-table">
   <tr>
     <th>Req ID</th>
@@ -489,7 +580,7 @@
 </table>
 
 <!-- 6. SYSTEM FUNCTION FLOW -->
-<h1>6. System Function Flow</h1>
+<h1 id="section-6">6. System Function Flow</h1>
 
 <h2>6.1 Activity Diagram - Login Flow</h2>
 <div class="diagram">
@@ -498,12 +589,12 @@
 </div>
 
 <!-- 7. API SPECIFICATION -->
-<h1>7. API Specification</h1>
+<h1 id="section-7">7. API Specification</h1>
 
-<h2>7.1 OpenAPI Specification</h2>
+<h2 id="section-7-1">7.1 OpenAPI Specification</h2>
 <p>See: <code>openapi.yaml</code></p>
 
-<h2>7.2 Endpoint Summary</h2>
+<h2 id="section-7-2">7.2 Endpoint Summary</h2>
 <table class="trace-table">
   <tr>
     <th>Method</th>
@@ -514,27 +605,27 @@
   </tr>
   <tr>
     <td>POST</td><td>/auth/sign-up</td><td>Register new user</td>
-    <td><span class="req-id">FR-001</span></td><td>Public</td>
+    <td id="fr-001"><span class="req-id">FR-001</span></td><td>Public</td>
   </tr>
   <tr>
     <td>POST</td><td>/auth/sign-in</td><td>Login</td>
-    <td><span class="req-id">FR-002</span></td><td>Public</td>
+    <td id="fr-002"><span class="req-id">FR-002</span></td><td>Public</td>
   </tr>
   <tr>
     <td>POST</td><td>/auth/sign-out</td><td>Logout</td>
-    <td><span class="req-id">FR-003</span></td><td>Authenticated</td>
+    <td id="fr-003"><span class="req-id">FR-003</span></td><td>Authenticated</td>
   </tr>
   <tr>
     <td>POST</td><td>/auth/refresh</td><td>Refresh access token</td>
-    <td><span class="req-id">FR-004</span></td><td>Public (refresh token)</td>
+    <td id="fr-004"><span class="req-id">FR-004</span></td><td>Public (refresh token)</td>
   </tr>
   <tr>
     <td>POST</td><td>/auth/forgot-password</td><td>Request password reset (email)</td>
-    <td><span class="req-id">FR-005</span></td><td>Public</td>
+    <td id="fr-005"><span class="req-id">FR-005</span></td><td>Public</td>
   </tr>
   <tr>
     <td>POST</td><td>/auth/forgot-password-phone</td><td>Request password reset (phone/OTP)</td>
-    <td><span class="req-id">FR-006</span></td><td>Public</td>
+    <td id="fr-006"><span class="req-id">FR-006</span></td><td>Public</td>
   </tr>
   <tr>
     <td>POST</td><td>/auth/reset-password</td><td>Reset password with token</td>
@@ -542,64 +633,64 @@
   </tr>
   <tr>
     <td>POST</td><td>/auth/change-password</td><td>Change password (authenticated)</td>
-    <td><span class="req-id">FR-007</span></td><td>Authenticated</td>
+    <td id="fr-007"><span class="req-id">FR-007</span></td><td>Authenticated</td>
   </tr>
   <tr>
     <td>GET</td><td>/auth/verify-email</td><td>Verify email via token</td>
-    <td><span class="req-id">FR-008</span></td><td>Public</td>
+    <td id="fr-008"><span class="req-id">FR-008</span></td><td>Public</td>
   </tr>
   <tr>
     <td>POST</td><td>/auth/verify-phone</td><td>Verify phone via OTP</td>
-    <td><span class="req-id">FR-009</span></td><td>Public</td>
+    <td id="fr-009"><span class="req-id">FR-009</span></td><td>Public</td>
   </tr>
   <tr>
     <td>GET</td><td>/users</td><td>List users (admin)</td>
-    <td><span class="req-id">FR-010</span></td><td>Admin</td>
+    <td id="fr-010"><span class="req-id">FR-010</span></td><td>Admin</td>
   </tr>
   <tr>
     <td>GET</td><td>/users/:id</td><td>Get user detail (admin)</td>
-    <td><span class="req-id">FR-010</span></td><td>Admin</td>
+    <td id="fr-010"><span class="req-id">FR-010</span></td><td>Admin</td>
   </tr>
   <tr>
     <td>PATCH</td><td>/users/:id</td><td>Update user (admin)</td>
-    <td><span class="req-id">FR-010</span></td><td>Admin</td>
+    <td id="fr-010"><span class="req-id">FR-010</span></td><td>Admin</td>
   </tr>
   <tr>
     <td>DELETE</td><td>/users/:id</td><td>Delete user (admin)</td>
-    <td><span class="req-id">FR-010</span></td><td>Admin</td>
+    <td id="fr-010"><span class="req-id">FR-010</span></td><td>Admin</td>
   </tr>
   <tr>
     <td>GET</td><td>/roles</td><td>List roles</td>
-    <td><span class="req-id">FR-011</span></td><td>Admin</td>
+    <td id="fr-011"><span class="req-id">FR-011</span></td><td>Admin</td>
   </tr>
   <tr>
     <td>POST</td><td>/roles</td><td>Create role</td>
-    <td><span class="req-id">FR-011</span></td><td>Admin</td>
+    <td id="fr-011"><span class="req-id">FR-011</span></td><td>Admin</td>
   </tr>
   <tr>
     <td>POST</td><td>/users/:id/roles</td><td>Assign role to user</td>
-    <td><span class="req-id">FR-011</span></td><td>Admin</td>
+    <td id="fr-011"><span class="req-id">FR-011</span></td><td>Admin</td>
   </tr>
   <tr>
     <td>POST</td><td>/auth/send-verification</td><td>Request account verification (email/SMS)</td>
-    <td><span class="req-id">FR-012</span></td><td>Authenticated</td>
+    <td id="fr-012"><span class="req-id">FR-012</span></td><td>Authenticated</td>
   </tr>
   <tr>
     <td>POST</td><td>/auth/resend-verification</td><td>Resend verification (rate-limited)</td>
-    <td><span class="req-id">FR-013</span></td><td>Authenticated</td>
+    <td id="fr-013"><span class="req-id">FR-013</span></td><td>Authenticated</td>
   </tr>
 </table>
 
 <!-- 8. INTEGRATION -->
-<h1>8. Integration</h1>
+<h1 id="section-8">8. Integration</h1>
 
-<h2>8.1 Sequence Diagram</h2>
+<h2 id="section-8-1">8.1 Sequence Diagram</h2>
 <div class="diagram">
   <img src="../images/sequence/sequence-diagram.png" alt="Sequence Diagram">
   <div class="caption">Figure 5: Login Sequence Diagram</div>
 </div>
 
-<h2>8.2 Integration Requirements</h2>
+<h2 id="section-8-2">8.2 Integration Requirements</h2>
 <table class="trace-table">
   <tr>
     <th>Req ID</th>
@@ -639,7 +730,7 @@
 </table>
 
 <!-- 9. NON-FUNCTIONAL REQUIREMENTS -->
-<h1>9. Non-Functional Requirements</h1>
+<h1 id="section-9">9. Non-Functional Requirements</h1>
 
 <table class="trace-table">
   <tr>
@@ -717,7 +808,7 @@
 </table>
 
 <!-- 10. TRACEABILITY MATRIX -->
-<h1>10. Requirements Traceability Matrix</h1>
+<h1 id="section-10">10. Requirements Traceability Matrix</h1>
 
 <p>This matrix maps requirements to system components and design decisions.</p>
 
@@ -731,7 +822,7 @@
     <th>External System</th>
   </tr>
   <tr>
-    <td><span class="req-id">FR-001</span></td>
+    <td id="fr-001"><span class="req-id">FR-001</span></td>
     <td>User Registration</td>
     <td>UC-01</td>
     <td>POST /auth/sign-up</td>
@@ -739,7 +830,7 @@
     <td>Email / SMS Provider</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-002</span></td>
+    <td id="fr-002"><span class="req-id">FR-002</span></td>
     <td>User Login</td>
     <td>UC-02</td>
     <td>POST /auth/sign-in</td>
@@ -747,7 +838,7 @@
     <td>-</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-003</span></td>
+    <td id="fr-003"><span class="req-id">FR-003</span></td>
     <td>Logout</td>
     <td>UC-03</td>
     <td>POST /auth/sign-out</td>
@@ -755,7 +846,7 @@
     <td>-</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-004</span></td>
+    <td id="fr-004"><span class="req-id">FR-004</span></td>
     <td>Refresh Token</td>
     <td>UC-04</td>
     <td>POST /auth/refresh</td>
@@ -763,7 +854,7 @@
     <td>-</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-005</span></td>
+    <td id="fr-005"><span class="req-id">FR-005</span></td>
     <td>Reset Password (Email)</td>
     <td>UC-05</td>
     <td>POST /auth/forgot-password</td>
@@ -771,7 +862,7 @@
     <td>Email Provider</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-006</span></td>
+    <td id="fr-006"><span class="req-id">FR-006</span></td>
     <td>Reset Password (Phone)</td>
     <td>UC-06</td>
     <td>POST /auth/forgot-password-phone</td>
@@ -779,7 +870,7 @@
     <td>SMS Provider</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-007</span></td>
+    <td id="fr-007"><span class="req-id">FR-007</span></td>
     <td>Change Password</td>
     <td>UC-07</td>
     <td>POST /auth/change-password</td>
@@ -787,7 +878,7 @@
     <td>-</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-008</span></td>
+    <td id="fr-008"><span class="req-id">FR-008</span></td>
     <td>Verify Email</td>
     <td>UC-08</td>
     <td>GET /auth/verify-email</td>
@@ -795,7 +886,7 @@
     <td>-</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-009</span></td>
+    <td id="fr-009"><span class="req-id">FR-009</span></td>
     <td>Verify Phone</td>
     <td>UC-09</td>
     <td>POST /auth/verify-phone</td>
@@ -803,7 +894,7 @@
     <td>-</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-010</span></td>
+    <td id="fr-010"><span class="req-id">FR-010</span></td>
     <td>Manage Users</td>
     <td>UC-10</td>
     <td>GET/PATCH/DELETE /users/:id</td>
@@ -811,7 +902,7 @@
     <td>-</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-011</span></td>
+    <td id="fr-011"><span class="req-id">FR-011</span></td>
     <td>Manage Roles</td>
     <td>UC-11</td>
     <td>GET/POST /roles, POST /users/:id/roles</td>
@@ -819,7 +910,7 @@
     <td>-</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-012</span></td>
+    <td id="fr-012"><span class="req-id">FR-012</span></td>
     <td>Request Account Verification</td>
     <td>UC-12</td>
     <td>POST /auth/send-verification</td>
@@ -827,7 +918,7 @@
     <td>RabbitMQ, Redis, Email/SMS Provider</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-013</span></td>
+    <td id="fr-013"><span class="req-id">FR-013</span></td>
     <td>Resend Verification</td>
     <td>UC-13</td>
     <td>POST /auth/resend-verification</td>

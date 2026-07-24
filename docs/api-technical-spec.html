@@ -4,12 +4,18 @@
   <meta charset="UTF-8">
   <title>API Technical Specification - Authentication System</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    .req-id { background: #e8f4fd; color: #1a5276; padding: 2px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
-    .trace-table td:first-child { white-space: nowrap; }
-  </style>
 </head>
 <body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <div class="logo-placeholder">Your Logo</div>
+  </div>
+  <div class="logo-right">
+    <div class="logo-placeholder">Partner Logo</div>
+  </div>
+</div>
 
 <!-- COVER PAGE -->
 <div class="cover">
@@ -18,11 +24,28 @@
   <table class="meta-table">
     <tr><td>Version</td><td>1.0</td></tr>
     <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
-    <tr><td>Date</td><td>2026-07-23</td></tr>
+    <tr><td>Date</td><td>2026-07-24</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>OpenAPI Spec</td><td>openapi.yaml</td></tr>
     <tr><td>Related SRS</td><td><a href="srs.html">SRS Document</a></td></tr>
   </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Response Format</a></li>
+    <li><a href="#section-3">3. Error Codes</a></li>
+    <li><a href="#section-4">4. Rate Limiting</a></li>
+    <li><a href="#section-5">5. Endpoints</a></li>
+    <li><a href="#section-6">6. Pagination</a></li>
+    <li><a href="#section-7">7. Filtering & Sorting</a></li>
+    <li><a href="#section-8">8. Versioning</a></li>
+    <li><a href="#section-9">9. SDK & Integration Examples</a></li>
+    <li><a href="#section-10">10. Changelog</a></li>
+  </ul>
 </div>
 
 <!-- 1. OVERVIEW -->

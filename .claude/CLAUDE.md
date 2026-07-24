@@ -55,27 +55,40 @@ ALL tables MUST use the format: `<project_short_name>_<table_name>`
 | employees | hrm_employees |
 | departments | hrm_departments |
 
-### ERD Structure
+### ERD Structure (Split by Database)
+
+ERD MUST be split into separate diagrams per database:
 
 ```
-ERD Diagram
-  ├── Authentication Module (proj_users, proj_roles, proj_sessions)
-  ├── Product Catalog Module (proj_products, proj_categories)
-  ├── E-Commerce Module (proj_orders, proj_order_items, proj_cart)
-  ├── Payment Module (proj_payments, proj_refunds, proj_tx_logs)
-  ├── Wallet Module (proj_wallets, proj_wallet_tx, proj_topup)
-  ├── Shipping Module (proj_addresses, proj_shipments)
-  └── Notification Module (proj_templates, proj_logs)
+templates/
+  ├── erd.puml           # Main ERD (all databases combined)
+  ├── erd-auth.puml      # auth_db ERD (AUTH module)
+  ├── erd-ecom.puml      # ecom_db ERD (PROD, ECOM, SHIP modules)
+  ├── erd-pay.puml       # pay_db ERD (PAY module)
+  ├── erd-wallet.puml    # wallet_db ERD (WAL module)
+  └── erd-noti.puml      # noti_db ERD (NOTI module)
 ```
+
+### ERD Per Database
+
+| File | Database | Modules | Tables |
+|------|----------|---------|--------|
+| `erd-auth.puml` | auth_db | AUTH | users, user_sessions, roles, user_roles, verification_codes |
+| `erd-ecom.puml` | ecom_db | PROD, ECOM, SHIP | products, categories, orders, order_items, addresses, shipments |
+| `erd-pay.puml` | pay_db | PAY | payments, refunds, transaction_logs |
+| `erd-wallet.puml` | wallet_db | WAL | wallets, wallet_transactions, wallet_topup_requests |
+| `erd-noti.puml` | noti_db | NOTI | notification_templates, notification_logs, sms_logs |
 
 ### Rules for ERD
 
-1. Each module MUST be visually separated (package/box in PlantUML)
-2. Each module MUST show which FR/NFR it resolves
-3. Cross-module relationships MUST be clearly marked
-4. Module boundaries MUST align with service boundaries in TDS
-5. ALL table names MUST follow `<project_short_name>_<table_name>` convention
-6. Foreign keys MUST reference full table name (e.g., `proj_users.id`)
+1. Each database MUST have its own ERD file
+2. Each module MUST be visually separated (package/box in PlantUML)
+3. Each module MUST show which FR/NFR it resolves
+4. Cross-database references use application-level IDs (no foreign keys across databases)
+5. Module boundaries MUST align with service boundaries in TDS
+6. ALL table names MUST follow `<project_short_name>_<table_name>` convention
+7. Foreign keys MUST reference full table name (e.g., `proj_users.id`)
+8. Generate per-database ERD: `make generate-erd-auth`, `make generate-erd-ecom`, etc.
 
 ### Module-to-Table Mapping
 
@@ -285,6 +298,96 @@ Database: noti_db
 - Every endpoint MUST show its requirement ID in the header
 - Include "Requirements Addressed" table mapping FR-xxx to endpoints
 - Endpoints SHOULD be grouped by module
+
+---
+
+## Rule: Document Header & Navigation
+
+Every HTML document MUST include a logo header and table of contents.
+
+### Logo Header
+
+Every page MUST have a logo header at the top:
+
+```html
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="path/to/your-logo.png" alt="Your Company" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="path/to/partner-logo.png" alt="Partner" class="logo">
+  </div>
+</div>
+```
+
+- Left side: Your company logo
+- Right side: Partner/client logo
+- Use placeholder div until actual logos are provided
+- Logos appear on every page (system docs and module docs)
+
+### Table of Contents
+
+Every page MUST have a TOC after the cover page:
+
+```html
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Section Name</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Sub-section</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+```
+
+### TOC Rules
+
+1. Every heading (h1, h2) MUST have an `id` attribute
+2. TOC MUST link to all sections and sub-sections
+3. TOC MUST be placed after cover page, before content
+4. Use nested `<ul>` for sub-sections
+5. SRS TOC MUST include links to each FR requirement (FR-001, FR-002, etc.)
+6. FR links MUST use `id="fr-001"` on the requirement row
+
+### Section ID Convention
+
+```
+<h1 id="section-1">1. Section</h1>
+<h2 id="section-1-1">1.1 Sub-section</h2>
+<h2 id="section-1-2">1.2 Sub-section</h2>
+<h1 id="section-2">2. Section</h1>
+```
+
+### FR Requirement ID Convention
+
+In the Functional Requirements Detail table (section 4 of SRS):
+
+```html
+<tr>
+  <td id="fr-001"><span class="req-id">FR-001</span></td>
+  <td>AUTH</td>
+  <td>User Registration</td>
+  ...
+</tr>
+```
+
+TOC link to FR:
+```html
+<li><a href="#fr-001">FR-001: User Registration</a></li>
+```
+
+### Logo Header Locations
+
+Logo header MUST appear in:
+- All system-level docs (srs.html, tds.html, database-design.html, api-technical-spec.html)
+- All module-level docs (module-srs.html, module-tds.html, etc.)
+- Index page (index.html)
+
+Logo header MUST NOT appear in:
+- style.css (only referenced)
+- PlantUML files (.puml)
 
 ---
 

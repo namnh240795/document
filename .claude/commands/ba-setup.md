@@ -80,29 +80,37 @@ Ask which documents they need, then:
 
 1. **SRS (Software Requirements Specification)**
    - Copy: `cp templates/srs.html <project-name>-srs.html`
+   - Update logo placeholders with actual company and partner logos
    - Fill in: purpose, scope, user classes
    - Add requirements with IDs (FR-xxx) and Module column
    - Link each requirement to its module (AUTH, ECOM, WAL, etc.)
    - Add Traceability Matrix mapping requirements to modules, endpoints, tables
    - Link generated diagrams in the img src attributes
+   - Update TOC if adding/removing sections
 
 2. **TDS (Technical Design Specification)**
    - Copy: `cp templates/tds.html <project-name>-tds.html`
+   - Update logo placeholders with actual company and partner logos
    - Fill in: architecture decisions, component design, deployment, security
    - Every design decision MUST show which SRS requirement it resolves
    - Component table MUST map to requirement IDs and modules
+   - Update TOC if adding/removing sections
 
 3. **Database Design**
    - Copy: `cp templates/database-design.html <project-name>-database-design.html`
+   - Update logo placeholders with actual company and partner logos
    - Tables are organized by module - keep only modules your system needs
    - Fill in: table definitions, indexes, migrations, backup strategy
    - Data Dictionary MUST include Module column
+   - Update TOC if adding/removing sections
 
 4. **API Technical Specification**
    - Copy: `cp templates/api-technical-spec.html <project-name>-api-spec.html`
+   - Update logo placeholders with actual company and partner logos
    - Fill in: endpoints, request/response examples, error codes
    - Every endpoint MUST show its requirement ID
    - Group endpoints by module
+   - Update TOC if adding/removing sections
 
 ### Step 6: Verify Traceability
 Run `/ba-trace` to verify:

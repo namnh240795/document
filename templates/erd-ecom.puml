@@ -1,0 +1,134 @@
+@startuml
+' ============================================================
+' ERD: E-Commerce Database (ecom_db)
+' Modules: PROD, ECOM, SHIP
+' Tables: xxx_products, xxx_categories, xxx_orders, xxx_order_items, xxx_addresses, xxx_shipments
+'
+' RULE: Replace "xxx" with your project short name
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+
+title E-Commerce Database (ecom_db)
+
+' --- Product Catalog ---
+entity "xxx_categories" as categories {
+  * id : uuid <<PK>>
+  --
+  * name : varchar(100)
+  * slug : varchar(100) <<UNIQUE>>
+  * description : text
+  * parent_id : uuid <<FK>>
+  * sort_order : int
+  * is_active : boolean DEFAULT true
+  * created_at : timestamp
+}
+
+entity "xxx_products" as products {
+  * id : uuid <<PK>>
+  --
+  * category_id : uuid <<FK>>
+  * name : varchar(200)
+  * slug : varchar(200) <<UNIQUE>>
+  * description : text
+  * sku : varchar(50) <<UNIQUE>>
+  * price : decimal(12,2)
+  * cost_price : decimal(12,2)
+  * stock_quantity : int DEFAULT 0
+  * status : enum('draft','active','archived')
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "xxx_product_images" as product_images {
+  * id : uuid <<PK>>
+  --
+  * product_id : uuid <<FK>>
+  * url : varchar(500)
+  * alt_text : varchar(200)
+  * sort_order : int
+  * is_primary : boolean DEFAULT false
+}
+
+' --- Orders ---
+entity "xxx_orders" as orders {
+  * id : uuid <<PK>>
+  --
+  * user_id : uuid <<FK>>  ' Application-level reference to auth_db.xxx_users
+  * order_number : varchar(20) <<UNIQUE>>
+  * status : enum('pending','confirmed','processing','shipped','delivered','cancelled')
+  * subtotal : decimal(12,2)
+  * tax_amount : decimal(12,2)
+  * shipping_fee : decimal(12,2)
+  * discount_amount : decimal(12,2)
+  * total_amount : decimal(12,2)
+  * shipping_address_id : uuid <<FK>>
+  * notes : text
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "xxx_order_items" as order_items {
+  * id : uuid <<PK>>
+  --
+  * order_id : uuid <<FK>>
+  * product_id : uuid <<FK>>
+  * quantity : int
+  * unit_price : decimal(12,2)
+  * subtotal : decimal(12,2)
+}
+
+entity "xxx_cart_items" as cart {
+  * id : uuid <<PK>>
+  --
+  * user_id : uuid  ' Application-level reference
+  * product_id : uuid <<FK>>
+  * quantity : int
+  * created_at : timestamp
+}
+
+' --- Shipping ---
+entity "xxx_addresses" as addresses {
+  * id : uuid <<PK>>
+  --
+  * user_id : uuid  ' Application-level reference
+  * label : varchar(50)
+  * street : varchar(255)
+  * city : varchar(100)
+  * state : varchar(100)
+  * zip_code : varchar(20)
+  * country : varchar(50)
+  * is_default : boolean DEFAULT false
+  * created_at : timestamp
+}
+
+entity "xxx_shipments" as shipments {
+  * id : uuid <<PK>>
+  --
+  * order_id : uuid <<FK>>
+  * address_id : uuid <<FK>>
+  * carrier : varchar(50)
+  * tracking_number : varchar(100)
+  * status : enum('pending','picked_up','in_transit','delivered')
+  * estimated_delivery : date
+  * actual_delivery : timestamp
+  * created_at : timestamp
+}
+
+' --- Relationships ---
+categories ||--o{ products : "categorizes"
+categories ||--o{ categories : "parent"
+products ||--o{ product_images : "has"
+products ||--o{ order_items : "included in"
+products ||--o{ cart : "added to cart"
+
+orders ||--o{ order_items : "contains"
+orders ||--o{ shipments : "shipped via"
+addresses ||--o{ shipments : "ship to"
+
+@enduml
