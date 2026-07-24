@@ -37,11 +37,31 @@
   </table>
 </div>
 
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Response Format</a></li>
+    <li><a href="#section-3">3. Error Codes</a></li>
+    <li><a href="#section-4">4. Rate Limiting</a></li>
+    <li><a href="#section-5">5. Endpoints</a></li>
+    <li><a href="#section-6">6. Pagination</a></li>
+    <li><a href="#section-7">7. Webhook Events</a></li>
+    <li><a href="#section-8">8. Changelog</a></li>
+  </ul>
+</div>
+
 <!-- 1. OVERVIEW -->
-<h1>1. Overview</h1>
+<h1 id="section-1">1. Overview</h1>
 
 <h2>1.1 Requirements Addressed</h2>
-<!-- REQUIREMENTS_ADDRESSED_PLACEHOLDER -->
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
+  <!-- TODO: Add requirements addressed here. Example:
+  <tr><td><span class="req-id">FR-001</span> User Registration</td><td>POST /auth/register</td></tr>
+  -->
+</table>
 
 <h2>1.2 API Principles</h2>
 <ul>
@@ -56,7 +76,7 @@
 <pre><code>Authorization: Bearer &lt;access_token&gt;</code></pre>
 
 <!-- 2. RESPONSE FORMAT -->
-<h1>2. Response Format</h1>
+<h1 id="section-2">2. Response Format</h1>
 
 <h2>2.1 Success Response</h2>
 <pre><code>{
@@ -81,29 +101,70 @@
 }</code></pre>
 
 <!-- 3. ERROR CODES -->
-<h1>3. Error Codes</h1>
-<!-- ERROR_CODES_PLACEHOLDER -->
+<h1 id="section-3">3. Error Codes</h1>
+
+<table>
+  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Request validation failed</td></tr>
+  <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid token</td></tr>
+  <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions</td></tr>
+  <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
+  <tr><td>409</td><td>CONFLICT</td><td>Resource already exists</td></tr>
+  <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
+  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
+</table>
 
 <!-- 4. RATE LIMITING -->
-<h1>4. Rate Limiting</h1>
-<!-- RATE_LIMITING_PLACEHOLDER -->
+<h1 id="section-4">4. Rate Limiting</h1>
+
+<table>
+  <tr><th>Endpoint Category</th><th>Requests/min</th><th>Burst</th></tr>
+  <tr><td>Auth endpoints</td><td>10</td><td>5</td></tr>
+  <tr><td>Authenticated endpoints</td><td>60</td><td>20</td></tr>
+  <tr><td>Admin endpoints</td><td>100</td><td>30</td></tr>
+</table>
 
 <!-- 5. ENDPOINTS -->
-<h1>5. Endpoints</h1>
-<!-- ENDPOINTS_PLACEHOLDER -->
-<!-- The build script will inject module-specific endpoints -->
+<h1 id="section-5">5. Endpoints</h1>
+
+<!-- TODO: Add endpoints here. Example: -->
+
+<!--
+<h2>5.1 Auth - Public</h2>
+
+<h3>POST /auth/register <em>(Public)</em> <span class="req-id">FR-001</span></h3>
+<p>Register new user with email or phone + password.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "securepassword123"
+}</code></pre>
+<p><strong>Response 201:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "email": "john@example.com"
+  }
+}</code></pre>
+-->
 
 <!-- 6. PAGINATION -->
-<h1>6. Pagination</h1>
+<h1 id="section-6">6. Pagination</h1>
 <p>All list endpoints support offset pagination.</p>
 <pre><code>GET /log?page=2&amp;limit=20</code></pre>
 
 <!-- 7. WEBHOOK EVENTS -->
-<h1>7. Webhook Events</h1>
-<!-- WEBHOOK_EVENTS_PLACEHOLDER -->
+<h1 id="section-7">7. Webhook Events</h1>
+
+<table>
+  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
+  <!-- TODO: Add webhook events here -->
+</table>
 
 <!-- 8. CHANGELOG -->
-<h1>8. Changelog</h1>
+<h1 id="section-8">8. Changelog</h1>
 <table>
   <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
   <tr><td>2026-07-24</td><td>1.0.0</td><td>Initial release</td></tr>

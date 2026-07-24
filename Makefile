@@ -1,4 +1,4 @@
-.PHONY: help pull generate generate-erd-auth generate-erd-ecom generate-erd-pay generate-erd-wallet generate-erd-noti generate-erd-all generate-module generate-all-modules build-docs build-all clean open watch
+.PHONY: help pull generate generate-erd-auth generate-erd-log generate-erd-all generate-module generate-all-modules build-docs build-all clean open watch
 
 PLANTUML_FORMAT ?= png
 
@@ -16,23 +16,11 @@ pull: ## Pull PlantUML Docker image
 generate-erd-auth: ## Generate auth_db ERD only
 	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-auth.puml
 
-generate-erd-ecom: ## Generate ecom_db ERD only
-	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-ecom.puml
-
-generate-erd-pay: ## Generate pay_db ERD only
-	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-pay.puml
-
-generate-erd-wallet: ## Generate wallet_db ERD only
-	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-wallet.puml
-
-generate-erd-noti: ## Generate noti_db ERD only
-	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-noti.puml
-
 generate-erd-log: ## Generate log_db ERD only
 	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-log.puml
 
 generate-erd-all: ## Generate all ERD diagrams (all databases)
-	@make generate-erd-auth && make generate-erd-ecom && make generate-erd-pay && make generate-erd-wallet && make generate-erd-noti && make generate-erd-log
+	@make generate-erd-auth && make generate-erd-log
 
 # ============================================================
 # Module diagram generation

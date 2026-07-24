@@ -108,7 +108,7 @@ for module in $MODULES; do
 
     MODULE_DOCS_DIR="$MODULES_DIR/$MODULE_LOWER"
     MODULE_IMAGES_DIR="$MODULE_DOCS_DIR/images"
-    MODULE_SRC_DIR="$MODULES_DIR/$module"
+    MODULE_SRC_DIR="$MODULES_DIR/$MODULE_LOWER"
 
     mkdir -p "$MODULE_DOCS_DIR"
 
@@ -146,6 +146,15 @@ for module in $MODULES; do
         esac
 
         output_file="$MODULE_DOCS_DIR/$output_name"
+
+        # Skip if custom file exists in module src directory
+        custom_file="$MODULES_DIR/$MODULE_LOWER/src/$output_name"
+        if [ -f "$custom_file" ]; then
+            cp "$custom_file" "$output_file"
+            echo "    [OK] $output_name (custom)"
+            continue
+        fi
+
         cp "$template_file" "$output_file"
 
         # Replace placeholders

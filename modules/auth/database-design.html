@@ -38,14 +38,31 @@
   </table>
 </div>
 
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Schema Design</a></li>
+    <li><a href="#section-3">3. Indexes</a></li>
+    <li><a href="#section-4">4. Migrations</a></li>
+    <li><a href="#section-5">5. Data Dictionary</a></li>
+    <li><a href="#section-6">6. Backup & Recovery</a></li>
+    <li><a href="#section-7">7. Performance Tuning</a></li>
+  </ul>
+</div>
+
 <!-- 1. OVERVIEW -->
-<h1>1. Overview</h1>
+<h1 id="section-1">1. Overview</h1>
 
 <h2>1.1 Purpose</h2>
 <p>This document defines the database design for the <strong> Authentication</strong> module (database: <code> auth_db</code>).</p>
 
 <h2>1.2 Requirements Addressed</h2>
-<!-- REQUIREMENTS_ADDRESSED_PLACEHOLDER -->
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Database Solution</th></tr>
+  <!-- TODO: Add requirements addressed here -->
+</table>
 
 <h2>1.3 ERD Diagram</h2>
 <div class="diagram">
@@ -54,7 +71,7 @@
 </div>
 
 <!-- 2. SCHEMA DESIGN -->
-<h1>2. Schema Design</h1>
+<h1 id="section-2">2. Schema Design</h1>
 
 <h2>2.1 Database Strategy</h2>
 <table>
@@ -66,15 +83,33 @@
 </table>
 
 <h2>2.2 Tables</h2>
-<!-- TABLES_PLACEHOLDER -->
-<!-- The build script will inject table schemas from modules.yaml -->
+
+<!-- TODO: Add table schemas here. Example for each table: -->
+
+<!--
+<h3>Table: <code>auth_users</code></h3>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Default</th><th>Description</th></tr>
+  <tr><td>id</td><td>uuid</td><td>NO</td><td>gen_random_uuid()</td><td>Primary key</td></tr>
+  <tr><td>email</td><td>varchar(255)</td><td>NO</td><td>-</td><td>Unique email</td></tr>
+</table>
+
+<pre><code>CREATE TABLE auth_users (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email       VARCHAR(255) NOT NULL UNIQUE,
+  created_at  TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+-->
 
 <!-- 3. INDEXES -->
-<h1>3. Indexes</h1>
-<!-- INDEXES_PLACEHOLDER -->
+<h1 id="section-3">3. Indexes</h1>
+
+<pre><code>-- TODO: Add index definitions here
+-- CREATE INDEX idx_auth_users_email ON auth_users(email);
+</code></pre>
 
 <!-- 4. MIGRATIONS -->
-<h1>4. Migrations</h1>
+<h1 id="section-4">4. Migrations</h1>
 
 <h2>4.1 Migration Strategy</h2>
 <table>
@@ -85,22 +120,38 @@
 </table>
 
 <h2>4.2 Migration File Structure</h2>
-<!-- MIGRATION_STRUCTURE_PLACEHOLDER -->
+<pre><code>migrations/
+   auth_db/
+    up/
+      001_create_table.sql
+    down/
+      001_create_table_rollback.sql</code></pre>
 
 <h2>4.3 Migration Order</h2>
-<!-- MIGRATION_ORDER_PLACEHOLDER -->
+<table>
+  <tr><th>Order</th><th>Migration</th><th>Description</th></tr>
+  <!-- TODO: Add migration order here -->
+</table>
 
 <!-- 5. DATA DICTIONARY -->
-<h1>5. Data Dictionary</h1>
-<!-- DATA_DICTIONARY_PLACEHOLDER -->
+<h1 id="section-5">5. Data Dictionary</h1>
+
+<table class="trace-table">
+  <tr><th>Table</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
+  <!-- TODO: Add data dictionary here -->
+</table>
 
 <!-- 6. BACKUP & RECOVERY -->
-<h1>6. Backup & Recovery</h1>
+<h1 id="section-6">6. Backup &amp; Recovery</h1>
 <p>Refer to system-level backup strategy. This module's data is part of <code> auth_db</code>.</p>
 
 <!-- 7. PERFORMANCE -->
-<h1>7. Performance Tuning</h1>
-<!-- PERFORMANCE_PLACEHOLDER -->
+<h1 id="section-7">7. Performance Tuning</h1>
+
+<table>
+  <tr><th>Aspect</th><th>Configuration</th></tr>
+  <!-- TODO: Add performance tuning here -->
+</table>
 
 </body>
 </html>

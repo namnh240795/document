@@ -108,6 +108,15 @@ ba/
 | `/ba-setup` | Step-by-step setup guide |
 | `/ba-guide` | Interactive walkthrough |
 | `/ba-trace` | Verify traceability and module mapping |
+| `/ba-new-module` | Add a new module step by step |
+| `/ba-new-requirement` | Add requirements to SRS |
+| `/ba-erd` | Create or edit ERD diagrams |
+| `/ba-srs` | Work on SRS document |
+| `/ba-review` | Review all documents for compliance |
+
+## BA Workflow
+
+See `BA-WORKFLOW.md` for the complete step-by-step guide for Business Analysts.
 
 ## Workflow
 
