@@ -1,0 +1,17 @@
+{
+  "name": "auth-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Authentication System Frontend - Turborepo Monorepo",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "clean": "turbo clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

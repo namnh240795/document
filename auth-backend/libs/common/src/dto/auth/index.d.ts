@@ -1,0 +1,7 @@
+export * from './auth-register.dto';
+export * from './auth-login.dto';
+export * from './auth-refresh-token.dto';
+export * from './auth-forgot-password.dto';
+export * from './auth-change-password.dto';
+export * from './auth-verify-phone.dto';
+export * from './auth-verify-email.dto';

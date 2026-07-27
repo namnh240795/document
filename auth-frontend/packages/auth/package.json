@@ -1,0 +1,21 @@
+{
+  "name": "@auth/auth",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --ext ts,tsx"
+  },
+  "dependencies": {
+    "react": "^18.3.0",
+    "react-router-dom": "^6.23.0",
+    "@auth/types": "workspace:*",
+    "@auth/api-client": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "typescript": "^5.5.0"
+  }
+}
