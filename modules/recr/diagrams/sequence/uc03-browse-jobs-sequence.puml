@@ -1,0 +1,61 @@
+@startuml
+' UC-03: Browse Jobs - Sequence Diagram
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-03: Browse Jobs
+
+actor "Candidate" as Cand
+participant "Career Portal" as FE
+participant "API Gateway" as GW
+participant "Recruitment Service" as RS
+database "Recruitment DB" as DB
+database "Search Index" as ES
+
+== Step 1: Load Job Listings ==
+
+Cand -> FE : Access job listings
+activate FE
+
+FE -> GW : GET /recr/jobs
+activate GW
+
+GW -> RS : Fetch jobs
+activate RS
+
+RS -> ES : Search jobs (full-text)
+activate ES
+ES --> RS : Search results
+deactivate ES
+
+RS -> DB : Get job details
+activate DB
+DB --> RS : Job data
+deactivate DB
+
+RS --> GW : Job listings
+deactivate RS
+
+GW --> FE : Jobs response
+deactivate GW
+
+FE --> Cand : Display jobs
+deactivate FE
+
+== Step 2: View Job Details ==
+
+Cand -> FE : Select job
+FE -> GW : GET /recr/jobs/:id
+activate GW
+GW --> FE : Job details
+deactivate GW
+
+FE --> Cand : Display job details
+deactivate FE
+
+@enduml

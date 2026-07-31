@@ -1,0 +1,65 @@
+@startuml
+' UC-10: Schedule Interview - Activity Diagram
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-10: Schedule Interview (HR)
+
+start
+:Login as HR;
+
+:Access Application Details;
+
+:Review Candidate Profile;
+
+:Select Candidate for Interview;
+
+:Select Interviewer;
+
+:Choose Date & Time;
+
+:Enter Location/Meeting Link;
+
+:Add Interview Notes;
+
+:Schedule Interview;
+
+:Validate Schedule;
+
+if (Valid Schedule?) then (yes)
+  :Check Interviewer Availability;
+
+  if (Available?) then (yes)
+    :Create Interview Record;
+
+    :Update Application Status;
+
+    :Send Calendar Invites;
+
+    :Notify Candidate;
+
+    :Notify Interviewer;
+
+    :Show Success Message;
+
+    :View Scheduled Interviews;
+
+  else (no)
+    :Return "Interviewer Unavailable";
+
+    :Show Error;
+  endif
+
+else (no)
+  :Return Validation Error;
+
+  :Show Error Details;
+endif
+
+stop
+@enduml

@@ -1,0 +1,72 @@
+@startuml
+' UC-01: Register Account - Sequence Diagram
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-01: Register Account
+
+actor "User" as User
+participant "Frontend" as FE
+participant "API Gateway" as GW
+participant "Auth Service" as Auth
+database "User DB" as DB
+queue "Event Bus" as MQ
+
+== Step 1: Submit Registration ==
+
+User -> FE : Enter registration details
+activate FE
+
+FE -> GW : POST /recr/auth/register
+activate GW
+
+GW -> Auth : Validate & Process
+activate Auth
+
+== Step 2: Validate & Create ==
+
+Auth -> DB : Check email availability
+activate DB
+DB --> Auth : Email available
+deactivate DB
+
+Auth -> Auth : Hash password (bcrypt)
+
+Auth -> DB : Create user record
+activate DB
+DB --> Auth : User created
+deactivate DB
+
+Auth -> DB : Create profile (candidate/employer)
+activate DB
+DB --> Auth : Profile created
+deactivate DB
+
+== Step 3: Generate Token ==
+
+Auth -> Auth : Generate JWT token
+
+== Step 4: Notification ==
+
+Auth -> MQ : Publish user.registered event
+activate MQ
+MQ --> Auth : Ack
+deactivate MQ
+
+== Step 5: Response ==
+
+Auth --> GW : 201 Created + JWT
+deactivate Auth
+
+GW --> FE : Registration Success
+deactivate GW
+
+FE --> User : Redirect to Dashboard
+deactivate FE
+
+@enduml

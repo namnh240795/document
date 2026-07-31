@@ -1,0 +1,58 @@
+@startuml
+' UC-11: Evaluate Candidate - Activity Diagram
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-11: Evaluate Candidate (HR)
+
+start
+:Login as HR;
+
+:Access Interview Details;
+
+:Review Candidate Profile;
+
+:Review Resume;
+
+:Conduct Interview;
+
+:Enter Evaluation Scores;
+
+:Technical Score (1-10);
+
+:Communication Score (1-10);
+
+:Cultural Fit Score (1-10);
+
+:Overall Score (1-10);
+
+:Select Recommendation;
+
+:Add Comments;
+
+:Submit Evaluation;
+
+:Validate Evaluation;
+
+if (Valid Evaluation?) then (yes)
+  :Save Evaluation Record;
+
+  :Update Interview Status;
+
+  :Notify HR Team;
+
+  :View Evaluation Summary;
+
+else (no)
+  :Return Validation Error;
+
+  :Show Error Details;
+endif
+
+stop
+@enduml

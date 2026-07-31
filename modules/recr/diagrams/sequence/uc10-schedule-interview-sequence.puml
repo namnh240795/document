@@ -1,0 +1,81 @@
+@startuml
+' UC-10: Schedule Interview - Sequence Diagram
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-10: Schedule Interview
+
+actor "HR" as HR
+participant "Dashboard" as FE
+participant "API Gateway" as GW
+participant "Recruitment Service" as RS
+participant "Notification Service" as NS
+participant "Calendar API" as Cal
+database "Recruitment DB" as DB
+
+== Step 1: Select Candidate ==
+
+HR -> FE : Access application
+activate FE
+
+FE -> GW : GET /recr/hr/applications/:id
+activate GW
+GW --> FE : Application details
+deactivate GW
+
+HR -> FE : Select for interview
+FE -> GW : POST /recr/hr/interviews
+activate GW
+
+GW -> RS : Validate & Process
+activate RS
+
+== Step 2: Validate Schedule ==
+
+RS -> DB : Check interviewer availability
+activate DB
+DB --> RS : Available
+deactivate DB
+
+RS -> DB : Create interview record
+activate DB
+DB --> RS : Interview created
+deactivate DB
+
+RS -> DB : Update application status
+activate DB
+DB --> RS : Status updated
+deactivate DB
+
+== Step 3: Send Notifications ==
+
+RS -> Cal : Create calendar event
+activate Cal
+Cal --> RS : Event created
+deactivate Cal
+
+RS -> NS : Publish interview.scheduled
+activate NS
+
+NS -> NS : Notify candidate (email)
+NS -> NS : Notify interviewer (email)
+NS --> RS : Done
+deactivate NS
+
+== Step 4: Response ==
+
+RS --> GW : 201 Created
+deactivate RS
+
+GW --> FE : Interview scheduled
+deactivate GW
+
+FE --> HR : Success message
+deactivate FE
+
+@enduml

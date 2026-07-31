@@ -1,0 +1,54 @@
+@startuml
+' UC-02: Login - Sequence Diagram
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-02: Login
+
+actor "User" as User
+participant "Frontend" as FE
+participant "API Gateway" as GW
+participant "Auth Service" as Auth
+database "User DB" as DB
+
+== Step 1: Submit Login ==
+
+User -> FE : Enter credentials
+activate FE
+
+FE -> GW : POST /recr/auth/login
+activate GW
+
+GW -> Auth : Validate & Process
+activate Auth
+
+== Step 2: Verify Credentials ==
+
+Auth -> DB : Find user by email
+activate DB
+DB --> Auth : User found
+deactivate DB
+
+Auth -> Auth : Compare password hash
+
+== Step 3: Generate Token ==
+
+Auth -> Auth : Generate JWT token
+
+== Step 4: Response ==
+
+Auth --> GW : 200 OK + JWT + role
+deactivate Auth
+
+GW --> FE : Login success
+deactivate GW
+
+FE --> User : Redirect to dashboard
+deactivate FE
+
+@enduml

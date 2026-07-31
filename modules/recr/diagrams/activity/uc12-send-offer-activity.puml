@@ -1,0 +1,54 @@
+@startuml
+' UC-12: Send Offer - Activity Diagram
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-12: Send Offer (HR)
+
+start
+:Login as HR;
+
+:Access Candidate Application;
+
+:Review Evaluation Scores;
+
+:Review Interview Feedback;
+
+:Create Offer Letter;
+
+:Enter Salary & Benefits;
+
+:Enter Start Date;
+
+:Review Offer Details;
+
+:Send Offer;
+
+:Validate Offer;
+
+if (Valid Offer?) then (yes)
+  :Create Offer Record;
+
+  :Update Application Status;
+
+  :Generate Offer Document;
+
+  :Send Offer Email to Candidate;
+
+  :Show Success Message;
+
+  :Track Offer Status;
+
+else (no)
+  :Return Validation Error;
+
+  :Show Error Details;
+endif
+
+stop
+@enduml

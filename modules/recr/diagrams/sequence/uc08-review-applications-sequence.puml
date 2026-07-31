@@ -1,0 +1,78 @@
+@startuml
+' UC-08: Review Applications - Sequence Diagram
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-08: Review Applications
+
+actor "HR" as HR
+participant "Dashboard" as FE
+participant "API Gateway" as GW
+participant "Recruitment Service" as RS
+database "Recruitment DB" as DB
+
+== Step 1: Load Applications ==
+
+HR -> FE : Access applications
+activate FE
+
+FE -> GW : GET /recr/hr/applications
+activate GW
+
+GW -> RS : Fetch applications
+activate RS
+
+RS -> DB : Query applications
+activate DB
+DB --> RS : Applications list
+deactivate DB
+
+RS --> GW : Applications response
+deactivate RS
+
+GW --> FE : Applications
+deactivate GW
+
+FE --> HR : Display applications
+deactivate FE
+
+== Step 2: Review Application ==
+
+HR -> FE : Select application
+FE -> GW : GET /recr/hr/applications/:id
+activate GW
+GW --> FE : Application details
+deactivate GW
+
+FE --> HR : Display details
+deactivate FE
+
+== Step 3: Update Status ==
+
+HR -> FE : Update status
+FE -> GW : PATCH /recr/hr/applications/:id/status
+activate GW
+
+GW -> RS : Update status
+activate RS
+
+RS -> DB : Update application status
+activate DB
+DB --> RS : Status updated
+deactivate DB
+
+RS --> GW : 200 OK
+deactivate RS
+
+GW --> FE : Updated
+deactivate GW
+
+FE --> HR : Status updated
+deactivate FE
+
+@enduml

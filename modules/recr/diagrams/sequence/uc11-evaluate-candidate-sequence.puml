@@ -1,0 +1,62 @@
+@startuml
+' UC-11: Evaluate Candidate - Sequence Diagram
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-11: Evaluate Candidate
+
+actor "HR" as HR
+participant "Dashboard" as FE
+participant "API Gateway" as GW
+participant "Recruitment Service" as RS
+database "Recruitment DB" as DB
+
+== Step 1: Access Interview ==
+
+HR -> FE : Access interview details
+activate FE
+
+FE -> GW : GET /recr/hr/interviews/:id
+activate GW
+GW --> FE : Interview details
+deactivate GW
+
+FE --> HR : Display interview
+deactivate FE
+
+== Step 2: Submit Evaluation ==
+
+HR -> FE : Submit evaluation
+FE -> GW : POST /recr/hr/evaluations
+activate GW
+
+GW -> RS : Validate & Process
+activate RS
+
+RS -> DB : Create evaluation record
+activate DB
+DB --> RS : Evaluation created
+deactivate DB
+
+RS -> DB : Update interview status
+activate DB
+DB --> RS : Status updated
+deactivate DB
+
+== Step 3: Response ==
+
+RS --> GW : 201 Created
+deactivate RS
+
+GW --> FE : Evaluation submitted
+deactivate GW
+
+FE --> HR : Success message
+deactivate FE
+
+@enduml

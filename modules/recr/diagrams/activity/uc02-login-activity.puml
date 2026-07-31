@@ -1,0 +1,66 @@
+@startuml
+' UC-02: Login - Activity Diagram
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-02: Login (All Roles)
+
+start
+:Access Login Page;
+
+:Enter Email;
+
+:Enter Password;
+
+:Click Login;
+
+:Validate Input;
+
+:Check Email Exists;
+
+if (Email Exists?) then (yes)
+  :Verify Password Hash;
+
+  if (Password Valid?) then (yes)
+    :Check Account Active;
+
+    if (Account Active?) then (yes)
+      :Generate JWT Token;
+
+      :Return Token + Role;
+
+      :Redirect to Dashboard;
+
+      if (Role = Candidate?) then (yes)
+        :Show Candidate Dashboard;
+      elseif (Role = HR?) then (yes)
+        :Show HR Dashboard;
+      else (Employer)
+        :Show Employer Dashboard;
+      endif
+
+    else (no)
+      :Return "Account Disabled";
+
+      :Show Error;
+    endif
+
+  else (no)
+    :Return "Invalid Password";
+
+    :Show Error;
+  endif
+
+else (no)
+  :Return "Email Not Found";
+
+  :Show Error;
+endif
+
+stop
+@enduml

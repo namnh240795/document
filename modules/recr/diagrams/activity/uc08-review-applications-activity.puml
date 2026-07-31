@@ -1,0 +1,58 @@
+@startuml
+' UC-08: Review Applications - Activity Diagram
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-08: Review Applications (HR)
+
+start
+:Login as HR;
+
+:Access Application Dashboard;
+
+:View All Applications;
+
+:Apply Filters;
+
+if (Filter by Job?) then (yes)
+  :Select Job Position;
+endif
+
+if (Filter by Status?) then (yes)
+  :Select Status;
+endif
+
+:Search Applications;
+
+:Query Applications;
+
+:Return Filtered Results;
+
+:View Application List;
+
+:Select Application;
+
+:View Candidate Profile;
+
+:View Resume;
+
+:View Cover Letter;
+
+if (Qualified?) then (yes)
+  :Move to Screening;
+
+  :Update Status;
+
+else (no)
+  :Reject Application;
+
+  :Add Rejection Reason;
+endif
+
+stop
+@enduml

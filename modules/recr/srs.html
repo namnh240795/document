@@ -56,18 +56,32 @@
         <li><a href="#section-2-2">2.2 Use Case Diagram</a></li>
       </ul>
     </li>
-    <li><a href="#section-3">3. Functional Requirements</a>
+    <li><a href="#section-3">3. Detailed Use Case Specifications</a>
       <ul>
-        <li><a href="#section-3-1">3.1 Candidate Requirements</a></li>
-        <li><a href="#section-3-2">3.2 HR Requirements</a></li>
-        <li><a href="#section-3-3">3.3 Employer Requirements</a></li>
+        <li><a href="#section-3-1">3.1 UC-01: Register Account</a></li>
+        <li><a href="#section-3-2">3.2 UC-02: Login</a></li>
+        <li><a href="#section-3-3">3.3 UC-03: Browse Jobs</a></li>
+        <li><a href="#section-3-4">3.4 UC-04: Submit Application</a></li>
+        <li><a href="#section-3-5">3.5 UC-05: View Application Status</a></li>
+        <li><a href="#section-3-6">3.6 UC-08: Review Applications</a></li>
+        <li><a href="#section-3-7">3.7 UC-10: Schedule Interview</a></li>
+        <li><a href="#section-3-8">3.8 UC-11: Evaluate Candidate</a></li>
+        <li><a href="#section-3-9">3.9 UC-12: Send Offer</a></li>
+        <li><a href="#section-3-10">3.10 UC-16: Post Job</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. Data Model</a></li>
-    <li><a href="#section-5">5. API Specification</a></li>
-    <li><a href="#section-6">6. Integration</a></li>
-    <li><a href="#section-7">7. Non-Functional Requirements</a></li>
-    <li><a href="#section-8">8. Requirements Traceability Matrix</a></li>
+    <li><a href="#section-4">4. Functional Requirements</a>
+      <ul>
+        <li><a href="#section-4-1">4.1 Candidate Requirements</a></li>
+        <li><a href="#section-4-2">4.2 HR Requirements</a></li>
+        <li><a href="#section-4-3">4.3 Employer Requirements</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Data Model</a></li>
+    <li><a href="#section-6">6. API Specification</a></li>
+    <li><a href="#section-7">7. Integration</a></li>
+    <li><a href="#section-8">8. Non-Functional Requirements</a></li>
+    <li><a href="#section-9">9. Requirements Traceability Matrix</a></li>
   </ul>
 </div>
 
@@ -126,10 +140,319 @@
   <div class="caption">Figure 1: Recruitment Use Case Diagram (3 Roles)</div>
 </div>
 
-<!-- 3. FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-3">3. Functional Requirements</h1>
+<!-- 3. DETAILED USE CASE SPECIFICATIONS -->
+<h1 id="section-3">3. Detailed Use Case Specifications</h1>
 
-<h2 id="section-3-1">3.1 Candidate Requirements</h2>
+<h2 id="section-3-1">3.1 UC-01: Register Account</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-01</td></tr>
+  <tr><td>Name</td><td>Register Account</td></tr>
+  <tr><td>Actor</td><td>Candidate, Employer</td></tr>
+  <tr><td>Precondition</td><td>User is not logged in</td></tr>
+  <tr><td>Postcondition</td><td>User account created, JWT token issued</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Register" button</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User navigates to registration page</li>
+  <li>User enters email, password, full name, phone</li>
+  <li>User selects role (Candidate or Employer)</li>
+  <li>If Employer: user enters company name, industry, company size</li>
+  <li>System validates input data</li>
+  <li>System checks email availability</li>
+  <li>System hashes password and creates user record</li>
+  <li>System creates profile (candidate or employer)</li>
+  <li>System generates JWT token</li>
+  <li>System returns success response</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>4a. Email already exists: System returns error "Email already registered"</li>
+  <li>4b. Invalid input: System returns validation error with details</li>
+</ul>
+<div class="diagram">
+  <img src="./images/activity/uc01-register-activity.png" alt="UC-01 Activity Diagram">
+  <div class="caption">Figure 3: UC-01 Register Account - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc01-register-sequence.png" alt="UC-01 Sequence Diagram">
+  <div class="caption">Figure 4: UC-01 Register Account - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-2">3.2 UC-02: Login</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-02</td></tr>
+  <tr><td>Name</td><td>Login</td></tr>
+  <tr><td>Actor</td><td>All (Candidate, HR, Employer)</td></tr>
+  <tr><td>Precondition</td><td>User has registered account</td></tr>
+  <tr><td>Postcondition</td><td>User authenticated, JWT token issued</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Login" button</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User enters email and password</li>
+  <li>System validates input</li>
+  <li>System checks email exists</li>
+  <li>System verifies password hash</li>
+  <li>System checks account is active</li>
+  <li>System generates JWT token with role claim</li>
+  <li>System returns token and role</li>
+  <li>Frontend redirects to role-specific dashboard</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc02-login-activity.png" alt="UC-02 Activity Diagram">
+  <div class="caption">Figure 5: UC-02 Login - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc02-login-sequence.png" alt="UC-02 Sequence Diagram">
+  <div class="caption">Figure 6: UC-02 Login - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-3">3.3 UC-03: Browse Jobs</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-03</td></tr>
+  <tr><td>Name</td><td>Browse Jobs</td></tr>
+  <tr><td>Actor</td><td>Candidate</td></tr>
+  <tr><td>Precondition</td><td>Jobs exist in system</td></tr>
+  <tr><td>Postcondition</td><td>Candidate views job listings</td></tr>
+  <tr><td>Trigger</td><td>Candidate accesses job listings page</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Candidate navigates to job listings page</li>
+  <li>System displays all open jobs</li>
+  <li>Candidate applies filters (location, salary, type)</li>
+  <li>System returns filtered results</li>
+  <li>Candidate selects a job to view details</li>
+  <li>System displays job details with requirements</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc03-browse-jobs-activity.png" alt="UC-03 Activity Diagram">
+  <div class="caption">Figure 7: UC-03 Browse Jobs - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc03-browse-jobs-sequence.png" alt="UC-03 Sequence Diagram">
+  <div class="caption">Figure 8: UC-03 Browse Jobs - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-4">3.4 UC-04: Submit Application</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-04</td></tr>
+  <tr><td>Name</td><td>Submit Application</td></tr>
+  <tr><td>Actor</td><td>Candidate</td></tr>
+  <tr><td>Precondition</td><td>Candidate is logged in, job exists</td></tr>
+  <tr><td>Postcondition</td><td>Application created, employer notified</td></tr>
+  <tr><td>Trigger</td><td>Candidate clicks "Apply" on job listing</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Candidate selects job and clicks "Apply"</li>
+  <li>Candidate uploads resume (PDF/DOCX, max 10MB)</li>
+  <li>Candidate enters cover letter</li>
+  <li>Candidate reviews and submits application</li>
+  <li>System validates application</li>
+  <li>System checks for duplicate application</li>
+  <li>System creates application record</li>
+  <li>System sends notification to employer</li>
+  <li>Candidate sees success message</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>6a. Already applied: System shows "Already Applied" error</li>
+  <li>5a. Invalid input: System shows validation error</li>
+</ul>
+<div class="diagram">
+  <img src="./images/activity/uc04-submit-application-activity.png" alt="UC-04 Activity Diagram">
+  <div class="caption">Figure 9: UC-04 Submit Application - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc04-submit-application-sequence.png" alt="UC-04 Sequence Diagram">
+  <div class="caption">Figure 10: UC-04 Submit Application - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-5">3.5 UC-05: View Application Status</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-05</td></tr>
+  <tr><td>Name</td><td>View Application Status</td></tr>
+  <tr><td>Actor</td><td>Candidate</td></tr>
+  <tr><td>Precondition</td><td>Candidate has submitted applications</td></tr>
+  <tr><td>Postcondition</td><td>Candidate views application progress</td></tr>
+  <tr><td>Trigger</td><td>Candidate accesses "My Applications"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Candidate navigates to "My Applications"</li>
+  <li>System displays list of applications</li>
+  <li>Candidate selects an application</li>
+  <li>System displays application details and status</li>
+  <li>Candidate views status history and timeline</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc05-view-application-status-activity.png" alt="UC-05 Activity Diagram">
+  <div class="caption">Figure 11: UC-05 View Application Status - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc05-view-application-status-sequence.png" alt="UC-05 Sequence Diagram">
+  <div class="caption">Figure 12: UC-05 View Application Status - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-6">3.6 UC-08: Review Applications</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-08</td></tr>
+  <tr><td>Name</td><td>Review Applications</td></tr>
+  <tr><td>Actor</td><td>HR</td></tr>
+  <tr><td>Precondition</td><td>Applications exist in system</td></tr>
+  <tr><td>Postcondition</td><td>HR reviews and updates application status</td></tr>
+  <tr><td>Trigger</td><td>HR accesses application dashboard</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>HR navigates to application dashboard</li>
+  <li>System displays all applications</li>
+  <li>HR applies filters (job, status)</li>
+  <li>System returns filtered results</li>
+  <li>HR selects an application to review</li>
+  <li>HR views candidate profile, resume, cover letter</li>
+  <li>HR updates application status (screening/rejected)</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc08-review-applications-activity.png" alt="UC-08 Activity Diagram">
+  <div class="caption">Figure 13: UC-08 Review Applications - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc08-review-applications-sequence.png" alt="UC-08 Sequence Diagram">
+  <div class="caption">Figure 14: UC-08 Review Applications - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-7">3.7 UC-10: Schedule Interview</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-10</td></tr>
+  <tr><td>Name</td><td>Schedule Interview</td></tr>
+  <tr><td>Actor</td><td>HR</td></tr>
+  <tr><td>Precondition</td><td>Candidate passed screening</td></tr>
+  <tr><td>Postcondition</td><td>Interview scheduled, notifications sent</td></tr>
+  <tr><td>Trigger</td><td>HR clicks "Schedule Interview"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>HR selects candidate from screened applications</li>
+  <li>HR selects interviewer</li>
+  <li>HR chooses date/time and location</li>
+  <li>HR adds meeting link and notes</li>
+  <li>System validates interviewer availability</li>
+  <li>System creates interview record</li>
+  <li>System sends calendar invites</li>
+  <li>System notifies candidate and interviewer</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc10-schedule-interview-activity.png" alt="UC-10 Activity Diagram">
+  <div class="caption">Figure 15: UC-10 Schedule Interview - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc10-schedule-interview-sequence.png" alt="UC-10 Sequence Diagram">
+  <div class="caption">Figure 16: UC-10 Schedule Interview - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-8">3.8 UC-11: Evaluate Candidate</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-11</td></tr>
+  <tr><td>Name</td><td>Evaluate Candidate</td></tr>
+  <tr><td>Actor</td><td>HR</td></tr>
+  <tr><td>Precondition</td><td>Interview completed</td></tr>
+  <tr><td>Postcondition</td><td>Evaluation recorded</td></tr>
+  <tr><td>Trigger</td><td>HR accesses interview details</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>HR accesses completed interview</li>
+  <li>HR reviews candidate profile and resume</li>
+  <li>HR enters evaluation scores (technical, communication, cultural fit)</li>
+  <li>HR selects recommendation (strong_yes/yes/neutral/no/strong_no)</li>
+  <li>HR adds comments</li>
+  <li>System saves evaluation record</li>
+  <li>System updates interview status</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc11-evaluate-candidate-activity.png" alt="UC-11 Activity Diagram">
+  <div class="caption">Figure 17: UC-11 Evaluate Candidate - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc11-evaluate-candidate-sequence.png" alt="UC-11 Sequence Diagram">
+  <div class="caption">Figure 18: UC-11 Evaluate Candidate - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-9">3.9 UC-12: Send Offer</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-12</td></tr>
+  <tr><td>Name</td><td>Send Offer</td></tr>
+  <tr><td>Actor</td><td>HR</td></tr>
+  <tr><td>Precondition</td><td>Candidate passed evaluation</td></tr>
+  <tr><td>Postcondition</td><td>Offer created and sent to candidate</td></tr>
+  <tr><td>Trigger</td><td>HR clicks "Create Offer"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>HR accesses candidate application</li>
+  <li>HR reviews evaluation scores</li>
+  <li>HR creates offer with salary, position, start date, benefits</li>
+  <li>System validates offer data</li>
+  <li>System creates offer record</li>
+  <li>System updates application status to "offer"</li>
+  <li>System generates offer document</li>
+  <li>System sends offer email to candidate</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc12-send-offer-activity.png" alt="UC-12 Activity Diagram">
+  <div class="caption">Figure 19: UC-12 Send Offer - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc12-send-offer-sequence.png" alt="UC-12 Sequence Diagram">
+  <div class="caption">Figure 20: UC-12 Send Offer - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-10">3.10 UC-16: Post Job</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-16</td></tr>
+  <tr><td>Name</td><td>Post Job</td></tr>
+  <tr><td>Actor</td><td>Employer</td></tr>
+  <tr><td>Precondition</td><td>Employer is logged in</td></tr>
+  <tr><td>Postcondition</td><td>Job created and submitted for approval</td></tr>
+  <tr><td>Trigger</td><td>Employer clicks "Create New Job"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Employer navigates to job management</li>
+  <li>Employer enters job details (title, description, department, location)</li>
+  <li>Employer enters salary range and employment type</li>
+  <li>Employer adds job requirements</li>
+  <li>System saves job as draft</li>
+  <li>Employer submits job for HR approval</li>
+  <li>System updates status to "pending_approval"</li>
+  <li>System notifies HR</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc16-post-job-activity.png" alt="UC-16 Activity Diagram">
+  <div class="caption">Figure 21: UC-16 Post Job - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc16-post-job-sequence.png" alt="UC-16 Sequence Diagram">
+  <div class="caption">Figure 22: UC-16 Post Job - Sequence Diagram</div>
+</div>
+
+<!-- 4. FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-4">4. Functional Requirements</h1>
+
+<h2 id="section-4-1">4.1 Candidate Requirements</h2>
 <table class="trace-table">
   <tr>
     <th>Req ID</th>
@@ -333,8 +656,8 @@
   </tr>
 </table>
 
-<!-- 4. DATA MODEL -->
-<h1 id="section-4">4. Data Model</h1>
+<!-- 5. DATA MODEL -->
+<h1 id="section-5">5. Data Model</h1>
 
 <h2>4.1 Entity Relationship Diagram</h2>
 <div class="diagram">
@@ -360,8 +683,8 @@
   <tr><td><span class="req-id">DR-008</span></td><td>recr_offers</td><td>Job offers with compensation</td><td>FR-012</td></tr>
 </table>
 
-<!-- 5. API SPECIFICATION -->
-<h1 id="section-5">5. API Specification</h1>
+<!-- 6. API SPECIFICATION -->
+<h1 id="section-6">6. API Specification</h1>
 
 <h2>5.1 Endpoint Summary</h2>
 
@@ -426,13 +749,13 @@
   <tr><td>GET</td><td>/recr/employer/analytics</td><td>View analytics</td><td>FR-021</td></tr>
 </table>
 
-<!-- 6. INTEGRATION -->
-<h1 id="section-6">6. Integration</h1>
+<!-- 7. INTEGRATION -->
+<h1 id="section-7">7. Integration</h1>
 
 <h2>6.1 Sequence Diagram</h2>
 <div class="diagram">
   <img src="./images/sequence/recruitment-integration.png" alt="Sequence Diagram">
-  <div class="caption">Figure 3: Candidate Application Flow</div>
+  <div class="caption">Figure 23: Candidate Application Flow</div>
 </div>
 
 <h2>6.2 Webhook Events</h2>
@@ -445,8 +768,8 @@
   <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when employer submits job for approval</td></tr>
 </table>
 
-<!-- 7. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-7">7. Non-Functional Requirements</h1>
+<!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-8">8. Non-Functional Requirements</h1>
 
 <table class="trace-table">
   <tr>
@@ -464,8 +787,8 @@
   <tr><td><span class="req-id">NFR-007</span></td><td>Search</td><td>Job search capability</td><td>Full-text search within 500ms</td></tr>
 </table>
 
-<!-- 8. TRACEABILITY -->
-<h1 id="section-8">8. Requirements Traceability Matrix</h1>
+<!-- 9. TRACEABILITY -->
+<h1 id="section-9">9. Requirements Traceability Matrix</h1>
 
 <table class="trace-table">
   <tr>

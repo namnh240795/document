@@ -1,0 +1,54 @@
+@startuml
+' UC-03: Browse Jobs - Activity Diagram
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-03: Browse Jobs (Candidate)
+
+start
+:Access Job Listings;
+
+:View All Open Jobs;
+
+:Apply Filters;
+
+if (Filter by Location?) then (yes)
+  :Enter Location;
+endif
+
+if (Filter by Salary?) then (yes)
+  :Enter Salary Range;
+endif
+
+if (Filter by Type?) then (yes)
+  :Select Employment Type;
+endif
+
+:Search/Apply Filters;
+
+:Query Jobs Database;
+
+:Return Filtered Results;
+
+:View Job Listings;
+
+:Select Job to View;
+
+:View Job Details;
+
+if (Interested?) then (yes)
+  :Click Apply;
+
+  :Submit Application;
+
+else (no)
+  :Continue Browsing;
+endif
+
+stop
+@enduml

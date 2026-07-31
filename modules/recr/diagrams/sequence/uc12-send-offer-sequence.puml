@@ -1,0 +1,70 @@
+@startuml
+' UC-12: Send Offer - Sequence Diagram
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-12: Send Offer
+
+actor "HR" as HR
+participant "Dashboard" as FE
+participant "API Gateway" as GW
+participant "Recruitment Service" as RS
+participant "Notification Service" as NS
+database "Recruitment DB" as DB
+
+== Step 1: Create Offer ==
+
+HR -> FE : Access candidate application
+activate FE
+
+FE -> GW : GET /recr/hr/applications/:id
+activate GW
+GW --> FE : Application details
+deactivate GW
+
+HR -> FE : Create offer
+FE -> GW : POST /recr/hr/offers
+activate GW
+
+GW -> RS : Validate & Process
+activate RS
+
+== Step 2: Create Offer Record ==
+
+RS -> DB : Create offer record
+activate DB
+DB --> RS : Offer created
+deactivate DB
+
+RS -> DB : Update application status to "offer"
+activate DB
+DB --> RS : Status updated
+deactivate DB
+
+== Step 3: Send Notification ==
+
+RS -> NS : Publish offer.sent
+activate NS
+
+NS -> NS : Generate offer document
+NS -> NS : Send offer email
+NS --> RS : Done
+deactivate NS
+
+== Step 4: Response ==
+
+RS --> GW : 201 Created
+deactivate RS
+
+GW --> FE : Offer ID
+deactivate GW
+
+FE --> HR : Offer sent
+deactivate FE
+
+@enduml
