@@ -153,21 +153,9 @@ The build script uses your custom file when it exists, otherwise falls back to t
 | Component | System components | `diagrams/component/` |
 | Architecture | C4 Level 1 context | `templates/architecture-system.puml` |
 
-## Claude Code Commands
+## Working with Claude Code
 
-These slash commands are available when using Claude Code in this repo:
-
-| Command | Purpose |
-|---------|---------|
-| `/ba-structure` | Show folder structure and workflow |
-| `/ba-setup` | Step-by-step setup guide |
-| `/ba-guide` | Interactive walkthrough |
-| `/ba-trace` | Verify traceability and module mapping |
-| `/ba-new-module` | Add a new module step by step |
-| `/ba-new-requirement` | Add requirements to SRS |
-| `/ba-erd` | Create or edit ERD diagrams |
-| `/ba-srs` | Work on SRS document |
-| `/ba-review` | Review all documents for compliance |
+Describe what you want to do, or run `/ba-guide`. Claude will check existing modules, ask you two questions (what's the business, what's the new use case), analyze the impact, and handle everything.
 
 ## Troubleshooting
 

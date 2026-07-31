@@ -32,7 +32,7 @@ make generate-all-modules                   # All modules, all types
 
 **Output** → `modules/` — per-module HTML docs + `modules/index.html` master index
 
-**Module registry** → `modules.yaml` — defines modules, databases, tables, dependencies, webhooks. This is the single source of truth for placeholders.
+**Module registry** → `modules.yaml` — defines modules, databases, tables, dependencies, webhooks, and features. This is the single source of truth for placeholders.
 
 ## Module System
 
@@ -88,23 +88,15 @@ ERD templates use `xxx_` as placeholder for the project short name (e.g., `xxx_u
 
 Shared stylesheet: `templates/style.css` (copied to `modules/style.css` at build time). All HTML is print-optimized for A4 paper. Export PDF via browser Print.
 
-## Claude Commands
-
-| Command | Purpose |
-|---------|---------|
-| `/ba-structure` | Show folder structure and workflow |
-| `/ba-setup` | Step-by-step setup guide |
-| `/ba-guide` | Interactive walkthrough |
-| `/ba-trace` | Verify traceability and module mapping |
-| `/ba-new-module` | Add a new module step by step |
-| `/ba-new-requirement` | Add requirements to SRS |
-| `/ba-erd` | Create or edit ERD diagrams |
-| `/ba-srs` | Work on SRS document |
-| `/ba-review` | Review all documents for compliance |
-
 ## BA Workflow
 
-See `BA-WORKFLOW.md` for the complete step-by-step guide for Business Analysts.
+Run `/ba-guide` or describe what you want to do. Claude will:
+1. Check existing modules (reads `modules.yaml`)
+2. Ask what's the business (you answer)
+3. Ask what's the new use case (you answer)
+4. Analyze impact on other modules
+
+Then Claude handles everything. See `BA-WORKFLOW.md` for details.
 
 ## Adding a New Module
 

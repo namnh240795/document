@@ -1,0 +1,59 @@
+@startuml
+!theme plain
+
+title Feature-Module Components
+
+skinparam component {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+  FontSize 13
+}
+
+skinparam package {
+  BackgroundColor #FAFAFA
+  BorderColor #90A4AE
+}
+
+skinparam rectangle {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+  FontSize 12
+}
+
+package "Features" {
+  rectangle "User Registration" as FR_REG #FFF3E0
+  rectangle "User Login" as FR_LOGIN #FFF3E0
+  rectangle "Phone Verification" as FR_PHONE #FFF3E0
+  rectangle "Email Verification" as FR_EMAIL #FFF3E0
+  rectangle "Password Reset" as FR_RESET #FFF3E0
+}
+
+package "Modules" {
+  component "AUTH" as M_AUTH #E3F2FD
+  component "SMS" as M_SMS #E3F2FD
+  component "EMAIL" as M_EMAIL #E3F2FD
+  component "LOG" as M_LOG #E3F2FD
+}
+
+' Feature -> Module connections
+FR_REG --> M_AUTH
+FR_REG --> M_SMS
+FR_REG --> M_EMAIL
+FR_REG --> M_LOG
+
+FR_LOGIN --> M_AUTH
+FR_LOGIN --> M_LOG
+
+FR_PHONE --> M_AUTH
+FR_PHONE --> M_SMS
+FR_PHONE --> M_LOG
+
+FR_EMAIL --> M_AUTH
+FR_EMAIL --> M_EMAIL
+FR_EMAIL --> M_LOG
+
+FR_RESET --> M_AUTH
+FR_RESET --> M_EMAIL
+FR_RESET --> M_LOG
+
+@enduml

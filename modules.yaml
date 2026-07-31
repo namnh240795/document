@@ -104,6 +104,31 @@ modules:
         timestamp: "date — event timestamp (ISO 8601)"
 
 # ============================================================
+# Features — maps business features to modules
+# Shows which modules work together for each feature
+# ============================================================
+features:
+  - name: "User Registration"
+    modules: [AUTH, SMS, EMAIL, LOG]
+    description: "User signs up, receives OTP via SMS/email, account created, event logged"
+
+  - name: "User Login"
+    modules: [AUTH, LOG]
+    description: "User authenticates, session created, login event logged"
+
+  - name: "Phone Verification"
+    modules: [AUTH, SMS, LOG]
+    description: "User requests SMS OTP, SMS delivered, verification confirmed, event logged"
+
+  - name: "Email Verification"
+    modules: [AUTH, EMAIL, LOG]
+    description: "User requests email OTP, email delivered, verification confirmed, event logged"
+
+  - name: "Password Reset"
+    modules: [AUTH, EMAIL, LOG]
+    description: "User requests reset, email sent with token, password updated, event logged"
+
+# ============================================================
 # Inter-Module Communication (Webhook Events)
 # Modules communicate via webhook events
 # ============================================================

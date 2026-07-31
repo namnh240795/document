@@ -1,4 +1,4 @@
-.PHONY: help pull generate generate-erd-auth generate-erd-log generate-erd-all generate-module generate-all-modules build-docs build-all clean open watch
+.PHONY: help pull generate generate-erd-auth generate-erd-log generate-erd-all generate-module generate-all-modules generate-feature-map build-docs build-all clean open watch
 
 PLANTUML_FORMAT ?= png
 
@@ -23,6 +23,14 @@ generate-erd-all: ## Generate all ERD diagrams (all databases)
 	@make generate-erd-auth && make generate-erd-log
 
 # ============================================================
+# Feature Map generation
+# ============================================================
+
+generate-feature-map: ## Generate feature-module relationship diagrams
+	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/feature-map:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/feature-map.puml
+	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/feature-map:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/feature-components.puml
+
+# ============================================================
 # Module diagram generation
 # ============================================================
 
@@ -39,7 +47,7 @@ generate-all-modules: ## Generate diagrams for all modules
 build-docs: ## Build all HTML documents (modules + index)
 	@bash scripts/build-docs.sh
 
-build-all: generate-erd-all generate-all-modules build-docs ## Generate all ERDs + module diagrams + build HTML docs
+build-all: generate-erd-all generate-all-modules generate-feature-map build-docs ## Generate all ERDs + module diagrams + feature map + build HTML docs
 
 # ============================================================
 # Open in browser

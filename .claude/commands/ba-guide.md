@@ -1,88 +1,86 @@
-# BA Guide - Interactive Setup
+# BA Guide — Interactive Setup
 
-Walk the user through the BA documentation framework step by step. Ask questions at each step.
+Guide the user through BA documentation. Claude answers Q1 and Q4 automatically; only ask user Q2 and Q3.
 
 ## Flow
 
-1. First, run `make help` to show available commands
-2. Ask: "What system are you documenting?" (e.g., e-commerce, HR system, etc.)
-3. Ask: "Which modules does your system have?" (AUTH, PROD, ECOM, PAY, WAL, SHIP, NOTI - or custom)
-4. For each module, ask:
-   - Module code and name
-   - Which database does it use?
-   - Which tables does it have?
-   - What are its dependencies on other modules?
-5. Ask: "How do modules communicate?" (webhook events via RabbitMQ, HTTP, etc.)
-6. Create `modules.yaml` with all module definitions and webhook events
-7. For each module:
-   - Create `modules/<code>/diagrams/` directory
-   - Copy module templates and customize
-   - Generate module diagrams with `make generate-module MODULE=<code>`
-8. Ask: "Which system-level diagrams do you need?" (architecture, deployment, component)
-9. Run `make build-all` and open `docs/index.html` in browser
-10. Explain per-module navigation and webhook event documentation
+### Step 1: Claude Answers — New Module or Existing?
 
-## Module Reference
+Read `modules.yaml` to determine:
+- Is the module the user wants to work on already defined?
+- What tables, databases, and dependencies does it have?
 
-| Module | Code | Tables |
-|--------|------|--------|
-| Authentication | AUTH | users, user_sessions, roles, accounts, verification |
-| SMS Service | SMS | sms_logs |
-| Product Catalog | PROD | products, categories, product_images |
-| E-Commerce | ECOM | orders, order_items, cart_items |
-| Payment | PAY | payments, refunds, transaction_logs |
-| Wallet | WAL | wallets, wallet_transactions, wallet_topup_requests |
-| Shipping | SHIP | addresses, shipments |
-| Notification | NOTI | notification_templates, notification_logs |
+Tell the user: "I see we have modules: AUTH, SMS, EMAIL, LOG. Which one are you working on, or is this a new module?"
 
-## Key Commands
+### Step 2: Ask User — What's the Business?
 
-### System-Level
-- `make pull` - First time setup
-- `make generate` - Generate all system diagrams
-- `make generate-<type>` - Generate specific diagram type
-- `make build-docs` - Build all HTML documents (system + modules + index)
-- `make build-all` - Generate everything
-- `make open` - Build and open master index in browser
-- `make clean` - Clean generated files
+> What does this module do, or what's changing?
 
-### Module-Level
-- `make generate-module MODULE=<code>` - Generate diagrams for a module
-- `make generate-all-modules` - Generate diagrams for all modules
-- `make open-module MODULE=<code>` - Build and open a module's docs
-- `/ba-trace` - Verify traceability and module mapping
+If **new module**, ask:
+- What is the module code? (3-5 chars, e.g., PROD, PAY)
+- What is the module name? (e.g., Product Catalog)
+- What does this module do? (1-2 sentences)
+- Which database? (existing like auth_db, or new)
+- What tables does it own? (will be prefixed with project short name)
+- Does it depend on other modules?
+- What tech stack? (e.g., NestJS, PostgreSQL, RabbitMQ)
 
-## Per-Module Document Structure
+If **existing module**, ask:
+- What's changing? (new requirement, ERD update, new use case, etc.)
 
-Each module gets its own document set:
+### Step 3: Ask User — What's the New Use Case?
+
+> What are the new use cases or requirements?
+
+Ask for:
+- Use case name and description
+- Which actors are involved
+- What the system should do (functional requirements)
+- Any performance/security needs (non-functional requirements)
+
+### Step 4: Claude Answers — Impact on Current Workflow
+
+Based on `modules.yaml` webhook definitions and dependencies, analyze:
+- Does this module send/receive events from other modules?
+- Do existing modules need updates (new webhooks, new dependencies)?
+- Are there any breaking changes?
+
+Tell the user: "This change will affect modules X and Y because [reason]. I'll update their docs too."
+
+---
+
+## Execute
+
+Based on the answers:
+
+### If New Module:
+1. Update `modules.yaml` with the new module definition
+2. Create module directory structure (`modules/<code>/diagrams/`, `modules/<code>/images/`)
+3. Create 4 HTML documents from templates (SRS, TDS, Database Design, API Spec)
+4. Create ERD file in `templates/erd-<database>.puml`
+5. Run `make build-all`
+6. Verify module appears in master index
+
+### If Existing Module:
+1. Update module's SRS (`modules/<code>/srs.html`) with new requirements/use cases
+2. Update ERD if tables changed (`templates/erd-<database>.puml`)
+3. Update TDS if technical design changed (`modules/<code>/tds.html`)
+4. Run `make build-all`
+5. Verify changes in browser
+
+## Important Rules
+
+- All tables: `<project_short_name>_<table_name>` (from modules.yaml)
+- Requirement IDs: FR-xxx, NFR-xxx, DR-xxx, IR-xxx
+- Every requirement must have: ID, Module, Title, Use Case ref, Priority, Description
+- Every HTML page needs logo header + table of contents
+- No cross-database foreign keys — use application-level IDs
+- Every technical doc must trace back to SRS requirements
+
+## Build Commands
+
+```bash
+make build-all     # Generate diagrams + build HTML docs
+make open          # Build and open master index in browser
+make clean         # Remove generated files
 ```
-docs/
-  <module>/
-    images/           # Module-specific diagram images
-      erd/
-      sequence/
-    srs.html          # Module SRS
-    tds.html          # Module TDS
-    database-design.html
-    api-technical-spec.html
-  index.html          # Master index linking to all modules
-```
-
-## Webhook Event Documentation
-
-When modules communicate via events, document them in `modules.yaml`:
-
-```yaml
-webhooks:
-  - from: AUTH
-    to: SMS
-    event: verification.requested
-    protocol: RabbitMQ
-    queue: verification.sms
-    payload:
-      user_id: uuid
-      phone: string
-      otp: string
-```
-
-These events are automatically shown in the master index and can be referenced in module TDS documents.

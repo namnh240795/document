@@ -1,0 +1,53 @@
+@startmindmap
+!theme plain
+
+title Feature-Module Relationship Map
+
+<style>
+mindmapDiagram {
+  node {
+    BackgroundColor #E3F2FD
+    BorderColor #1565C0
+    FontSize 14
+  }
+  :depth(0) {
+    BackgroundColor #1565C0
+    FontColor white
+    FontSize 18
+    FontStyle bold
+  }
+  :depth(1) {
+    BackgroundColor #42A5F5
+    FontColor white
+    FontSize 16
+  }
+  :depth(2) {
+    BackgroundColor #E3F2FD
+    FontColor #1565C0
+    FontSize 13
+  }
+}
+</style>
+
+* **System**
+** **AUTH**
+*** User Registration
+*** User Login
+*** Phone Verification
+*** Email Verification
+*** Password Reset
+** **SMS**
+*** User Registration
+*** Phone Verification
+** **EMAIL**
+*** User Registration
+*** Email Verification
+*** Password Reset
+** **LOG**
+*** User Registration
+*** User Login
+*** Phone Verification
+*** Email Verification
+*** Password Reset
+
+@endmindmap
