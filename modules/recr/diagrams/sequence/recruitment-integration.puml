@@ -1,0 +1,104 @@
+@startuml
+' ============================================================
+' Recruitment System - Sequence Diagram
+' Integration flow for Candidate Application
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Integration Flow: Candidate Job Application
+
+actor "Candidate" as Cand
+participant "Career Portal" as FE
+participant "API Gateway" as GW
+participant "Recruitment Service" as RS
+participant "Notification Service" as NS
+database "Recruitment DB" as DB
+database "Auth DB" as AuthDB
+
+== Step 1: Login & Browse ==
+
+Cand -> FE : Login
+activate FE
+
+FE -> GW : POST /auth/login
+activate GW
+
+GW -> AuthDB : Verify Credentials
+activate AuthDB
+AuthDB --> GW : Token
+deactivate AuthDB
+
+GW --> FE : JWT Token
+deactivate GW
+
+Cand -> FE : Browse Jobs
+FE -> GW : GET /recr/jobs
+activate GW
+
+GW -> RS : Fetch Jobs
+activate RS
+
+RS -> DB : Query Jobs
+activate DB
+DB --> RS : Job List
+deactivate DB
+
+RS --> GW : Jobs Response
+deactivate RS
+
+GW --> FE : Job Listings
+deactivate GW
+
+FE --> Cand : Display Jobs
+deactivate FE
+
+== Step 2: Submit Application ==
+
+Cand -> FE : Apply for Job
+activate FE
+
+FE -> GW : POST /recr/applications
+activate GW
+
+GW -> RS : Validate & Process
+activate RS
+
+RS -> AuthDB : Verify Candidate
+activate AuthDB
+AuthDB --> RS : Candidate Valid
+deactivate AuthDB
+
+RS -> DB : Create Application
+activate DB
+DB --> RS : Application Created
+deactivate DB
+
+== Step 3: Notification ==
+
+RS -> NS : Publish Application Event
+activate NS
+
+NS -> NS : Send Confirmation Email
+NS -> NS : Notify HR
+NS --> RS : Event Processed
+deactivate NS
+
+== Step 4: Response ==
+
+RS --> GW : 201 Created
+deactivate RS
+
+GW --> FE : Application ID
+deactivate GW
+
+FE --> Cand : Application Submitted
+deactivate FE
+
+@enduml

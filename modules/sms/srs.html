@@ -52,19 +52,13 @@
     <li><a href="#section-2">2. Module Overview</a></li>
     <li><a href="#section-3">3. Functional Requirements</a>
       <ul>
-        <li><a href="#fr-001">FR-001: Send SMS OTP (UC-01)</a></li>
-        <li><a href="#fr-002">FR-002: Verify OTP (UC-01)</a></li>
-        <li><a href="#fr-003">FR-003: Log SMS Delivery (UC-02)</a></li>
-        <li><a href="#fr-004">FR-004: Get SMS Status (UC-02)</a></li>
+        <li><a href="#fr-001">FR-001: Send SMS OTP</a></li>
+        <li><a href="#fr-002">FR-002: Verify OTP</a></li>
+        <li><a href="#fr-003">FR-003: Log SMS Delivery</a></li>
+        <li><a href="#fr-004">FR-004: Get SMS Status</a></li>
       </ul>
     </li>
-    <li><a href="#section-3a">4. Use Cases</a>
-      <ul>
-        <li><a href="#uc-01">UC-01: Send and Verify OTP</a></li>
-        <li><a href="#uc-02">UC-02: Track SMS Delivery</a></li>
-      </ul>
-    </li>
-    <li><a href="#section-4">5. Non-Functional Requirements</a>
+    <li><a href="#section-4">4. Non-Functional Requirements</a>
       <ul>
         <li><a href="#nfr-001">NFR-001: SMS Send Latency</a></li>
         <li><a href="#nfr-002">NFR-002: Delivery Rate</a></li>
@@ -72,7 +66,7 @@
         <li><a href="#nfr-004">NFR-004: Log Retention</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">6. Traceability Matrix</a>
+    <li><a href="#section-5">5. Traceability Matrix</a>
       <ul>
         <li><a href="#trace-fr-001">FR-001: Send SMS OTP</a></li>
         <li><a href="#trace-fr-002">FR-002: Verify OTP</a></li>
@@ -132,7 +126,6 @@
     <th>Req ID</th>
     <th>Module</th>
     <th>Requirement</th>
-    <th>Use Case</th>
     <th>Priority</th>
     <th>Description</th>
   </tr>
@@ -140,7 +133,6 @@
     <td><span class="req-id">FR-001</span></td>
     <td>SMS</td>
     <td>Send SMS OTP</td>
-    <td>UC-01</td>
     <td>High</td>
     <td>System shall send OTP code via SMS to user's phone number</td>
   </tr>
@@ -148,7 +140,6 @@
     <td><span class="req-id">FR-002</span></td>
     <td>SMS</td>
     <td>Verify OTP</td>
-    <td>UC-01</td>
     <td>High</td>
     <td>System shall verify OTP code submitted by user</td>
   </tr>
@@ -156,7 +147,6 @@
     <td><span class="req-id">FR-003</span></td>
     <td>SMS</td>
     <td>Log SMS Delivery</td>
-    <td>UC-02</td>
     <td>High</td>
     <td>System shall log all SMS delivery attempts with status</td>
   </tr>
@@ -164,39 +154,13 @@
     <td><span class="req-id">FR-004</span></td>
     <td>SMS</td>
     <td>Get SMS Status</td>
-    <td>UC-02</td>
     <td>Medium</td>
     <td>System shall allow querying SMS delivery status</td>
   </tr>
 </table>
 
-<!-- 4. USE CASES -->
-<h1 id="section-3a">4. Use Cases</h1>
-
-<h2 id="uc-01">UC-01: Send and Verify OTP</h2>
-<table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>AUTH module (service-to-service), End user</td></tr>
-  <tr><td>Preconditions</td><td>User has registered phone number; AUTH module requests SMS</td></tr>
-  <tr><td>Main Flow</td><td>1. AUTH module publishes verification.requested event to RabbitMQ<br>2. SMS consumer receives event<br>3. System generates OTP code (6 digits, 5min expiry)<br>4. System creates SMS log record (status: pending)<br>5. System sends SMS via Twilio provider<br>6. System updates log (status: sent)<br>7. User receives OTP on phone<br>8. User submits OTP to AUTH module<br>9. SMS service verifies OTP against log record</td></tr>
-  <tr><td>Alternative Flows</td><td>5a. Twilio fails → System updates log (status: failed, error_message)<br>5b. Retry up to 3 times with exponential backoff<br>9a. OTP expired → System returns 422 OTP_EXPIRED<br>9b. OTP invalid → System returns 422 OTP_INVALID</td></tr>
-  <tr><td>Postconditions</td><td>SMS log created with delivery status; OTP verified or failed</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
-</table>
-
-<h2 id="uc-02">UC-02: Track SMS Delivery</h2>
-<table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>Twilio (webhook), Admin user</td></tr>
-  <tr><td>Preconditions</td><td>SMS has been sent via Twilio</td></tr>
-  <tr><td>Main Flow</td><td>1. Twilio sends delivery status callback to /webhooks/sms/delivered<br>2. System receives webhook with MessageSid and status<br>3. System finds SMS log by provider_message_id<br>4. System updates log with delivery status and delivered_at timestamp<br>5. System sends verification.delivered event back to AUTH module<br>6. Admin can query SMS status via GET /sms/:id/status</td></tr>
-  <tr><td>Alternative Flows</td><td>2a. Invalid webhook signature → System returns 401<br>3a. SMS log not found → System returns 404<br>4a. Delivery failed → System updates log with error_message</td></tr>
-  <tr><td>Postconditions</td><td>SMS log updated with final delivery status; AUTH notified</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-003</span>, <span class="req-id">FR-004</span></td></tr>
-</table>
-
-<!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-4">5. Non-Functional Requirements</h1>
+<!-- 4. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-4">4. Non-Functional Requirements</h1>
 
 <table class="trace-table">
   <tr><th>Req ID</th><th>Category</th><th>Requirement</th><th>Target</th></tr>
@@ -226,8 +190,8 @@
   </tr>
 </table>
 
-<!-- 6. TRACEABILITY -->
-<h1 id="section-5">6. Requirements Traceability Matrix</h1>
+<!-- 5. TRACEABILITY -->
+<h1 id="section-5">5. Requirements Traceability Matrix</h1>
 
 <table class="trace-table">
   <tr><th>Req ID</th><th>Requirement</th><th>DB Table</th><th>Integration</th></tr>

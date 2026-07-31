@@ -1,0 +1,99 @@
+@startuml
+' ============================================================
+' Recruitment System - Deployment Diagram
+' Infrastructure topology
+' ============================================================
+
+skinparam node {
+  BackgroundColor #E8F4E8
+  BorderColor #333333
+}
+skinparam artifact {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+}
+skinparam database {
+  BackgroundColor #FDE8E8
+  BorderColor #333333
+}
+skinparam cloud {
+  BackgroundColor #E8E8FD
+  BorderColor #333333
+}
+
+title Recruitment System - Deployment Diagram
+
+' --- CDN / Edge ---
+cloud "CDN\n(CloudFront)" as cdn
+
+' --- Load Balancer ---
+node "Load Balancer\n(ALB)" as alb
+
+' --- Application Servers ---
+node "App Server 1\n(EC2 / ECS)" as app1 {
+  artifact "API Gateway\n(Node.js)" as api1
+  artifact "Recruitment Service\n(Node.js)" as recr1
+  artifact "Auth Service\n(Node.js)" as auth1
+}
+
+node "App Server 2\n(EC2 / ECS)" as app2 {
+  artifact "API Gateway\n(Node.js)" as api2
+  artifact "Recruitment Service\n(Node.js)" as recr2
+  artifact "Auth Service\n(Node.js)" as auth2
+}
+
+' --- Worker Servers ---
+node "Worker Server\n(EC2)" as worker {
+  artifact "Notification Worker\n(Node.js)" as workerNotif
+  artifact "Resume Parser\n(Node.js)" as workerParser
+}
+
+' --- Data Tier ---
+node "Primary DB\n(RDS PostgreSQL)" as dbPrimary {
+  database "recr_db\n(recr_*)" as recrData
+  database "auth_db\n(auth_*)" as authData
+}
+
+node "Read Replica\n(RDS PostgreSQL)" as dbReplica {
+  database "recr_db (read)" as recrRead
+}
+
+node "Cache\n(ElastiCache Redis)" as redis
+
+node "Message Queue\n(RabbitMQ)" as mq
+
+' --- Search ---
+node "Search Engine\n(OpenSearch)" as search
+
+' --- External ---
+cloud "External APIs" as external
+
+' --- Relationships ---
+cdn --> alb : HTTPS
+alb --> app1 : HTTP
+alb --> app2 : HTTP
+
+app1 --> dbPrimary : TCP 5432
+app2 --> dbPrimary : TCP 5432
+
+dbPrimary --> dbReplica : replication
+
+app1 --> redis : TCP 6379
+app2 --> redis : TCP 6379
+
+app1 --> search : TCP 9200
+app2 --> search : TCP 9200
+
+app1 --> mq : TCP 5672
+app2 --> mq : TCP 5672
+
+mq --> worker : consume
+
+worker --> dbPrimary : TCP 5432
+workerNotif --> external : HTTPS
+workerParser --> external : HTTPS
+
+app1 --> external : HTTPS
+app2 --> external : HTTPS
+
+@enduml

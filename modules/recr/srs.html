@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Software Requirements Specification - Recruitment</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Software Requirements Specification</h1>
+  <div class="subtitle">Recruitment Module</div>
+  <span class="module-badge">RECR</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>HR Management System</td></tr>
+    <tr><td>Module</td><td>RECR - Recruitment</td></tr>
+    <tr><td>Database</td><td>recr_db</td></tr>
+    <tr><td>Date</td><td>2026-07-31</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Introduction</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 Scope</a></li>
+        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
+        <li><a href="#section-1-4">1.4 Definitions</a></li>
+        <li><a href="#section-1-5">1.5 User Roles</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-2">2. Module Overview</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Module Description</a></li>
+        <li><a href="#section-2-2">2.2 Use Case Diagram</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Functional Requirements</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 Candidate Requirements</a></li>
+        <li><a href="#section-3-2">3.2 HR Requirements</a></li>
+        <li><a href="#section-3-3">3.3 Employer Requirements</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Data Model</a></li>
+    <li><a href="#section-5">5. API Specification</a></li>
+    <li><a href="#section-6">6. Integration</a></li>
+    <li><a href="#section-7">7. Non-Functional Requirements</a></li>
+    <li><a href="#section-8">8. Requirements Traceability Matrix</a></li>
+  </ul>
+</div>
+
+<!-- 1. INTRODUCTION -->
+<h1 id="section-1">1. Introduction</h1>
+
+<h2 id="section-1-1">1.1 Purpose</h2>
+<p>This document defines the software requirements for the <strong>Recruitment</strong> module of the HR Management System.</p>
+
+<h2 id="section-1-2">1.2 Scope</h2>
+<p>The Recruitment module manages the end-to-end hiring process with three distinct user roles: <strong>Candidate</strong> (job seekers), <strong>HR</strong> (recruitment team), and <strong>Employer</strong> (companies posting jobs). Each role has specific permissions and workflows.</p>
+
+<h2 id="section-1-3">1.3 Module Dependencies</h2>
+<table>
+  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
+  <tr><td>AUTH</td><td>Hard</td><td>User authentication and role-based access control</td></tr>
+  <tr><td>LOG</td><td>Soft</td><td>Event logging for audit trail</td></tr>
+</table>
+
+<h2 id="section-1-4">1.4 Definitions</h2>
+<table>
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td>SRS</td><td>Software Requirements Specification</td></tr>
+  <tr><td>FR</td><td>Functional Requirement</td></tr>
+  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
+  <tr><td>UC</td><td>Use Case</td></tr>
+  <tr><td>DR</td><td>Data Requirement</td></tr>
+  <tr><td>IR</td><td>Integration Requirement</td></tr>
+</table>
+
+<h2 id="section-1-5">1.5 User Roles</h2>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Key Permissions</th></tr>
+  <tr><td><strong>Candidate</strong></td><td>Job seekers looking for employment</td><td>Browse jobs, submit applications, view application status, manage profile</td></tr>
+  <tr><td><strong>HR</strong></td><td>Internal recruitment team members</td><td>Review applications, schedule interviews, evaluate candidates, manage offers, generate reports</td></tr>
+  <tr><td><strong>Employer</strong></td><td>Companies/organizations posting jobs</td><td>Create job postings, view applicants, approve job postings, view analytics</td></tr>
+</table>
+
+<!-- 2. MODULE OVERVIEW -->
+<h1 id="section-2">2. Module Overview</h1>
+
+<h2 id="section-2-1">2.1 Module Description</h2>
+<table>
+  <tr><th>Aspect</th><th>Value</th></tr>
+  <tr><td>Module Code</td><td>RECR</td></tr>
+  <tr><td>Module Name</td><td>Recruitment</td></tr>
+  <tr><td>Description</td><td>End-to-end recruitment management with 3 roles: Candidate, HR, Employer</td></tr>
+  <tr><td>Database</td><td>recr_db</td></tr>
+  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_offers, recr_job_requirements</td></tr>
+  <tr><td>Tech Stack</td><td>Node.js, NestJS, PostgreSQL, Drizzle ORM, RabbitMQ, Elasticsearch</td></tr>
+</table>
+
+<h2 id="section-2-2">2.2 Use Case Diagram</h2>
+<div class="diagram">
+  <img src="./images/usecase/recruitment-usecase.png" alt="Use Case Diagram">
+  <div class="caption">Figure 1: Recruitment Use Case Diagram (3 Roles)</div>
+</div>
+
+<!-- 3. FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-3">3. Functional Requirements</h1>
+
+<h2 id="section-3-1">3.1 Candidate Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-001</span></td>
+    <td>RECR</td>
+    <td>Candidate Registration</td>
+    <td>UC-01</td>
+    <td>High</td>
+    <td>Candidates can register accounts with email, password, and basic profile information</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-002</span></td>
+    <td>RECR</td>
+    <td>Candidate Login</td>
+    <td>UC-02</td>
+    <td>High</td>
+    <td>Candidates can log in with email/password and receive JWT token</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-003</span></td>
+    <td>RECR</td>
+    <td>Browse Jobs</td>
+    <td>UC-03</td>
+    <td>High</td>
+    <td>Candidates can browse and search job listings with filters (location, salary, type)</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-004</span></td>
+    <td>RECR</td>
+    <td>Submit Application</td>
+    <td>UC-04</td>
+    <td>High</td>
+    <td>Candidates can submit applications with resume, cover letter for specific jobs</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-005</span></td>
+    <td>RECR</td>
+    <td>View Application Status</td>
+    <td>UC-05</td>
+    <td>High</td>
+    <td>Candidates can track their application progress through recruitment stages</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-006</span></td>
+    <td>RECR</td>
+    <td>Update Profile</td>
+    <td>UC-06</td>
+    <td>Medium</td>
+    <td>Candidates can update their profile, skills, and experience</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-007</span></td>
+    <td>RECR</td>
+    <td>Upload Resume</td>
+    <td>UC-07</td>
+    <td>High</td>
+    <td>Candidates can upload and manage their resume files (PDF, DOCX)</td>
+  </tr>
+</table>
+
+<h2 id="section-3-2">3.2 HR Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-008</span></td>
+    <td>RECR</td>
+    <td>Review Applications</td>
+    <td>UC-08</td>
+    <td>High</td>
+    <td>HR can review applications, filter by job, status, and candidate qualifications</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-009</span></td>
+    <td>RECR</td>
+    <td>Screen Candidates</td>
+    <td>UC-09</td>
+    <td>High</td>
+    <td>HR can screen candidates and move them through recruitment stages</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-010</span></td>
+    <td>RECR</td>
+    <td>Schedule Interview</td>
+    <td>UC-10</td>
+    <td>High</td>
+    <td>HR can schedule interviews with date/time, location, meeting link</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-011</span></td>
+    <td>RECR</td>
+    <td>Evaluate Candidate</td>
+    <td>UC-11</td>
+    <td>High</td>
+    <td>HR can submit evaluations with scores and recommendations</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-012</span></td>
+    <td>RECR</td>
+    <td>Send Offer</td>
+    <td>UC-12</td>
+    <td>High</td>
+    <td>HR can create and send offer letters with salary and benefits</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-013</span></td>
+    <td>RECR</td>
+    <td>Reject Candidate</td>
+    <td>UC-13</td>
+    <td>High</td>
+    <td>HR can reject candidates with optional rejection reason</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-014</span></td>
+    <td>RECR</td>
+    <td>Track Pipeline</td>
+    <td>UC-14</td>
+    <td>High</td>
+    <td>HR can view recruitment pipeline with candidate counts per stage</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-015</span></td>
+    <td>RECR</td>
+    <td>Generate Reports</td>
+    <td>UC-15</td>
+    <td>Medium</td>
+    <td>HR can generate recruitment metrics and analytics reports</td>
+  </tr>
+</table>
+
+<h2 id="section-3-3">3.3 Employer Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-016</span></td>
+    <td>RECR</td>
+    <td>Employer Registration</td>
+    <td>UC-01</td>
+    <td>High</td>
+    <td>Employers can register company accounts with company details</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-017</span></td>
+    <td>RECR</td>
+    <td>Post Job</td>
+    <td>UC-16</td>
+    <td>High</td>
+    <td>Employers can create job listings with requirements and salary range</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-018</span></td>
+    <td>RECR</td>
+    <td>Manage Job Listings</td>
+    <td>UC-17</td>
+    <td>High</td>
+    <td>Employers can edit, close, or archive their job listings</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-019</span></td>
+    <td>RECR</td>
+    <td>View Applicants</td>
+    <td>UC-18</td>
+    <td>High</td>
+    <td>Employers can view applicants for their posted jobs</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-020</span></td>
+    <td>RECR</td>
+    <td>Approve Job Posting</td>
+    <td>UC-19</td>
+    <td>Medium</td>
+    <td>Employers can submit jobs for HR approval before publishing</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-021</span></td>
+    <td>RECR</td>
+    <td>View Analytics</td>
+    <td>UC-20</td>
+    <td>Medium</td>
+    <td>Employers can view recruitment analytics for their job postings</td>
+  </tr>
+</table>
+
+<!-- 4. DATA MODEL -->
+<h1 id="section-4">4. Data Model</h1>
+
+<h2>4.1 Entity Relationship Diagram</h2>
+<div class="diagram">
+  <img src="./images/erd/erd-recr.png" alt="ERD Diagram">
+  <div class="caption">Figure 2: Recruitment ERD (3 Roles)</div>
+</div>
+
+<h2>4.2 Data Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Entity</th>
+    <th>Description</th>
+    <th>Related FR</th>
+  </tr>
+  <tr><td><span class="req-id">DR-001</span></td><td>recr_users</td><td>User accounts with role-based authentication</td><td>FR-001, FR-002, FR-016</td></tr>
+  <tr><td><span class="req-id">DR-002</span></td><td>recr_candidates</td><td>Candidate profiles with resume and skills</td><td>FR-006, FR-007</td></tr>
+  <tr><td><span class="req-id">DR-003</span></td><td>recr_employers</td><td>Employer company profiles</td><td>FR-016</td></tr>
+  <tr><td><span class="req-id">DR-004</span></td><td>recr_jobs</td><td>Job listings with requirements</td><td>FR-017, FR-018</td></tr>
+  <tr><td><span class="req-id">DR-005</span></td><td>recr_applications</td><td>Job applications linking candidates to jobs</td><td>FR-004, FR-005</td></tr>
+  <tr><td><span class="req-id">DR-006</span></td><td>recr_interviews</td><td>Interview scheduling and status</td><td>FR-010</td></tr>
+  <tr><td><span class="req-id">DR-007</span></td><td>recr_evaluations</td><td>Interview evaluation scores</td><td>FR-011</td></tr>
+  <tr><td><span class="req-id">DR-008</span></td><td>recr_offers</td><td>Job offers with compensation</td><td>FR-012</td></tr>
+</table>
+
+<!-- 5. API SPECIFICATION -->
+<h1 id="section-5">5. API Specification</h1>
+
+<h2>5.1 Endpoint Summary</h2>
+
+<h3>Authentication Endpoints (All Roles)</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>POST</td><td>/recr/auth/register</td><td>Register new user (candidate/employer)</td><td>FR-001, FR-016</td></tr>
+  <tr><td>POST</td><td>/recr/auth/login</td><td>Login with email/password</td><td>FR-002</td></tr>
+</table>
+
+<h3>Candidate Endpoints</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>GET</td><td>/recr/jobs</td><td>Browse job listings</td><td>FR-003</td></tr>
+  <tr><td>POST</td><td>/recr/applications</td><td>Submit application</td><td>FR-004</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/applications</td><td>View my applications</td><td>FR-005</td></tr>
+  <tr><td>PATCH</td><td>/recr/candidate/profile</td><td>Update profile</td><td>FR-006</td></tr>
+  <tr><td>POST</td><td>/recr/candidate/resume</td><td>Upload resume</td><td>FR-007</td></tr>
+</table>
+
+<h3>HR Endpoints</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>GET</td><td>/recr/hr/applications</td><td>Review applications</td><td>FR-008</td></tr>
+  <tr><td>PATCH</td><td>/recr/hr/applications/:id/status</td><td>Update application status</td><td>FR-009</td></tr>
+  <tr><td>POST</td><td>/recr/hr/interviews</td><td>Schedule interview</td><td>FR-010</td></tr>
+  <tr><td>POST</td><td>/recr/hr/evaluations</td><td>Submit evaluation</td><td>FR-011</td></tr>
+  <tr><td>POST</td><td>/recr/hr/offers</td><td>Create offer</td><td>FR-012</td></tr>
+  <tr><td>PATCH</td><td>/recr/hr/offers/:id/status</td><td>Update offer status</td><td>FR-012</td></tr>
+  <tr><td>GET</td><td>/recr/hr/pipeline</td><td>View recruitment pipeline</td><td>FR-014</td></tr>
+  <tr><td>GET</td><td>/recr/hr/reports</td><td>Generate reports</td><td>FR-015</td></tr>
+</table>
+
+<h3>Employer Endpoints</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>POST</td><td>/recr/employer/jobs</td><td>Create job listing</td><td>FR-017</td></tr>
+  <tr><td>GET</td><td>/recr/employer/jobs</td><td>List my jobs</td><td>FR-018</td></tr>
+  <tr><td>PATCH</td><td>/recr/employer/jobs/:id</td><td>Update job listing</td><td>FR-018</td></tr>
+  <tr><td>GET</td><td>/recr/employer/jobs/:id/applicants</td><td>View applicants</td><td>FR-019</td></tr>
+  <tr><td>PATCH</td><td>/recr/employer/jobs/:id/submit</td><td>Submit for approval</td><td>FR-020</td></tr>
+  <tr><td>GET</td><td>/recr/employer/analytics</td><td>View analytics</td><td>FR-021</td></tr>
+</table>
+
+<!-- 6. INTEGRATION -->
+<h1 id="section-6">6. Integration</h1>
+
+<h2>6.1 Sequence Diagram</h2>
+<div class="diagram">
+  <img src="./images/sequence/recruitment-integration.png" alt="Sequence Diagram">
+  <div class="caption">Figure 3: Candidate Application Flow</div>
+</div>
+
+<h2>6.2 Webhook Events</h2>
+<table>
+  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
+  <tr><td>application.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when candidate submits application</td></tr>
+  <tr><td>interview.scheduled</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when interview is scheduled</td></tr>
+  <tr><td>offer.sent</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when offer letter is sent</td></tr>
+  <tr><td>candidate.hired</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when candidate accepts offer</td></tr>
+  <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when employer submits job for approval</td></tr>
+</table>
+
+<!-- 7. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-7">7. Non-Functional Requirements</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Category</th>
+    <th>Requirement</th>
+    <th>Target</th>
+  </tr>
+  <tr><td><span class="req-id">NFR-001</span></td><td>Performance</td><td>API response time for list queries</td><td>&lt; 500ms (p95)</td></tr>
+  <tr><td><span class="req-id">NFR-002</span></td><td>Performance</td><td>Application submission processing</td><td>&lt; 2s</td></tr>
+  <tr><td><span class="req-id">NFR-003</span></td><td>Scalability</td><td>Support concurrent users</td><td>500+ concurrent users</td></tr>
+  <tr><td><span class="req-id">NFR-004</span></td><td>Availability</td><td>System uptime</td><td>99.9%</td></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>Security</td><td>Role-based access control</td><td>Candidate, HR, Employer roles</td></tr>
+  <tr><td><span class="req-id">NFR-006</span></td><td>Data</td><td>Resume file storage</td><td>S3-compatible, max 10MB per file</td></tr>
+  <tr><td><span class="req-id">NFR-007</span></td><td>Search</td><td>Job search capability</td><td>Full-text search within 500ms</td></tr>
+</table>
+
+<!-- 8. TRACEABILITY -->
+<h1 id="section-8">8. Requirements Traceability Matrix</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Requirement</th>
+    <th>Role</th>
+    <th>TDS Section</th>
+    <th>DB Table</th>
+    <th>API Endpoint</th>
+  </tr>
+  <tr><td>FR-001</td><td>Candidate Registration</td><td>Candidate</td><td>3.1</td><td>recr_users, recr_candidates</td><td>POST /recr/auth/register</td></tr>
+  <tr><td>FR-002</td><td>Candidate Login</td><td>Candidate</td><td>3.1</td><td>recr_users</td><td>POST /recr/auth/login</td></tr>
+  <tr><td>FR-003</td><td>Browse Jobs</td><td>Candidate</td><td>3.1</td><td>recr_jobs</td><td>GET /recr/jobs</td></tr>
+  <tr><td>FR-004</td><td>Submit Application</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>POST /recr/applications</td></tr>
+  <tr><td>FR-005</td><td>View Application Status</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>GET /recr/candidate/applications</td></tr>
+  <tr><td>FR-008</td><td>Review Applications</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/applications</td></tr>
+  <tr><td>FR-010</td><td>Schedule Interview</td><td>HR</td><td>3.2</td><td>recr_interviews</td><td>POST /recr/hr/interviews</td></tr>
+  <tr><td>FR-011</td><td>Evaluate Candidate</td><td>HR</td><td>3.2</td><td>recr_evaluations</td><td>POST /recr/hr/evaluations</td></tr>
+  <tr><td>FR-012</td><td>Send Offer</td><td>HR</td><td>3.2</td><td>recr_offers</td><td>POST /recr/hr/offers</td></tr>
+  <tr><td>FR-017</td><td>Post Job</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>POST /recr/employer/jobs</td></tr>
+  <tr><td>FR-018</td><td>Manage Job Listings</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>GET/PATCH /recr/employer/jobs</td></tr>
+  <tr><td>FR-019</td><td>View Applicants</td><td>Employer</td><td>3.3</td><td>recr_applications</td><td>GET /recr/employer/jobs/:id/applicants</td></tr>
+  <tr><td>NFR-005</td><td>RBAC</td><td>All</td><td>6.1</td><td>recr_users</td><td>-</td></tr>
+</table>
+
+</body>
+</html>

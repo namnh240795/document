@@ -60,6 +60,32 @@ modules:
       - RabbitMQ
       - SendGrid/SMTP
 
+  - code: RECR
+    name: "Recruitment"
+    description: "End-to-end recruitment management with 3 roles: Candidate, HR, Employer"
+    database: recr_db
+    tables:
+      - recr_users
+      - recr_candidates
+      - recr_employers
+      - recr_hr_profiles
+      - recr_jobs
+      - recr_applications
+      - recr_interviews
+      - recr_evaluations
+      - recr_offers
+      - recr_job_requirements
+    depends_on:
+      - AUTH
+      - LOG
+    color: "#E8F4E8"
+    tech_stack:
+      - NestJS
+      - Drizzle ORM
+      - PostgreSQL
+      - Elasticsearch
+      - RabbitMQ
+
   - code: LOG
     name: "Logger"
     description: "Centralized event logging — receives log events from all services via RabbitMQ, stores in OpenSearch for full-text search, analytics, and dashboards"
@@ -127,6 +153,22 @@ features:
   - name: "Password Reset"
     modules: [AUTH, EMAIL, LOG]
     description: "User requests reset, email sent with token, password updated, event logged"
+
+  - name: "Job Posting"
+    modules: [RECR, LOG]
+    description: "HR Manager creates job listing, job published, event logged"
+
+  - name: "Application Submission"
+    modules: [RECR, EMAIL, LOG]
+    description: "Candidate submits application, confirmation email sent, event logged"
+
+  - name: "Interview Scheduling"
+    modules: [RECR, EMAIL, LOG]
+    description: "Recruiter schedules interview, calendar invite sent, event logged"
+
+  - name: "Offer Management"
+    modules: [RECR, EMAIL, LOG]
+    description: "Recruiter creates offer, offer letter sent, event logged"
 
 # ============================================================
 # Inter-Module Communication (Webhook Events)
@@ -266,5 +308,67 @@ webhooks:
       user_id: uuid | null
       provider_message_id: string
       status: string
+      metadata: jsonb
+      timestamp: iso8601
+
+  # ============================================================
+  # Recruitment Module Events (RECR -> EMAIL, LOG)
+  # ============================================================
+
+  - from: RECR
+    to: EMAIL
+    event: application.submitted
+    description: "RECR publishes when candidate submits application"
+    protocol: RabbitMQ
+    queue: recruitment.email
+    payload:
+      event_id: uuid
+      candidate_email: string
+      candidate_name: string
+      job_title: string
+      timestamp: iso8601
+
+  - from: RECR
+    to: EMAIL
+    event: interview.scheduled
+    description: "RECR publishes when interview is scheduled"
+    protocol: RabbitMQ
+    queue: recruitment.email
+    payload:
+      event_id: uuid
+      candidate_email: string
+      candidate_name: string
+      interviewer_email: string
+      scheduled_at: iso8601
+      location: string
+      meeting_link: string
+      timestamp: iso8601
+
+  - from: RECR
+    to: EMAIL
+    event: offer.sent
+    description: "RECR publishes when offer letter is sent"
+    protocol: RabbitMQ
+    queue: recruitment.email
+    payload:
+      event_id: uuid
+      candidate_email: string
+      candidate_name: string
+      position_title: string
+      salary: decimal
+      start_date: date
+      timestamp: iso8601
+
+  - from: RECR
+    to: LOG
+    event: recruitment.event.logged
+    description: "RECR publishes recruitment events (application, interview, offer) to Logger"
+    protocol: RabbitMQ
+    queue: log.events
+    payload:
+      event_id: uuid
+      level: "info" | "warn" | "error"
+      action: string
+      user_id: uuid | null
       metadata: jsonb
       timestamp: iso8601

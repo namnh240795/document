@@ -1,0 +1,88 @@
+@startuml
+' ============================================================
+' Recruitment System - Use Case Diagram
+' Roles: Candidate, HR, Employer
+' ============================================================
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+skinparam nodesep 60
+skinparam ranksep 40
+
+' --- Actors ---
+actor "Candidate" as candidate
+actor "HR" as hr
+actor "Employer" as employer
+
+' --- Force actor order ---
+candidate -[hidden]down- hr
+hr -[hidden]down- employer
+
+' --- Use Cases - Candidate ---
+usecase "UC-01: Register Account" as UC01
+usecase "UC-02: Login" as UC02
+usecase "UC-03: Browse Jobs" as UC03
+usecase "UC-04: Submit Application" as UC04
+usecase "UC-05: View Application Status" as UC05
+usecase "UC-06: Update Profile" as UC06
+usecase "UC-07: Upload Resume" as UC07
+
+' --- Use Cases - HR ---
+usecase "UC-08: Review Applications" as UC08
+usecase "UC-09: Screen Candidates" as UC09
+usecase "UC-10: Schedule Interview" as UC10
+usecase "UC-11: Evaluate Candidate" as UC11
+usecase "UC-12: Send Offer" as UC12
+usecase "UC-13: Reject Candidate" as UC13
+usecase "UC-14: Track Pipeline" as UC14
+usecase "UC-15: Generate Reports" as UC15
+
+' --- Use Cases - Employer ---
+usecase "UC-16: Post Job" as UC16
+usecase "UC-17: Manage Job Listings" as UC17
+usecase "UC-18: View Applicants" as UC18
+usecase "UC-19: Approve Job Posting" as UC19
+usecase "UC-20: View Recruitment Analytics" as UC20
+
+' --- Relationships - Candidate ---
+candidate --> UC01
+candidate --> UC02
+candidate --> UC03
+candidate --> UC04
+candidate --> UC05
+candidate --> UC06
+candidate --> UC07
+
+' --- Relationships - HR ---
+hr --> UC08
+hr --> UC09
+hr --> UC10
+hr --> UC11
+hr --> UC12
+hr --> UC13
+hr --> UC14
+hr --> UC15
+
+' --- Relationships - Employer ---
+employer --> UC16
+employer --> UC17
+employer --> UC18
+employer --> UC19
+employer --> UC20
+
+' --- Include/Extend ---
+UC04 ..> UC01 : <<include>>
+UC04 ..> UC02 : <<include>>
+UC08 ..> UC09 : <<include>>
+UC10 ..> UC11 : <<include>>
+UC12 ..> UC14 : <<extend>>
+UC13 ..> UC14 : <<extend>>
+
+@enduml

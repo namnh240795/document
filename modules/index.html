@@ -29,7 +29,7 @@
   <h1>System Documentation</h1>
   <div class="subtitle"> Authentication System</div>
   <table class="meta-table">
-    <tr><td>Generated</td><td>2026-07-24</td></tr>
+    <tr><td>Generated</td><td>2026-07-31</td></tr>
   </table>
 </div>
 
@@ -60,12 +60,23 @@
   <h3><span class="module-badge" style="background:#666666">EMAIL</span>  Email Notification</h3>
   <p> Email notification delivery  templating  and audit trail</p>
   <p>Database: <strong> email_db</strong> | Tech: NestJS,Drizzle ORM,PostgreSQL,RabbitMQ,SendGrid/SMTP</p>
-  <p>Dependencies: None</p>
+  <p>Dependencies: <span class="dep-tag"> </span></p>
   <div class="doc-links">
-    <a href="EMAIL/srs.html">SRS</a>
-    <a href="EMAIL/tds.html">TDS</a>
-    <a href="EMAIL/database-design.html">Database Design</a>
-    <a href="EMAIL/api-technical-spec.html">API Spec</a>
+    <a href="email/srs.html">SRS</a>
+    <a href="email/tds.html">TDS</a>
+    <a href="email/database-design.html">Database Design</a>
+    <a href="email/api-technical-spec.html">API Spec</a>
+  </div>
+</div>
+<div class="module-card">
+  <h3><span class="module-badge" style="background:#666666">RECR</span>  Recruitment</h3>
+  <p> End-to-end recruitment management with 3 roles: Candidate  HR  Employer</p>
+  <p>Database: <strong> recr_db</strong> | Tech: NestJS,Drizzle ORM,PostgreSQL,Elasticsearch,RabbitMQ</p>
+  <div class="doc-links">
+    <a href="recr/srs.html">SRS</a>
+    <a href="recr/tds.html">TDS</a>
+    <a href="recr/database-design.html">Database Design</a>
+    <a href="recr/api-technical-spec.html">API Spec</a>
   </div>
 </div>
 <div class="module-card">
@@ -73,10 +84,10 @@
   <p> Centralized event logging — receives log events from all services via RabbitMQ  stores in OpenSearch for full-text search  analytics  and dashboards</p>
   <p>Database: <strong> opensearch</strong> | Tech: NestJS,RabbitMQ (amqplib),OpenSearch (@opensearch-project/opensearch)</p>
   <div class="doc-links">
-    <a href="LOG/srs.html">SRS</a>
-    <a href="LOG/tds.html">TDS</a>
-    <a href="LOG/database-design.html">Database Design</a>
-    <a href="LOG/api-technical-spec.html">API Spec</a>
+    <a href="log/srs.html">SRS</a>
+    <a href="log/tds.html">TDS</a>
+    <a href="log/database-design.html">Database Design</a>
+    <a href="log/api-technical-spec.html">API Spec</a>
   </div>
 </div>
 
@@ -89,15 +100,19 @@
 <h1>Inter-Module Communication</h1>
 <table class="trace-table">
   <tr><th>From</th><th>To</th><th>Event</th><th>Protocol</th><th>Description</th></tr>
-  <tr><td>AUTH</td><td>SMS</td><td><code>verification.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when user requests account verification</td></tr>
+  <tr><td>AUTH</td><td>SMS</td><td><code>verification.requested</code></td><td></td><td>AUTH publishes when user requests account verification</td></tr>
   <tr><td>AUTH</td><td>SMS</td><td><code>verification.resent</code></td><td>RabbitMQ</td><td>AUTH publishes when user resends verification (rate-limited)</td></tr>
-  <tr><td>SMS</td><td>AUTH</td><td><code>verification.delivered</code></td><td>Webhook</td><td>SMS confirms delivery status back to AUTH</td></tr>
-  <tr><td>AUTH</td><td>LOG</td><td><code>auth.event.logged</code></td><td>RabbitMQ</td><td>AUTH publishes any auth event (login, logout, register, password change) to Logger</td></tr>
+  <tr><td>SMS</td><td>AUTH</td><td><code>verification.delivered</code></td><td>RabbitMQ</td><td>SMS confirms delivery status back to AUTH</td></tr>
+  <tr><td>AUTH</td><td>LOG</td><td><code>auth.event.logged</code></td><td>Webhook</td><td>AUTH publishes any auth event (login, logout, register, password change) to Logger</td></tr>
   <tr><td>SMS</td><td>LOG</td><td><code>sms.event.logged</code></td><td>RabbitMQ</td><td>SMS publishes delivery events (sent, delivered, failed) to Logger</td></tr>
   <tr><td>AUTH</td><td>EMAIL</td><td><code>verification.email.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when user requests email verification</td></tr>
   <tr><td>AUTH</td><td>EMAIL</td><td><code>verification.email.resent</code></td><td>RabbitMQ</td><td>AUTH publishes when user resends email verification (rate-limited)</td></tr>
-  <tr><td>EMAIL</td><td>AUTH</td><td><code>verification.email.delivered</code></td><td>Webhook</td><td>EMAIL confirms delivery status back to AUTH</td></tr>
-  <tr><td>EMAIL</td><td>LOG</td><td><code>email.event.logged</code></td><td>RabbitMQ</td><td>EMAIL publishes email delivery events (sent, delivered, failed) to Logger</td></tr>
+  <tr><td>EMAIL</td><td>AUTH</td><td><code>verification.email.delivered</code></td><td>RabbitMQ</td><td>EMAIL confirms delivery status back to AUTH</td></tr>
+  <tr><td>EMAIL</td><td>LOG</td><td><code>email.event.logged</code></td><td>Webhook</td><td>EMAIL publishes email delivery events (sent, delivered, failed) to Logger</td></tr>
+  <tr><td>RECR</td><td>EMAIL</td><td><code>application.submitted</code></td><td>RabbitMQ</td><td>RECR publishes when candidate submits application</td></tr>
+  <tr><td>RECR</td><td>EMAIL</td><td><code>interview.scheduled</code></td><td>RabbitMQ</td><td>RECR publishes when interview is scheduled</td></tr>
+  <tr><td>RECR</td><td>EMAIL</td><td><code>offer.sent</code></td><td>RabbitMQ</td><td>RECR publishes when offer letter is sent</td></tr>
+  <tr><td>RECR</td><td>LOG</td><td><code>recruitment.event.logged</code></td><td>RabbitMQ</td><td>RECR publishes recruitment events (application, interview, offer) to Logger</td></tr>
 </table>
 
 </body>

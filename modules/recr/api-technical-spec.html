@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Technical Specification - Recruitment</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>API Technical Specification</h1>
+  <div class="subtitle">Recruitment API</div>
+  <span class="module-badge">RECR</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
+    <tr><td>System</td><td>HR Management System</td></tr>
+    <tr><td>Module</td><td>RECR - Recruitment</td></tr>
+    <tr><td>Date</td><td>2026-07-31</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Recruitment SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Response Format</a></li>
+    <li><a href="#section-3">3. Error Codes</a></li>
+    <li><a href="#section-4">4. Rate Limiting</a></li>
+    <li><a href="#section-5">5. Endpoints</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 Authentication (All Roles)</a></li>
+        <li><a href="#section-5-2">5.2 Candidate Endpoints</a></li>
+        <li><a href="#section-5-3">5.3 HR Endpoints</a></li>
+        <li><a href="#section-5-4">5.4 Employer Endpoints</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. Pagination</a></li>
+    <li><a href="#section-7">7. Webhook Events</a></li>
+    <li><a href="#section-8">8. Changelog</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Candidate Registration</td><td>POST /recr/auth/register</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Login</td><td>POST /recr/auth/login</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Browse Jobs</td><td>GET /recr/jobs</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Submit Application</td><td>POST /recr/applications</td></tr>
+  <tr><td><span class="req-id">FR-008</span> Review Applications</td><td>GET /recr/hr/applications</td></tr>
+  <tr><td><span class="req-id">FR-017</span> Post Job</td><td>POST /recr/employer/jobs</td></tr>
+</table>
+
+<h2>1.2 API Principles</h2>
+<ul>
+  <li>RESTful design</li>
+  <li>JSON request/response</li>
+  <li>Versioned via URL path (<code>/v1/</code>)</li>
+  <li>Stateless (JWT authentication)</li>
+  <li>Role-based endpoints: <code>/candidate/</code>, <code>/hr/</code>, <code>/employer/</code></li>
+</ul>
+
+<h2>1.3 Authentication</h2>
+<p>All endpoints require JWT Bearer token unless marked as <strong>Public</strong>. The JWT includes the user's role.</p>
+<pre><code>Authorization: Bearer &lt;access_token&gt;
+
+// JWT Payload includes:
+{
+  "sub": "user_id",
+  "email": "user@example.com",
+  "role": "candidate" | "hr" | "employer"
+}</code></pre>
+
+<!-- 2. RESPONSE FORMAT -->
+<h1 id="section-2">2. Response Format</h1>
+
+<h2>2.1 Success Response</h2>
+<pre><code>{
+  "success": true,
+  "data": { ... },
+  "meta": {
+    "requestId": "req-abc-123",
+    "timestamp": "2026-07-31T10:30:00Z"
+  }
+}</code></pre>
+
+<h2>2.2 Error Response</h2>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      { "field": "email", "message": "Invalid email format" }
+    ]
+  }
+}</code></pre>
+
+<!-- 3. ERROR CODES -->
+<h1 id="section-3">3. Error Codes</h1>
+
+<table>
+  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Request validation failed</td></tr>
+  <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid token</td></tr>
+  <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions for role</td></tr>
+  <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
+  <tr><td>409</td><td>APPLICATION_EXISTS</td><td>Candidate already applied to this job</td></tr>
+  <tr><td>422</td><td>INVALID_STATUS_TRANSITION</td><td>Invalid status change</td></tr>
+  <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
+  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
+</table>
+
+<!-- 4. RATE LIMITING -->
+<h1 id="section-4">4. Rate Limiting</h1>
+
+<table>
+  <tr><th>Endpoint Category</th><th>Requests/min</th><th>Burst</th></tr>
+  <tr><td>Auth endpoints</td><td>10</td><td>5</td></tr>
+  <tr><td>Candidate endpoints</td><td>60</td><td>20</td></tr>
+  <tr><td>HR endpoints</td><td>100</td><td>30</td></tr>
+  <tr><td>Employer endpoints</td><td>60</td><td>20</td></tr>
+</table>
+
+<!-- 5. ENDPOINTS -->
+<h1 id="section-5">5. Endpoints</h1>
+
+<h2 id="section-5-1">5.1 Authentication (All Roles)</h2>
+
+<h3>POST /recr/auth/register <em>(Public)</em> <span class="req-id">FR-001, FR-016</span></h3>
+<p>Register new user as candidate or employer.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "email": "john@example.com",
+  "password": "securepassword123",
+  "full_name": "John Doe",
+  "phone": "0901234567",
+  "role": "candidate",
+  // For employer only:
+  "company_name": "Tech Corp",
+  "industry": "Technology"
+}</code></pre>
+<p><strong>Response 201:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "email": "john@example.com",
+    "role": "candidate",
+    "token": "jwt_token_here"
+  }
+}</code></pre>
+
+<h3>POST /recr/auth/login <em>(Public)</em> <span class="req-id">FR-002</span></h3>
+<p>Login with email/password. Returns JWT with role claim.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "email": "john@example.com",
+  "password": "securepassword123"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "email": "john@example.com",
+    "role": "candidate",
+    "token": "jwt_token_here"
+  }
+}</code></pre>
+
+<h2 id="section-5-2">5.2 Candidate Endpoints</h2>
+
+<h3>GET /recr/jobs <span class="req-id">FR-003</span></h3>
+<p>Browse job listings. Public endpoint (no auth required).</p>
+<p><strong>Query Params:</strong> <code>search</code>, <code>location</code>, <code>salary_min</code>, <code>employment_type</code>, <code>page</code>, <code>limit</code></p>
+
+<h3>POST /recr/applications <span class="req-id">FR-004</span></h3>
+<p>Submit job application. Requires <strong>candidate</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "job_id": 1,
+  "cover_letter": "I am interested in this position..."
+}</code></pre>
+
+<h3>GET /recr/candidate/applications <span class="req-id">FR-005</span></h3>
+<p>View my applications. Requires <strong>candidate</strong> role.</p>
+
+<h3>PATCH /recr/candidate/profile <span class="req-id">FR-006</span></h3>
+<p>Update profile. Requires <strong>candidate</strong> role.</p>
+
+<h3>POST /recr/candidate/resume <span class="req-id">FR-007</span></h3>
+<p>Upload resume. Requires <strong>candidate</strong> role. Max 10MB.</p>
+
+<h2 id="section-5-3">5.3 HR Endpoints</h2>
+
+<h3>GET /recr/hr/applications <span class="req-id">FR-008</span></h3>
+<p>Review applications. Requires <strong>hr</strong> role.</p>
+<p><strong>Query Params:</strong> <code>job_id</code>, <code>status</code>, <code>page</code>, <code>limit</code></p>
+
+<h3>PATCH /recr/hr/applications/:id/status <span class="req-id">FR-009</span></h3>
+<p>Update application status. Requires <strong>hr</strong> role.</p>
+
+<h3>POST /recr/hr/interviews <span class="req-id">FR-010</span></h3>
+<p>Schedule interview. Requires <strong>hr</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "application_id": 1,
+  "interviewer_id": 201,
+  "scheduled_at": "2026-08-05T14:00:00Z",
+  "duration_minutes": 60,
+  "location": "Meeting Room A",
+  "meeting_link": "https://meet.google.com/abc-defg-hij"
+}</code></pre>
+
+<h3>POST /recr/hr/evaluations <span class="req-id">FR-011</span></h3>
+<p>Submit evaluation. Requires <strong>hr</strong> role.</p>
+
+<h3>POST /recr/hr/offers <span class="req-id">FR-012</span></h3>
+<p>Create offer. Requires <strong>hr</strong> role.</p>
+
+<h3>GET /recr/hr/pipeline <span class="req-id">FR-014</span></h3>
+<p>View recruitment pipeline. Requires <strong>hr</strong> role.</p>
+
+<h3>GET /recr/hr/reports <span class="req-id">FR-015</span></h3>
+<p>Generate reports. Requires <strong>hr</strong> role.</p>
+
+<h2 id="section-5-4">5.4 Employer Endpoints</h2>
+
+<h3>POST /recr/employer/jobs <span class="req-id">FR-017</span></h3>
+<p>Create job listing. Requires <strong>employer</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "title": "Senior Software Engineer",
+  "description": "We are looking for a senior engineer...",
+  "department": "Engineering",
+  "location": "Ho Chi Minh City",
+  "salary_min": 20000000,
+  "salary_max": 40000000,
+  "employment_type": "full_time",
+  "requirements": [
+    { "type": "skill", "description": "5+ years Node.js", "is_mandatory": true }
+  ]
+}</code></pre>
+
+<h3>GET /recr/employer/jobs <span class="req-id">FR-018</span></h3>
+<p>List my jobs. Requires <strong>employer</strong> role.</p>
+
+<h3>PATCH /recr/employer/jobs/:id <span class="req-id">FR-018</span></h3>
+<p>Update job listing. Requires <strong>employer</strong> role.</p>
+
+<h3>GET /recr/employer/jobs/:id/applicants <span class="req-id">FR-019</span></h3>
+<p>View applicants. Requires <strong>employer</strong> role.</p>
+
+<h3>PATCH /recr/employer/jobs/:id/submit <span class="req-id">FR-020</span></h3>
+<p>Submit for HR approval. Requires <strong>employer</strong> role.</p>
+
+<h3>GET /recr/employer/analytics <span class="req-id">FR-021</span></h3>
+<p>View analytics. Requires <strong>employer</strong> role.</p>
+
+<!-- 6. PAGINATION -->
+<h1 id="section-6">6. Pagination</h1>
+<p>All list endpoints support offset pagination.</p>
+<pre><code>GET /recr/jobs?page=2&amp;limit=20</code></pre>
+
+<!-- 7. WEBHOOK EVENTS -->
+<h1 id="section-7">7. Webhook Events</h1>
+
+<table>
+  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
+  <tr><td>application.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate submits application</td></tr>
+  <tr><td>interview.scheduled</td><td>Outbound</td><td>RabbitMQ</td><td>HR schedules interview</td></tr>
+  <tr><td>offer.sent</td><td>Outbound</td><td>RabbitMQ</td><td>HR sends offer letter</td></tr>
+  <tr><td>candidate.hired</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate accepts offer</td></tr>
+  <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Employer submits job for approval</td></tr>
+</table>
+
+<!-- 8. CHANGELOG -->
+<h1 id="section-8">8. Changelog</h1>
+<table>
+  <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
+  <tr><td>2026-07-31</td><td>1.0.0</td><td>Initial release with 3 roles: Candidate, HR, Employer</td></tr>
+</table>
+
+</body>
+</html>

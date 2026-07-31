@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Technical Design Specification -  Recruitment</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Technical Design Specification</h1>
+  <div class="subtitle"> Recruitment Module</div>
+  <span class="module-badge">RECR</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td> Authentication System</td></tr>
+    <tr><td>Module</td><td>RECR -  Recruitment</td></tr>
+    <tr><td>Date</td><td>2026-07-31</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html"> Recruitment SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 SRS Reference</a></li>
+        <li><a href="#section-1-3">1.3 Requirements Addressed</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-2">2. Architecture</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Architecture Overview</a></li>
+        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Component Design</a></li>
+    <li><a href="#section-4">4. Data Architecture</a></li>
+    <li><a href="#section-5">5. API Design</a></li>
+    <li><a href="#section-6">6. Security Design</a></li>
+    <li><a href="#section-7">7. Integration</a></li>
+    <li><a href="#section-8">8. Error Handling</a></li>
+    <li><a href="#section-9">9. Traceability Summary</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2 id="section-1-1">1.1 Purpose</h2>
+<p>This document describes the technical design decisions for the <strong> Recruitment</strong> module.</p>
+
+<h2 id="section-1-2">1.2 SRS Reference</h2>
+<table>
+  <tr><th>Document</th><th>Version</th><th>Description</th></tr>
+  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html"> Recruitment SRS</a></td></tr>
+  <tr><td>API Spec</td><td>1.0</td><td><a href="api-technical-spec.html"> Recruitment API Spec</a></td></tr>
+  <tr><td>Database Design</td><td>1.0</td><td><a href="database-design.html"> Recruitment Database Design</a></td></tr>
+</table>
+
+<h2 id="section-1-3">1.3 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
+  <!-- TODO: Add requirements addressed here. Example:
+  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-005</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-003</span></td><td>Section 6, 8</td></tr>
+  -->
+</table>
+
+<!-- 2. ARCHITECTURE -->
+<h1 id="section-2">2. Architecture</h1>
+
+<h2 id="section-2-1">2.1 Architecture Overview</h2>
+<div class="diagram">
+  <img src="../images/architecture/recruitment-architecture.png" alt="Architecture Overview">
+  <div class="caption">Figure 1: System Context</div>
+</div>
+
+<h2 id="section-2-2">2.2 Key Design Decisions</h2>
+<table class="trace-table">
+  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
+  <!-- TODO: Add design decisions here. Example:
+  <tr>
+    <td>1</td><td>Use PostgreSQL</td>
+    <td>ACID compliance, JSON support</td>
+    <td><span class="req-id">DR-001</span></td>
+  </tr>
+  -->
+</table>
+
+<!-- 3. COMPONENT DESIGN -->
+<h1 id="section-3">3. Component Design</h1>
+
+<h2>3.1 Component Diagram</h2>
+<div class="diagram">
+  <img src="../images/component/recruitment-component.png" alt="Component Diagram">
+  <div class="caption">Figure 2:  Recruitment Components</div>
+</div>
+
+<h2>3.2 Component to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
+  <!-- TODO: Add component mapping here -->
+</table>
+
+<!-- 4. DATA ARCHITECTURE -->
+<h1 id="section-4">4. Data Architecture</h1>
+
+<h2>4.1 Database Design</h2>
+<p>Refer to: <a href="database-design.html"> Recruitment Database Design</a></p>
+
+<h2>4.2 Data Requirements Resolution</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
+  <!-- TODO: Add data resolution here -->
+</table>
+
+<!-- 5. API DESIGN -->
+<h1 id="section-5">5. API Design</h1>
+
+<h2>5.1 Endpoint to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
+  <!-- TODO: Add endpoint mapping here -->
+</table>
+
+<!-- 6. SECURITY -->
+<h1 id="section-6">6. Security Design</h1>
+
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
+  <!-- TODO: Add security design here -->
+</table>
+
+<!-- 7. INTEGRATION -->
+<h1 id="section-7">7. Integration</h1>
+
+<h2>7.1 Webhook Events</h2>
+<table>
+  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
+  <!-- TODO: Add webhook events here -->
+</table>
+
+<h2>7.2 External Services</h2>
+<table>
+  <tr><th>Service</th><th>Protocol</th><th>Purpose</th></tr>
+  <!-- TODO: Add external services here -->
+</table>
+
+<!-- 8. ERROR HANDLING -->
+<h1 id="section-8">8. Error Handling</h1>
+
+<table>
+  <tr><th>HTTP Status</th><th>Code</th><th>Description</th></tr>
+  <!-- TODO: Add error codes here -->
+</table>
+
+<!-- 9. TRACEABILITY -->
+<h1 id="section-9">9. Traceability Summary</h1>
+
+<table class="trace-table">
+  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
+  <!-- TODO: Add traceability summary here -->
+</table>
+
+</body>
+</html>

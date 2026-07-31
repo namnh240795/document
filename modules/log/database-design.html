@@ -47,9 +47,8 @@
     <li><a href="#section-3">3. Field Mappings</a></li>
     <li><a href="#section-4">4. Index Lifecycle</a></li>
     <li><a href="#section-5">5. Data Dictionary</a></li>
-    <li><a href="#section-6">6. Index Creation & Management</a></li>
-    <li><a href="#section-7">7. Backup & Recovery</a></li>
-    <li><a href="#section-8">8. Performance Tuning</a></li>
+    <li><a href="#section-6">6. Backup & Recovery</a></li>
+    <li><a href="#section-7">7. Performance Tuning</a></li>
   </ul>
 </div>
 
@@ -151,43 +150,8 @@
   <tr><td>log-events</td><td>Application logs from all services</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-003</span>, <span class="req-id">FR-004</span></td><td>10,000,000</td></tr>
 </table>
 
-<!-- 6. INDEX CREATION & MANAGEMENT -->
-<h1 id="section-6">6. Index Creation &amp; Management</h1>
-
-<h2>6.1 Create Index</h2>
-<pre><code>PUT /log-events
-{
-  "mappings": {
-    "properties": {
-      "eventId":     { "type": "keyword" },
-      "source":      { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
-      "level":       { "type": "keyword" },
-      "action":      { "type": "keyword" },
-      "message":     { "type": "text" },
-      "input":       { "type": "text" },
-      "output":      { "type": "text" },
-      "error":       { "type": "text" },
-      "exception":   { "type": "text" },
-      "metadata":    { "type": "object", "enabled": true },
-      "traceId":     { "type": "keyword" },
-      "userId":      { "type": "keyword" },
-      "timestamp":   { "type": "date" }
-    }
-  }
-}</code></pre>
-
-<h2>6.2 Rollback (Delete Index)</h2>
-<pre><code>DELETE /log-events</code></pre>
-
-<h2>6.3 Reindex (Schema Migration)</h2>
-<pre><code>POST /_reindex
-{
-  "source": { "index": "log-events-v1" },
-  "dest": { "index": "log-events-v2" }
-}</code></pre>
-
-<!-- 7. BACKUP & RECOVERY -->
-<h1 id="section-7">7. Backup &amp; Recovery</h1>
+<!-- 6. BACKUP & RECOVERY -->
+<h1 id="section-6">6. Backup &amp; Recovery</h1>
 
 <table>
   <tr><th>Type</th><th>Frequency</th><th>Method</th></tr>
@@ -195,8 +159,8 @@
   <tr><td>Index Recovery</td><td>On demand</td><td>Restore from snapshot</td></tr>
 </table>
 
-<!-- 8. PERFORMANCE -->
-<h1 id="section-8">8. Performance Tuning</h1>
+<!-- 7. PERFORMANCE -->
+<h1 id="section-7">7. Performance Tuning</h1>
 
 <table>
   <tr><th>Setting</th><th>Value</th><th>Description</th></tr>

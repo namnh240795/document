@@ -1,0 +1,133 @@
+@startuml
+' ============================================================
+' Recruitment System - Activity Diagram
+' Process flow for 3 roles: Candidate, HR, Employer
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Recruitment Process Flow (3 Roles)
+
+|System|
+start
+:User Access System;
+
+if (Login Role?) then (Candidate)
+  |Candidate|
+  :Browse Job Listings;
+
+  :Select Job Position;
+
+  :Submit Application;
+
+  |System|
+  :Validate Application;
+
+  if (Valid Application?) then (yes)
+    :Create Application Record;
+
+    :Notify HR;
+
+    |HR|
+    :Review Application;
+
+    if (Qualified Candidate?) then (yes)
+      :Schedule Interview;
+
+      |Candidate|
+      :Attend Interview;
+
+      |HR|
+      :Evaluate Interview;
+
+      if (Positive Evaluation?) then (yes)
+        :Create Offer;
+
+        |Employer|
+        :Approve Offer;
+
+        if (Offer Approved?) then (yes)
+          :Send Offer Letter;
+
+          |Candidate|
+          if (Accepts Offer?) then (yes)
+            :Update Status to Hired;
+
+            |System|
+            :Create Employee Record;
+
+          else (no)
+            :Notify HR;
+          endif
+
+        else (no)
+          :Notify HR;
+        endif
+
+      else (no)
+        :Reject Candidate;
+
+        |System|
+        :Send Rejection Email;
+      endif
+
+    else (no)
+      :Reject Candidate;
+
+      |System|
+      :Send Rejection Email;
+    endif
+
+  else (no)
+    :Return Error;
+  endif
+
+elseif (Employer)
+  |Employer|
+  :Create Job Posting;
+
+  :Submit for Approval;
+
+  |HR|
+  :Review Job Posting;
+
+  if (Approved?) then (yes)
+    :Approve Job;
+
+    |System|
+    :Publish Job;
+
+    :Notify Employer;
+
+  else (no)
+    :Return for Revision;
+
+    |Employer|
+    :Revise Job Posting;
+  endif
+
+elseif (HR)
+  |HR|
+  :Access Dashboard;
+
+  :View Pipeline;
+
+  :Review Applications;
+
+  :Schedule Interviews;
+
+  :Manage Offers;
+
+  :Generate Reports;
+
+endif
+
+stop
+
+@enduml

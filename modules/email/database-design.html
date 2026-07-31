@@ -183,31 +183,5 @@ CREATE INDEX idx_email_logs_provider_message_id ON email_logs (provider_message_
 COMMIT;
 </pre>
 
-<h2>5.2 Rollback Script</h2>
-<pre>
--- Rollback: Drop email_logs table and indexes
--- Date: 2026-07-24
--- Module: EMAIL
-
-BEGIN;
-
-DROP INDEX IF EXISTS idx_email_logs_provider_message_id;
-DROP INDEX IF EXISTS idx_email_logs_created_at;
-DROP INDEX IF EXISTS idx_email_logs_status;
-DROP INDEX IF EXISTS idx_email_logs_user_id;
-
-DROP TABLE IF EXISTS email_logs CASCADE;
-
-COMMIT;
-</pre>
-
-<!-- 6. DATA DICTIONARY -->
-<h1 id="section-6">6. Data Dictionary</h1>
-
-<table class="trace-table">
-  <tr><th>Table</th><th>Module</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
-  <tr><td>email_logs</td><td>EMAIL</td><td>Email delivery logs and audit trail</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-003</span>, <span class="req-id">FR-004</span></td><td>500,000</td></tr>
-</table>
-
 </body>
 </html>

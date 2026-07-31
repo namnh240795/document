@@ -52,21 +52,13 @@
     <li><a href="#section-2">2. Module Overview</a></li>
     <li><a href="#section-3">3. Functional Requirements</a>
       <ul>
-        <li><a href="#fr-001">FR-001: Ingest Log Events (UC-01)</a></li>
-        <li><a href="#fr-002">FR-002: Query Logs (UC-02)</a></li>
-        <li><a href="#fr-003">FR-003: Log Analytics (UC-03)</a></li>
-        <li><a href="#fr-004">FR-004: Real-time Monitoring (UC-04)</a></li>
+        <li><a href="#fr-001">FR-001: Ingest Log Events</a></li>
+        <li><a href="#fr-002">FR-002: Query Logs</a></li>
+        <li><a href="#fr-003">FR-003: Log Analytics</a></li>
+        <li><a href="#fr-004">FR-004: Real-time Monitoring</a></li>
       </ul>
     </li>
-    <li><a href="#section-3a">4. Use Cases</a>
-      <ul>
-        <li><a href="#uc-01">UC-01: Ingest Log Events</a></li>
-        <li><a href="#uc-02">UC-02: Query Logs</a></li>
-        <li><a href="#uc-03">UC-03: Log Analytics</a></li>
-        <li><a href="#uc-04">UC-04: Real-time Monitoring</a></li>
-      </ul>
-    </li>
-    <li><a href="#section-4">5. Non-Functional Requirements</a>
+    <li><a href="#section-4">4. Non-Functional Requirements</a>
       <ul>
         <li><a href="#nfr-001">NFR-001: Ingestion Throughput</a></li>
         <li><a href="#nfr-002">NFR-002: Query Response Time</a></li>
@@ -74,7 +66,7 @@
         <li><a href="#nfr-004">NFR-004: Log Retention</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">6. Traceability Matrix</a>
+    <li><a href="#section-5">5. Traceability Matrix</a>
       <ul>
         <li><a href="#trace-fr-001">FR-001: Ingest Log Events</a></li>
         <li><a href="#trace-fr-002">FR-002: Query Logs</a></li>
@@ -132,7 +124,6 @@
     <th>Req ID</th>
     <th>Module</th>
     <th>Requirement</th>
-    <th>Use Case</th>
     <th>Priority</th>
     <th>Description</th>
   </tr>
@@ -140,7 +131,6 @@
     <td><span class="req-id">FR-001</span></td>
     <td>LOG</td>
     <td>Ingest Log Events</td>
-    <td>UC-01</td>
     <td>High</td>
     <td>System shall consume log events from RabbitMQ and index to OpenSearch</td>
   </tr>
@@ -148,7 +138,6 @@
     <td><span class="req-id">FR-002</span></td>
     <td>LOG</td>
     <td>Query Logs</td>
-    <td>UC-02</td>
     <td>High</td>
     <td>System shall provide API to query logs with filters (level, source, time range)</td>
   </tr>
@@ -156,7 +145,6 @@
     <td><span class="req-id">FR-003</span></td>
     <td>LOG</td>
     <td>Log Analytics</td>
-    <td>UC-03</td>
     <td>Medium</td>
     <td>System shall provide analytics on log data (error rates, response times)</td>
   </tr>
@@ -164,61 +152,13 @@
     <td><span class="req-id">FR-004</span></td>
     <td>LOG</td>
     <td>Real-time Monitoring</td>
-    <td>UC-04</td>
     <td>Medium</td>
     <td>System shall support real-time log streaming via WebSocket</td>
   </tr>
 </table>
 
-<!-- 4. USE CASES -->
-<h1 id="section-3a">4. Use Cases</h1>
-
-<h2 id="uc-01">UC-01: Ingest Log Events</h2>
-<table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>All services (AUTH, SMS, EMAIL - producers)</td></tr>
-  <tr><td>Preconditions</td><td>RabbitMQ queue log.events is available; OpenSearch is running</td></tr>
-  <tr><td>Main Flow</td><td>1. Service performs operation (login, send SMS, etc.)<br>2. Service publishes log event to RabbitMQ queue log.events<br>3. Log Consumer receives event from queue<br>4. Consumer validates event schema<br>5. Consumer indexes event to OpenSearch (index: log-events)<br>6. Event is now searchable and available for queries</td></tr>
-  <tr><td>Alternative Flows</td><td>4a. Invalid event schema → Consumer logs error, event DLQ<br>5a. OpenSearch unavailable → Event buffered in RabbitMQ, retried<br>5b. Indexing fails → Consumer retries with exponential backoff</td></tr>
-  <tr><td>Postconditions</td><td>Log event stored in OpenSearch; available for search and analytics</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-001</span></td></tr>
-</table>
-
-<h2 id="uc-02">UC-02: Query Logs</h2>
-<table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>Admin user, Operations team</td></tr>
-  <tr><td>Preconditions</td><td>User is authenticated with admin role; logs exist in OpenSearch</td></tr>
-  <tr><td>Main Flow</td><td>1. User navigates to log search page<br>2. User applies filters (level, source, time range, search term)<br>3. System queries OpenSearch with filters<br>4. System returns paginated results<br>5. User can click on event to view full details</td></tr>
-  <tr><td>Alternative Flows</td><td>3a. No results found → System returns empty array with total: 0<br>3b. Query timeout → System returns 500 QUERY_FAILED<br>4a. User exports results (CSV/JSON)</td></tr>
-  <tr><td>Postconditions</td><td>Search results returned; user can analyze log data</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-002</span></td></tr>
-</table>
-
-<h2 id="uc-03">UC-03: Log Analytics</h2>
-<table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>Admin user, Operations team</td></tr>
-  <tr><td>Preconditions</td><td>User is authenticated with admin role; sufficient log data exists</td></tr>
-  <tr><td>Main Flow</td><td>1. User navigates to analytics dashboard<br>2. User selects time range and metrics<br>3. System queries OpenSearch aggregations<br>4. System returns analytics data (error rates, response times, by source)<br>5. System displays charts and graphs</td></tr>
-  <tr><td>Alternative Flows</td><td>3a. Aggregation query fails → System returns 500<br>4a. Insufficient data → System shows partial results with warning</td></tr>
-  <tr><td>Postconditions</td><td>Analytics dashboard displayed; insights available</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-003</span></td></tr>
-</table>
-
-<h2 id="uc-04">UC-04: Real-time Monitoring</h2>
-<table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>Operations team, On-call engineer</td></tr>
-  <tr><td>Preconditions</td><td>User is authenticated; WebSocket connection available</td></tr>
-  <tr><td>Main Flow</td><td>1. User connects to WebSocket /ws/logs with JWT token<br>2. User specifies filters (level, source)<br>3. System establishes WebSocket connection<br>4. As new log events are indexed, System streams them to connected clients<br>5. User sees real-time log feed</td></tr>
-  <tr><td>Alternative Flows</td><td>1a. Invalid token → Connection rejected with 401<br>3a. Connection dropped → Client auto-reconnects<br>4a. High event volume → System applies backpressure</td></tr>
-  <tr><td>Postconditions</td><td>Real-time log streaming active; user monitors live events</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-004</span></td></tr>
-</table>
-
-<!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-4">5. Non-Functional Requirements</h1>
+<!-- 4. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-4">4. Non-Functional Requirements</h1>
 
 <table class="trace-table">
   <tr><th>Req ID</th><th>Category</th><th>Requirement</th><th>Target</th></tr>
@@ -248,8 +188,8 @@
   </tr>
 </table>
 
-<!-- 6. TRACEABILITY -->
-<h1 id="section-5">6. Requirements Traceability Matrix</h1>
+<!-- 5. TRACEABILITY -->
+<h1 id="section-5">5. Requirements Traceability Matrix</h1>
 
 <table class="trace-table">
   <tr><th>Req ID</th><th>Requirement</th><th>Technology</th><th>Integration</th></tr>

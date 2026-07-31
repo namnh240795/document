@@ -1,0 +1,87 @@
+@startuml
+' ============================================================
+' Recruitment System - Architecture Overview (C4 Level 1)
+' High-level system context
+' ============================================================
+
+skinparam actor {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+}
+skinparam component {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #666666
+}
+skinparam cloud {
+  BackgroundColor #E8E8FD
+  BorderColor #333333
+}
+
+title Recruitment System - System Context Diagram (C4 Level 1)
+
+' --- People ---
+actor "Candidate" as candidate
+actor "Recruiter" as recruiter
+actor "HR Manager" as hr
+actor "Interviewer" as interviewer
+
+' --- Our System ---
+cloud "Recruitment Platform" as system {
+  package "Frontend" {
+    [Career Portal] as portal
+    [Recruitment Dashboard] as dashboard
+  }
+
+  package "Backend Services" {
+    [API Gateway] as gw
+    [Recruitment Core] as core
+  }
+
+  package "Data & Infrastructure" {
+    database "Primary Database" as db
+    database "Cache Layer" as cache
+    queue "Event Bus" as mq
+    [Search Engine] as search
+  }
+}
+
+' --- External Systems ---
+cloud "Email Provider\n(SendGrid)" as email
+cloud "Calendar Service\n(Google/Outlook)" as calendar
+cloud "Resume Parser\n(AI Service)" as parser
+cloud "Monitoring\n(Datadog)" as monitoring
+cloud "HR System\n(Existing)" as hrSystem
+
+' --- Relationships ---
+candidate --> portal
+recruiter --> dashboard
+hr --> dashboard
+interviewer --> dashboard
+
+portal --> gw
+dashboard --> gw
+
+gw --> core
+
+core --> db
+core --> cache
+core --> mq
+core --> search
+
+core ..> email : <<HTTPS>>
+core ..> calendar : <<API>>
+core ..> parser : <<API>>
+core ..> hrSystem : <<Integration>>
+
+core --> monitoring : metrics/logs
+
+note bottom of system
+  C4 Level 1: System Context
+  Shows actors and external system interactions
+end note
+
+@enduml

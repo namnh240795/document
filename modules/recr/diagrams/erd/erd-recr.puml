@@ -1,0 +1,234 @@
+@startuml
+' ============================================================
+' Recruitment Module - Entity Relationship Diagram
+' All tables: recr_<table_name>
+' Roles: Candidate, HR, Employer
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #666666
+}
+
+title Recruitment System - Entity Relationship Diagram
+
+' ============================================================
+' MODULE: Recruitment - Users & Authentication
+' Handles: candidate accounts, employer accounts, HR accounts
+' Resolves: FR-001, FR-002, FR-003
+' ============================================================
+package "Recruitment Users" #E8F4E8 {
+  entity "recr_users" as users {
+    * id : bigint <<PK>>
+    --
+    * email : varchar(100) <<UNIQUE>>
+    * password_hash : varchar(255)
+    * full_name : varchar(100)
+    * phone : varchar(20)
+    * role : enum('candidate','hr','employer')
+    * avatar_url : varchar(500)
+    * is_active : boolean
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+
+  entity "recr_candidates" as candidates {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>> <<UNIQUE>>
+    * resume_url : varchar(500)
+    * linkedin_url : varchar(300)
+    * skills : jsonb
+    * experience_years : int
+    * current_company : varchar(200)
+    * expected_salary : decimal(12,2)
+    * source : enum('website','referral','linkedin','job_board','other')
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+
+  entity "recr_employers" as employers {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>> <<UNIQUE>>
+    * company_name : varchar(200)
+    * company_website : varchar(300)
+    * company_description : text
+    * industry : varchar(100)
+    * company_size : enum('1-10','11-50','51-200','201-500','501-1000','1000+')
+    * logo_url : varchar(500)
+    * is_verified : boolean
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+
+  entity "recr_hr_profiles" as hr_profiles {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<FK>> <<UNIQUE>>
+    * department : varchar(100)
+    * position : varchar(100)
+    * created_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Recruitment - Jobs
+' Handles: job postings, requirements
+' Resolves: FR-004, FR-005, FR-006
+' ============================================================
+package "Recruitment Jobs" #E8E8FD {
+  entity "recr_jobs" as jobs {
+    * id : bigint <<PK>>
+    --
+    * employer_id : bigint <<FK>>
+    * title : varchar(200)
+    * description : text
+    * department : varchar(100)
+    * location : varchar(200)
+    * salary_min : decimal(12,2)
+    * salary_max : decimal(12,2)
+    * employment_type : enum('full_time','part_time','contract','internship')
+    * status : enum('draft','pending_approval','open','closed','archived')
+    * approved_by : bigint <<FK>>
+    * approved_at : timestamp
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+
+  entity "recr_job_requirements" as job_requirements {
+    * id : bigint <<PK>>
+    --
+    * job_id : bigint <<FK>>
+    * requirement_type : enum('skill','experience','education','certification')
+    * description : text
+    * is_mandatory : boolean
+    * sort_order : int
+  }
+}
+
+' ============================================================
+' MODULE: Recruitment - Applications
+' Handles: job applications
+' Resolves: FR-007, FR-008, FR-009
+' ============================================================
+package "Recruitment Applications" #FDE8E8 {
+  entity "recr_applications" as applications {
+    * id : bigint <<PK>>
+    --
+    * job_id : bigint <<FK>>
+    * candidate_id : bigint <<FK>>
+    * cover_letter : text
+    * status : enum('submitted','screening','interview','offer','rejected','hired')
+    * applied_at : timestamp
+    * updated_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Recruitment - Interviews
+' Handles: interview scheduling and evaluations
+' Resolves: FR-010, FR-011, FR-012
+' ============================================================
+package "Recruitment Interviews" #FFF3E0 {
+  entity "recr_interviews" as interviews {
+    * id : bigint <<PK>>
+    --
+    * application_id : bigint <<FK>>
+    * interviewer_id : bigint <<FK>>
+    * scheduled_at : timestamp
+    * duration_minutes : int
+    * location : varchar(200)
+    * meeting_link : varchar(500)
+    * status : enum('scheduled','completed','cancelled','no_show')
+    * notes : text
+    * created_at : timestamp
+  }
+
+  entity "recr_evaluations" as evaluations {
+    * id : bigint <<PK>>
+    --
+    * interview_id : bigint <<FK>>
+    * evaluator_id : bigint <<FK>>
+    * score : int
+    * technical_score : int
+    * communication_score : int
+    * cultural_fit_score : int
+    * recommendation : enum('strong_yes','yes','neutral','no','strong_no')
+    * comments : text
+    * submitted_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Recruitment - Offers
+' Handles: job offers
+' Resolves: FR-013, FR-014
+' ============================================================
+package "Recruitment Offers" #E0F7FA {
+  entity "recr_offers" as offers {
+    * id : bigint <<PK>>
+    --
+    * application_id : bigint <<FK>>
+    * salary : decimal(12,2)
+    * position_title : varchar(200)
+    * start_date : date
+    * benefits : text
+    * status : enum('draft','sent','accepted','rejected','expired')
+    * sent_at : timestamp
+    * responded_at : timestamp
+    * created_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Auth (Reference)
+' Resolves: FR-001 (User Registration)
+' ============================================================
+package "Auth Module (Reference)" #F3E5F5 {
+  entity "auth_users" as auth_users {
+    * id : bigint <<PK>>
+    --
+    * username : varchar(50) <<UNIQUE>>
+    * email : varchar(100) <<UNIQUE>>
+    * full_name : varchar(100)
+    * role : enum('admin','hr_manager','recruiter','interviewer')
+  }
+}
+
+' ============================================================
+' RELATIONSHIPS
+' ============================================================
+
+' --- Users ---
+users ||--o| candidates : "is candidate"
+users ||--o| employers : "is employer"
+users ||--o| hr_profiles : "is HR"
+
+' --- Jobs ---
+employers ||--o{ jobs : "posts"
+users ||--o{ jobs : "approved by"
+jobs ||--o{ job_requirements : "has"
+
+' --- Applications ---
+jobs ||--o{ applications : "has"
+candidates ||--o{ applications : "submits"
+
+' --- Interviews ---
+applications ||--o{ interviews : "schedules"
+users ||--o{ interviews : "conducts"
+
+' --- Evaluations ---
+interviews ||--o{ evaluations : "has"
+users ||--o{ evaluations : "evaluated by"
+
+' --- Offers ---
+applications ||--o{ offers : "may receive"
+
+@enduml

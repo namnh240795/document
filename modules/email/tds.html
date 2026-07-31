@@ -127,10 +127,10 @@
 <h2>3.2 Component to Requirements Mapping</h2>
 <table class="trace-table">
   <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
-  <tr><td>Email Consumer</td><td>Consumes from RabbitMQ, triggers email sending</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
-  <tr><td>Email Service</td><td>Business logic for email processing</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-005</span></td></tr>
-  <tr><td>Email Controller</td><td>Receives delivery callbacks from provider</td><td><span class="req-id">FR-003</span></td></tr>
-  <tr><td>Log Producer</td><td>Publishes email events to LOG module</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>Email Consumer</td><td>Consumes from RabbitMQ, triggers email sending</td><td>FR-001, FR-002</td></tr>
+  <tr><td>Email Service</td><td>Business logic for email processing</td><td>FR-001, FR-005</td></tr>
+  <tr><td>Email Controller</td><td>Receives delivery callbacks from provider</td><td>FR-003</td></tr>
+  <tr><td>Log Producer</td><td>Publishes email events to LOG module</td><td>FR-004</td></tr>
 </table>
 
 <!-- 4. DATA ARCHITECTURE -->
@@ -142,9 +142,9 @@
 <h2>4.2 Data Requirements Resolution</h2>
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Send Verification Email</td><td>Insert log record on send</td><td>email_logs</td></tr>
-  <tr><td><span class="req-id">FR-003</span> Track Email Delivery</td><td>Update status on callback</td><td>email_logs</td></tr>
-  <tr><td><span class="req-id">FR-004</span> Log Email Events</td><td>Full audit trail in email_logs</td><td>email_logs</td></tr>
+  <tr><td>FR-001: Send Verification Email</td><td>Insert log record on send</td><td>email_logs</td></tr>
+  <tr><td>FR-003: Track Email Delivery</td><td>Update status on callback</td><td>email_logs</td></tr>
+  <tr><td>FR-004: Log Email Events</td><td>Full audit trail in email_logs</td><td>email_logs</td></tr>
 </table>
 
 <!-- 5. API DESIGN -->
@@ -153,7 +153,7 @@
 <h2>5.1 Endpoint to Requirements Mapping</h2>
 <table class="trace-table">
   <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
-  <tr><td>POST</td><td>/api/webhooks/email/delivered</td><td>Receive delivery callback</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>POST</td><td>/api/webhooks/email/delivered</td><td>Receive delivery callback</td><td>FR-003</td></tr>
 </table>
 
 <!-- 6. SECURITY -->
@@ -161,8 +161,8 @@
 
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
-  <tr><td><span class="req-id">NFR-002</span></td><td>Webhook signature verification</td><td>HMAC-SHA256 signature validation</td></tr>
-  <tr><td><span class="req-id">NFR-004</span></td><td>Retry with exponential backoff</td><td>Max 3 retries with 1min, 5min, 15min delays</td></tr>
+  <tr><td>NFR-002</td><td>Webhook signature verification</td><td>HMAC-SHA256 signature validation</td></tr>
+  <tr><td>NFR-004</td><td>Retry with exponential backoff</td><td>Max 3 retries with 1min, 5min, 15min delays</td></tr>
 </table>
 
 <!-- 7. INTEGRATION -->
@@ -255,30 +255,6 @@
     <td>Retry Failed Emails</td>
     <td>8. Error Handling</td>
     <td>retry_count field tracks attempts, exponential backoff</td>
-  </tr>
-  <tr>
-    <td><span class="req-id">NFR-001</span></td>
-    <td>Email delivery latency &lt; 3s</td>
-    <td>2.2 Design Decision #1</td>
-    <td>Async via RabbitMQ, decoupled from request handling</td>
-  </tr>
-  <tr>
-    <td><span class="req-id">NFR-002</span></td>
-    <td>99.9% service uptime</td>
-    <td>2.2 Design Decision #1</td>
-    <td>RabbitMQ queue durability, webhook signature verification</td>
-  </tr>
-  <tr>
-    <td><span class="req-id">NFR-003</span></td>
-    <td>1000+ emails per minute</td>
-    <td>2.2 Design Decision #1</td>
-    <td>Async queue-based processing, horizontal scaling</td>
-  </tr>
-  <tr>
-    <td><span class="req-id">NFR-004</span></td>
-    <td>99%+ delivery success rate</td>
-    <td>2.2 Design Decision #2, 8</td>
-    <td>SendGrid/SMTP provider, retry with exponential backoff</td>
   </tr>
 </table>
 

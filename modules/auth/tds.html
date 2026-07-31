@@ -162,7 +162,7 @@
     roles.controller.ts
     roles.service.ts</code></pre>
 
-<h2>3.3 Component to Requirements Mapping</h2>
+<h2>3.2 Component to Requirements Mapping</h2>
 <table class="trace-table">
   <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
   <tr><td>AuthController</td><td>Login, register, logout, refresh, reset password</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-007</span></td></tr>
@@ -322,9 +322,6 @@
   <tr><td><span class="req-id">NFR-003</span></td><td>bcrypt 12 rounds</td><td>6</td><td>bcrypt.hash(password, 12)</td></tr>
   <tr><td><span class="req-id">NFR-004</span></td><td>JWT expiry</td><td>6</td><td>Access: 15min, Refresh: 7 days</td></tr>
   <tr><td><span class="req-id">NFR-005</span></td><td>Rate limiting</td><td>6</td><td>Redis 10 req/min</td></tr>
-  <tr><td><span class="req-id">NFR-002</span></td><td>Registration &lt; 1s</td><td>2.1</td><td>Async verification, optimized DB queries</td></tr>
-  <tr><td><span class="req-id">NFR-006</span></td><td>99.9% uptime</td><td>2.1</td><td>PostgreSQL HA, NestJS health checks</td></tr>
-  <tr><td><span class="req-id">NFR-007</span></td><td>1000+ concurrent</td><td>2.1</td><td>Stateless JWT, horizontal scaling</td></tr>
 </table>
 
 </body>

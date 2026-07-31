@@ -126,7 +126,7 @@
   <div class="caption">Figure 1: SMS Module Components</div>
 </div>
 
-<h2 id="section-3-2">3.2 Module Structure</h2>
+<h2>3.2 Module Structure</h2>
 <pre><code>src/
   sms/
     sms.module.ts
@@ -138,7 +138,7 @@
   external/
     twilio.service.ts      # Twilio API wrapper</code></pre>
 
-<h2 id="section-3-3">3.3 Component to Requirements Mapping</h2>
+<h2>3.2 Component to Requirements Mapping</h2>
 <table class="trace-table">
   <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
   <tr><td>SmsService</td><td>Send SMS, verify OTP, log delivery</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-003</span></td></tr>
@@ -171,14 +171,13 @@
 </div>
 
 <h2>5.2 Webhook Events</h2>
-
 <table>
   <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
   <tr><td>verification.requested</td><td>Inbound (from AUTH)</td><td>RabbitMQ</td><td>Receive SMS send request from AUTH module</td></tr>
   <tr><td>verification.delivered</td><td>Outbound (to AUTH)</td><td>Webhook HTTP</td><td>Notify AUTH of SMS delivery status</td></tr>
 </table>
 
-<h2 id="section-5-3">5.3 External Services</h2>
+<h2>5.2 External Services</h2>
 <table>
   <tr><th>Service</th><th>Protocol</th><th>Purpose</th></tr>
   <tr><td>Twilio</td><td>REST API</td><td>Send SMS messages</td></tr>
