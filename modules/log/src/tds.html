@@ -30,7 +30,7 @@
     <tr><td>Version</td><td>1.0</td></tr>
     <tr><td>System</td><td>Authentication System</td></tr>
     <tr><td>Module</td><td>LOG - Logger</td></tr>
-    <tr><td>Date</td><td>2026-07-24</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
     <tr><td>Related SRS</td><td><a href="srs.html">Logger SRS</a></td></tr>
@@ -205,10 +205,12 @@
 
 <h2>5.5 Inbound Events</h2>
 <table>
-  <tr><th>Event</th><th>From</th><th>Protocol</th><th>Description</th></tr>
-  <tr><td>auth.event.logged</td><td>AUTH</td><td>RabbitMQ</td><td>Auth events (login, logout, register)</td></tr>
-  <tr><td>sms.event.logged</td><td>SMS</td><td>RabbitMQ</td><td>SMS delivery events</td></tr>
-  <tr><td>email.event.logged</td><td>EMAIL</td><td>RabbitMQ</td><td>Email delivery events</td></tr>
+  <tr><th>Event</th><th>From</th><th>Protocol</th><th>Queue</th><th>Description</th></tr>
+  <tr><td>auth.event.logged</td><td>AUTH</td><td>RabbitMQ</td><td>log.events</td><td>Auth events (login, logout, register)</td></tr>
+  <tr><td>sms.event.logged</td><td>SMS</td><td>RabbitMQ</td><td>log.events</td><td>SMS delivery events</td></tr>
+  <tr><td>email.event.logged</td><td>EMAIL</td><td>RabbitMQ</td><td>log.events</td><td>Email delivery events</td></tr>
+  <tr><td>recruitment.event.logged</td><td>RECR</td><td>RabbitMQ</td><td>log.events</td><td>Recruitment events (application, interview, offer)</td></tr>
+  <tr><td>wallet.event.logged</td><td>WALLET</td><td>RabbitMQ</td><td>log.events</td><td>Wallet events (deposit, withdrawal, transfer, payment)</td></tr>
 </table>
 
 <h2>5.3 External Services</h2>

@@ -22,6 +22,12 @@ modules:
       - auth_verification
       - auth_roles
       - auth_user_roles
+      - auth_organizations
+      - auth_members
+      - auth_teams
+      - auth_team_members
+      - auth_invitations
+      - auth_organization_roles
     depends_on:
       - SMS
       - EMAIL
@@ -84,6 +90,26 @@ modules:
       - Drizzle ORM
       - PostgreSQL
       - Elasticsearch
+      - RabbitMQ
+
+  - code: WALLET
+    name: "Electronic Wallet"
+    description: "Electronic wallet for payments, deposits, withdrawals, and financial transactions within the recruitment platform"
+    database: wallet_db
+    tables:
+      - wallet_wallets
+      - wallet_transactions
+      - wallet_payment_methods
+      - wallet_payment_orders
+      - wallet_payout_requests
+    depends_on:
+      - AUTH
+      - LOG
+    color: "#E8F4FD"
+    tech_stack:
+      - NestJS
+      - Drizzle ORM
+      - PostgreSQL
       - RabbitMQ
 
   - code: LOG
@@ -169,6 +195,30 @@ features:
   - name: "Offer Management"
     modules: [RECR, EMAIL, LOG]
     description: "Recruiter creates offer, offer letter sent, event logged"
+
+  - name: "Wallet Deposit"
+    modules: [WALLET, LOG]
+    description: "User deposits funds via bank transfer, credit card, or e-wallet, transaction recorded"
+
+  - name: "Wallet Withdrawal"
+    modules: [WALLET, LOG]
+    description: "User requests withdrawal, admin approves, funds transferred to bank"
+
+  - name: "Wallet Transfer"
+    modules: [WALLET, LOG]
+    description: "User transfers funds to another user's wallet"
+
+  - name: "Job Posting Payment"
+    modules: [WALLET, RECR, LOG]
+    description: "Employer pays for job posting using wallet balance, job activated"
+
+  - name: "Featured Job Payment"
+    modules: [WALLET, RECR, LOG]
+    description: "Employer pays to feature job listing, job marked as featured"
+
+  - name: "Wallet Management"
+    modules: [WALLET, LOG]
+    description: "User views balance, sets PIN, manages payment methods, views transaction history"
 
 # ============================================================
 # Inter-Module Communication (Webhook Events)
@@ -371,4 +421,56 @@ webhooks:
       action: string
       user_id: uuid | null
       metadata: jsonb
+      timestamp: iso8601
+
+  # ============================================================
+  # Wallet Module Events (WALLET -> RECR, LOG)
+  # ============================================================
+
+  - from: WALLET
+    to: RECR
+    event: wallet.payment.completed
+    description: "WALLET publishes when payment for job posting or featured job is completed"
+    protocol: RabbitMQ
+    queue: wallet.events
+    payload:
+      event_id: uuid
+      wallet_id: bigint
+      order_id: bigint
+      order_type: "job_posting" | "featured_job" | "premium_subscription"
+      amount: decimal
+      related_module: string
+      related_id: bigint
+      timestamp: iso8601
+
+  - from: WALLET
+    to: LOG
+    event: wallet.event.logged
+    description: "WALLET publishes wallet events (deposit, withdrawal, transfer, payment) to Logger"
+    protocol: RabbitMQ
+    queue: log.events
+    payload:
+      event_id: uuid
+      level: "info" | "warn" | "error"
+      action: string
+      user_id: uuid | null
+      wallet_id: bigint
+      amount: decimal
+      metadata: jsonb
+      timestamp: iso8601
+
+  # ============================================================
+  # Auth Module Events (AUTH -> WALLET)
+  # ============================================================
+
+  - from: AUTH
+    to: WALLET
+    event: user.registered
+    description: "AUTH publishes when new user registers, WALLET creates wallet"
+    protocol: RabbitMQ
+    queue: wallet.user
+    payload:
+      user_id: uuid
+      email: string
+      role: string
       timestamp: iso8601

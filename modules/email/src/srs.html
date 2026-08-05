@@ -31,7 +31,7 @@
     <tr><td>System</td><td>Authentication System</td></tr>
     <tr><td>Module</td><td>EMAIL - Email Notification</td></tr>
     <tr><td>Database</td><td>email_db</td></tr>
-    <tr><td>Date</td><td>2026-07-24</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
   </table>
@@ -74,7 +74,12 @@
 <p>Email notification delivery, templating, and audit trail</p>
 
 <h2 id="section-1-3">1.3 Module Dependencies</h2>
-<p>None - This module is independent.</p>
+<table>
+  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
+  <tr><td>AUTH</td><td>Async (RabbitMQ)</td><td>Receives verification email requests from AUTH module</td></tr>
+  <tr><td>RECR</td><td>Async (RabbitMQ)</td><td>Receives application, interview, and offer email requests from RECR module</td></tr>
+  <tr><td>LOG</td><td>Async (RabbitMQ)</td><td>Publishes email delivery events to Logger module</td></tr>
+</table>
 
 <h2 id="section-1-4">1.4 Definitions</h2>
 <table>
@@ -158,6 +163,30 @@
     <td>UC-03</td>
     <td>Medium</td>
     <td>System shall retry failed email deliveries with exponential backoff</td>
+  </tr>
+  <tr id="fr-006">
+    <td><span class="req-id">FR-006</span></td>
+    <td>EMAIL</td>
+    <td>Send Application Confirmation</td>
+    <td>UC-04</td>
+    <td>High</td>
+    <td>System shall send confirmation email when candidate submits job application</td>
+  </tr>
+  <tr id="fr-007">
+    <td><span class="req-id">FR-007</span></td>
+    <td>EMAIL</td>
+    <td>Send Interview Invitation</td>
+    <td>UC-05</td>
+    <td>High</td>
+    <td>System shall send interview invitation email with calendar details</td>
+  </tr>
+  <tr id="fr-008">
+    <td><span class="req-id">FR-008</span></td>
+    <td>EMAIL</td>
+    <td>Send Offer Letter</td>
+    <td>UC-06</td>
+    <td>High</td>
+    <td>System shall send offer letter email with position and salary details</td>
   </tr>
 </table>
 
@@ -324,6 +353,27 @@
     <td>3.4 Retry Mechanism</td>
     <td>email_logs</td>
     <td>Internal scheduler</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-006</span></td>
+    <td>Send Application Confirmation</td>
+    <td>3.1 Email Sending</td>
+    <td>email_logs</td>
+    <td>RabbitMQ consumer (recruitment.email)</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-007</span></td>
+    <td>Send Interview Invitation</td>
+    <td>3.1 Email Sending</td>
+    <td>email_logs</td>
+    <td>RabbitMQ consumer (recruitment.email)</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-008</span></td>
+    <td>Send Offer Letter</td>
+    <td>3.1 Email Sending</td>
+    <td>email_logs</td>
+    <td>RabbitMQ consumer (recruitment.email)</td>
   </tr>
 </table>
 

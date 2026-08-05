@@ -1,0 +1,173 @@
+@startuml
+' ============================================================
+' Wallet Module - Entity Relationship Diagram
+' All tables: wallet_<table_name>
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #666666
+}
+
+title Wallet System - Entity Relationship Diagram
+
+' ============================================================
+' MODULE: Wallet - User Wallets
+' Handles: wallet accounts for users
+' Resolves: FR-001, FR-002
+' ============================================================
+package "Wallet Accounts" #E8F4FD {
+  entity "wallet_wallets" as wallets {
+    * id : bigint <<PK>>
+    --
+    * user_id : bigint <<UNIQUE>> <<FK>>
+    * currency : varchar(3) <<DEFAULT 'VND'>>
+    * balance : decimal(15,2) <<DEFAULT 0>>
+    * frozen_amount : decimal(15,2) <<DEFAULT 0>>
+    * status : enum('active','frozen','closed')
+    * pin_hash : varchar(255)
+    * daily_limit : decimal(15,2)
+    * monthly_limit : decimal(15,2)
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Wallet - Transactions
+' Handles: all financial transactions
+' Resolves: FR-003, FR-004, FR-005, FR-006, FR-007
+' ============================================================
+package "Wallet Transactions" #FFF3E0 {
+  entity "wallet_transactions" as transactions {
+    * id : bigint <<PK>>
+    --
+    * wallet_id : bigint <<FK>>
+    * type : enum('deposit','withdrawal','payment','refund','transfer_in','transfer_out')
+    * amount : decimal(15,2)
+    * currency : varchar(3)
+    * balance_before : decimal(15,2)
+    * balance_after : decimal(15,2)
+    * status : enum('pending','processing','completed','failed','cancelled')
+    * reference_type : varchar(50)
+    * reference_id : bigint
+    * description : text
+    * metadata : jsonb
+    * failure_reason : text
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+
+  entity "wallet_payment_methods" as payment_methods {
+    * id : bigint <<PK>>
+    --
+    * wallet_id : bigint <<FK>>
+    * type : enum('bank_account','credit_card','debit_card','e_wallet')
+    * provider : varchar(50)
+    * account_number : varchar(100)
+    * account_name : varchar(100)
+    * is_default : boolean
+    * is_verified : boolean
+    * metadata : jsonb
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Wallet - Payment Orders
+' Handles: payment orders linked to recruitment
+' Resolves: FR-008, FR-009
+' ============================================================
+package "Wallet Payment Orders" #E8F8E8 {
+  entity "wallet_payment_orders" as payment_orders {
+    * id : bigint <<PK>>
+    --
+    * wallet_id : bigint <<FK>>
+    * order_type : enum('job_posting','featured_job','premium_subscription','recruitment_service')
+    * amount : decimal(15,2)
+    * currency : varchar(3)
+    * status : enum('pending','paid','refunded','cancelled')
+    * related_module : varchar(20)
+    * related_id : bigint
+    * description : text
+    * paid_at : timestamp
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Wallet - Payout Requests
+' Handles: withdrawal/payout requests
+' Resolves: FR-006
+' ============================================================
+package "Wallet Payout Requests" #FDE8E8 {
+  entity "wallet_payout_requests" as payout_requests {
+    * id : bigint <<PK>>
+    --
+    * wallet_id : bigint <<FK>>
+    * payment_method_id : bigint <<FK>>
+    * amount : decimal(15,2)
+    * status : enum('pending','approved','processing','completed','rejected')
+    * admin_notes : text
+    * processed_by : bigint
+    * processed_at : timestamp
+    * created_at : timestamp
+    * updated_at : timestamp
+  }
+}
+
+' ============================================================
+' MODULE: Auth (Reference)
+' ============================================================
+package "Auth Module (Reference)" #F3E5F5 {
+  entity "auth_users" as auth_users {
+    * id : bigint <<PK>>
+    --
+    * email : varchar(100) <<UNIQUE>>
+    * full_name : varchar(100)
+  }
+}
+
+' ============================================================
+' MODULE: Recruitment (Reference)
+' ============================================================
+package "Recruitment Module (Reference)" #E8F4E8 {
+  entity "recr_jobs" as recr_jobs {
+    * id : bigint <<PK>>
+    --
+    * employer_id : bigint <<FK>>
+    * title : varchar(200)
+    * status : varchar(20)
+  }
+}
+
+' ============================================================
+' RELATIONSHIPS
+' ============================================================
+
+' --- Wallet to User ---
+wallets ||--|| auth_users : "belongs to"
+
+' --- Transactions ---
+wallets ||--o{ transactions : "has"
+
+' --- Payment Methods ---
+wallets ||--o{ payment_methods : "has"
+
+' --- Payment Orders ---
+wallets ||--o{ payment_orders : "creates"
+recr_jobs ||--o| payment_orders : "linked to"
+
+' --- Payout Requests ---
+wallets ||--o{ payout_requests : "requests"
+payment_methods ||--o{ payout_requests : "pays to"
+
+@enduml

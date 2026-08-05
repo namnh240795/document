@@ -1,0 +1,35 @@
+@startuml
+' ============================================================
+' UC-12: Pay for Job Posting - Activity Diagram
+' No swimlanes, clean sequential flow
+' ============================================================
+
+title UC-12: Pay for Job Posting
+
+start
+:Employer creates job posting;
+:System creates wallet_payment_orders record;
+:System checks wallet balance;
+if (Sufficient balance?) then (yes)
+  :System prompts for wallet PIN;
+  :User enters PIN;
+  :System verifies PIN;
+  if (PIN valid?) then (yes)
+    :System creates wallet_transactions record;
+    :System deducts amount from wallet;
+    :System updates payment order status (paid);
+    :System updates job posting status (active);
+    :System notifies RECR module;
+    :Employer sees job posted successfully;
+  else (no)
+    :System returns "Invalid PIN";
+    :User re-enters PIN;
+  endif
+else (no)
+  :System shows "Insufficient balance";
+  :System suggests deposit;
+  :User deposits funds;
+endif
+stop
+
+@enduml

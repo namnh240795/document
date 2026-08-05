@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Technical Specification - Wallet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>API Technical Specification</h1>
+  <div class="subtitle">Wallet Module</div>
+  <span class="module-badge">WALLET</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>HR Management System</td></tr>
+    <tr><td>Module</td><td>WALLET - Electronic Wallet</td></tr>
+    <tr><td>Database</td><td>wallet_db</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Introduction</a></li>
+    <li><a href="#section-2">2. Wallet Endpoints</a></li>
+    <li><a href="#section-3">3. Transaction Endpoints</a></li>
+    <li><a href="#section-4">4. Payment Endpoints</a></li>
+    <li><a href="#section-5">5. Payment Methods Endpoints</a></li>
+    <li><a href="#section-6">6. Admin Endpoints</a></li>
+    <li><a href="#section-7">7. Webhook Endpoints</a></li>
+    <li><a href="#section-8">8. Error Codes</a></li>
+  </ul>
+</div>
+
+<!-- 1. INTRODUCTION -->
+<h1 id="section-1">1. Introduction</h1>
+
+<h2>1.1 API Overview</h2>
+<table>
+  <tr><th>Aspect</th><th>Value</th></tr>
+  <tr><td>Base URL</td><td>/api/v1</td></tr>
+  <tr><td>Authentication</td><td>Bearer JWT Token</td></tr>
+  <tr><td>Content-Type</td><td>application/json</td></tr>
+</table>
+
+<!-- 2. WALLET ENDPOINTS -->
+<h1 id="section-2">2. Wallet Endpoints</h1>
+
+<h2>2.1 View Balance <span class="req-id">FR-002</span></h2>
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td>GET</td><td>/wallet/balance</td><td>View wallet balance</td></tr>
+</table>
+<p><strong>Response 200 OK:</strong></p>
+<pre>
+{
+  "id": 1,
+  "currency": "VND",
+  "balance": 5000000,
+  "frozen_amount": 1000000,
+  "available_balance": 4000000,
+  "status": "active"
+}
+</pre>
+
+<h2>2.2 Set PIN <span class="req-id">FR-003</span></h2>
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td>POST</td><td>/wallet/pin</td><td>Set or change wallet PIN</td></tr>
+</table>
+<p><strong>Request Body:</strong></p>
+<pre>
+{
+  "pin": "123456",
+  "confirm_pin": "123456"
+}
+</pre>
+
+<h2>2.3 View Transactions <span class="req-id">FR-004</span></h2>
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td>GET</td><td>/wallet/transactions</td><td>View transaction history</td></tr>
+</table>
+
+<!-- 3. TRANSACTION ENDPOINTS -->
+<h1 id="section-3">3. Transaction Endpoints</h1>
+
+<h2>3.1 Deposit Funds <span class="req-id">FR-006</span></h2>
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td>POST</td><td>/wallet/deposit</td><td>Deposit funds to wallet</td></tr>
+</table>
+<p><strong>Request Body:</strong></p>
+<pre>
+{
+  "amount": 1000000,
+  "currency": "VND",
+  "method": "bank_transfer",
+  "payment_method_id": 1
+}
+</pre>
+
+<h2>3.2 Request Withdrawal <span class="req-id">FR-007</span></h2>
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td>POST</td><td>/wallet/withdraw</td><td>Request withdrawal</td></tr>
+</table>
+<p><strong>Request Body:</strong></p>
+<pre>
+{
+  "amount": 500000,
+  "payment_method_id": 1,
+  "pin": "123456"
+}
+</pre>
+
+<h2>3.3 Transfer Funds <span class="req-id">FR-008</span></h2>
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td>POST</td><td>/wallet/transfer</td><td>Transfer to another wallet</td></tr>
+</table>
+<p><strong>Request Body:</strong></p>
+<pre>
+{
+  "recipient_email": "recipient@example.com",
+  "amount": 200000,
+  "pin": "123456"
+}
+</pre>
+
+<!-- 4. PAYMENT ENDPOINTS -->
+<h1 id="section-4">4. Payment Endpoints</h1>
+
+<h2>4.1 Pay for Service <span class="req-id">FR-011, FR-012</span></h2>
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td>POST</td><td>/wallet/pay</td><td>Pay for recruitment service</td></tr>
+</table>
+<p><strong>Request Body:</strong></p>
+<pre>
+{
+  "order_type": "job_posting",
+  "related_id": 123,
+  "amount": 2000000,
+  "pin": "123456"
+}
+</pre>
+
+<h2>4.2 View Payment History <span class="req-id">FR-013</span></h2>
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td>GET</td><td>/wallet/payment-orders</td><td>View payment order history</td></tr>
+</table>
+
+<!-- 5. PAYMENT METHODS ENDPOINTS -->
+<h1 id="section-5">5. Payment Methods Endpoints</h1>
+
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th><th>Requirement</th></tr>
+  <tr><td>GET</td><td>/wallet/payment-methods</td><td>List payment methods</td><td>FR-005</td></tr>
+  <tr><td>POST</td><td>/wallet/payment-methods</td><td>Add payment method</td><td>FR-005</td></tr>
+  <tr><td>PATCH</td><td>/wallet/payment-methods/:id</td><td>Update payment method</td><td>FR-005</td></tr>
+  <tr><td>DELETE</td><td>/wallet/payment-methods/:id</td><td>Remove payment method</td><td>FR-005</td></tr>
+</table>
+
+<!-- 6. ADMIN ENDPOINTS -->
+<h1 id="section-6">6. Admin Endpoints</h1>
+
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th><th>Requirement</th></tr>
+  <tr><td>GET</td><td>/admin/wallet/payouts</td><td>List payout requests</td><td>FR-015</td></tr>
+  <tr><td>PATCH</td><td>/admin/wallet/payouts/:id</td><td>Approve/reject payout</td><td>FR-015</td></tr>
+  <tr><td>PATCH</td><td>/admin/wallet/wallets/:id/freeze</td><td>Freeze/unfreeze wallet</td><td>FR-015</td></tr>
+  <tr><td>GET</td><td>/admin/wallet/wallets</td><td>List all wallets</td><td>FR-015</td></tr>
+</table>
+
+<!-- 7. WEBHOOK ENDPOINTS -->
+<h1 id="section-7">7. Webhook Endpoints</h1>
+
+<table>
+  <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+  <tr><td>POST</td><td>/webhooks/payment/callback</td><td>Payment Gateway callback</td></tr>
+</table>
+
+<!-- 8. ERROR CODES -->
+<h1 id="section-8">8. Error Codes</h1>
+
+<table>
+  <tr><th>Error Code</th><th>HTTP Status</th><th>Description</th></tr>
+  <tr><td>WALLET_001</td><td>404</td><td>Wallet not found</td></tr>
+  <tr><td>WALLET_002</td><td>400</td><td>Insufficient balance</td></tr>
+  <tr><td>WALLET_003</td><td>400</td><td>Invalid PIN</td></tr>
+  <tr><td>WALLET_004</td><td>400</td><td>Amount exceeds daily limit</td></tr>
+  <tr><td>WALLET_005</td><td>400</td><td>Amount exceeds monthly limit</td></tr>
+  <tr><td>WALLET_006</td><td>400</td><td>Amount below minimum</td></tr>
+  <tr><td>WALLET_007</td><td>400</td><td>Wallet is frozen</td></tr>
+  <tr><td>WALLET_008</td><td>400</td><td>Recipient wallet not found</td></tr>
+</table>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Software Requirements Specification - Authentication</title>
+  <title>Software Requirements Specification - Authentication (Better Auth)</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -31,7 +31,7 @@
     <tr><td>System</td><td>Authentication System</td></tr>
     <tr><td>Module</td><td>AUTH - Authentication</td></tr>
     <tr><td>Database</td><td>auth_db</td></tr>
-    <tr><td>Date</td><td>2026-07-24</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
   </table>
@@ -63,6 +63,12 @@
         <li><a href="#fr-009">FR-009: Verify Phone</a></li>
         <li><a href="#fr-010">FR-010: Manage Users</a></li>
         <li><a href="#fr-011">FR-011: Manage Roles</a></li>
+        <li><a href="#fr-012">FR-012: Social Authentication</a></li>
+        <li><a href="#fr-013">FR-013: Session Management</a></li>
+        <li><a href="#fr-014">FR-014: User Ban & Impersonation</a></li>
+        <li><a href="#fr-015">FR-015: Organization Management</a></li>
+        <li><a href="#fr-016">FR-016: Team Management</a></li>
+        <li><a href="#fr-017">FR-017: Invitation Management</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Use Cases</a>
@@ -79,6 +85,12 @@
         <li><a href="#uc-09">4.9 UC-09: Verify Phone</a></li>
         <li><a href="#uc-10">4.10 UC-10: Manage Users</a></li>
         <li><a href="#uc-11">4.11 UC-11: Manage Roles</a></li>
+        <li><a href="#uc-12">4.12 UC-12: Social Authentication</a></li>
+        <li><a href="#uc-13">4.13 UC-13: Session Management</a></li>
+        <li><a href="#uc-14">4.14 UC-14: User Ban & Impersonation</a></li>
+        <li><a href="#uc-15">4.15 UC-15: Organization Management</a></li>
+        <li><a href="#uc-16">4.16 UC-16: Team Management</a></li>
+        <li><a href="#uc-17">4.17 UC-17: Invitation Management</a></li>
       </ul>
     </li>
     <li><a href="#section-5">5. Non-Functional Requirements</a>
@@ -101,6 +113,12 @@
         <li><a href="#trace-fr-009">FR-009: Verify Phone</a></li>
         <li><a href="#trace-fr-010">FR-010: Manage Users</a></li>
         <li><a href="#trace-fr-011">FR-011: Manage Roles</a></li>
+        <li><a href="#trace-fr-012">FR-012: Social Authentication</a></li>
+        <li><a href="#trace-fr-013">FR-013: Session Management</a></li>
+        <li><a href="#trace-fr-014">FR-014: User Ban & Impersonation</a></li>
+        <li><a href="#trace-fr-015">FR-015: Organization Management</a></li>
+        <li><a href="#trace-fr-016">FR-016: Team Management</a></li>
+        <li><a href="#trace-fr-017">FR-017: Invitation Management</a></li>
       </ul>
     </li>
   </ul>
@@ -152,7 +170,7 @@
   <tr><td>Module Name</td><td>Authentication</td></tr>
   <tr><td>Description</td><td>User accounts, login, roles, sessions, verification</td></tr>
   <tr><td>Database</td><td>auth_db</td></tr>
-  <tr><td>Tables</td><td>auth_users, auth_sessions, auth_accounts, auth_verification, auth_roles, auth_user_roles</td></tr>
+  <tr><td>Tables</td><td>auth_users, auth_sessions, auth_accounts, auth_verification, auth_roles, auth_user_roles, auth_organizations, auth_members, auth_teams, auth_team_members, auth_invitations</td></tr>
   <tr><td>Tech Stack</td><td>NestJS, Better Auth, Drizzle ORM, PostgreSQL</td></tr>
 </table>
 
@@ -255,6 +273,54 @@
     <td>UC-11</td>
     <td>Medium</td>
     <td>Admin shall be able to create roles and assign to users</td>
+  </tr>
+  <tr id="fr-012">
+    <td><span class="req-id">FR-012</span></td>
+    <td>AUTH</td>
+    <td>Social Authentication</td>
+    <td>UC-12</td>
+    <td>High</td>
+    <td>System shall allow users to sign in via social providers (Google, GitHub, etc.) and link/unlink social accounts</td>
+  </tr>
+  <tr id="fr-013">
+    <td><span class="req-id">FR-013</span></td>
+    <td>AUTH</td>
+    <td>Session Management</td>
+    <td>UC-13</td>
+    <td>High</td>
+    <td>System shall allow users to view, revoke, and manage active sessions across devices</td>
+  </tr>
+  <tr id="fr-014">
+    <td><span class="req-id">FR-014</span></td>
+    <td>AUTH</td>
+    <td>User Ban & Impersonation</td>
+    <td>UC-14</td>
+    <td>Medium</td>
+    <td>Admin shall be able to ban/unban users and impersonate users for support</td>
+  </tr>
+  <tr id="fr-015">
+    <td><span class="req-id">FR-015</span></td>
+    <td>AUTH</td>
+    <td>Organization Management</td>
+    <td>UC-15</td>
+    <td>High</td>
+    <td>System shall allow users to create, update, delete organizations and manage membership</td>
+  </tr>
+  <tr id="fr-016">
+    <td><span class="req-id">FR-016</span></td>
+    <td>AUTH</td>
+    <td>Team Management</td>
+    <td>UC-16</td>
+    <td>Medium</td>
+    <td>System shall allow creating teams within organizations and managing team membership</td>
+  </tr>
+  <tr id="fr-017">
+    <td><span class="req-id">FR-017</span></td>
+    <td>AUTH</td>
+    <td>Invitation Management</td>
+    <td>UC-17</td>
+    <td>High</td>
+    <td>System shall allow inviting members to organizations via email, with accept/reject flow</td>
   </tr>
 </table>
 
@@ -472,6 +538,72 @@
   <tr><td>Related FR</td><td><span class="req-id">FR-011</span></td></tr>
 </table>
 
+<h2 id="uc-12">4.12 UC-12: Social Authentication</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Guest or authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>Social provider configured (Google, GitHub, etc.)</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks "Sign in with Google" (or other provider)<br>2. System redirects to provider OAuth page<br>3. User authenticates with provider<br>4. Provider redirects back with authorization code<br>5. System exchanges code for tokens<br>6. System creates/links user account<br>7. System returns session tokens</td></tr>
+  <tr><td>Alternative Flows</td><td>6a. Email already exists → System links social account to existing user<br>6b. Provider unavailable → System returns 503</td></tr>
+  <tr><td>Postconditions</td><td>User authenticated via social provider; session created</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-012</span></td></tr>
+</table>
+
+<h2 id="uc-13">4.13 UC-13: Session Management</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to session settings<br>2. System displays list of active sessions (device, IP, last active)<br>3. User can revoke specific session or all other sessions<br>4. System invalidates selected sessions<br>5. System returns success</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Session already expired → System removes from list</td></tr>
+  <tr><td>Postconditions</td><td>Selected sessions invalidated; user remains logged in on current device</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-013</span></td></tr>
+</table>
+
+<h2 id="uc-14">4.14 UC-14: User Ban & Impersonation</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Admin user</td></tr>
+  <tr><td>Preconditions</td><td>Admin is logged in with admin role</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin navigates to user management<br>2. Admin selects user to ban/impersonate<br>3. For ban: Admin provides reason and optional expiry → System bans user, invalidates all sessions<br>4. For impersonate: System creates admin session as target user<br>5. Admin can stop impersonation to return to admin session</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. User already banned → System returns 409<br>4a. Target user not found → System returns 404</td></tr>
+  <tr><td>Postconditions</td><td>User banned (sessions revoked) or admin impersonating user</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-014</span></td></tr>
+</table>
+
+<h2 id="uc-15">4.15 UC-15: Organization Management</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User creates organization with name and slug<br>2. System validates slug uniqueness<br>3. System creates organization, user becomes owner<br>4. Owner can update org details, manage members, set roles<br>5. Owner can delete organization</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Slug already taken → System returns 409<br>4a. Unauthorized → System returns 403</td></tr>
+  <tr><td>Postconditions</td><td>Organization created/updated/deleted; membership managed</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-015</span></td></tr>
+</table>
+
+<h2 id="uc-16">4.16 UC-16: Team Management</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Organization admin</td></tr>
+  <tr><td>Preconditions</td><td>User is admin/owner of an organization</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin creates team within organization<br>2. Admin adds/removes members from team<br>3. Admin can update team name or delete team<br>4. System manages team membership and active team selection</td></tr>
+  <tr><td>Alternative Flows</td><td>1a. Team name already exists → System returns 409<br>2a. User not in organization → System returns 400</td></tr>
+  <tr><td>Postconditions</td><td>Team created/updated/deleted; membership managed</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-016</span></td></tr>
+</table>
+
+<h2 id="uc-17">4.17 UC-17: Invitation Management</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Organization admin / Invited user</td></tr>
+  <tr><td>Preconditions</td><td>Admin is logged in; invitee has email address</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin invites user by email with role and optional team<br>2. System sends invitation email via EMAIL module<br>3. Invitee receives email, clicks invitation link<br>4. Invitee accepts or rejects invitation<br>5. If accepted: System adds user to organization with specified role</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Email already member → System returns 409<br>4a. Invitation expired → System returns 410<br>4b. Invitation rejected → Status updated to rejected</td></tr>
+  <tr><td>Postconditions</td><td>Invitation sent; user added to organization (if accepted)</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-017</span></td></tr>
+</table>
+
 <!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-5">5. Non-Functional Requirements</h1>
 
@@ -546,7 +678,13 @@
   <tr id="trace-fr-008"><td><span class="req-id">FR-008</span></td><td>Verify Email</td><td>auth_verification, auth_users</td><td>GET /auth/verify-email</td></tr>
   <tr id="trace-fr-009"><td><span class="req-id">FR-009</span></td><td>Verify Phone</td><td>auth_verification, auth_users</td><td>POST /auth/verify-phone</td></tr>
   <tr id="trace-fr-010"><td><span class="req-id">FR-010</span></td><td>Manage Users</td><td>auth_users</td><td>GET/PUT/DELETE /users/:id</td></tr>
-  <tr id="trace-fr-011"><td><span class="req-id">FR-011</span></td><td>Manage Roles</td><td>auth_roles, auth_user_roles</td><td>GET/POST /roles</td></tr>
+  <tr id="trace-fr-011"><td><span class="req-id">FR-011</span></td><td>Manage Roles</td><td>auth_roles, auth_user_roles</td><td>POST /admin/set-role, POST /organization/create-role</td></tr>
+  <tr id="trace-fr-012"><td><span class="req-id">FR-012</span></td><td>Social Authentication</td><td>auth_accounts</td><td>POST /sign-in/social, POST /link-social, POST /unlink-account</td></tr>
+  <tr id="trace-fr-013"><td><span class="req-id">FR-013</span></td><td>Session Management</td><td>auth_sessions</td><td>GET /list-sessions, POST /revoke-session, POST /revoke-sessions</td></tr>
+  <tr id="trace-fr-014"><td><span class="req-id">FR-014</span></td><td>User Ban & Impersonation</td><td>auth_users, auth_sessions</td><td>POST /admin/ban-user, POST /admin/impersonate-user</td></tr>
+  <tr id="trace-fr-015"><td><span class="req-id">FR-015</span></td><td>Organization Management</td><td>auth_organizations, auth_members</td><td>POST /organization/create, GET /organization/list</td></tr>
+  <tr id="trace-fr-016"><td><span class="req-id">FR-016</span></td><td>Team Management</td><td>auth_teams, auth_team_members</td><td>POST /organization/create-team, POST /organization/add-team-member</td></tr>
+  <tr id="trace-fr-017"><td><span class="req-id">FR-017</span></td><td>Invitation Management</td><td>auth_invitations</td><td>POST /organization/invite-member, POST /organization/accept-invitation</td></tr>
 </table>
 
 </body>

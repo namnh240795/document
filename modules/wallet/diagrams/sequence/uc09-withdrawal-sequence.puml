@@ -1,0 +1,50 @@
+@startuml
+' ============================================================
+' UC-09: Request Withdrawal - Sequence Diagram
+' ============================================================
+
+title UC-09: Request Withdrawal
+
+actor User
+participant "Wallet UI" as UI
+participant "Wallet API" as API
+database "Wallet DB" as DB
+participant "Admin" as Admin
+participant "Payment Gateway" as PG
+participant "LOG Service" as LOG
+
+== Request Withdrawal ==
+
+User -> UI: Enter withdrawal amount & select method
+UI -> API: POST /wallet/withdraw { amount, method_id }
+API -> API: Validate amount & check limits
+API -> DB: SELECT balance FROM wallet_wallets
+DB --> API: Current balance
+
+API -> DB: INSERT wallet_payout_requests (status: pending)
+API -> DB: UPDATE wallet_wallets SET frozen_amount = frozen_amount + amount
+API -> LOG: Log withdrawal request
+LOG --> API: Logged
+
+API --> UI: 200 OK { request_id, status: 'pending' }
+UI --> User: "Withdrawal pending approval"
+
+== Admin Approval ==
+
+Admin -> API: GET /admin/wallet/payouts?status=pending
+API --> Admin: List of pending payouts
+
+Admin -> API: PATCH /admin/wallet/payouts/:id { status: 'approved' }
+API -> DB: UPDATE wallet_payout_requests SET status = 'approved'
+API -> PG: Process payout { amount, bank_account }
+PG --> API: Payout processed
+
+API -> DB: UPDATE wallet_payout_requests SET status = 'completed'
+API -> DB: UPDATE wallet_wallets SET balance = balance - amount, frozen_amount = frozen_amount - amount
+API -> LOG: Log payout completed
+LOG --> API: Logged
+
+API --> Admin: 200 OK { status: 'completed' }
+Admin --> User: "Withdrawal completed"
+
+@enduml

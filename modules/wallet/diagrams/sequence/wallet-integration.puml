@@ -1,0 +1,48 @@
+@startuml
+' ============================================================
+' Wallet Module - Integration Sequence Diagram
+' ============================================================
+
+title Wallet Module - Integration Flow
+
+actor User
+participant "Wallet API" as WALLET
+database "Wallet DB" as DB
+participant "RECR Service" as RECR
+participant "AUTH Service" as AUTH
+participant "Payment Gateway" as PG
+participant "LOG Service" as LOG
+
+== Employer Pays for Job Posting ==
+
+User -> WALLET: POST /wallet/pay { job_posting }
+WALLET -> AUTH: Validate JWT
+WALLET -> DB: Check balance
+WALLET -> DB: Deduct funds
+WALLET -> RECR: Job activated
+RECR --> WALLET: OK
+WALLET -> LOG: Log event
+WALLET --> User: Payment success
+
+== User Deposits Funds ==
+
+User -> WALLET: POST /wallet/deposit
+WALLET -> DB: Create pending transaction
+WALLET -> PG: Initiate payment
+PG --> WALLET: Payment URL
+WALLET --> User: Redirect to PG
+User -> PG: Complete payment
+PG -> WALLET: Webhook callback
+WALLET -> DB: Update balance
+WALLET -> LOG: Log deposit
+WALLET --> User: Balance updated
+
+== User Withdraws Funds ==
+
+User -> WALLET: POST /wallet/withdraw
+WALLET -> DB: Create payout request
+WALLET -> DB: Freeze amount
+WALLET -> LOG: Log request
+WALLET --> User: Pending approval
+
+@enduml

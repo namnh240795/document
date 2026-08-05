@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Technical Design Specification - Authentication</title>
+  <title>Technical Design Specification - Authentication (Better Auth)</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -30,7 +30,7 @@
     <tr><td>Version</td><td>1.0</td></tr>
     <tr><td>System</td><td>Authentication System</td></tr>
     <tr><td>Module</td><td>AUTH - Authentication</td></tr>
-    <tr><td>Date</td><td>2026-07-24</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
     <tr><td>Related SRS</td><td><a href="srs.html">Authentication SRS</a></td></tr>
@@ -89,7 +89,7 @@
 <h2>1.2 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-011</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-017</span></td><td>Section 3, 5</td></tr>
   <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-007</span></td><td>Section 6</td></tr>
 </table>
 
@@ -160,15 +160,32 @@
   roles/
     roles.module.ts
     roles.controller.ts
-    roles.service.ts</code></pre>
+    roles.service.ts
+  organizations/
+    organizations.module.ts
+    organizations.controller.ts
+    organizations.service.ts
+  teams/
+    teams.module.ts
+    teams.controller.ts
+    teams.service.ts
+  invitations/
+    invitations.module.ts
+    invitations.controller.ts
+    invitations.service.ts</code></pre>
 
 <h2>3.2 Component to Requirements Mapping</h2>
 <table class="trace-table">
   <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
-  <tr><td>AuthController</td><td>Login, register, logout, refresh, reset password</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-007</span></td></tr>
+  <tr><td>AuthController</td><td>Login, register, logout, refresh, reset password</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-009</span></td></tr>
   <tr><td>AuthService</td><td>Token generation, password hashing, verification</td><td><span class="req-id">NFR-003</span>, <span class="req-id">NFR-004</span></td></tr>
   <tr><td>UsersController</td><td>User CRUD operations</td><td><span class="req-id">FR-010</span></td></tr>
   <tr><td>RolesController</td><td>Role management, assignment</td><td><span class="req-id">FR-011</span></td></tr>
+  <tr><td>SocialAuthController</td><td>Social sign-in, account linking/unlinking</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>SessionController</td><td>Session listing, revocation, impersonation</td><td><span class="req-id">FR-013</span>, <span class="req-id">FR-014</span></td></tr>
+  <tr><td>OrganizationsController</td><td>Organization CRUD, membership, roles</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>TeamsController</td><td>Team CRUD, membership management</td><td><span class="req-id">FR-016</span></td></tr>
+  <tr><td>InvitationsController</td><td>Invite, accept, reject, cancel invitations</td><td><span class="req-id">FR-017</span></td></tr>
   <tr><td>AuthGuard</td><td>JWT validation, route protection</td><td><span class="req-id">NFR-004</span></td></tr>
 </table>
 
@@ -194,17 +211,23 @@
 <h2>5.1 Endpoint to Requirements Mapping</h2>
 <table class="trace-table">
   <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
-  <tr><td>POST</td><td>/auth/register</td><td>Register new user</td><td><span class="req-id">FR-001</span></td></tr>
-  <tr><td>POST</td><td>/auth/login</td><td>Login</td><td><span class="req-id">FR-002</span></td></tr>
-  <tr><td>POST</td><td>/auth/logout</td><td>Logout</td><td><span class="req-id">FR-003</span></td></tr>
-  <tr><td>POST</td><td>/auth/refresh</td><td>Refresh token</td><td><span class="req-id">FR-004</span></td></tr>
-  <tr><td>POST</td><td>/auth/forgot-password</td><td>Reset password (email)</td><td><span class="req-id">FR-005</span></td></tr>
-  <tr><td>POST</td><td>/auth/forgot-password-phone</td><td>Reset password (phone)</td><td><span class="req-id">FR-006</span></td></tr>
-  <tr><td>POST</td><td>/auth/change-password</td><td>Change password</td><td><span class="req-id">FR-007</span></td></tr>
-  <tr><td>GET</td><td>/auth/verify-email</td><td>Verify email</td><td><span class="req-id">FR-008</span></td></tr>
-  <tr><td>POST</td><td>/auth/verify-phone</td><td>Verify phone</td><td><span class="req-id">FR-009</span></td></tr>
-  <tr><td>GET/PUT/DELETE</td><td>/users/:id</td><td>User management</td><td><span class="req-id">FR-010</span></td></tr>
-  <tr><td>GET/POST</td><td>/roles</td><td>Role management</td><td><span class="req-id">FR-011</span></td></tr>
+  <tr><td>POST</td><td>/sign-up/email</td><td>Register new user</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>POST</td><td>/sign-in/email</td><td>Email sign-in</td><td><span class="req-id">FR-002</span></td></tr>
+  <tr><td>POST</td><td>/sign-in/social</td><td>Social sign-in</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>POST</td><td>/sign-out</td><td>Logout</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>POST</td><td>/refresh-token</td><td>Refresh token</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>POST</td><td>/request-password-reset</td><td>Request password reset</td><td><span class="req-id">FR-005</span></td></tr>
+  <tr><td>POST</td><td>/change-password</td><td>Change password</td><td><span class="req-id">FR-007</span></td></tr>
+  <tr><td>GET</td><td>/verify-email</td><td>Verify email</td><td><span class="req-id">FR-008</span></td></tr>
+  <tr><td>GET</td><td>/list-sessions</td><td>List sessions</td><td><span class="req-id">FR-013</span></td></tr>
+  <tr><td>POST</td><td>/revoke-session</td><td>Revoke session</td><td><span class="req-id">FR-013</span></td></tr>
+  <tr><td>POST</td><td>/link-social</td><td>Link social account</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>POST</td><td>/admin/set-role</td><td>Set user role</td><td><span class="req-id">FR-011</span></td></tr>
+  <tr><td>POST</td><td>/admin/ban-user</td><td>Ban user</td><td><span class="req-id">FR-014</span></td></tr>
+  <tr><td>POST</td><td>/admin/impersonate-user</td><td>Impersonate user</td><td><span class="req-id">FR-014</span></td></tr>
+  <tr><td>POST</td><td>/organization/create</td><td>Create organization</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>POST</td><td>/organization/invite-member</td><td>Invite member</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>POST</td><td>/organization/create-team</td><td>Create team</td><td><span class="req-id">FR-016</span></td></tr>
 </table>
 
 <!-- 6. INTEGRATION FLOWS -->
@@ -317,7 +340,13 @@
   <tr><td><span class="req-id">FR-008</span></td><td>Verify Email</td><td>5.1</td><td>GET /auth/verify-email</td></tr>
   <tr><td><span class="req-id">FR-009</span></td><td>Verify Phone</td><td>5.1</td><td>POST /auth/verify-phone</td></tr>
   <tr><td><span class="req-id">FR-010</span></td><td>Manage Users</td><td>3.2, 5.1</td><td>UsersController + GET/PUT/DELETE /users/:id</td></tr>
-  <tr><td><span class="req-id">FR-011</span></td><td>Manage Roles</td><td>3.2, 5.1</td><td>RolesController + GET/POST /roles</td></tr>
+  <tr><td><span class="req-id">FR-011</span></td><td>Manage Roles</td><td>3.2, 5.1</td><td>RolesController + POST /admin/set-role</td></tr>
+  <tr><td><span class="req-id">FR-012</span></td><td>Social Authentication</td><td>3.2, 5.1</td><td>SocialAuthController + POST /sign-in/social</td></tr>
+  <tr><td><span class="req-id">FR-013</span></td><td>Session Management</td><td>3.2, 5.1</td><td>SessionController + GET /list-sessions</td></tr>
+  <tr><td><span class="req-id">FR-014</span></td><td>User Ban & Impersonation</td><td>3.2, 5.1</td><td>SessionController + POST /admin/ban-user</td></tr>
+  <tr><td><span class="req-id">FR-015</span></td><td>Organization Management</td><td>3.2, 5.1</td><td>OrganizationsController + POST /organization/create</td></tr>
+  <tr><td><span class="req-id">FR-016</span></td><td>Team Management</td><td>3.2, 5.1</td><td>TeamsController + POST /organization/create-team</td></tr>
+  <tr><td><span class="req-id">FR-017</span></td><td>Invitation Management</td><td>3.2, 5.1</td><td>InvitationsController + POST /organization/invite-member</td></tr>
   <tr><td><span class="req-id">NFR-001</span></td><td>Login &lt; 500ms</td><td>2.1</td><td>Redis cache, DB indexing</td></tr>
   <tr><td><span class="req-id">NFR-003</span></td><td>bcrypt 12 rounds</td><td>6</td><td>bcrypt.hash(password, 12)</td></tr>
   <tr><td><span class="req-id">NFR-004</span></td><td>JWT expiry</td><td>6</td><td>Access: 15min, Refresh: 7 days</td></tr>

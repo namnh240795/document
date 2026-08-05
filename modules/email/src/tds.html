@@ -31,7 +31,7 @@
     <tr><td>System</td><td>Authentication System</td></tr>
     <tr><td>Module</td><td>EMAIL - Email Notification</td></tr>
     <tr><td>Database</td><td>email_db</td></tr>
-    <tr><td>Date</td><td>2026-07-24</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
     <tr><td>Related SRS</td><td><a href="srs.html">Email Notification SRS</a></td></tr>
@@ -176,29 +176,54 @@
 
 <h2>7.2 Webhook Events</h2>
 <table>
-  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
+  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Queue</th><th>Description</th></tr>
   <tr>
     <td>verification.email.requested</td>
     <td>AUTH → EMAIL</td>
     <td>RabbitMQ</td>
+    <td>verification.email</td>
     <td>Triggered when user requests email verification</td>
   </tr>
   <tr>
     <td>verification.email.resent</td>
     <td>AUTH → EMAIL</td>
     <td>RabbitMQ</td>
+    <td>verification.email</td>
     <td>Triggered when user resends email verification</td>
+  </tr>
+  <tr>
+    <td>application.submitted</td>
+    <td>RECR → EMAIL</td>
+    <td>RabbitMQ</td>
+    <td>recruitment.email</td>
+    <td>Send confirmation email when candidate submits application</td>
+  </tr>
+  <tr>
+    <td>interview.scheduled</td>
+    <td>RECR → EMAIL</td>
+    <td>RabbitMQ</td>
+    <td>recruitment.email</td>
+    <td>Send interview invitation with calendar details</td>
+  </tr>
+  <tr>
+    <td>offer.sent</td>
+    <td>RECR → EMAIL</td>
+    <td>RabbitMQ</td>
+    <td>recruitment.email</td>
+    <td>Send offer letter with position and salary</td>
   </tr>
   <tr>
     <td>verification.email.delivered</td>
     <td>EMAIL → AUTH</td>
     <td>Webhook</td>
+    <td>-</td>
     <td>Confirms email delivery status back to AUTH</td>
   </tr>
   <tr>
     <td>email.event.logged</td>
     <td>EMAIL → LOG</td>
     <td>RabbitMQ</td>
+    <td>log.events</td>
     <td>Logs email delivery events to Logger</td>
   </tr>
 </table>

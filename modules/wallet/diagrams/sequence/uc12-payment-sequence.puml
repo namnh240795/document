@@ -1,0 +1,39 @@
+@startuml
+' ============================================================
+' UC-12: Pay for Job Posting - Sequence Diagram
+' ============================================================
+
+title UC-12: Pay for Job Posting
+
+actor Employer
+participant "Wallet UI" as UI
+participant "Wallet API" as API
+database "Wallet DB" as DB
+participant "RECR Service" as RECR
+participant "LOG Service" as LOG
+
+== Payment for Job Posting ==
+
+Employer -> UI: Create job posting & select "Pay with Wallet"
+UI -> API: POST /wallet/pay { order_type: 'job_posting', related_id: job_id, amount }
+API -> DB: SELECT balance FROM wallet_wallets
+DB --> API: Current balance
+
+alt Sufficient balance
+  API -> API: Verify wallet PIN
+  API -> DB: INSERT wallet_payment_orders (status: pending)
+  API -> DB: INSERT wallet_transactions (type: 'payment', status: 'completed')
+  API -> DB: UPDATE wallet_wallets SET balance = balance - amount
+  API -> DB: UPDATE wallet_payment_orders SET status = 'paid'
+  API -> RECR: POST /webhooks/recr/job-activated { job_id }
+  RECR --> API: Job activated
+  API -> LOG: Log payment event
+  LOG --> API: Logged
+  API --> UI: 200 OK { order_id, status: 'paid' }
+  UI --> Employer: "Job posted successfully"
+else Insufficient balance
+  API --> UI: 400 Bad Request { error: 'Insufficient balance' }
+  UI --> Employer: "Please deposit funds first"
+end
+
+@enduml

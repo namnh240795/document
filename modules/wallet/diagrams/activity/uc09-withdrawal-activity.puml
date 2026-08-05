@@ -1,0 +1,54 @@
+@startuml
+' ============================================================
+' UC-09: Request Withdrawal - Activity Diagram
+' No swimlanes, clean sequential flow
+' ============================================================
+
+title UC-09: Request Withdrawal
+
+start
+:User navigates to withdrawal page;
+:User selects payment method;
+:User enters withdrawal amount;
+:System validates withdrawal amount;
+if (Amount valid?) then (yes)
+  :System checks available balance;
+  :System checks daily/monthly limits;
+  if (Limits exceeded?) then (no)
+    :System creates wallet_payout_requests record (status: pending);
+    :System freezes withdrawal amount in wallet;
+    :System notifies admin for approval;
+    :User sees "Withdrawal pending approval";
+    fork
+      :Admin reviews request;
+    fork again
+      :System sends notification;
+    end fork
+    if (Admin approves?) then (yes)
+      :System updates payout status (processing);
+      :System processes payment to bank;
+      if (Payment successful?) then (yes)
+        :System updates payout status (completed);
+        :System updates wallet balance;
+        :User receives funds;
+      else (no)
+        :System updates payout status (failed);
+        :System unfreezes amount;
+        :User notified of failure;
+      endif
+    else (no)
+      :System updates payout status (rejected);
+      :System unfreezes amount;
+      :User notified of rejection;
+    endif
+  else (yes)
+    :System returns "Limit exceeded";
+    :User sees limit error;
+  endif
+else (no)
+  :System returns validation error;
+  :User corrects amount;
+endif
+stop
+
+@enduml

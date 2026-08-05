@@ -1,0 +1,32 @@
+@startuml
+' ============================================================
+' UC-01: View Wallet Balance - Sequence Diagram
+' ============================================================
+
+title UC-01: View Wallet Balance
+
+actor User
+participant "Wallet UI" as UI
+participant "Wallet API" as API
+database "Wallet DB" as DB
+participant "AUTH Service" as AUTH
+
+== View Wallet Balance ==
+
+User -> UI: Access wallet page
+UI -> API: GET /wallet/balance
+API -> AUTH: Validate JWT token
+AUTH --> API: Token valid (user_id)
+
+API -> DB: SELECT * FROM wallet_wallets WHERE user_id = ?
+DB --> API: Wallet data
+
+alt Wallet exists
+  API --> UI: 200 OK { balance, currency, status }
+  UI --> User: Display wallet balance
+else No wallet
+  API --> UI: 404 Not Found
+  UI --> User: "No wallet found"
+end
+
+@enduml

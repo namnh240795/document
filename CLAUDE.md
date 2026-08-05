@@ -11,7 +11,7 @@ BA Documentation Framework — generates technical documentation (SRS, TDS, Data
 ```bash
 make pull           # Pull PlantUML Docker image (required once)
 make build-all      # Generate all diagrams + build HTML docs
-make open           # Build and open modules/index.html in browser
+make open           # Build and open modules/dist/index.html in browser
 make clean          # Remove all generated files
 make watch          # Auto-rebuild on file change (requires fswatch)
 ```
@@ -30,7 +30,7 @@ make generate-all-modules                   # All modules, all types
 
 **Build pipeline** → `scripts/generate.sh` (PlantUML → PNG via Docker) → `scripts/build-docs.sh` (templates → HTML, placeholders replaced from `modules.yaml`)
 
-**Output** → `modules/` — per-module HTML docs + `modules/index.html` master index
+**Output** → `modules/dist/` — per-module HTML docs + `modules/dist/index.html` master index
 
 **Module registry** → `modules.yaml` — defines modules, databases, tables, dependencies, webhooks, and features. This is the single source of truth for placeholders.
 
@@ -48,8 +48,14 @@ modules/<CODE>/
     activity/
     class/
   images/            # Generated diagrams (auto)
-  srs.html           # Module SRS content
+  src/               # Custom HTML source files (source of truth)
+    srs.html
+    tds.html
+    database-design.html
+    api-technical-spec.html
 ```
+
+Build output goes to `modules/dist/` (gitignored).
 
 Template placeholders: `{{PROJECT_NAME}}`, `{{MODULE_NAME}}`, `{{MODULE_CODE}}`, `{{MODULE_DATABASE}}`, `{{MODULE_TABLES}}`, `{{MODULE_DEPENDENCIES}}`, `{{MODULE_COLOR}}`, `{{DATE}}`, `{{AUTHOR}}`
 
@@ -86,7 +92,7 @@ ERD templates use `xxx_` as placeholder for the project short name (e.g., `xxx_u
 
 ## CSS
 
-Shared stylesheet: `templates/style.css` (copied to `modules/style.css` at build time). All HTML is print-optimized for A4 paper. Export PDF via browser Print.
+Shared stylesheet: `templates/style.css` (copied to `modules/dist/style.css` at build time). All HTML is print-optimized for A4 paper. Export PDF via browser Print.
 
 ## BA Workflow
 
@@ -102,11 +108,13 @@ Then Claude handles everything. See `BA-WORKFLOW.md` for details.
 
 1. Add module to `modules.yaml` with code, name, database, tables, depends_on
 2. Create `modules/<CODE>/diagrams/` with PlantUML source files
-3. Add module-specific ERD in `templates/erd-<database>.puml`
-4. Run `make generate MODULE=<code>` then `make build-docs`
+3. Create `modules/<CODE>/src/` with custom HTML files (srs.html, tds.html, database-design.html, api-technical-spec.html)
+4. Add module-specific ERD in `templates/erd-<database>.puml`
+5. Run `make generate MODULE=<code>` then `make build-docs`
 
 ## Build Script Notes
 
 - `scripts/build-docs.sh` uses macOS `sed -i ''` — will fail on Linux without modification
 - Diagram generation requires Docker: `docker pull plantuml/plantuml:latest`
 - Output images go to `modules/<code>/images/<type>/`
+- Build output goes to `modules/dist/` (gitignored)

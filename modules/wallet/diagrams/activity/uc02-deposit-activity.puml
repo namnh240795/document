@@ -1,0 +1,33 @@
+@startuml
+' ============================================================
+' UC-02: Deposit Funds - Activity Diagram
+' No swimlanes, clean sequential flow
+' ============================================================
+
+title UC-02: Deposit Funds
+
+start
+:User selects deposit method;
+:User enters deposit amount;
+:System validates amount (min/max limits);
+if (Amount valid?) then (yes)
+  :System creates wallet_transactions record (status: pending);
+  :System redirects to Payment Gateway;
+  :Payment Gateway processes payment;
+  if (Payment successful?) then (yes)
+    :System updates transaction status (completed);
+    :System updates wallet balance;
+    :System returns success to user;
+    :User sees updated balance;
+  else (no)
+    :System updates transaction status (failed);
+    :System records failure reason;
+    :User sees error message;
+  endif
+else (no)
+  :System returns validation error;
+  :User corrects amount;
+endif
+stop
+
+@enduml

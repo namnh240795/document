@@ -1,0 +1,41 @@
+@startuml
+' ============================================================
+' UC-02: Deposit Funds - Sequence Diagram
+' ============================================================
+
+title UC-02: Deposit Funds
+
+actor User
+participant "Wallet UI" as UI
+participant "Wallet API" as API
+database "Wallet DB" as DB
+participant "Payment Gateway" as PG
+participant "LOG Service" as LOG
+
+== Deposit Funds ==
+
+User -> UI: Select deposit method & enter amount
+UI -> API: POST /wallet/deposit { amount, method }
+API -> API: Validate amount (min/max limits)
+API -> DB: INSERT wallet_transactions (status: pending)
+DB --> API: Transaction created
+
+API -> PG: Initiate payment { amount, method }
+PG --> API: Payment URL / redirect
+
+API --> UI: 200 OK { payment_url }
+UI --> User: Redirect to Payment Gateway
+
+== Payment Processing ==
+
+User -> PG: Complete payment
+PG -> API: POST /webhooks/payment/callback { status, transaction_id }
+API -> DB: UPDATE wallet_transactions SET status = 'completed'
+API -> DB: UPDATE wallet_wallets SET balance = balance + amount
+API -> LOG: Log deposit event
+LOG --> API: Logged
+
+API --> PG: 200 OK
+PG --> User: Payment successful
+
+@enduml

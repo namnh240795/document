@@ -1,0 +1,117 @@
+@startuml
+' ============================================================
+' Wallet Module - Use Case Diagram
+' Actors: User (all roles), Admin, Payment Gateway
+' ============================================================
+
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #FFF9E6
+  BorderColor #333333
+}
+skinparam actor {
+  BackgroundColor #E8F4FD
+  BorderColor #333333
+}
+
+title Wallet Module - Use Case Diagram
+
+' ============================================================
+' ACTORS
+' ============================================================
+actor "User" as User
+actor "Admin" as Admin
+actor "Payment\nGateway" as PG
+rectangle "Wallet System" {
+
+  ' --- Wallet Management ---
+  package "Wallet Management" #E8F4FD {
+    usecase "View Wallet Balance" as UC01
+    usecase "Create Wallet" as UC02
+    usecase "View Transaction History" as UC03
+    usecase "Set Wallet PIN" as UC04
+  }
+
+  ' --- Deposit ---
+  package "Deposit" #E8F8E8 {
+    usecase "Deposit via Bank Transfer" as UC05
+    usecase "Deposit via Credit Card" as UC06
+    usecase "Deposit via E-Wallet" as UC07
+    usecase "Verify Deposit" as UC08
+  }
+
+  ' --- Withdrawal ---
+  package "Withdrawal" #FDE8E8 {
+    usecase "Request Withdrawal" as UC09
+    usecase "Add Payment Method" as UC10
+    usecase "Manage Payment Methods" as UC11
+  }
+
+  ' --- Payment ---
+  package "Payment" #FFF3E0 {
+    usecase "Pay for Job Posting" as UC12
+    usecase "Pay for Featured Job" as UC13
+    usecase "Pay for Premium Subscription" as UC14
+    usecase "View Payment History" as UC15
+  }
+
+  ' --- Transfer ---
+  package "Transfer" #F3E5F5 {
+    usecase "Transfer to Another Wallet" as UC16
+    usecase "Receive Transfer" as UC17
+  }
+
+  ' --- Admin ---
+  package "Admin Operations" #FFEBEE {
+    usecase "Approve Withdrawal" as UC18
+    usecase "Freeze Wallet" as UC19
+    usecase "View All Wallets" as UC20
+    usecase "Process Payout" as UC21
+  }
+}
+
+' ============================================================
+' ACTOR -> USE CASE RELATIONSHIPS
+' ============================================================
+
+' User
+User --> UC01
+User --> UC02
+User --> UC03
+User --> UC04
+User --> UC05
+User --> UC06
+User --> UC07
+User --> UC09
+User --> UC10
+User --> UC11
+User --> UC12
+User --> UC13
+User --> UC14
+User --> UC15
+User --> UC16
+
+' Admin
+Admin --> UC18
+Admin --> UC19
+Admin --> UC20
+Admin --> UC21
+
+' Payment Gateway
+PG --> UC08
+PG --> UC21
+
+' ============================================================
+' USE CASE RELATIONSHIPS
+' ============================================================
+UC06 ..> UC05 : <<include>>
+UC07 ..> UC05 : <<include>>
+UC12 ..> UC01 : <<include>>
+UC13 ..> UC01 : <<include>>
+UC14 ..> UC01 : <<include>>
+UC16 ..> UC01 : <<include>>
+UC18 ..> UC09 : <<include>>
+
+@enduml

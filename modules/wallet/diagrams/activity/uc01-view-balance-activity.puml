@@ -1,0 +1,29 @@
+@startuml
+' ============================================================
+' UC-01: View Wallet Balance - Activity Diagram
+' No swimlanes, clean sequential flow
+' ============================================================
+
+title UC-01: View Wallet Balance
+
+start
+:User accesses Wallet page;
+:System validates JWT token;
+if (Token valid?) then (yes)
+  :System retrieves user_id from token;
+  :System queries wallet_wallets table;
+  if (Wallet exists?) then (yes)
+    :System retrieves wallet balance and status;
+    :System returns wallet data;
+    :User views wallet balance;
+  else (no)
+    :System returns "No wallet found";
+    :User sees empty state;
+  endif
+else (no)
+  :System returns 401 Unauthorized;
+  :User redirected to login;
+endif
+stop
+
+@enduml

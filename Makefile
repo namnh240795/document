@@ -54,12 +54,12 @@ build-all: generate-erd-all generate-all-modules generate-feature-map build-docs
 # ============================================================
 
 open: build-docs ## Build docs and open index
-	@open modules/index.html
+	@open modules/dist/index.html
 
 serve: build-docs ## Start local web server (http://localhost:8080)
 	@echo "Starting server at http://localhost:8080"
 	@echo "Press Ctrl+C to stop"
-	@cd modules && python3 -m http.server 8080
+	@cd modules/dist && python3 -m http.server 8080
 
 # ============================================================
 # Utilities
@@ -68,7 +68,7 @@ serve: build-docs ## Start local web server (http://localhost:8080)
 clean: ## Remove all generated images and docs
 	rm -rf modules/images/*/*.png modules/images/*/*.svg
 	rm -rf modules/*/images/*/*.png modules/*/images/*/*.svg
-	rm -f modules/index.html modules/style.css
+	rm -rf modules/dist
 	@echo "Cleaned generated files."
 
 watch: ## Auto-generate on file change (requires fswatch)

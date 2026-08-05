@@ -30,18 +30,20 @@ Each module has 4 documents with full traceability:
 
 ```
 modules/<code>/
-  src/                    # Custom HTML (overrides templates)
+  src/                    # Custom HTML source files (source of truth)
+    srs.html
+    tds.html
+    database-design.html
+    api-technical-spec.html
   diagrams/               # PlantUML source files
     usecase/
     erd/
     activity/
     sequence/
   images/                 # Generated diagrams
-  srs.html                # Generated SRS
-  tds.html                # Generated TDS
-  database-design.html    # Generated DB design
-  api-technical-spec.html # Generated API spec
 ```
+
+Build output goes to `modules/dist/<code>/` (gitignored).
 
 ---
 
@@ -201,7 +203,7 @@ ALL tables MUST use the format: `<project_short_name>_<table_name>`
 
 ```bash
 make pull           # Download PlantUML Docker image
-make build-all      # Generate diagrams + build HTML docs
+make build-all      # Generate diagrams + build HTML docs (output: modules/dist/)
 make serve          # Start local web server (http://localhost:8080)
 make clean          # Remove generated files
 make watch          # Auto-rebuild on file change
