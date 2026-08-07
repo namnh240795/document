@@ -84,6 +84,12 @@ if [ -d "$PROJECT_ROOT/assets" ]; then
     echo "  [OK] assets/"
 fi
 
+# --- Copy system-level images (architecture, feature-map, etc.) ---
+if [ -d "$IMAGES_DIR" ]; then
+    cp -r "$IMAGES_DIR" "$DIST_DIR/images"
+    echo "  [OK] images/"
+fi
+
 # --- Find first image in a diagram type directory ---
 find_first_image() {
     local dir="$1"
