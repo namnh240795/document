@@ -27,13 +27,8 @@ package "Recruitment Users" #E8F4E8 {
   entity "recr_users" as users {
     * id : bigint <<PK>>
     --
-    * email : varchar(100) <<UNIQUE>>
-    * password_hash : varchar(255)
-    * full_name : varchar(100)
-    * phone : varchar(20)
-    * role : enum('candidate','hr','employer')
+    * user_id : bigint <<FK>> <<UNIQUE>>
     * avatar_url : varchar(500)
-    * is_active : boolean
     * created_at : timestamp
     * updated_at : timestamp
   }

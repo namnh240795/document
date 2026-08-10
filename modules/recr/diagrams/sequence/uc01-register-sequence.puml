@@ -1,7 +1,7 @@
 @startuml
 ' UC-01: Register Account - Sequence Diagram
-' AUTH handles: user creation, password hashing, JWT
-' RECR handles: role selection, profile creation
+' AUTH handles: user creation, password hashing, role storage, JWT
+' RECR handles: profile creation (candidate/employer details)
 skinparam sequence {
   ArrowColor #333333
   ActorBorderColor #333333
@@ -28,9 +28,9 @@ activate FE
 FE -> RECR : POST /recr/auth/register
 activate RECR
 
-== Step 2: AUTH Creates User Account ==
+== Step 2: AUTH Creates User Account with Role ==
 
-RECR -> AUTH : Create user (email, password, name)
+RECR -> AUTH : Create user (email, password, name, <b>role</b>)
 activate AUTH
 
 AUTH -> ADB : Check email availability
@@ -40,19 +40,19 @@ deactivate ADB
 
 AUTH -> AUTH : Hash password (bcrypt)
 
-AUTH -> ADB : Create user record
+AUTH -> ADB : Create user record <b>with role</b>
 activate ADB
-ADB --> AUTH : User created (user_id)
+ADB --> AUTH : User created (user_id, role)
 deactivate ADB
 
-AUTH -> AUTH : Generate JWT token
+AUTH -> AUTH : Generate JWT token <b>with role claim</b>
 
-AUTH --> RECR : user_id + JWT token
+AUTH --> RECR : user_id + JWT token (contains role)
 deactivate AUTH
 
 == Step 3: RECR Creates Profile ==
 
-RECR -> RDB : Create profile (candidate/employer)
+RECR -> RDB : Create profile (candidate/employer details)
 activate RDB
 RDB --> RECR : Profile created
 deactivate RDB

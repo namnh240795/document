@@ -1,5 +1,7 @@
 @startuml
 ' UC-02: Login - Sequence Diagram
+' AUTH handles: credential verification, JWT generation
+' RECR handles: role-based redirect
 skinparam sequence {
   ArrowColor #333333
   ActorBorderColor #333333
@@ -8,47 +10,52 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title UC-02: Login
+title UC-02: Login (AUTH + RECR)
 
 actor "User" as User
 participant "Frontend" as FE
-participant "API Gateway" as GW
-participant "Auth Service" as Auth
-database "User DB" as DB
+participant "RECR Service" as RECR
+participant "AUTH Service" as AUTH
+database "AUTH DB" as ADB
 
 == Step 1: Submit Login ==
 
-User -> FE : Enter credentials
+User -> FE : Enter credentials (email, password)
 activate FE
 
-FE -> GW : POST /recr/auth/login
-activate GW
+FE -> RECR : POST /recr/auth/login
+activate RECR
 
-GW -> Auth : Validate & Process
-activate Auth
+== Step 2: AUTH Verifies Credentials ==
 
-== Step 2: Verify Credentials ==
+RECR -> AUTH : Authenticate (email, password)
+activate AUTH
 
-Auth -> DB : Find user by email
-activate DB
-DB --> Auth : User found
-deactivate DB
+AUTH -> ADB : Find user by email
+activate ADB
+ADB --> AUTH : User found
+deactivate ADB
 
-Auth -> Auth : Compare password hash
+AUTH -> AUTH : Compare password hash (bcrypt)
+
+AUTH -> ADB : Check account is active
+activate ADB
+ADB --> AUTH : Account active
+deactivate ADB
 
 == Step 3: Generate Token ==
 
-Auth -> Auth : Generate JWT token
+AUTH -> AUTH : Generate JWT token with role claim
+
+AUTH --> RECR : JWT token + role
+deactivate AUTH
 
 == Step 4: Response ==
 
-Auth --> GW : 200 OK + JWT + role
-deactivate Auth
+RECR --> FE : 200 OK + JWT + role
+deactivate RECR
 
-GW --> FE : Login success
-deactivate GW
-
-FE --> User : Redirect to dashboard
+FE --> User : Redirect to role-based dashboard
 deactivate FE
 
 @enduml

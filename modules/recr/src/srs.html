@@ -161,15 +161,17 @@
   <li>If Employer: user enters company name, industry, company size</li>
   <li>System validates input data</li>
   <li>System checks email availability</li>
-  <li>System hashes password and creates user record</li>
+  <li>System hashes password and creates user record <strong>with role</strong></li>
   <li>System creates profile (candidate or employer)</li>
-  <li>System generates JWT token</li>
+  <li>System generates JWT token <strong>with role claim</strong></li>
   <li>System returns success response</li>
 </ol>
 <p><strong>AUTH Module Dependency:</strong></p>
 <ul>
-  <li>Steps 5-6 (validate, check email, hash password, create user) are handled by <strong>AUTH module</strong> (FR-001)</li>
-  <li>AUTH returns user_id and JWT token to RECR</li>
+  <li>Steps 5-7 (validate, check email, hash password, create user <strong>with role</strong>) are handled by <strong>AUTH module</strong> (FR-001)</li>
+  <li>Role is passed from RECR to AUTH during registration</li>
+  <li>AUTH stores role in auth_users and includes it in JWT token</li>
+  <li>AUTH returns user_id and JWT token (with role) to RECR</li>
   <li>RECR then creates recruitment-specific profile (candidate or employer) and links to auth user</li>
 </ul>
 <p><strong>Alternative Flows:</strong></p>
@@ -207,6 +209,13 @@
   <li>System returns token and role</li>
   <li>Frontend redirects to role-specific dashboard</li>
 </ol>
+<p><strong>AUTH Module Dependency:</strong></p>
+<ul>
+  <li>Steps 2-6 (validate, check email, verify password, check active, generate JWT) are handled by <strong>AUTH module</strong> (FR-002)</li>
+  <li>AUTH reads role from auth_users table (stored during registration in UC-01)</li>
+  <li>AUTH returns JWT token with role claim to RECR</li>
+  <li>RECR uses role claim to redirect to appropriate dashboard (Candidate/HR/Employer)</li>
+</ul>
 <div class="diagram">
   <img src="./images/activity/uc02-login-activity.png" alt="UC-02 Activity Diagram">
   <div class="caption">Figure 5: UC-02 Login - Activity Diagram</div>
