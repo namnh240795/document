@@ -91,31 +91,22 @@
 <h2>2.2 Tables</h2>
 
 <h3>Table: <code>recr_users</code> - Core User Table (All Roles)</h3>
+<p><strong>Note:</strong> User authentication (email, password, role) is handled by AUTH module. This table only stores recruitment-specific data and links to auth_users via user_id.</p>
 <table>
   <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Default</th><th>Description</th></tr>
   <tr><td>id</td><td>bigint</td><td>NO</td><td>nextval('recr_users_id_seq')</td><td>Primary key</td></tr>
-  <tr><td>email</td><td>varchar(100)</td><td>NO</td><td>-</td><td>Unique email</td></tr>
-  <tr><td>password_hash</td><td>varchar(255)</td><td>NO</td><td>-</td><td>Hashed password</td></tr>
-  <tr><td>full_name</td><td>varchar(100)</td><td>NO</td><td>-</td><td>Full name</td></tr>
-  <tr><td>phone</td><td>varchar(20)</td><td>YES</td><td>-</td><td>Phone number</td></tr>
-  <tr><td>role</td><td>enum</td><td>NO</td><td>-</td><td>candidate, hr, employer</td></tr>
+  <tr><td>user_id</td><td>bigint</td><td>NO</td><td>-</td><td>FK to auth_users.id (UNIQUE)</td></tr>
   <tr><td>avatar_url</td><td>varchar(500)</td><td>YES</td><td>-</td><td>Avatar image URL</td></tr>
-  <tr><td>is_active</td><td>boolean</td><td>NO</td><td>true</td><td>Account status</td></tr>
   <tr><td>created_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Creation timestamp</td></tr>
   <tr><td>updated_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Last update timestamp</td></tr>
 </table>
 
 <pre><code>CREATE TABLE recr_users (
-  id            BIGSERIAL PRIMARY KEY,
-  email         VARCHAR(100) NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
-  full_name     VARCHAR(100) NOT NULL,
-  phone         VARCHAR(20),
-  role          VARCHAR(20) NOT NULL CHECK (role IN ('candidate','hr','employer')),
-  avatar_url    VARCHAR(500),
-  is_active     BOOLEAN NOT NULL DEFAULT true,
-  created_at    TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at    TIMESTAMP NOT NULL DEFAULT NOW()
+  id          BIGSERIAL PRIMARY KEY,
+  user_id     BIGINT NOT NULL UNIQUE REFERENCES auth_users(id),
+  avatar_url  VARCHAR(500),
+  created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at  TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
 <h3>Table: <code>recr_candidates</code> - Candidate Profile</h3>
