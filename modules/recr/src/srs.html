@@ -166,6 +166,12 @@
   <li>System generates JWT token</li>
   <li>System returns success response</li>
 </ol>
+<p><strong>AUTH Module Dependency:</strong></p>
+<ul>
+  <li>Steps 5-6 (validate, check email, hash password, create user) are handled by <strong>AUTH module</strong> (FR-001)</li>
+  <li>AUTH returns user_id and JWT token to RECR</li>
+  <li>RECR then creates recruitment-specific profile (candidate or employer) and links to auth user</li>
+</ul>
 <p><strong>Alternative Flows:</strong></p>
 <ul>
   <li>4a. Email already exists: System returns error "Email already registered"</li>
