@@ -1,5 +1,7 @@
 @startuml
 ' UC-01: Register Account - Sequence Diagram
+' AUTH handles: user creation, password hashing, JWT
+' RECR handles: role selection, profile creation
 skinparam sequence {
   ArrowColor #333333
   ActorBorderColor #333333
@@ -8,63 +10,64 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title UC-01: Register Account
+title UC-01: Register Account (AUTH + RECR)
 
 actor "User" as User
 participant "Frontend" as FE
-participant "API Gateway" as GW
-participant "Auth Service" as Auth
-database "User DB" as DB
+participant "RECR Service" as RECR
+participant "AUTH Service" as AUTH
+database "RECR DB" as RDB
+database "AUTH DB" as ADB
 queue "Event Bus" as MQ
 
 == Step 1: Submit Registration ==
 
-User -> FE : Enter registration details
+User -> FE : Enter registration details (email, password, name, role)
 activate FE
 
-FE -> GW : POST /recr/auth/register
-activate GW
+FE -> RECR : POST /recr/auth/register
+activate RECR
 
-GW -> Auth : Validate & Process
-activate Auth
+== Step 2: AUTH Creates User Account ==
 
-== Step 2: Validate & Create ==
+RECR -> AUTH : Create user (email, password, name)
+activate AUTH
 
-Auth -> DB : Check email availability
-activate DB
-DB --> Auth : Email available
-deactivate DB
+AUTH -> ADB : Check email availability
+activate ADB
+ADB --> AUTH : Email available
+deactivate ADB
 
-Auth -> Auth : Hash password (bcrypt)
+AUTH -> AUTH : Hash password (bcrypt)
 
-Auth -> DB : Create user record
-activate DB
-DB --> Auth : User created
-deactivate DB
+AUTH -> ADB : Create user record
+activate ADB
+ADB --> AUTH : User created (user_id)
+deactivate ADB
 
-Auth -> DB : Create profile (candidate/employer)
-activate DB
-DB --> Auth : Profile created
-deactivate DB
+AUTH -> AUTH : Generate JWT token
 
-== Step 3: Generate Token ==
+AUTH --> RECR : user_id + JWT token
+deactivate AUTH
 
-Auth -> Auth : Generate JWT token
+== Step 3: RECR Creates Profile ==
+
+RECR -> RDB : Create profile (candidate/employer)
+activate RDB
+RDB --> RECR : Profile created
+deactivate RDB
 
 == Step 4: Notification ==
 
-Auth -> MQ : Publish user.registered event
+RECR -> MQ : Publish user.registered event
 activate MQ
-MQ --> Auth : Ack
+MQ --> RECR : Ack
 deactivate MQ
 
 == Step 5: Response ==
 
-Auth --> GW : 201 Created + JWT
-deactivate Auth
-
-GW --> FE : Registration Success
-deactivate GW
+RECR --> FE : 201 Created + JWT
+deactivate RECR
 
 FE --> User : Redirect to Dashboard
 deactivate FE
