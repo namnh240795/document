@@ -81,10 +81,9 @@
 <h2 id="section-1-3">1.3 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <!-- TODO: Add requirements addressed here. Example:
-  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-005</span></td><td>Section 3, 5</td></tr>
-  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-003</span></td><td>Section 6, 8</td></tr>
-  -->
+  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-021</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Subscription</td><td><span class="req-id">FR-022</span> - <span class="req-id">FR-027</span></td><td>Section 3, 5, 6</td></tr>
+  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-007</span></td><td>Section 6, 8</td></tr>
 </table>
 
 <!-- 2. ARCHITECTURE -->
@@ -99,13 +98,41 @@
 <h2 id="section-2-2">2.2 Key Design Decisions</h2>
 <table class="trace-table">
   <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
-  <!-- TODO: Add design decisions here. Example:
   <tr>
-    <td>1</td><td>Use PostgreSQL</td>
-    <td>ACID compliance, JSON support</td>
-    <td><span class="req-id">DR-001</span></td>
+    <td>1</td><td>Subscription is optional for all roles</td>
+    <td>All users (Candidate, HR, Employer) can purchase subscription for premium features, but it's not required for basic functionality.</td>
+    <td><span class="req-id">FR-023</span></td>
   </tr>
-  -->
+  <tr>
+    <td>2</td><td>Separate subscription_plans and subscriptions tables</td>
+    <td>Plans are static configuration, subscriptions are user-specific. Separation allows plan updates without affecting existing subscriptions.</td>
+    <td><span class="req-id">FR-022</span></td>
+  </tr>
+  <tr>
+    <td>3</td><td>Store final_price in subscription_plans</td>
+    <td>Pre-calculated price avoids runtime discount calculation errors and provides audit trail.</td>
+    <td><span class="req-id">FR-022</span></td>
+  </tr>
+  <tr>
+    <td>4</td><td>Subscription history table for audit trail</td>
+    <td>Tracks all subscription changes (renewal, upgrade, cancellation) for compliance and debugging.</td>
+    <td><span class="req-id">FR-027</span></td>
+  </tr>
+  <tr>
+    <td>5</td><td>Unique constraint on active subscription per user</td>
+    <td>Ensures one user cannot have multiple active subscriptions simultaneously.</td>
+    <td><span class="req-id">FR-024</span></td>
+  </tr>
+  <tr>
+    <td>6</td><td>Role-specific premium features</td>
+    <td>Different subscription benefits for each role (Candidate: priority application, HR: advanced tools, Employer: premium posting).</td>
+    <td><span class="req-id">FR-022</span></td>
+  </tr>
+  <tr>
+    <td>7</td><td>JSONB features field in plans</td>
+    <td>Flexible feature list allows plan differentiation without schema changes.</td>
+    <td><span class="req-id">FR-022</span></td>
+  </tr>
 </table>
 
 <!-- 3. COMPONENT DESIGN -->
@@ -120,7 +147,12 @@
 <h2>3.2 Component to Requirements Mapping</h2>
 <table class="trace-table">
   <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
-  <!-- TODO: Add component mapping here -->
+  <tr><td>AuthModule</td><td>User authentication, JWT, role management</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
+  <tr><td>JobModule</td><td>Job CRUD, search, filtering (HR & Employer)</td><td><span class="req-id">FR-017</span>, <span class="req-id">FR-018</span>, <span class="req-id">FR-028</span>, <span class="req-id">FR-029</span></td></tr>
+  <tr><td>ApplicationModule</td><td>Application management, status tracking</td><td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td></tr>
+  <tr><td>InterviewModule</td><td>Interview scheduling, evaluation</td><td><span class="req-id">FR-010</span>, <span class="req-id">FR-011</span></td></tr>
+  <tr><td>SubscriptionModule</td><td>Plan management, subscription CRUD, access control</td><td><span class="req-id">FR-022</span> - <span class="req-id">FR-027</span></td></tr>
+  <tr><td>SubscriptionGuard</td><td>Middleware for subscription validation on employer routes</td><td><span class="req-id">FR-024</span>, <span class="req-id">FR-025</span></td></tr>
 </table>
 
 <!-- 4. DATA ARCHITECTURE -->
@@ -132,7 +164,14 @@
 <h2>4.2 Data Requirements Resolution</h2>
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
-  <!-- TODO: Add data resolution here -->
+  <tr><td><span class="req-id">FR-001</span>, <span class="req-id">FR-016</span></td><td>User registration with role-based profiles</td><td>recr_users, recr_candidates, recr_employers</td></tr>
+  <tr><td><span class="req-id">FR-017</span>, <span class="req-id">FR-018</span>, <span class="req-id">FR-028</span>, <span class="req-id">FR-029</span></td><td>Job listings with requirements, created_by tracks owner</td><td>recr_jobs, recr_job_requirements</td></tr>
+  <tr><td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td><td>Application tracking with status workflow</td><td>recr_applications</td></tr>
+  <tr><td><span class="req-id">FR-010</span></td><td>Interview scheduling with time slots</td><td>recr_interviews</td></tr>
+  <tr><td><span class="req-id">FR-011</span></td><td>Evaluation scoring system</td><td>recr_evaluations</td></tr>
+  <tr><td><span class="req-id">FR-022</span></td><td>Subscription plan definitions with pricing</td><td>recr_subscription_plans</td></tr>
+  <tr><td><span class="req-id">FR-023</span>, <span class="req-id">FR-024</span></td><td>User subscription tracking and access control</td><td>recr_subscriptions</td></tr>
+  <tr><td><span class="req-id">FR-027</span></td><td>Subscription change audit trail</td><td>recr_subscription_history</td></tr>
 </table>
 
 <!-- 5. API DESIGN -->
@@ -141,7 +180,22 @@
 <h2>5.1 Endpoint to Requirements Mapping</h2>
 <table class="trace-table">
   <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
-  <!-- TODO: Add endpoint mapping here -->
+  <tr><td>POST</td><td>/recr/auth/register</td><td>Register new user</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-016</span></td></tr>
+  <tr><td>POST</td><td>/recr/auth/login</td><td>Login with email/password</td><td><span class="req-id">FR-002</span></td></tr>
+  <tr><td>GET</td><td>/recr/jobs</td><td>Browse job listings</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>POST</td><td>/recr/applications</td><td>Submit application</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>GET</td><td>/recr/candidate/applications</td><td>View my applications</td><td><span class="req-id">FR-005</span></td></tr>
+  <tr><td>GET</td><td>/recr/hr/applications</td><td>Review applications</td><td><span class="req-id">FR-008</span></td></tr>
+  <tr><td>POST</td><td>/recr/hr/interviews</td><td>Schedule interview</td><td><span class="req-id">FR-010</span></td></tr>
+  <tr><td>POST</td><td>/recr/hr/evaluations</td><td>Submit evaluation</td><td><span class="req-id">FR-011</span></td></tr>
+  <tr><td>POST</td><td>/recr/hr/offers</td><td>Create offer</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>POST</td><td>/recr/employer/jobs</td><td>Create job listing</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>GET</td><td>/recr/employer/jobs</td><td>List my jobs</td><td><span class="req-id">FR-018</span></td></tr>
+  <tr><td>GET</td><td>/recr/subscription/plans</td><td>List subscription plans</td><td><span class="req-id">FR-022</span></td></tr>
+  <tr><td>POST</td><td>/recr/subscription/purchase</td><td>Purchase subscription</td><td><span class="req-id">FR-023</span></td></tr>
+  <tr><td>GET</td><td>/recr/subscription/status</td><td>Get subscription status</td><td><span class="req-id">FR-025</span></td></tr>
+  <tr><td>POST</td><td>/recr/subscription/renew</td><td>Renew subscription</td><td><span class="req-id">FR-026</span></td></tr>
+  <tr><td>GET</td><td>/recr/subscription/history</td><td>View subscription history</td><td><span class="req-id">FR-027</span></td></tr>
 </table>
 
 <!-- 6. SECURITY -->
@@ -149,8 +203,17 @@
 
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
-  <!-- TODO: Add security design here -->
+  <tr><td><span class="req-id">NFR-005</span></td><td>Role-based access control</td><td>JWT role claim + NestJS Guards</td></tr>
+  <tr><td><span class="req-id">FR-025</span></td><td>Subscription validation</td><td>Optional subscription check for premium features; basic functionality available to all users</td></tr>
 </table>
+
+<h2>6.1 Subscription Benefits (Optional)</h2>
+<p>Subscription provides premium features but is <strong>not required</strong> for basic functionality:</p>
+<ul>
+  <li><strong>Candidate:</strong> Priority application processing, profile boost in search results</li>
+  <li><strong>HR:</strong> Advanced recruitment analytics, priority support</li>
+  <li><strong>Employer:</strong> Featured job listings, premium analytics dashboard</li>
+</ul>
 
 <!-- 7. INTEGRATION -->
 <h1 id="section-7">7. Integration</h1>
@@ -180,7 +243,20 @@
 
 <table class="trace-table">
   <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
-  <!-- TODO: Add traceability summary here -->
+  <tr><td><span class="req-id">FR-001</span></td><td>Candidate Registration</td><td>3.1, 5.1</td><td>AuthModule handles registration</td></tr>
+  <tr><td><span class="req-id">FR-002</span></td><td>Candidate Login</td><td>3.1, 5.1</td><td>JWT with role claim</td></tr>
+  <tr><td><span class="req-id">FR-004</span></td><td>Submit Application</td><td>3.1, 5.1</td><td>ApplicationModule</td></tr>
+  <tr><td><span class="req-id">FR-010</span></td><td>Schedule Interview</td><td>3.1, 5.1</td><td>InterviewModule</td></tr>
+  <tr><td><span class="req-id">FR-011</span></td><td>Evaluate Candidate</td><td>3.1, 5.1</td><td>InterviewModule</td></tr>
+  <tr><td><span class="req-id">FR-012</span></td><td>Reject Candidate</td><td>3.1, 5.1</td><td>ApplicationModule</td></tr>
+  <tr><td><span class="req-id">FR-017</span></td><td>Post Job</td><td>3.1, 5.1</td><td>JobModule</td></tr>
+  <tr><td><span class="req-id">FR-022</span></td><td>Subscription Plans</td><td>2.2, 4.2, 5.1</td><td>recr_subscription_plans table, SubscriptionModule</td></tr>
+  <tr><td><span class="req-id">FR-023</span></td><td>Purchase Subscription</td><td>4.2, 5.1</td><td>recr_subscriptions table, SubscriptionModule</td></tr>
+  <tr><td><span class="req-id">FR-024</span></td><td>Subscription Access Control</td><td>6.1, 6.2</td><td>SubscriptionGuard middleware</td></tr>
+  <tr><td><span class="req-id">FR-025</span></td><td>Subscription Validation</td><td>6.1</td><td>Query active subscription on each request</td></tr>
+  <tr><td><span class="req-id">FR-026</span></td><td>Subscription Renewal</td><td>5.1</td><td>POST /recr/subscription/renew</td></tr>
+  <tr><td><span class="req-id">FR-027</span></td><td>Subscription History</td><td>4.2, 5.1</td><td>recr_subscription_history table</td></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>RBAC</td><td>6.1</td><td>JWT role claim + Guards</td></tr>
 </table>
 
 </body>

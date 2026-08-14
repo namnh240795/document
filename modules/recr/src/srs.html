@@ -60,14 +60,16 @@
       <ul>
         <li><a href="#section-3-1">3.1 UC-01: Register Account</a></li>
         <li><a href="#section-3-2">3.2 UC-02: Login</a></li>
-        <li><a href="#section-3-3">3.3 UC-03: Browse Jobs</a></li>
-        <li><a href="#section-3-4">3.4 UC-04: Submit Application</a></li>
-        <li><a href="#section-3-5">3.5 UC-05: View Application Status</a></li>
-        <li><a href="#section-3-6">3.6 UC-08: Review Applications</a></li>
-        <li><a href="#section-3-7">3.7 UC-10: Schedule Interview</a></li>
-        <li><a href="#section-3-8">3.8 UC-11: Evaluate Candidate</a></li>
-        <li><a href="#section-3-9">3.9 UC-12: Send Offer</a></li>
-        <li><a href="#section-3-10">3.10 UC-16: Post Job</a></li>
+        <li><a href="#section-3-3">3.3 UC-03: Purchase Subscription</a></li>
+        <li><a href="#section-3-4">3.4 UC-04: Manage Subscription</a></li>
+        <li><a href="#section-3-5">3.5 UC-05: Browse Jobs</a></li>
+        <li><a href="#section-3-6">3.6 UC-06: Submit Application</a></li>
+        <li><a href="#section-3-7">3.7 UC-07: View Application Status</a></li>
+        <li><a href="#section-3-8">3.8 UC-08: Review Applications</a></li>
+        <li><a href="#section-3-9">3.9 UC-09: Schedule Interview</a></li>
+        <li><a href="#section-3-10">3.10 UC-10: Evaluate Candidate</a></li>
+        <li><a href="#section-3-11">3.11 UC-11: Post Job</a></li>
+        <li><a href="#section-3-12">3.12 UC-12: Manage Jobs</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Functional Requirements</a>
@@ -75,6 +77,7 @@
         <li><a href="#section-4-1">4.1 Candidate Requirements</a></li>
         <li><a href="#section-4-2">4.2 HR Requirements</a></li>
         <li><a href="#section-4-3">4.3 Employer Requirements</a></li>
+        <li><a href="#section-4-4">4.4 Subscription Requirements</a></li>
       </ul>
     </li>
     <li><a href="#section-5">5. Data Model</a></li>
@@ -130,7 +133,7 @@
   <tr><td>Module Name</td><td>Recruitment</td></tr>
   <tr><td>Description</td><td>End-to-end recruitment management with 3 roles: Candidate, HR, Employer</td></tr>
   <tr><td>Database</td><td>recr_db</td></tr>
-  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_offers, recr_job_requirements</td></tr>
+  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history</td></tr>
   <tr><td>Tech Stack</td><td>Node.js, NestJS, PostgreSQL, Drizzle ORM, RabbitMQ, Elasticsearch</td></tr>
 </table>
 
@@ -173,6 +176,12 @@
   <li>AUTH stores role in auth_users and includes it in JWT token</li>
   <li>AUTH returns user_id and JWT token (with role) to RECR</li>
   <li>RECR then creates recruitment-specific profile (candidate or employer) and links to auth user</li>
+</ul>
+<p><strong>Subscription Note:</strong></p>
+<ul>
+  <li>All roles (Candidate, HR, Employer) can <strong>optionally</strong> purchase subscription</li>
+  <li>Subscription provides premium features but is <strong>not required</strong> for basic functionality</li>
+  <li>See UC-03: Purchase Subscription for details</li>
 </ul>
 <p><strong>Alternative Flows:</strong></p>
 <ul>
@@ -225,10 +234,83 @@
   <div class="caption">Figure 6: UC-02 Login - Sequence Diagram</div>
 </div>
 
-<h2 id="section-3-3">3.3 UC-03: Browse Jobs</h2>
+<h2 id="section-3-3">3.3 UC-03: Purchase Subscription</h2>
 <table>
   <tr><th>Field</th><th>Description</th></tr>
   <tr><td>Use Case ID</td><td>UC-03</td></tr>
+  <tr><td>Name</td><td>Purchase Subscription</td></tr>
+  <tr><td>Actor</td><td>All (Candidate, HR, Employer)</td></tr>
+  <tr><td>Precondition</td><td>User is logged in, no active subscription</td></tr>
+  <tr><td>Postcondition</td><td>Subscription activated, user can access premium features</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Subscribe"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User navigates to subscription page</li>
+  <li>System displays available plans:
+    <ul>
+      <li><strong>1 Month:</strong> Standard price</li>
+      <li><strong>6 Months:</strong> 10% discount</li>
+      <li><strong>1 Year:</strong> 2 months free (pay for 10 months)</li>
+    </ul>
+  </li>
+  <li>User selects a plan</li>
+  <li>System calculates final price with discount</li>
+  <li>User reviews order summary</li>
+  <li>User completes payment</li>
+  <li>System creates subscription record</li>
+  <li>System activates subscription</li>
+  <li>User receives confirmation</li>
+  <li>User can now access premium features (varies by role)</li>
+</ol>
+<p><strong>Subscription Benefits by Role:</strong></p>
+<ul>
+  <li><strong>Candidate:</strong> Priority application, profile boost, advanced analytics</li>
+  <li><strong>HR:</strong> Advanced recruitment tools, priority support, enhanced analytics</li>
+  <li><strong>Employer:</strong> Premium job posting, featured listings, advanced applicant tracking</li>
+</ul>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>7a. Payment failed: System shows error, subscription not activated</li>
+  <li>7b. Payment cancelled: System returns to plan selection</li>
+</ul>
+
+<h2 id="section-3-4">3.4 UC-04: Manage Subscription</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-04</td></tr>
+  <tr><td>Name</td><td>Manage Subscription</td></tr>
+  <tr><td>Actor</td><td>Employer</td></tr>
+  <tr><td>Precondition</td><td>Employer has subscription (active or expired)</td></tr>
+  <tr><td>Postcondition</td><td>Subscription status updated</td></tr>
+  <tr><td>Trigger</td><td>Employer accesses subscription management</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Employer navigates to subscription management</li>
+  <li>System displays current subscription status:
+    <ul>
+      <li>Plan name and duration</li>
+      <li>Start date and end date</li>
+      <li>Days remaining</li>
+      <li>Auto-renewal status</li>
+    </ul>
+  </li>
+  <li>Employer can:
+    <ul>
+      <li>Renew subscription</li>
+      <li>Upgrade plan (e.g., 1 month → 6 months)</li>
+      <li>Cancel auto-renewal</li>
+    </ul>
+  </li>
+  <li>System processes request</li>
+  <li>System updates subscription record</li>
+</ol>
+
+<h2 id="section-3-5">3.5 UC-05: Browse Jobs</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-05</td></tr>
   <tr><td>Name</td><td>Browse Jobs</td></tr>
   <tr><td>Actor</td><td>Candidate</td></tr>
   <tr><td>Precondition</td><td>Jobs exist in system</td></tr>
@@ -253,10 +335,10 @@
   <div class="caption">Figure 8: UC-03 Browse Jobs - Sequence Diagram</div>
 </div>
 
-<h2 id="section-3-4">3.4 UC-04: Submit Application</h2>
+<h2 id="section-3-6">3.6 UC-06: Submit Application</h2>
 <table>
   <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-04</td></tr>
+  <tr><td>Use Case ID</td><td>UC-06</td></tr>
   <tr><td>Name</td><td>Submit Application</td></tr>
   <tr><td>Actor</td><td>Candidate</td></tr>
   <tr><td>Precondition</td><td>Candidate is logged in, job exists</td></tr>
@@ -289,10 +371,10 @@
   <div class="caption">Figure 10: UC-04 Submit Application - Sequence Diagram</div>
 </div>
 
-<h2 id="section-3-5">3.5 UC-05: View Application Status</h2>
+<h2 id="section-3-7">3.7 UC-07: View Application Status</h2>
 <table>
   <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-05</td></tr>
+  <tr><td>Use Case ID</td><td>UC-07</td></tr>
   <tr><td>Name</td><td>View Application Status</td></tr>
   <tr><td>Actor</td><td>Candidate</td></tr>
   <tr><td>Precondition</td><td>Candidate has submitted applications</td></tr>
@@ -316,7 +398,7 @@
   <div class="caption">Figure 12: UC-05 View Application Status - Sequence Diagram</div>
 </div>
 
-<h2 id="section-3-6">3.6 UC-08: Review Applications</h2>
+<h2 id="section-3-8">3.8 UC-08: Review Applications</h2>
 <table>
   <tr><th>Field</th><th>Description</th></tr>
   <tr><td>Use Case ID</td><td>UC-08</td></tr>
@@ -345,10 +427,10 @@
   <div class="caption">Figure 14: UC-08 Review Applications - Sequence Diagram</div>
 </div>
 
-<h2 id="section-3-7">3.7 UC-10: Schedule Interview</h2>
+<h2 id="section-3-9">3.9 UC-09: Schedule Interview</h2>
 <table>
   <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-10</td></tr>
+  <tr><td>Use Case ID</td><td>UC-09</td></tr>
   <tr><td>Name</td><td>Schedule Interview</td></tr>
   <tr><td>Actor</td><td>HR</td></tr>
   <tr><td>Precondition</td><td>Candidate passed screening</td></tr>
@@ -375,10 +457,10 @@
   <div class="caption">Figure 16: UC-10 Schedule Interview - Sequence Diagram</div>
 </div>
 
-<h2 id="section-3-8">3.8 UC-11: Evaluate Candidate</h2>
+<h2 id="section-3-10">3.10 UC-10: Evaluate Candidate</h2>
 <table>
   <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-11</td></tr>
+  <tr><td>Use Case ID</td><td>UC-10</td></tr>
   <tr><td>Name</td><td>Evaluate Candidate</td></tr>
   <tr><td>Actor</td><td>HR</td></tr>
   <tr><td>Precondition</td><td>Interview completed</td></tr>
@@ -404,65 +486,70 @@
   <div class="caption">Figure 18: UC-11 Evaluate Candidate - Sequence Diagram</div>
 </div>
 
-<h2 id="section-3-9">3.9 UC-12: Send Offer</h2>
+<h2 id="section-3-11">3.11 UC-11: Post Job</h2>
 <table>
   <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-12</td></tr>
-  <tr><td>Name</td><td>Send Offer</td></tr>
-  <tr><td>Actor</td><td>HR</td></tr>
-  <tr><td>Precondition</td><td>Candidate passed evaluation</td></tr>
-  <tr><td>Postcondition</td><td>Offer created and sent to candidate</td></tr>
-  <tr><td>Trigger</td><td>HR clicks "Create Offer"</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>HR accesses candidate application</li>
-  <li>HR reviews evaluation scores</li>
-  <li>HR creates offer with salary, position, start date, benefits</li>
-  <li>System validates offer data</li>
-  <li>System creates offer record</li>
-  <li>System updates application status to "offer"</li>
-  <li>System generates offer document</li>
-  <li>System sends offer email to candidate</li>
-</ol>
-<div class="diagram">
-  <img src="./images/activity/uc12-send-offer-activity.png" alt="UC-12 Activity Diagram">
-  <div class="caption">Figure 19: UC-12 Send Offer - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc12-send-offer-sequence.png" alt="UC-12 Sequence Diagram">
-  <div class="caption">Figure 20: UC-12 Send Offer - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-10">3.10 UC-16: Post Job</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-16</td></tr>
+  <tr><td>Use Case ID</td><td>UC-11</td></tr>
   <tr><td>Name</td><td>Post Job</td></tr>
-  <tr><td>Actor</td><td>Employer</td></tr>
-  <tr><td>Precondition</td><td>Employer is logged in</td></tr>
+  <tr><td>Actor</td><td>HR, Employer</td></tr>
+  <tr><td>Precondition</td><td>User is logged in</td></tr>
   <tr><td>Postcondition</td><td>Job created and submitted for approval</td></tr>
-  <tr><td>Trigger</td><td>Employer clicks "Create New Job"</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Create New Job"</td></tr>
 </table>
 <p><strong>Main Flow:</strong></p>
 <ol>
-  <li>Employer navigates to job management</li>
-  <li>Employer enters job details (title, description, department, location)</li>
-  <li>Employer enters salary range and employment type</li>
-  <li>Employer adds job requirements</li>
-  <li>System saves job as draft</li>
-  <li>Employer submits job for HR approval</li>
+  <li>User navigates to job management</li>
+  <li>User enters job details (title, description, department, location)</li>
+  <li>User enters salary range and employment type</li>
+  <li>User adds job requirements</li>
+  <li>System saves job as draft with user as owner</li>
+  <li>User submits job for approval</li>
   <li>System updates status to "pending_approval"</li>
-  <li>System notifies HR</li>
+  <li>System notifies HR (if HR created) or notifies admin (if Employer created)</li>
 </ol>
+<p><strong>Note:</strong> Subscription is optional. Users with subscription get premium features like priority posting, featured listings.</p>
 <div class="diagram">
   <img src="./images/activity/uc16-post-job-activity.png" alt="UC-16 Activity Diagram">
-  <div class="caption">Figure 21: UC-16 Post Job - Activity Diagram</div>
+  <div class="caption">Figure 21: UC-11 Post Job - Activity Diagram</div>
 </div>
 <div class="diagram">
   <img src="./images/sequence/uc16-post-job-sequence.png" alt="UC-16 Sequence Diagram">
-  <div class="caption">Figure 22: UC-16 Post Job - Sequence Diagram</div>
+  <div class="caption">Figure 22: UC-11 Post Job - Sequence Diagram</div>
 </div>
+
+<h2 id="section-3-12">3.12 UC-12: Manage Jobs</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-12</td></tr>
+  <tr><td>Name</td><td>Manage Jobs</td></tr>
+  <tr><td>Actor</td><td>HR, Employer</td></tr>
+  <tr><td>Precondition</td><td>User has created jobs</td></tr>
+  <tr><td>Postcondition</td><td>Job status updated</td></tr>
+  <tr><td>Trigger</td><td>User accesses job management page</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User navigates to job management</li>
+  <li>System displays user's job repository:
+    <ul>
+      <li>All jobs created by this user</li>
+      <li>Status indicators (draft, open, closed, archived)</li>
+      <li>Application counts per job</li>
+    </ul>
+  </li>
+  <li>User can:
+    <ul>
+      <li>Edit job details</li>
+      <li>Change job status (open/close/archive)</li>
+      <li>View applicants for each job</li>
+    </ul>
+  </li>
+  <li>System updates job record</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>2a. Employer without subscription: System shows subscription required message</li>
+</ul>
 
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Functional Requirements</h1>
@@ -497,7 +584,7 @@
     <td><span class="req-id">FR-003</span></td>
     <td>RECR</td>
     <td>Browse Jobs</td>
-    <td>UC-03</td>
+    <td>UC-05</td>
     <td>High</td>
     <td>Candidates can browse and search job listings with filters (location, salary, type)</td>
   </tr>
@@ -505,7 +592,7 @@
     <td><span class="req-id">FR-004</span></td>
     <td>RECR</td>
     <td>Submit Application</td>
-    <td>UC-04</td>
+    <td>UC-06</td>
     <td>High</td>
     <td>Candidates can submit applications with resume, cover letter for specific jobs</td>
   </tr>
@@ -513,7 +600,7 @@
     <td><span class="req-id">FR-005</span></td>
     <td>RECR</td>
     <td>View Application Status</td>
-    <td>UC-05</td>
+    <td>UC-07</td>
     <td>High</td>
     <td>Candidates can track their application progress through recruitment stages</td>
   </tr>
@@ -535,7 +622,7 @@
   </tr>
 </table>
 
-<h2 id="section-3-2">3.2 HR Requirements</h2>
+<h2 id="section-4-2">4.2 HR Requirements</h2>
 <table class="trace-table">
   <tr>
     <th>Req ID</th>
@@ -573,23 +660,15 @@
     <td><span class="req-id">FR-011</span></td>
     <td>RECR</td>
     <td>Evaluate Candidate</td>
-    <td>UC-11</td>
+    <td>UC-10</td>
     <td>High</td>
     <td>HR can submit evaluations with scores and recommendations</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-012</span></td>
     <td>RECR</td>
-    <td>Send Offer</td>
-    <td>UC-12</td>
-    <td>High</td>
-    <td>HR can create and send offer letters with salary and benefits</td>
-  </tr>
-  <tr>
-    <td><span class="req-id">FR-013</span></td>
-    <td>RECR</td>
     <td>Reject Candidate</td>
-    <td>UC-13</td>
+    <td>UC-12</td>
     <td>High</td>
     <td>HR can reject candidates with optional rejection reason</td>
   </tr>
@@ -609,9 +688,25 @@
     <td>Medium</td>
     <td>HR can generate recruitment metrics and analytics reports</td>
   </tr>
+  <tr>
+    <td><span class="req-id">FR-028</span></td>
+    <td>RECR</td>
+    <td>HR Post Job</td>
+    <td>UC-11</td>
+    <td>High</td>
+    <td>HR can create job listings for their organization</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-029</span></td>
+    <td>RECR</td>
+    <td>HR Manage Jobs</td>
+    <td>UC-12</td>
+    <td>High</td>
+    <td>HR can edit, close, or archive their job listings</td>
+  </tr>
 </table>
 
-<h2 id="section-3-3">3.3 Employer Requirements</h2>
+<h2 id="section-4-3">4.3 Employer Requirements</h2>
 <table class="trace-table">
   <tr>
     <th>Req ID</th>
@@ -633,7 +728,7 @@
     <td><span class="req-id">FR-017</span></td>
     <td>RECR</td>
     <td>Post Job</td>
-    <td>UC-16</td>
+    <td>UC-12</td>
     <td>High</td>
     <td>Employers can create job listings with requirements and salary range</td>
   </tr>
@@ -671,16 +766,76 @@
   </tr>
 </table>
 
+<h2 id="section-4-4">4.4 Subscription Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-022</span></td>
+    <td>RECR</td>
+    <td>Subscription Plans</td>
+    <td>UC-03</td>
+    <td>High</td>
+    <td>System provides 3 subscription plans: 1 month, 6 months (10% discount), 1 year (2 months free)</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-023</span></td>
+    <td>RECR</td>
+    <td>Purchase Subscription</td>
+    <td>UC-03</td>
+    <td>Medium</td>
+    <td>All users (Candidate, HR, Employer) can optionally purchase subscription for premium features</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-024</span></td>
+    <td>RECR</td>
+    <td>Subscription Access Control</td>
+    <td>UC-03, UC-04</td>
+    <td>High</td>
+    <td>System validates subscription status to provide premium features</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-025</span></td>
+    <td>RECR</td>
+    <td>Subscription Validation</td>
+    <td>UC-04</td>
+    <td>High</td>
+    <td>System validates subscription status before allowing access to restricted features</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-026</span></td>
+    <td>RECR</td>
+    <td>Subscription Renewal</td>
+    <td>UC-04</td>
+    <td>Medium</td>
+    <td>All users can renew or upgrade their subscription</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-027</span></td>
+    <td>RECR</td>
+    <td>Subscription History</td>
+    <td>UC-04</td>
+    <td>Low</td>
+    <td>All users can view their subscription history and payment records</td>
+  </tr>
+</table>
+
 <!-- 5. DATA MODEL -->
 <h1 id="section-5">5. Data Model</h1>
 
-<h2>4.1 Entity Relationship Diagram</h2>
+<h2>5.1 Entity Relationship Diagram</h2>
 <div class="diagram">
   <img src="./images/erd/erd-recr.png" alt="ERD Diagram">
   <div class="caption">Figure 2: Recruitment ERD (3 Roles)</div>
 </div>
 
-<h2>4.2 Data Requirements</h2>
+<h2>5.2 Data Requirements</h2>
 <table class="trace-table">
   <tr>
     <th>Req ID</th>
@@ -695,13 +850,15 @@
   <tr><td><span class="req-id">DR-005</span></td><td>recr_applications</td><td>Job applications linking candidates to jobs</td><td>FR-004, FR-005</td></tr>
   <tr><td><span class="req-id">DR-006</span></td><td>recr_interviews</td><td>Interview scheduling and status</td><td>FR-010</td></tr>
   <tr><td><span class="req-id">DR-007</span></td><td>recr_evaluations</td><td>Interview evaluation scores</td><td>FR-011</td></tr>
-  <tr><td><span class="req-id">DR-008</span></td><td>recr_offers</td><td>Job offers with compensation</td><td>FR-012</td></tr>
+  <tr><td><span class="req-id">DR-009</span></td><td>recr_subscription_plans</td><td>Subscription plan definitions</td><td>FR-022</td></tr>
+  <tr><td><span class="req-id">DR-010</span></td><td>recr_subscriptions</td><td>User subscriptions</td><td>FR-023, FR-024</td></tr>
+  <tr><td><span class="req-id">DR-011</span></td><td>recr_subscription_history</td><td>Subscription change history</td><td>FR-027</td></tr>
 </table>
 
 <!-- 6. API SPECIFICATION -->
 <h1 id="section-6">6. API Specification</h1>
 
-<h2>5.1 Endpoint Summary</h2>
+<h2>6.1 Endpoint Summary</h2>
 
 <h3>Authentication Endpoints (All Roles)</h3>
 <table class="trace-table">
@@ -742,10 +899,25 @@
   <tr><td>PATCH</td><td>/recr/hr/applications/:id/status</td><td>Update application status</td><td>FR-009</td></tr>
   <tr><td>POST</td><td>/recr/hr/interviews</td><td>Schedule interview</td><td>FR-010</td></tr>
   <tr><td>POST</td><td>/recr/hr/evaluations</td><td>Submit evaluation</td><td>FR-011</td></tr>
-  <tr><td>POST</td><td>/recr/hr/offers</td><td>Create offer</td><td>FR-012</td></tr>
-  <tr><td>PATCH</td><td>/recr/hr/offers/:id/status</td><td>Update offer status</td><td>FR-012</td></tr>
   <tr><td>GET</td><td>/recr/hr/pipeline</td><td>View recruitment pipeline</td><td>FR-014</td></tr>
   <tr><td>GET</td><td>/recr/hr/reports</td><td>Generate reports</td><td>FR-015</td></tr>
+  <tr><td>POST</td><td>/recr/hr/jobs</td><td>Create job listing</td><td>FR-028</td></tr>
+  <tr><td>GET</td><td>/recr/hr/jobs</td><td>List my jobs</td><td>FR-029</td></tr>
+  <tr><td>PATCH</td><td>/recr/hr/jobs/:id</td><td>Update job listing</td><td>FR-029</td></tr>
+</table>
+
+<h3>Subscription Endpoints (All Roles)</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>GET</td><td>/recr/subscription/plans</td><td>List subscription plans</td><td>FR-022</td></tr>
+  <tr><td>POST</td><td>/recr/subscription/purchase</td><td>Purchase subscription</td><td>FR-023</td></tr>
+  <tr><td>GET</td><td>/recr/subscription/status</td><td>Get subscription status</td><td>FR-025</td></tr>
+  <tr><td>POST</td><td>/recr/subscription/renew</td><td>Renew subscription</td><td>FR-026</td></tr>
 </table>
 
 <h3>Employer Endpoints</h3>
@@ -767,20 +939,19 @@
 <!-- 7. INTEGRATION -->
 <h1 id="section-7">7. Integration</h1>
 
-<h2>6.1 Sequence Diagram</h2>
+<h2>7.1 Sequence Diagram</h2>
 <div class="diagram">
   <img src="./images/sequence/recruitment-integration.png" alt="Sequence Diagram">
   <div class="caption">Figure 23: Candidate Application Flow</div>
 </div>
 
-<h2>6.2 Webhook Events</h2>
+<h2>7.2 Webhook Events</h2>
 <table>
   <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
   <tr><td>application.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when candidate submits application</td></tr>
   <tr><td>interview.scheduled</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when interview is scheduled</td></tr>
-  <tr><td>offer.sent</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when offer letter is sent</td></tr>
-  <tr><td>candidate.hired</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when candidate accepts offer</td></tr>
-  <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when employer submits job for approval</td></tr>
+  <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when HR/Employer submits job for approval</td></tr>
+  <tr><td>subscription.purchased</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when user purchases subscription</td></tr>
 </table>
 
 <!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
@@ -822,10 +993,17 @@
   <tr><td>FR-008</td><td>Review Applications</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/applications</td></tr>
   <tr><td>FR-010</td><td>Schedule Interview</td><td>HR</td><td>3.2</td><td>recr_interviews</td><td>POST /recr/hr/interviews</td></tr>
   <tr><td>FR-011</td><td>Evaluate Candidate</td><td>HR</td><td>3.2</td><td>recr_evaluations</td><td>POST /recr/hr/evaluations</td></tr>
-  <tr><td>FR-012</td><td>Send Offer</td><td>HR</td><td>3.2</td><td>recr_offers</td><td>POST /recr/hr/offers</td></tr>
+  <tr><td>FR-012</td><td>Reject Candidate</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
   <tr><td>FR-017</td><td>Post Job</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>POST /recr/employer/jobs</td></tr>
   <tr><td>FR-018</td><td>Manage Job Listings</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>GET/PATCH /recr/employer/jobs</td></tr>
   <tr><td>FR-019</td><td>View Applicants</td><td>Employer</td><td>3.3</td><td>recr_applications</td><td>GET /recr/employer/jobs/:id/applicants</td></tr>
+  <tr><td>FR-028</td><td>HR Post Job</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>POST /recr/hr/jobs</td></tr>
+  <tr><td>FR-029</td><td>HR Manage Jobs</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
+  <tr><td>FR-022</td><td>Subscription Plans</td><td>All</td><td>4.4</td><td>recr_subscription_plans</td><td>GET /recr/subscription/plans</td></tr>
+  <tr><td>FR-023</td><td>Purchase Subscription</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/purchase</td></tr>
+  <tr><td>FR-024</td><td>Subscription Access Control</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>-</td></tr>
+  <tr><td>FR-025</td><td>Subscription Validation</td><td>System</td><td>4.4</td><td>recr_subscriptions</td><td>GET /recr/subscription/status</td></tr>
+  <tr><td>FR-026</td><td>Subscription Renewal</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/renew</td></tr>
   <tr><td>NFR-005</td><td>RBAC</td><td>All</td><td>6.1</td><td>recr_users</td><td>-</td></tr>
 </table>
 

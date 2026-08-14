@@ -51,6 +51,7 @@
         <li><a href="#section-5-2">5.2 Candidate Endpoints</a></li>
         <li><a href="#section-5-3">5.3 HR Endpoints</a></li>
         <li><a href="#section-5-4">5.4 Employer Endpoints</a></li>
+        <li><a href="#section-5-5">5.5 Subscription Endpoints</a></li>
       </ul>
     </li>
     <li><a href="#section-6">6. Pagination</a></li>
@@ -71,6 +72,10 @@
   <tr><td><span class="req-id">FR-004</span> Submit Application</td><td>POST /recr/applications</td></tr>
   <tr><td><span class="req-id">FR-008</span> Review Applications</td><td>GET /recr/hr/applications</td></tr>
   <tr><td><span class="req-id">FR-017</span> Post Job</td><td>POST /recr/employer/jobs</td></tr>
+  <tr><td><span class="req-id">FR-022</span> Subscription Plans</td><td>GET /recr/subscription/plans</td></tr>
+  <tr><td><span class="req-id">FR-023</span> Purchase Subscription</td><td>POST /recr/subscription/purchase</td></tr>
+  <tr><td><span class="req-id">FR-025</span> Subscription Validation</td><td>GET /recr/subscription/status</td></tr>
+  <tr><td><span class="req-id">FR-026</span> Subscription Renewal</td><td>POST /recr/subscription/renew</td></tr>
 </table>
 
 <h2>1.2 API Principles</h2>
@@ -126,11 +131,17 @@
   <tr><td>400</td><td>VALIDATION_ERROR</td><td>Request validation failed</td></tr>
   <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid token</td></tr>
   <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions for role</td></tr>
+  <tr><td>403</td><td>SUBSCRIPTION_REQUIRED</td><td>Active subscription required to access this feature</td></tr>
+  <tr><td>403</td><td>SUBSCRIPTION_EXPIRED</td><td>Your subscription has expired</td></tr>
   <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
+  <tr><td>404</td><td>SUBSCRIPTION_PLAN_NOT_FOUND</td><td>Subscription plan not found</td></tr>
   <tr><td>409</td><td>APPLICATION_EXISTS</td><td>Candidate already applied to this job</td></tr>
+  <tr><td>409</td><td>ACTIVE_SUBSCRIPTION_EXISTS</td><td>User already has an active subscription</td></tr>
   <tr><td>422</td><td>INVALID_STATUS_TRANSITION</td><td>Invalid status change</td></tr>
+  <tr><td>422</td><td>INVALID_SUBSCRIPTION_ACTION</td><td>Cannot perform this action on subscription</td></tr>
   <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
   <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
+  <tr><td>502</td><td>PAYMENT_GATEWAY_ERROR</td><td>Payment processing failed</td></tr>
 </table>
 
 <!-- 4. RATE LIMITING -->
@@ -150,7 +161,8 @@
 <h2 id="section-5-1">5.1 Authentication (All Roles)</h2>
 
 <h3>POST /recr/auth/register <em>(Public)</em> <span class="req-id">FR-001, FR-016</span></h3>
-<p>Register new user as candidate or employer.</p>
+<p>Register new user as candidate, HR, or employer.</p>
+<p><strong>Note:</strong> All users can optionally purchase subscription (POST /recr/subscription/purchase) for premium features.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "email": "john@example.com",
@@ -238,14 +250,36 @@
 <h3>POST /recr/hr/evaluations <span class="req-id">FR-011</span></h3>
 <p>Submit evaluation. Requires <strong>hr</strong> role.</p>
 
-<h3>POST /recr/hr/offers <span class="req-id">FR-012</span></h3>
-<p>Create offer. Requires <strong>hr</strong> role.</p>
-
 <h3>GET /recr/hr/pipeline <span class="req-id">FR-014</span></h3>
 <p>View recruitment pipeline. Requires <strong>hr</strong> role.</p>
 
 <h3>GET /recr/hr/reports <span class="req-id">FR-015</span></h3>
 <p>Generate reports. Requires <strong>hr</strong> role.</p>
+
+<h3>POST /recr/hr/jobs <span class="req-id">FR-028</span></h3>
+<p>Create job listing. Requires <strong>hr</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "title": "Senior Software Engineer",
+  "description": "We are looking for a senior engineer...",
+  "department": "Engineering",
+  "location": "Ho Chi Minh City",
+  "salary_min": 20000000,
+  "salary_max": 40000000,
+  "employment_type": "full_time",
+  "requirements": [
+    { "type": "skill", "description": "5+ years Node.js", "is_mandatory": true }
+  ]
+}</code></pre>
+
+<h3>GET /recr/hr/jobs <span class="req-id">FR-029</span></h3>
+<p>List my jobs. Requires <strong>hr</strong> role.</p>
+
+<h3>PATCH /recr/hr/jobs/:id <span class="req-id">FR-029</span></h3>
+<p>Update job listing. Requires <strong>hr</strong> role.</p>
+
+<h3>GET /recr/hr/jobs/:id/applicants <span class="req-id">FR-029</span></h3>
+<p>View applicants for my job. Requires <strong>hr</strong> role.</p>
 
 <h2 id="section-5-4">5.4 Employer Endpoints</h2>
 
@@ -278,7 +312,156 @@
 <p>Submit for HR approval. Requires <strong>employer</strong> role.</p>
 
 <h3>GET /recr/employer/analytics <span class="req-id">FR-021</span></h3>
-<p>View analytics. Requires <strong>employer</strong> role.</p>
+<p>View analytics. Requires <strong>employer</strong> role. <em>Requires active subscription.</em></p>
+
+<h2 id="section-5-5">5.5 Subscription Endpoints</h2>
+
+<h3>GET /recr/subscription/plans <span class="req-id">FR-022</span> <em>(Public)</em></h3>
+<p>List available subscription plans.</p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "1_month",
+      "display_name": "1 Month",
+      "duration_months": 1,
+      "base_price": 500000,
+      "discount_percent": 0,
+      "free_months": 0,
+      "final_price": 500000,
+      "features": ["post_jobs", "manage_candidates", "analytics"]
+    },
+    {
+      "id": 2,
+      "name": "6_months",
+      "display_name": "6 Months",
+      "duration_months": 6,
+      "base_price": 3000000,
+      "discount_percent": 10,
+      "free_months": 0,
+      "final_price": 2700000,
+      "features": ["post_jobs", "manage_candidates", "analytics", "priority_support"]
+    },
+    {
+      "id": 3,
+      "name": "1_year",
+      "display_name": "1 Year",
+      "duration_months": 12,
+      "base_price": 6000000,
+      "discount_percent": 0,
+      "free_months": 2,
+      "final_price": 5000000,
+      "features": ["post_jobs", "manage_candidates", "analytics", "priority_support", "dedicated_account_manager"]
+    }
+  ]
+}</code></pre>
+
+<h3>POST /recr/subscription/purchase <span class="req-id">FR-023</span></h3>
+<p>Purchase a subscription plan. Requires <strong>employer</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "plan_id": 2,
+  "payment_method": "credit_card",
+  "payment_token": "tok_visa_123"  // From payment gateway
+}</code></pre>
+<p><strong>Response 201:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "plan": {
+      "id": 2,
+      "name": "6_months",
+      "display_name": "6 Months"
+    },
+    "status": "active",
+    "start_date": "2026-08-01T00:00:00Z",
+    "end_date": "2027-02-01T00:00:00Z",
+    "payment_amount": 2700000,
+    "payment_method": "credit_card",
+    "payment_reference": "pay_abc123"
+  }
+}</code></pre>
+
+<h3>GET /recr/subscription/status <span class="req-id">FR-025</span></h3>
+<p>Get current subscription status. Requires <strong>employer</strong> role.</p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "has_subscription": true,
+    "subscription": {
+      "id": 1,
+      "plan": {
+        "id": 2,
+        "name": "6_months",
+        "display_name": "6 Months"
+      },
+      "status": "active",
+      "start_date": "2026-08-01T00:00:00Z",
+      "end_date": "2027-02-01T00:00:00Z",
+      "days_remaining": 153,
+      "auto_renew": false
+    }
+  }
+}</code></pre>
+
+<h3>POST /recr/subscription/renew <span class="req-id">FR-026</span></h3>
+<p>Renew or upgrade subscription. Requires <strong>employer</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "plan_id": 3,  // Optional: upgrade to different plan
+  "payment_method": "credit_card",
+  "payment_token": "tok_visa_123"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 2,
+    "plan": {
+      "id": 3,
+      "name": "1_year",
+      "display_name": "1 Year"
+    },
+    "status": "active",
+    "start_date": "2027-02-01T00:00:00Z",
+    "end_date": "2028-02-01T00:00:00Z",
+    "payment_amount": 5000000,
+    "payment_method": "credit_card"
+  }
+}</code></pre>
+
+<h3>GET /recr/subscription/history <span class="req-id">FR-027</span></h3>
+<p>View subscription history. Requires <strong>employer</strong> role.</p>
+<p><strong>Query Params:</strong> <code>page</code>, <code>limit</code></p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "action": "created",
+      "plan": "6 Months",
+      "amount": 2700000,
+      "created_at": "2026-08-01T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "action": "renewed",
+      "plan": "1 Year",
+      "amount": 5000000,
+      "created_at": "2027-02-01T09:00:00Z"
+    }
+  ],
+  "meta": {
+    "total": 2,
+    "page": 1,
+    "limit": 10
+  }
+}</code></pre>
 
 <!-- 6. PAGINATION -->
 <h1 id="section-6">6. Pagination</h1>
@@ -295,6 +478,9 @@
   <tr><td>offer.sent</td><td>Outbound</td><td>RabbitMQ</td><td>HR sends offer letter</td></tr>
   <tr><td>candidate.hired</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate accepts offer</td></tr>
   <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Employer submits job for approval</td></tr>
+  <tr><td>subscription.purchased</td><td>Outbound</td><td>RabbitMQ</td><td>Employer purchases subscription</td></tr>
+  <tr><td>subscription.expiring</td><td>Outbound</td><td>RabbitMQ</td><td>Subscription expiring in 7 days</td></tr>
+  <tr><td>subscription.expired</td><td>Outbound</td><td>RabbitMQ</td><td>Subscription has expired</td></tr>
 </table>
 
 <!-- 8. CHANGELOG -->
@@ -302,6 +488,7 @@
 <table>
   <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
   <tr><td>2026-07-31</td><td>1.0.0</td><td>Initial release with 3 roles: Candidate, HR, Employer</td></tr>
+  <tr><td>2026-08-01</td><td>1.1.0</td><td>Add subscription system: 3 plans (1mo, 6mo, 1yr), access control for employer features</td></tr>
 </table>
 
 </body>
