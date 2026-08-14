@@ -1,0 +1,62 @@
+@startuml
+' UC-13: Review Job - Activity Diagram
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-13: Review Job (Candidate)
+
+start
+:Navigate to Job Listing;
+
+:Click "Write Review";
+
+:Check if Candidate has Applied;
+
+if (Has Applied?) then (yes)
+  :Display Review Form;
+
+  :Rate Job (1-5 Stars);
+  note right
+    - Overall Rating
+    - Work-life Balance
+    - Compensation
+    - Career Growth
+    - Company Culture
+  end note
+
+  :Write Review Title;
+
+  :Write Review Description;
+
+  :Select Anonymous Option;
+
+  :Submit Review;
+
+  :Validate Review Data;
+
+  if (Already Reviewed?) then (yes)
+    :Show "Already Reviewed" Message;
+
+  else (no)
+    :Save Review Record;
+
+    :Update Job Average Rating;
+
+    :Return Success Response;
+
+    :Show Confirmation;
+
+  endif
+
+else (no)
+  :Show "Only Applicants Can Review" Message;
+
+endif
+
+stop
+@enduml

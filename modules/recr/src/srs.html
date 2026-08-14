@@ -72,6 +72,7 @@
         <li><a href="#section-3-12">3.12 UC-12: Manage Jobs</a></li>
         <li><a href="#section-3-13">3.13 UC-13: Review Job</a></li>
         <li><a href="#section-3-14">3.14 UC-14: Review Candidate</a></li>
+        <li><a href="#section-3-15">3.15 UC-15: Update Profile</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Functional Requirements</a>
@@ -587,6 +588,14 @@
   <li>1a. Candidate hasn't applied: System shows "Only applicants can review" message</li>
   <li>2a. Already reviewed: System shows "You've already reviewed this job" message</li>
 </ul>
+<div class="diagram">
+  <img src="./images/activity/uc13-review-job-activity.png" alt="UC-13 Activity Diagram">
+  <div class="caption">Figure 24: UC-13 Review Job - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc13-review-job-sequence.png" alt="UC-13 Sequence Diagram">
+  <div class="caption">Figure 25: UC-13 Review Job - Sequence Diagram</div>
+</div>
 
 <h2 id="section-3-14">3.14 UC-14: Review Candidate</h2>
 <table>
@@ -622,6 +631,55 @@
   <li>1a. Interview not completed: System shows "Interview must be completed first" message</li>
   <li>2a. Already reviewed: System shows "You've already reviewed this candidate" message</li>
 </ul>
+<div class="diagram">
+  <img src="./images/activity/uc14-review-candidate-activity.png" alt="UC-14 Activity Diagram">
+  <div class="caption">Figure 26: UC-14 Review Candidate - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc14-review-candidate-sequence.png" alt="UC-14 Sequence Diagram">
+  <div class="caption">Figure 27: UC-14 Review Candidate - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-15">3.15 UC-15: Update Profile</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-15</td></tr>
+  <tr><td>Name</td><td>Update Profile</td></tr>
+  <tr><td>Actor</td><td>All (Candidate, HR, Employer)</td></tr>
+  <tr><td>Precondition</td><td>User is logged in</td></tr>
+  <tr><td>Postcondition</td><td>Profile updated successfully</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Edit Profile"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User navigates to profile page</li>
+  <li>System displays current profile data</li>
+  <li>User edits profile fields:
+    <ul>
+      <li><strong>All roles:</strong> Full name, phone, avatar</li>
+      <li><strong>Candidate:</strong> Resume, skills, experience, expected salary</li>
+      <li><strong>HR:</strong> Department, position</li>
+      <li><strong>Employer:</strong> Company name, website, description, industry, size</li>
+    </ul>
+  </li>
+  <li>User submits changes</li>
+  <li>System validates input</li>
+  <li>System updates profile record</li>
+  <li>System returns success response</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>3a. Invalid input: System shows validation error</li>
+  <li>4a. Upload failed: System shows file upload error</li>
+</ul>
+<div class="diagram">
+  <img src="./images/activity/uc15-update-profile-activity.png" alt="UC-15 Activity Diagram">
+  <div class="caption">Figure 28: UC-15 Update Profile - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc15-update-profile-sequence.png" alt="UC-15 Sequence Diagram">
+  <div class="caption">Figure 29: UC-15 Update Profile - Sequence Diagram</div>
+</div>
 
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Functional Requirements</h1>
@@ -679,8 +737,8 @@
   <tr>
     <td><span id="fr-006" class="req-id">FR-006</span></td>
     <td>RECR</td>
-    <td>Update Profile</td>
-    <td>UC-01</td>
+    <td>Update Candidate Profile</td>
+    <td>UC-15</td>
     <td>Medium</td>
     <td>Candidates can update their profile, skills, and experience</td>
   </tr>
@@ -776,6 +834,14 @@
     <td>High</td>
     <td>HR can edit, close, or archive their job listings</td>
   </tr>
+  <tr>
+    <td><span id="fr-032" class="req-id">FR-032</span></td>
+    <td>RECR</td>
+    <td>Update HR Profile</td>
+    <td>UC-15</td>
+    <td>Medium</td>
+    <td>HR can update their department, position, and personal information</td>
+  </tr>
 </table>
 
 <h2 id="section-4-3">4.3 Employer Requirements</h2>
@@ -835,6 +901,14 @@
     <td>UC-12</td>
     <td>Medium</td>
     <td>Employers can view recruitment analytics for their job postings</td>
+  </tr>
+  <tr>
+    <td><span id="fr-033" class="req-id">FR-033</span></td>
+    <td>RECR</td>
+    <td>Update Employer Profile</td>
+    <td>UC-15</td>
+    <td>Medium</td>
+    <td>Employers can update their company information, description, and branding</td>
   </tr>
 </table>
 

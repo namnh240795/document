@@ -1,0 +1,76 @@
+@startuml uc15-update-profile-sequence
+title UC-15: Update Profile - Sequence Diagram
+
+actor User
+participant "API Gateway" as API
+participant "ProfileController" as Controller
+participant "ProfileService" as Service
+participant "UserRepository" as UserRepo
+participant "CandidateRepository" as CandidateRepo
+participant "HrProfileRepository" as HrRepo
+participant "EmployerRepository" as EmployerRepo
+database "PostgreSQL" as DB
+
+== Get Current Profile ==
+User -> API : GET /recr/profile
+API -> Controller : getProfile(userId)
+Controller -> Service : getProfile(userId)
+
+Service -> UserRepo : findById(userId)
+UserRepo -> DB : SELECT * FROM recr_users WHERE id = ?
+DB --> UserRepo : user
+UserRepo --> Service : user
+
+alt Candidate
+  Service -> CandidateRepo : findByUserId(userId)
+  CandidateRepo -> DB : SELECT * FROM recr_candidates WHERE user_id = ?
+  DB --> CandidateRepo : profile
+  CandidateRepo --> Service : profile
+else HR
+  Service -> HrRepo : findByUserId(userId)
+  HrRepo -> DB : SELECT * FROM recr_hr_profiles WHERE user_id = ?
+  DB --> HrRepo : profile
+  HrRepo --> Service : profile
+else Employer
+  Service -> EmployerRepo : findByUserId(userId)
+  EmployerRepo -> DB : SELECT * FROM recr_employers WHERE user_id = ?
+  DB --> EmployerRepo : profile
+  EmployerRepo --> Service : profile
+end
+
+Service --> Controller : profile
+Controller --> API : profile
+API --> User : Profile data
+
+== Update Profile ==
+User -> API : PATCH /recr/profile
+API -> Controller : updateProfile(dto, userId)
+Controller -> Service : updateProfile(userId, dto)
+
+Service -> UserRepo : update(userId, dto.common)
+UserRepo -> DB : UPDATE recr_users SET ...
+DB --> UserRepo : updated
+UserRepo --> Service : updated
+
+alt Candidate
+  Service -> CandidateRepo : update(userId, dto.candidate)
+  CandidateRepo -> DB : UPDATE recr_candidates SET ...
+  DB --> CandidateRepo : updated
+  CandidateRepo --> Service : updated
+else HR
+  Service -> HrRepo : update(userId, dto.hr)
+  HrRepo -> DB : UPDATE recr_hr_profiles SET ...
+  DB --> HrRepo : updated
+  HrRepo --> Service : updated
+else Employer
+  Service -> EmployerRepo : update(userId, dto.employer)
+  EmployerRepo -> DB : UPDATE recr_employers SET ...
+  DB --> EmployerRepo : updated
+  EmployerRepo --> Service : updated
+end
+
+Service --> Controller : updatedProfile
+Controller --> API : 200 OK
+API --> User : Profile updated
+
+@enduml

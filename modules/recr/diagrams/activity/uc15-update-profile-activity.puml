@@ -1,0 +1,56 @@
+@startuml
+' UC-15: Update Profile - Activity Diagram
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-15: Update Profile (All Roles)
+
+start
+:Navigate to Profile Page;
+
+:Load Current Profile Data;
+
+:Display Profile Form;
+
+:Edit Profile Fields;
+note right
+  All Roles:
+  - Full Name, Phone, Avatar
+
+  Candidate:
+  - Resume, Skills, Experience
+  - Expected Salary
+
+  HR:
+  - Department, Position
+
+  Employer:
+  - Company Name, Website
+  - Description, Industry, Size
+end note
+
+:Submit Changes;
+
+:Validate Input;
+
+if (Valid Input?) then (yes)
+  :Update Profile Record;
+
+  :Return Success Response;
+
+  :Show Confirmation;
+
+else (no)
+  :Show Validation Error;
+
+  :Return to Form;
+
+endif
+
+stop
+@enduml

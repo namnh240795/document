@@ -289,6 +289,16 @@
 <h3>GET /recr/hr/reports <span class="req-id">FR-015</span></h3>
 <p>Generate reports. Requires <strong>hr</strong> role.</p>
 
+<h3>PATCH /recr/hr/profile <span class="req-id">FR-032</span></h3>
+<p>Update HR profile. Requires <strong>hr</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "department": "Engineering",
+  "position": "Senior Recruiter",
+  "phone": "0901234567",
+  "avatar_url": "https://example.com/avatar.jpg"
+}</code></pre>
+
 <h3>POST /recr/hr/jobs <span class="req-id">FR-028</span></h3>
 <p>Create job listing. Requires <strong>hr</strong> role.</p>
 <p><strong>Request:</strong></p>
@@ -365,6 +375,18 @@
 
 <h3>GET /recr/employer/analytics <span class="req-id">FR-021</span></h3>
 <p>View analytics. Requires <strong>employer</strong> role. <em>Requires active subscription.</em></p>
+
+<h3>PATCH /recr/employer/profile <span class="req-id">FR-033</span></h3>
+<p>Update employer profile. Requires <strong>employer</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "company_name": "Tech Corp",
+  "company_website": "https://techcorp.com",
+  "company_description": "Leading technology company...",
+  "industry": "Technology",
+  "company_size": "51-200",
+  "logo_url": "https://example.com/logo.png"
+}</code></pre>
 
 <h2 id="section-5-5">5.5 Subscription Endpoints</h2>
 
