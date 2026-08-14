@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Technical Design Specification -  Recruitment</title>
+  <title>Technical Design Specification - Recruitment</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -24,16 +24,17 @@
 <!-- COVER PAGE -->
 <div class="cover">
   <h1>Technical Design Specification</h1>
-  <div class="subtitle"> Recruitment Module</div>
+  <div class="subtitle">Recruitment Module</div>
   <span class="module-badge">RECR</span>
   <table class="meta-table">
     <tr><td>Version</td><td>1.0</td></tr>
     <tr><td>System</td><td>HR Management System</td></tr>
-    <tr><td>Module</td><td>RECR -  Recruitment</td></tr>
-    <tr><td>Date</td><td>2026-07-31</td></tr>
+    <tr><td>Module</td><td>RECR - Recruitment</td></tr>
+    <tr><td>Tech Stack</td><td>NestJS, TypeScript, PostgreSQL, RabbitMQ, Drizzle ORM</td></tr>
+    <tr><td>Date</td><td>2026-08-13</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Status</td><td>Draft</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html"> Recruitment SRS</a></td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Recruitment SRS</a></td></tr>
   </table>
 </div>
 
@@ -50,17 +51,23 @@
     </li>
     <li><a href="#section-2">2. Architecture</a>
       <ul>
-        <li><a href="#section-2-1">2.1 Architecture Overview</a></li>
+        <li><a href="#section-2-1">2.1 NestJS Monorepo Structure</a></li>
         <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
       </ul>
     </li>
-    <li><a href="#section-3">3. Component Design</a></li>
-    <li><a href="#section-4">4. Data Architecture</a></li>
-    <li><a href="#section-5">5. API Design</a></li>
-    <li><a href="#section-6">6. Security Design</a></li>
-    <li><a href="#section-7">7. Integration</a></li>
-    <li><a href="#section-8">8. Error Handling</a></li>
-    <li><a href="#section-9">9. Traceability Summary</a></li>
+    <li><a href="#section-3">3. Project Structure</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 Module Structure</a></li>
+        <li><a href="#section-3-2">3.2 File Organization</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Controller Design</a></li>
+    <li><a href="#section-5">5. Service Design</a></li>
+    <li><a href="#section-6">6. Worker Design</a></li>
+    <li><a href="#section-7">7. Event Processing</a></li>
+    <li><a href="#section-8">8. Data Architecture</a></li>
+    <li><a href="#section-9">9. Security Design</a></li>
+    <li><a href="#section-10">10. Traceability Summary</a></li>
   </ul>
 </div>
 
@@ -68,202 +75,559 @@
 <h1 id="section-1">1. Overview</h1>
 
 <h2 id="section-1-1">1.1 Purpose</h2>
-<p>This document describes the technical design decisions for the <strong> Recruitment</strong> module.</p>
+<p>This document describes the technical design for the <strong>Recruitment</strong> module, implemented as a NestJS monorepo microservice.</p>
 
 <h2 id="section-1-2">1.2 SRS Reference</h2>
 <table>
   <tr><th>Document</th><th>Version</th><th>Description</th></tr>
-  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html"> Recruitment SRS</a></td></tr>
-  <tr><td>API Spec</td><td>1.0</td><td><a href="api-technical-spec.html"> Recruitment API Spec</a></td></tr>
-  <tr><td>Database Design</td><td>1.0</td><td><a href="database-design.html"> Recruitment Database Design</a></td></tr>
+  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html">Recruitment SRS</a></td></tr>
+  <tr><td>API Spec</td><td>1.0</td><td><a href="api-technical-spec.html">Recruitment API Spec</a></td></tr>
+  <tr><td>Database Design</td><td>1.0</td><td><a href="database-design.html">Recruitment Database Design</a></td></tr>
 </table>
 
 <h2 id="section-1-3">1.3 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <tr><td>Candidate</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-007</span></td><td>Section 3, 5</td></tr>
-  <tr><td>HR</td><td><span class="req-id">FR-008</span> - <span class="req-id">FR-014</span>, <span class="req-id">FR-028</span>, <span class="req-id">FR-029</span></td><td>Section 3, 5</td></tr>
-  <tr><td>Employer</td><td><span class="req-id">FR-015</span> - <span class="req-id">FR-020</span></td><td>Section 3, 5</td></tr>
-  <tr><td>Subscription</td><td><span class="req-id">FR-021</span> - <span class="req-id">FR-027</span></td><td>Section 3, 5, 6</td></tr>
-  <tr><td>Reviews</td><td><span class="req-id">FR-030</span>, <span class="req-id">FR-031</span></td><td>Section 3, 5</td></tr>
-  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-007</span></td><td>Section 6, 8</td></tr>
+  <tr><td>Candidate</td><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> - <a href="srs.html#fr-007"><span class="req-id">FR-007</span></a></td><td>Section 4, 5, 6</td></tr>
+  <tr><td>HR</td><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a> - <a href="srs.html#fr-014"><span class="req-id">FR-014</span></a>, <a href="srs.html#fr-028"><span class="req-id">FR-028</span></a>, <a href="srs.html#fr-029"><span class="req-id">FR-029</span></a></td><td>Section 4, 5, 6</td></tr>
+  <tr><td>Employer</td><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a> - <a href="srs.html#fr-020"><span class="req-id">FR-020</span></a></td><td>Section 4, 5, 6</td></tr>
+  <tr><td>Subscription</td><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> - <a href="srs.html#fr-027"><span class="req-id">FR-027</span></a></td><td>Section 4, 5, 6</td></tr>
+  <tr><td>Reviews</td><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a>, <a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td><td>Section 4, 5, 6</td></tr>
+  <tr><td>Non-Functional</td><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a> - <a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Section 9</td></tr>
 </table>
 
 <!-- 2. ARCHITECTURE -->
 <h1 id="section-2">2. Architecture</h1>
 
-<h2 id="section-2-1">2.1 Architecture Overview</h2>
-<div class="diagram">
-  <img src="../images/architecture/recruitment-architecture.png" alt="Architecture Overview">
-  <div class="caption">Figure 1: System Context</div>
-</div>
+<h2 id="section-2-1">2.1 NestJS Monorepo Structure</h2>
+<p>The RECR module follows NestJS monorepo architecture with clear separation of concerns:</p>
+<pre><code>apps/
+├── recr-api/                    # HTTP API Service (Controller layer)
+│   ├── src/
+│   │   ├── main.ts
+│   │   ├── app.module.ts
+│   │   └── controllers/         # Route handlers
+│   └── package.json
+│
+├── recr-worker/                 # Background Worker (Consumer layer)
+│   ├── src/
+│   │   ├── main.ts
+│   │   ├── worker.module.ts
+│   │   └── consumers/           # Message queue consumers
+│   └── package.json
+│
+libs/
+├── recr-core/                   # Shared Business Logic (Service layer)
+│   ├── src/
+│   │   ├── services/            # Domain services
+│   │   ├── entities/            # Drizzle ORM schemas
+│   │   ├── dto/                 # Data transfer objects
+│   │   └── events/              # Event definitions
+│   └── package.json
+│
+└── shared/                      # Cross-module utilities
+    ├── src/
+    │   ├── guards/              # Auth, subscription guards
+    │   ├── interceptors/        # Logging, transform
+    │   └── validators/          # Custom validators
+    └── package.json</code></pre>
 
 <h2 id="section-2-2">2.2 Key Design Decisions</h2>
 <table class="trace-table">
   <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
   <tr>
-    <td>1</td><td>Subscription is optional for all roles</td>
-    <td>All users (Candidate, HR, Employer) can purchase subscription for premium features, but it's not required for basic functionality.</td>
-    <td><span class="req-id">FR-023</span></td>
+    <td>1</td><td>Separate API and Worker services</td>
+    <td>API handles HTTP requests synchronously. Worker processes background jobs (emails, notifications, analytics) asynchronously via RabbitMQ.</td>
+    <td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a>, <a href="srs.html#nfr-002"><span class="req-id">NFR-002</span></a></td>
   </tr>
   <tr>
-    <td>2</td><td>Separate subscription_plans and subscriptions tables</td>
-    <td>Plans are static configuration, subscriptions are user-specific. Separation allows plan updates without affecting existing subscriptions.</td>
-    <td><span class="req-id">FR-022</span></td>
+    <td>2</td><td>Shared core library (recr-core)</td>
+    <td>Services, entities, and DTOs shared between API and Worker. Single source of truth for business logic.</td>
+    <td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> - <a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td>
   </tr>
   <tr>
-    <td>3</td><td>Store final_price in subscription_plans</td>
-    <td>Pre-calculated price avoids runtime discount calculation errors and provides audit trail.</td>
-    <td><span class="req-id">FR-022</span></td>
+    <td>3</td><td>Event-driven architecture with RabbitMQ</td>
+    <td>Decouples modules. Events emitted by services, consumed by workers for async processing.</td>
+    <td><a href="srs.html#nfr-003"><span class="req-id">NFR-003</span></a></td>
   </tr>
   <tr>
-    <td>4</td><td>Subscription history table for audit trail</td>
-    <td>Tracks all subscription changes (renewal, upgrade, cancellation) for compliance and debugging.</td>
-    <td><span class="req-id">FR-027</span></td>
+    <td>4</td><td>Drizzle ORM for database access</td>
+    <td>Type-safe queries, lightweight, excellent TypeScript support.</td>
+    <td><a href="srs.html#nfr-005"><span class="req-id">NFR-005</span></a></td>
   </tr>
   <tr>
-    <td>5</td><td>Unique constraint on active subscription per user</td>
-    <td>Ensures one user cannot have multiple active subscriptions simultaneously.</td>
-    <td><span class="req-id">FR-024</span></td>
-  </tr>
-  <tr>
-    <td>6</td><td>Role-specific premium features</td>
-    <td>Different subscription benefits for each role (Candidate: priority application, HR: advanced tools, Employer: premium posting).</td>
-    <td><span class="req-id">FR-022</span></td>
-  </tr>
-  <tr>
-    <td>7</td><td>JSONB features field in plans</td>
-    <td>Flexible feature list allows plan differentiation without schema changes.</td>
-    <td><span class="req-id">FR-022</span></td>
+    <td>5</td><td>Subscription is optional for all roles</td>
+    <td>All users can purchase subscription for premium features, but basic functionality is available without it.</td>
+    <td><a href="srs.html#fr-023"><span class="req-id">FR-023</span></a></td>
   </tr>
 </table>
 
-<!-- 3. COMPONENT DESIGN -->
-<h1 id="section-3">3. Component Design</h1>
+<!-- 3. PROJECT STRUCTURE -->
+<h1 id="section-3">3. Project Structure</h1>
 
-<h2>3.1 Component Diagram</h2>
-<div class="diagram">
-  <img src="../images/component/recruitment-component.png" alt="Component Diagram">
-  <div class="caption">Figure 2:  Recruitment Components</div>
-</div>
+<h2 id="section-3-1">3.1 Module Structure</h2>
+<p>Each domain module follows NestJS module pattern:</p>
+<pre><code>libs/recr-core/src/
+├── job/
+│   ├── job.module.ts
+│   ├── job.controller.ts        # API endpoints (used by recr-api)
+│   ├── job.service.ts           # Business logic
+│   ├── job.repository.ts        # Database queries (Drizzle)
+│   ├── job.consumer.ts          # Event consumers (used by recr-worker)
+│   ├── dto/
+│   │   ├── create-job.dto.ts
+│   │   └── update-job.dto.ts
+│   └── entities/
+│       └── job.schema.ts        # Drizzle table definition
+│
+├── application/
+│   ├── application.module.ts
+│   ├── application.controller.ts
+│   ├── application.service.ts
+│   ├── application.repository.ts
+│   ├── application.consumer.ts
+│   └── entities/
+│       └── application.schema.ts
+│
+├── interview/
+│   ├── interview.module.ts
+│   ├── interview.controller.ts
+│   ├── interview.service.ts
+│   ├── interview.repository.ts
+│   ├── interview.consumer.ts
+│   └── entities/
+│       └── interview.schema.ts
+│
+├── subscription/
+│   ├── subscription.module.ts
+│   ├── subscription.controller.ts
+│   ├── subscription.service.ts
+│   ├── subscription.repository.ts
+│   ├── subscription.guard.ts    # SubscriptionGuard
+│   └── entities/
+│       └── subscription.schema.ts
+│
+├── review/
+│   ├── review.module.ts
+│   ├── review.controller.ts
+│   ├── review.service.ts
+│   ├── review.repository.ts
+│   └── entities/
+│       ├── job-review.schema.ts
+│       └── candidate-review.schema.ts
+│
+└── events/
+    ├── job-events.ts            # Job-related events
+    ├── application-events.ts    # Application events
+    ├── subscription-events.ts   # Subscription events
+    └── review-events.ts         # Review events</code></pre>
 
-<h2>3.2 Component to Requirements Mapping</h2>
-<table class="trace-table">
-  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
-  <tr><td>AuthModule</td><td>User authentication, JWT, role management</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
-  <tr><td>JobModule</td><td>Job CRUD, search, filtering (HR & Employer)</td><td><span class="req-id">FR-017</span>, <span class="req-id">FR-018</span>, <span class="req-id">FR-028</span>, <span class="req-id">FR-029</span></td></tr>
-  <tr><td>ApplicationModule</td><td>Application management, status tracking</td><td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td></tr>
-  <tr><td>InterviewModule</td><td>Interview scheduling, evaluation</td><td><span class="req-id">FR-010</span>, <span class="req-id">FR-011</span></td></tr>
-  <tr><td>ReviewModule</td><td>Job reviews, candidate reviews, rating aggregation</td><td><span class="req-id">FR-030</span>, <span class="req-id">FR-031</span></td></tr>
-  <tr><td>SubscriptionModule</td><td>Plan management, subscription CRUD, access control</td><td><span class="req-id">FR-022</span> - <span class="req-id">FR-027</span></td></tr>
-  <tr><td>SubscriptionGuard</td><td>Middleware for subscription validation on employer routes</td><td><span class="req-id">FR-024</span>, <span class="req-id">FR-025</span></td></tr>
+<h2 id="section-3-2">3.2 File Organization</h2>
+<table>
+  <tr><th>Directory</th><th>Purpose</th><th>Used By</th></tr>
+  <tr><td><code>apps/recr-api/</code></td><td>HTTP API gateway, route handling</td><td>API consumers (frontend, mobile)</td></tr>
+  <tr><td><code>apps/recr-worker/</code></td><td>Background job processing</td><td>RabbitMQ consumers</td></tr>
+  <tr><td><code>libs/recr-core/</code></td><td>Shared business logic, entities, DTOs</td><td>Both API and Worker</td></tr>
+  <tr><td><code>libs/shared/</code></td><td>Cross-module utilities</td><td>All modules</td></tr>
 </table>
 
-<!-- 4. DATA ARCHITECTURE -->
-<h1 id="section-4">4. Data Architecture</h1>
+<!-- 4. CONTROLLER DESIGN -->
+<h1 id="section-4">4. Controller Design</h1>
+<p>Controllers handle HTTP requests and delegate to services. Located in <code>apps/recr-api/src/controllers/</code>.</p>
 
-<h2>4.1 Database Design</h2>
-<p>Refer to: <a href="database-design.html"> Recruitment Database Design</a></p>
-
-<h2>4.2 Data Requirements Resolution</h2>
-<table class="trace-table">
-  <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
-  <tr><td><span class="req-id">FR-001</span>, <span class="req-id">FR-016</span></td><td>User registration with role-based profiles</td><td>recr_users, recr_candidates, recr_employers</td></tr>
-  <tr><td><span class="req-id">FR-017</span>, <span class="req-id">FR-018</span>, <span class="req-id">FR-028</span>, <span class="req-id">FR-029</span></td><td>Job listings with requirements, created_by tracks owner</td><td>recr_jobs, recr_job_requirements</td></tr>
-  <tr><td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td><td>Application tracking with status workflow</td><td>recr_applications</td></tr>
-  <tr><td><span class="req-id">FR-010</span></td><td>Interview scheduling with time slots</td><td>recr_interviews</td></tr>
-  <tr><td><span class="req-id">FR-011</span></td><td>Evaluation scoring system</td><td>recr_evaluations</td></tr>
-  <tr><td><span class="req-id">FR-030</span></td><td>Job reviews with multi-dimensional ratings</td><td>recr_job_reviews</td></tr>
-  <tr><td><span class="req-id">FR-031</span></td><td>Candidate reviews from interviewers</td><td>recr_candidate_reviews</td></tr>
-  <tr><td><span class="req-id">FR-022</span></td><td>Subscription plan definitions with pricing</td><td>recr_subscription_plans</td></tr>
-  <tr><td><span class="req-id">FR-023</span>, <span class="req-id">FR-024</span></td><td>User subscription tracking and access control</td><td>recr_subscriptions</td></tr>
-  <tr><td><span class="req-id">FR-027</span></td><td>Subscription change audit trail</td><td>recr_subscription_history</td></tr>
+<h2>4.1 Controller List</h2>
+<table>
+  <tr><th>Controller</th><th>Base Path</th><th>Responsibility</th><th>Requirements</th></tr>
+  <tr><td>AuthController</td><td><code>/recr/auth</code></td><td>Registration, login</td><td>FR-001, FR-002, FR-015</td></tr>
+  <tr><td>JobController</td><td><code>/recr/jobs</code>, <code>/recr/employer/jobs</code>, <code>/recr/hr/jobs</code></td><td>Job CRUD, search, filtering</td><td>FR-003, FR-016, FR-017, FR-028, FR-029</td></tr>
+  <tr><td>ApplicationController</td><td><code>/recr/applications</code></td><td>Application submission, status tracking</td><td>FR-004, FR-005, FR-008, FR-009</td></tr>
+  <tr><td>InterviewController</td><td><code>/recr/hr/interviews</code></td><td>Interview scheduling</td><td>FR-010</td></tr>
+  <tr><td>EvaluationController</td><td><code>/recr/hr/evaluations</code></td><td>Candidate evaluation</td><td>FR-011</td></tr>
+  <tr><td>SubscriptionController</td><td><code>/recr/subscription</code></td><td>Plan listing, purchase, renewal</td><td>FR-021 - FR-027</td></tr>
+  <tr><td>ReviewController</td><td><code>/recr/candidate/reviews</code>, <code>/recr/hr/reviews</code></td><td>Job reviews, candidate reviews</td><td>FR-030, FR-031</td></tr>
 </table>
 
-<!-- 5. API DESIGN -->
-<h1 id="section-5">5. API Design</h1>
+<h2>4.2 Controller Example</h2>
+<pre><code>// apps/recr-api/src/controllers/job.controller.ts
+@Controller('recr')
+export class JobController {
+  constructor(private readonly jobService: JobService) {}
 
-<h2>5.1 Endpoint to Requirements Mapping</h2>
-<table class="trace-table">
-  <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
-  <tr><td>POST</td><td>/recr/auth/register</td><td>Register new user</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-016</span></td></tr>
-  <tr><td>POST</td><td>/recr/auth/login</td><td>Login with email/password</td><td><span class="req-id">FR-002</span></td></tr>
-  <tr><td>GET</td><td>/recr/jobs</td><td>Browse job listings</td><td><span class="req-id">FR-003</span></td></tr>
-  <tr><td>POST</td><td>/recr/applications</td><td>Submit application</td><td><span class="req-id">FR-004</span></td></tr>
-  <tr><td>GET</td><td>/recr/candidate/applications</td><td>View my applications</td><td><span class="req-id">FR-005</span></td></tr>
-  <tr><td>GET</td><td>/recr/hr/applications</td><td>Review applications</td><td><span class="req-id">FR-008</span></td></tr>
-  <tr><td>POST</td><td>/recr/hr/interviews</td><td>Schedule interview</td><td><span class="req-id">FR-010</span></td></tr>
-  <tr><td>POST</td><td>/recr/hr/evaluations</td><td>Submit evaluation</td><td><span class="req-id">FR-011</span></td></tr>
-  <tr><td>POST</td><td>/recr/candidate/reviews/jobs</td><td>Review a job</td><td><span class="req-id">FR-030</span></td></tr>
-  <tr><td>POST</td><td>/recr/hr/reviews/candidates</td><td>Review a candidate</td><td><span class="req-id">FR-031</span></td></tr>
-  <tr><td>POST</td><td>/recr/employer/jobs</td><td>Create job listing</td><td><span class="req-id">FR-017</span></td></tr>
-  <tr><td>GET</td><td>/recr/employer/jobs</td><td>List my jobs</td><td><span class="req-id">FR-018</span></td></tr>
-  <tr><td>GET</td><td>/recr/subscription/plans</td><td>List subscription plans</td><td><span class="req-id">FR-022</span></td></tr>
-  <tr><td>POST</td><td>/recr/subscription/purchase</td><td>Purchase subscription</td><td><span class="req-id">FR-023</span></td></tr>
-  <tr><td>GET</td><td>/recr/subscription/status</td><td>Get subscription status</td><td><span class="req-id">FR-025</span></td></tr>
-  <tr><td>POST</td><td>/recr/subscription/renew</td><td>Renew subscription</td><td><span class="req-id">FR-026</span></td></tr>
-  <tr><td>GET</td><td>/recr/subscription/history</td><td>View subscription history</td><td><span class="req-id">FR-027</span></td></tr>
+  @Post('employer/jobs')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('employer')
+  async createJob(@Body() dto: CreateJobDto, @Req() req) {
+    return this.jobService.create(dto, req.user.id);
+  }
+
+  @Get('employer/jobs')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles('employer')
+  async listMyJobs(@Req() req, @Query() query: PaginationDto) {
+    return this.jobService.findByOwner(req.user.id, query);
+  }
+
+  @Get('jobs')
+  async browseJobs(@Query() query: JobFilterDto) {
+    return this.jobService.browse(query);
+  }
+}</code></pre>
+
+<!-- 5. SERVICE DESIGN -->
+<h1 id="section-5">5. Service Design</h1>
+<p>Services contain business logic. Located in <code>libs/recr-core/src/services/</code>.</p>
+
+<h2>5.1 Service List</h2>
+<table>
+  <tr><th>Service</th><th>Responsibility</th><th>Dependencies</th></tr>
+  <tr><td>JobService</td><td>Job CRUD, status management, search</td><td>JobRepository, EventEmitter</td></tr>
+  <tr><td>ApplicationService</td><td>Application submission, status workflow</td><td>ApplicationRepository, JobService, EventEmitter</td></tr>
+  <tr><td>InterviewService</td><td>Interview scheduling, conflict detection</td><td>InterviewRepository, ApplicationService</td></tr>
+  <tr><td>EvaluationService</td><td>Evaluation scoring, aggregation</td><td>EvaluationRepository, InterviewRepository</td></tr>
+  <tr><td>SubscriptionService</td><td>Plan management, purchase, renewal, validation</td><td>SubscriptionRepository, PaymentService</td></tr>
+  <tr><td>ReviewService</td><td>Job reviews, candidate reviews, rating aggregation</td><td>ReviewRepository, JobRepository</td></tr>
 </table>
 
-<!-- 6. SECURITY -->
-<h1 id="section-6">6. Security Design</h1>
+<h2>5.2 Service Example</h2>
+<pre><code>// libs/recr-core/src/services/job.service.ts
+@Injectable()
+export class JobService {
+  constructor(
+    private readonly jobRepository: JobRepository,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
+
+  async create(dto: CreateJobDto, userId: string): Promise&lt;Job&gt; {
+    // 1. Validate employer owns company
+    const job = await this.jobRepository.create({
+      ...dto,
+      createdBy: userId,
+      status: 'draft',
+    });
+
+    // 2. Emit event for async processing
+    this.eventEmitter.emit('job.created', {
+      jobId: job.id,
+      createdBy: userId,
+      title: dto.title,
+    });
+
+    return job;
+  }
+
+  async submitForApproval(jobId: string, userId: string): Promise&lt;Job&gt; {
+    const job = await this.jobRepository.findById(jobId);
+
+    // 1. Validate ownership
+    if (job.createdBy !== userId) {
+      throw new ForbiddenException('Not job owner');
+    }
+
+    // 2. Update status
+    const updated = await this.jobRepository.updateStatus(
+      jobId,
+      'pending_approval'
+    );
+
+    // 3. Emit event for notification worker
+    this.eventEmitter.emit('job.submitted_for_approval', {
+      jobId: job.id,
+      title: job.title,
+      createdBy: userId,
+    });
+
+    return updated;
+  }
+}</code></pre>
+
+<!-- 6. WORKER DESIGN -->
+<h1 id="section-6">6. Worker Design</h1>
+<p>Workers consume messages from RabbitMQ for async processing. Located in <code>apps/recr-worker/src/consumers/</code>.</p>
+
+<h2>6.1 Worker List</h2>
+<table>
+  <tr><th>Worker (Consumer)</th><th>Queue</th><th>Purpose</th><th>Events Handled</th></tr>
+  <tr><td>JobConsumer</td><td><code>recr.job.events</code></td><td>Job-related background tasks</td><td>job.created, job.submitted_for_approval</td></tr>
+  <tr><td>ApplicationConsumer</td><td><code>recr.application.events</code></td><td>Application notifications</td><td>application.submitted, application.status_changed</td></tr>
+  <tr><td>InterviewConsumer</td><td><code>recr.interview.events</code></td><td>Interview notifications</td><td>interview.scheduled, interview.completed</td></tr>
+  <tr><td>SubscriptionConsumer</td><td><code>recr.subscription.events</code></td><td>Subscription expiry checks</td><td>subscription.purchased, subscription.expiring</td></tr>
+  <tr><td>ReviewConsumer</td><td><code>recr.review.events</code></td><td>Review aggregation, notifications</td><td>review.submitted</td></tr>
+  <tr><td>NotificationConsumer</td><td><code>notification.events</code></td><td>Email, push notifications</td><td>notification.send</td></tr>
+</table>
+
+<h2>6.2 Worker Example</h2>
+<pre><code>// apps/recr-worker/src/consumers/job.consumer.ts
+@RabbitMQConsumer('recr.job.events')
+export class JobConsumer {
+  constructor(
+    private readonly notificationService: NotificationService,
+    private readonly logService: LogService,
+  ) {}
+
+  @RabbitMQHandler('job.submitted_for_approval')
+  async handleJobSubmitted(event: JobSubmittedEvent) {
+    // 1. Log the event
+    await this.logService.log({
+      action: 'job.submitted_for_approval',
+      jobId: event.jobId,
+      userId: event.createdBy,
+    });
+
+    // 2. Notify HR team
+    await this.notificationService.send({
+      type: 'email',
+      to: 'hr@company.com',
+      subject: `New job pending approval: ${event.title}`,
+      template: 'job-pending-approval',
+      data: { jobId: event.jobId, title: event.title },
+    });
+
+    // 3. Notify admins if needed
+    if (event.requiresAdminApproval) {
+      await this.notificationService.send({
+        type: 'email',
+        to: 'admin@company.com',
+        subject: `Job requires admin approval: ${event.title}`,
+        template: 'job-admin-approval',
+        data: { jobId: event.jobId },
+      });
+    }
+  }
+}</code></pre>
+
+<!-- 7. EVENT PROCESSING -->
+<h1 id="section-7">7. Event Processing</h1>
+
+<h2>7.1 Event Flow</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                        EVENT FLOW                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Controller ──► Service ──► EventEmitter ──► RabbitMQ ──► Worker │
+│                  │                           │                  │
+│                  ▼                           ▼                  │
+│            Repository                 Consumer                   │
+│            (Drizzle)                  (Background)               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+<h2>7.2 Event Definitions</h2>
+<table>
+  <tr><th>Event</th><th>Publisher</th><th>Consumer</th><th>Payload</th></tr>
+  <tr><td><code>job.created</code></td><td>JobService</td><td>JobConsumer</td><td>{ jobId, createdBy, title }</td></tr>
+  <tr><td><code>job.submitted_for_approval</code></td><td>JobService</td><td>JobConsumer</td><td>{ jobId, title, createdBy }</td></tr>
+  <tr><td><code>application.submitted</code></td><td>ApplicationService</td><td>ApplicationConsumer</td><td>{ applicationId, jobId, candidateId }</td></tr>
+  <tr><td><code>application.status_changed</code></td><td>ApplicationService</td><td>ApplicationConsumer</td><td>{ applicationId, oldStatus, newStatus }</td></tr>
+  <tr><td><code>interview.scheduled</code></td><td>InterviewService</td><td>InterviewConsumer</td><td>{ interviewId, candidateId, scheduledAt }</td></tr>
+  <tr><td><code>subscription.purchased</code></td><td>SubscriptionService</td><td>SubscriptionConsumer</td><td>{ userId, planId, amount }</td></tr>
+  <tr><td><code>subscription.expiring</code></td><td>CronJob</td><td>SubscriptionConsumer</td><td>{ userId, subscriptionId, expiresAt }</td></tr>
+  <tr><td><code>review.submitted</code></td><td>ReviewService</td><td>ReviewConsumer</td><td>{ reviewId, type, targetId }</td></tr>
+</table>
+
+<h2>7.3 Event Emitter Example</h2>
+<pre><code>// libs/recr-core/src/events/application-events.ts
+export interface ApplicationSubmittedEvent {
+  applicationId: string;
+  jobId: string;
+  candidateId: string;
+  candidateName: string;
+  jobTitle: string;
+  timestamp: Date;
+}
+
+export interface ApplicationStatusChangedEvent {
+  applicationId: string;
+  jobId: string;
+  candidateId: string;
+  oldStatus: string;
+  newStatus: string;
+  changedBy: string;
+  timestamp: Date;
+}
+
+// Emitted in ApplicationService
+this.eventEmitter.emit('application.submitted', {
+  applicationId: app.id,
+  jobId: app.jobId,
+  candidateId: app.candidateId,
+  candidateName: user.fullName,
+  jobTitle: job.title,
+  timestamp: new Date(),
+} satisfies ApplicationSubmittedEvent);</code></pre>
+
+<h2>7.4 RabbitMQ Configuration</h2>
+<pre><code>// apps/recr-worker/src/worker.module.ts
+@Module({
+  imports: [
+    RabbitMQModule.forRoot({
+      exchanges: [
+        {
+          name: 'recr.events',
+          type: 'topic',
+        },
+      ],
+      uri: process.env.RABBITMQ_URL,
+    }),
+  ],
+  providers: [
+    JobConsumer,
+    ApplicationConsumer,
+    InterviewConsumer,
+    SubscriptionConsumer,
+    ReviewConsumer,
+  ],
+})
+export class WorkerModule {}</code></pre>
+
+<!-- 8. DATA ARCHITECTURE -->
+<h1 id="section-8">8. Data Architecture</h1>
+
+<h2>8.1 Drizzle Schema Structure</h2>
+<pre><code>// libs/recr-core/src/entities/job.schema.ts
+import { pgTable, bigserial, varchar, decimal, timestamp, jsonb, bigint } from 'drizzle-orm/pg-core';
+
+export const recrJobs = pgTable('recr_jobs', {
+  id: bigserial('id', { mode: 'number' }),
+  employerId: bigint('employer_id', { mode: 'number' }),
+  createdBy: bigint('created_by', { mode: 'number' }).notNull(),
+  title: varchar('title', { length: 200 }).notNull(),
+  description: varchar('description', { length: 5000 }),
+  department: varchar('department', { length: 100 }),
+  location: varchar('location', { length: 200 }),
+  salaryMin: decimal('salary_min', { precision: 12, scale: 2 }),
+  salaryMax: decimal('salary_max', { precision: 12, scale: 2 }),
+  employmentType: varchar('employment_type', { length: 20 }).notNull(),
+  status: varchar('status', { length: 20 }).notNull().default('draft'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});</code></pre>
+
+<h2>8.2 Repository Pattern</h2>
+<pre><code>// libs/recr-core/src/repositories/job.repository.ts
+@Injectable()
+export class JobRepository {
+  constructor(private readonly db: DrizzleService) {}
+
+  async create(data: CreateJobInput): Promise&lt;Job&gt; {
+    const [job] = await this.db.db
+      .insert(recrJobs)
+      .values(data)
+      .returning();
+    return job;
+  }
+
+  async findById(id: number): Promise&lt;Job | undefined&gt; {
+    return this.db.db.query.recrJobs.findFirst({
+      where: eq(recrJobs.id, id),
+    });
+  }
+
+  async findByOwner(userId: number, pagination: PaginationDto) {
+    return this.db.db.query.recrJobs.findMany({
+      where: eq(recrJobs.createdBy, userId),
+      limit: pagination.limit,
+      offset: pagination.offset,
+    });
+  }
+}</code></pre>
+
+<!-- 9. SECURITY DESIGN -->
+<h1 id="section-9">9. Security Design</h1>
 
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
-  <tr><td><span class="req-id">NFR-005</span></td><td>Role-based access control</td><td>JWT role claim + NestJS Guards</td></tr>
-  <tr><td><span class="req-id">FR-025</span></td><td>Subscription validation</td><td>Optional subscription check for premium features; basic functionality available to all users</td></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>Role-based access control</td><td>JWT role claim + NestJS Guards (@Roles decorator)</td></tr>
+  <tr><td><span class="req-id">FR-024</span></td><td>Subscription validation</td><td>Optional SubscriptionGuard for premium features</td></tr>
 </table>
 
-<h2>6.1 Subscription Benefits (Optional)</h2>
-<p>Subscription provides premium features but is <strong>not required</strong> for basic functionality:</p>
-<ul>
-  <li><strong>Candidate:</strong> Priority application processing, profile boost in search results</li>
-  <li><strong>HR:</strong> Advanced recruitment analytics, priority support</li>
-  <li><strong>Employer:</strong> Featured job listings, premium analytics dashboard</li>
-</ul>
+<h2>9.1 Guard Implementation</h2>
+<pre><code>// libs/shared/src/guards/roles.guard.ts
+@Injectable()
+export class RolesGuard implements CanActivate {
+  constructor(private reflector: Reflector) {}
 
-<!-- 7. INTEGRATION -->
-<h1 id="section-7">7. Integration</h1>
+  canActivate(context: ExecutionContext): boolean {
+    const requiredRoles = this.reflector.get&lt;string[]&gt;(
+      'roles',
+      context.getHandler()
+    );
+    if (!requiredRoles) return true;
 
-<h2>7.1 Webhook Events</h2>
-<table>
-  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
-  <!-- TODO: Add webhook events here -->
-</table>
+    const { user } = context.switchToHttp().getRequest();
+    return requiredRoles.some((role) => user.role === role);
+  }
+}
 
-<h2>7.2 External Services</h2>
-<table>
-  <tr><th>Service</th><th>Protocol</th><th>Purpose</th></tr>
-  <!-- TODO: Add external services here -->
-</table>
+// Usage in controller
+@Post('employer/jobs')
+@UseGuards(AuthGuard, RolesGuard)
+@Roles('employer')
+async createJob() { ... }</code></pre>
 
-<!-- 8. ERROR HANDLING -->
-<h1 id="section-8">8. Error Handling</h1>
+<h2>9.2 Subscription Guard (Optional)</h2>
+<pre><code>// libs/recr-core/src/subscription/subscription.guard.ts
+@Injectable()
+export class SubscriptionGuard implements CanActivate {
+  async canActivate(context: ExecutionContext): Promise&lt;boolean&gt; {
+    const request = context.switchToHttp().getRequest();
+    const userId = request.user.id;
 
-<table>
-  <tr><th>HTTP Status</th><th>Code</th><th>Description</th></tr>
-  <!-- TODO: Add error codes here -->
-</table>
+    // Check if user has active subscription
+    const subscription = await this.subscriptionService.getActive(userId);
 
-<!-- 9. TRACEABILITY -->
-<h1 id="section-9">9. Traceability Summary</h1>
+    if (!subscription) {
+      throw new ForbiddenException({
+        code: 'SUBSCRIPTION_REQUIRED',
+        message: 'Active subscription required for this feature',
+      });
+    }
+
+    return true;
+  }
+}</code></pre>
+
+<!-- 10. TRACEABILITY -->
+<h1 id="section-10">10. Traceability Summary</h1>
 
 <table class="trace-table">
-  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
-  <tr><td><span class="req-id">FR-001</span></td><td>Candidate Registration</td><td>3.1, 5.1</td><td>AuthModule handles registration</td></tr>
-  <tr><td><span class="req-id">FR-002</span></td><td>Candidate Login</td><td>3.1, 5.1</td><td>JWT with role claim</td></tr>
-  <tr><td><span class="req-id">FR-004</span></td><td>Submit Application</td><td>3.1, 5.1</td><td>ApplicationModule</td></tr>
-  <tr><td><span class="req-id">FR-010</span></td><td>Schedule Interview</td><td>3.1, 5.1</td><td>InterviewModule</td></tr>
-  <tr><td><span class="req-id">FR-011</span></td><td>Evaluate Candidate</td><td>3.1, 5.1</td><td>InterviewModule</td></tr>
-  <tr><td><span class="req-id">FR-012</span></td><td>Reject Candidate</td><td>3.1, 5.1</td><td>ApplicationModule</td></tr>
-  <tr><td><span class="req-id">FR-017</span></td><td>Post Job</td><td>3.1, 5.1</td><td>JobModule</td></tr>
-  <tr><td><span class="req-id">FR-022</span></td><td>Subscription Plans</td><td>2.2, 4.2, 5.1</td><td>recr_subscription_plans table, SubscriptionModule</td></tr>
-  <tr><td><span class="req-id">FR-023</span></td><td>Purchase Subscription</td><td>4.2, 5.1</td><td>recr_subscriptions table, SubscriptionModule</td></tr>
-  <tr><td><span class="req-id">FR-024</span></td><td>Subscription Access Control</td><td>6.1, 6.2</td><td>SubscriptionGuard middleware</td></tr>
-  <tr><td><span class="req-id">FR-025</span></td><td>Subscription Validation</td><td>6.1</td><td>Query active subscription on each request</td></tr>
-  <tr><td><span class="req-id">FR-026</span></td><td>Subscription Renewal</td><td>5.1</td><td>POST /recr/subscription/renew</td></tr>
-  <tr><td><span class="req-id">FR-027</span></td><td>Subscription History</td><td>4.2, 5.1</td><td>recr_subscription_history table</td></tr>
-  <tr><td><span class="req-id">NFR-005</span></td><td>RBAC</td><td>6.1</td><td>JWT role claim + Guards</td></tr>
+  <tr><th>SRS Req ID</th><th>Requirement</th><th>Controller</th><th>Service</th><th>Worker</th></tr>
+  <tr><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a></td><td>Candidate Registration</td><td>AuthController</td><td>AuthService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-002"><span class="req-id">FR-002</span></a></td><td>Login</td><td>AuthController</td><td>AuthService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-003"><span class="req-id">FR-003</span></a></td><td>Browse Jobs</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-004"><span class="req-id">FR-004</span></a></td><td>Submit Application</td><td>ApplicationController</td><td>ApplicationService</td><td>ApplicationConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-005"><span class="req-id">FR-005</span></a></td><td>View Application Status</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-006"><span class="req-id">FR-006</span></a></td><td>Update Profile</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-007"><span class="req-id">FR-007</span></a></td><td>Upload Resume</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a></td><td>Review Applications</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-009"><span class="req-id">FR-009</span></a></td><td>Screen Candidates</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-010"><span class="req-id">FR-010</span></a></td><td>Schedule Interview</td><td>InterviewController</td><td>InterviewService</td><td>InterviewConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-011"><span class="req-id">FR-011</span></a></td><td>Evaluate Candidate</td><td>EvaluationController</td><td>EvaluationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-012"><span class="req-id">FR-012</span></a></td><td>Reject Candidate</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-013"><span class="req-id">FR-013</span></a></td><td>Track Pipeline</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-014"><span class="req-id">FR-014</span></a></td><td>Generate Reports</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a></td><td>Employer Registration</td><td>AuthController</td><td>AuthService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-016"><span class="req-id">FR-016</span></a></td><td>Post Job (Employer)</td><td>JobController</td><td>JobService</td><td>JobConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-017"><span class="req-id">FR-017</span></a></td><td>Manage Job Listings</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-018"><span class="req-id">FR-018</span></a></td><td>View Applicants</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-019"><span class="req-id">FR-019</span></a></td><td>Approve Job Posting</td><td>JobController</td><td>JobService</td><td>JobConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-020"><span class="req-id">FR-020</span></a></td><td>View Analytics</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a></td><td>Subscription Plans</td><td>SubscriptionController</td><td>SubscriptionService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-022"><span class="req-id">FR-022</span></a></td><td>Purchase Subscription</td><td>SubscriptionController</td><td>SubscriptionService</td><td>SubscriptionConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-023"><span class="req-id">FR-023</span></a></td><td>Subscription Access Control</td><td>-</td><td>SubscriptionGuard</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-024"><span class="req-id">FR-024</span></a></td><td>Subscription Validation</td><td>-</td><td>SubscriptionGuard</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-025"><span class="req-id">FR-025</span></a></td><td>Subscription Renewal</td><td>SubscriptionController</td><td>SubscriptionService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></td><td>Subscription History</td><td>SubscriptionController</td><td>SubscriptionService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-028"><span class="req-id">FR-028</span></a></td><td>HR Post Job</td><td>JobController</td><td>JobService</td><td>JobConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-029"><span class="req-id">FR-029</span></a></td><td>HR Manage Jobs</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a></td><td>Job Review</td><td>ReviewController</td><td>ReviewService</td><td>ReviewConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td><td>Candidate Review</td><td>ReviewController</td><td>ReviewService</td><td>ReviewConsumer</td></tr>
+  <tr><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a></td><td>API Response Time</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-002"><span class="req-id">NFR-002</span></a></td><td>Application Processing</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-003"><span class="req-id">NFR-003</span></a></td><td>Concurrent Users</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-004"><span class="req-id">NFR-004</span></a></td><td>System Uptime</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-005"><span class="req-id">NFR-005</span></a></td><td>RBAC</td><td>All Controllers</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-006"><span class="req-id">NFR-006</span></a></td><td>Resume Storage</td><td>-</td><td>FileService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Job Search</td><td>JobController</td><td>JobService</td><td>-</td></tr>
 </table>
 
 </body>

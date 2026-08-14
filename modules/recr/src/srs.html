@@ -283,14 +283,14 @@
   <tr><th>Field</th><th>Description</th></tr>
   <tr><td>Use Case ID</td><td>UC-04</td></tr>
   <tr><td>Name</td><td>Manage Subscription</td></tr>
-  <tr><td>Actor</td><td>Employer</td></tr>
-  <tr><td>Precondition</td><td>Employer has subscription (active or expired)</td></tr>
+  <tr><td>Actor</td><td>All (Candidate, HR, Employer)</td></tr>
+  <tr><td>Precondition</td><td>User has subscription (active or expired)</td></tr>
   <tr><td>Postcondition</td><td>Subscription status updated</td></tr>
-  <tr><td>Trigger</td><td>Employer accesses subscription management</td></tr>
+  <tr><td>Trigger</td><td>User accesses subscription management</td></tr>
 </table>
 <p><strong>Main Flow:</strong></p>
 <ol>
-  <li>Employer navigates to subscription management</li>
+  <li>User navigates to subscription management</li>
   <li>System displays current subscription status:
     <ul>
       <li>Plan name and duration</li>
@@ -637,7 +637,7 @@
     <th>Description</th>
   </tr>
   <tr>
-    <td><span class="req-id">FR-001</span></td>
+    <td><span id="fr-001" class="req-id">FR-001</span></td>
     <td>RECR</td>
     <td>Candidate Registration</td>
     <td>UC-01</td>
@@ -645,15 +645,15 @@
     <td>Candidates can register accounts with email, password, and basic profile information</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-002</span></td>
+    <td><span id="fr-002" class="req-id">FR-002</span></td>
     <td>RECR</td>
-    <td>Candidate Login</td>
+    <td>Login</td>
     <td>UC-02</td>
     <td>High</td>
-    <td>Candidates can log in with email/password and receive JWT token</td>
+    <td>All users can log in with email/password and receive JWT token</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-003</span></td>
+    <td><span id="fr-003" class="req-id">FR-003</span></td>
     <td>RECR</td>
     <td>Browse Jobs</td>
     <td>UC-05</td>
@@ -661,7 +661,7 @@
     <td>Candidates can browse and search job listings with filters (location, salary, type)</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-004</span></td>
+    <td><span id="fr-004" class="req-id">FR-004</span></td>
     <td>RECR</td>
     <td>Submit Application</td>
     <td>UC-06</td>
@@ -669,7 +669,7 @@
     <td>Candidates can submit applications with resume, cover letter for specific jobs</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-005</span></td>
+    <td><span id="fr-005" class="req-id">FR-005</span></td>
     <td>RECR</td>
     <td>View Application Status</td>
     <td>UC-07</td>
@@ -677,7 +677,7 @@
     <td>Candidates can track their application progress through recruitment stages</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-006</span></td>
+    <td><span id="fr-006" class="req-id">FR-006</span></td>
     <td>RECR</td>
     <td>Update Profile</td>
     <td>UC-01</td>
@@ -685,7 +685,7 @@
     <td>Candidates can update their profile, skills, and experience</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-007</span></td>
+    <td><span id="fr-007" class="req-id">FR-007</span></td>
     <td>RECR</td>
     <td>Upload Resume</td>
     <td>UC-06</td>
@@ -705,7 +705,7 @@
     <th>Description</th>
   </tr>
   <tr>
-    <td><span class="req-id">FR-008</span></td>
+    <td><span id="fr-008" class="req-id">FR-008</span></td>
     <td>RECR</td>
     <td>Review Applications</td>
     <td>UC-08</td>
@@ -713,7 +713,7 @@
     <td>HR can review applications, filter by job, status, and candidate qualifications</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-009</span></td>
+    <td><span id="fr-009" class="req-id">FR-009</span></td>
     <td>RECR</td>
     <td>Screen Candidates</td>
     <td>UC-08</td>
@@ -721,7 +721,7 @@
     <td>HR can screen candidates and move them through recruitment stages</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-010</span></td>
+    <td><span id="fr-010" class="req-id">FR-010</span></td>
     <td>RECR</td>
     <td>Schedule Interview</td>
     <td>UC-09</td>
@@ -729,7 +729,7 @@
     <td>HR can schedule interviews with date/time, location, meeting link</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-011</span></td>
+    <td><span id="fr-011" class="req-id">FR-011</span></td>
     <td>RECR</td>
     <td>Evaluate Candidate</td>
     <td>UC-10</td>
@@ -737,7 +737,7 @@
     <td>HR can submit evaluations with scores and recommendations</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-012</span></td>
+    <td><span id="fr-012" class="req-id">FR-012</span></td>
     <td>RECR</td>
     <td>Reject Candidate</td>
     <td>UC-08</td>
@@ -745,7 +745,7 @@
     <td>HR can reject candidates with optional rejection reason</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-013</span></td>
+    <td><span id="fr-013" class="req-id">FR-013</span></td>
     <td>RECR</td>
     <td>Track Pipeline</td>
     <td>UC-08</td>
@@ -753,7 +753,7 @@
     <td>HR can view recruitment pipeline with candidate counts per stage</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-014</span></td>
+    <td><span id="fr-014" class="req-id">FR-014</span></td>
     <td>RECR</td>
     <td>Generate Reports</td>
     <td>UC-08</td>
@@ -761,7 +761,7 @@
     <td>HR can generate recruitment metrics and analytics reports</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-028</span></td>
+    <td><span id="fr-028" class="req-id">FR-028</span></td>
     <td>RECR</td>
     <td>HR Post Job</td>
     <td>UC-11</td>
@@ -769,7 +769,7 @@
     <td>HR can create job listings for their organization</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-029</span></td>
+    <td><span id="fr-029" class="req-id">FR-029</span></td>
     <td>RECR</td>
     <td>HR Manage Jobs</td>
     <td>UC-12</td>
@@ -789,7 +789,7 @@
     <th>Description</th>
   </tr>
   <tr>
-    <td><span class="req-id">FR-015</span></td>
+    <td><span id="fr-015" class="req-id">FR-015</span></td>
     <td>RECR</td>
     <td>Employer Registration</td>
     <td>UC-01</td>
@@ -797,7 +797,7 @@
     <td>Employers can register company accounts with company details</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-016</span></td>
+    <td><span id="fr-016" class="req-id">FR-016</span></td>
     <td>RECR</td>
     <td>Post Job</td>
     <td>UC-11</td>
@@ -805,7 +805,7 @@
     <td>Employers can create job listings with requirements and salary range</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-017</span></td>
+    <td><span id="fr-017" class="req-id">FR-017</span></td>
     <td>RECR</td>
     <td>Manage Job Listings</td>
     <td>UC-12</td>
@@ -813,7 +813,7 @@
     <td>Employers can edit, close, or archive their job listings</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-018</span></td>
+    <td><span id="fr-018" class="req-id">FR-018</span></td>
     <td>RECR</td>
     <td>View Applicants</td>
     <td>UC-12</td>
@@ -821,7 +821,7 @@
     <td>Employers can view applicants for their posted jobs</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-019</span></td>
+    <td><span id="fr-019" class="req-id">FR-019</span></td>
     <td>RECR</td>
     <td>Approve Job Posting</td>
     <td>UC-11</td>
@@ -829,7 +829,7 @@
     <td>Employers can submit jobs for HR approval before publishing</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-020</span></td>
+    <td><span id="fr-020" class="req-id">FR-020</span></td>
     <td>RECR</td>
     <td>View Analytics</td>
     <td>UC-12</td>
@@ -849,7 +849,7 @@
     <th>Description</th>
   </tr>
   <tr>
-    <td><span class="req-id">FR-022</span></td>
+    <td><span id="fr-021" class="req-id">FR-021</span></td>
     <td>RECR</td>
     <td>Subscription Plans</td>
     <td>UC-03</td>
@@ -857,7 +857,7 @@
     <td>System provides 3 subscription plans: 1 month, 6 months (10% discount), 1 year (2 months free)</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-023</span></td>
+    <td><span id="fr-022" class="req-id">FR-022</span></td>
     <td>RECR</td>
     <td>Purchase Subscription</td>
     <td>UC-03</td>
@@ -865,7 +865,7 @@
     <td>All users (Candidate, HR, Employer) can optionally purchase subscription for premium features</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-024</span></td>
+    <td><span id="fr-023" class="req-id">FR-023</span></td>
     <td>RECR</td>
     <td>Subscription Access Control</td>
     <td>UC-03, UC-04</td>
@@ -873,7 +873,7 @@
     <td>System validates subscription status to provide premium features</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-025</span></td>
+    <td><span id="fr-024" class="req-id">FR-024</span></td>
     <td>RECR</td>
     <td>Subscription Validation</td>
     <td>UC-04</td>
@@ -881,7 +881,7 @@
     <td>System validates subscription status before allowing access to restricted features</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-026</span></td>
+    <td><span id="fr-025" class="req-id">FR-025</span></td>
     <td>RECR</td>
     <td>Subscription Renewal</td>
     <td>UC-04</td>
@@ -889,7 +889,7 @@
     <td>All users can renew or upgrade their subscription</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-027</span></td>
+    <td><span id="fr-026" class="req-id">FR-026</span></td>
     <td>RECR</td>
     <td>Subscription History</td>
     <td>UC-04</td>
@@ -909,7 +909,7 @@
     <th>Description</th>
   </tr>
   <tr>
-    <td><span class="req-id">FR-030</span></td>
+    <td><span id="fr-030" class="req-id">FR-030</span></td>
     <td>RECR</td>
     <td>Job Review</td>
     <td>UC-13</td>
@@ -917,7 +917,7 @@
     <td>Candidates can review jobs with ratings and descriptions</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-031</span></td>
+    <td><span id="fr-031" class="req-id">FR-031</span></td>
     <td>RECR</td>
     <td>Candidate Review</td>
     <td>UC-14</td>
@@ -950,7 +950,9 @@
   <tr><td><span class="req-id">DR-005</span></td><td>recr_applications</td><td>Job applications linking candidates to jobs</td><td>FR-004, FR-005</td></tr>
   <tr><td><span class="req-id">DR-006</span></td><td>recr_interviews</td><td>Interview scheduling and status</td><td>FR-010</td></tr>
   <tr><td><span class="req-id">DR-007</span></td><td>recr_evaluations</td><td>Interview evaluation scores</td><td>FR-011</td></tr>
-  <tr><td><span class="req-id">DR-009</span></td><td>recr_subscription_plans</td><td>Subscription plan definitions</td><td>FR-022</td></tr>
+  <tr><td><span class="req-id">DR-008</span></td><td>recr_hr_profiles</td><td>HR user profiles</td><td>-</td></tr>
+  <tr><td><span class="req-id">DR-009</span></td><td>recr_job_requirements</td><td>Job requirements</td><td>FR-016, FR-017</td></tr>
+  <tr><td><span class="req-id">DR-010</span></td><td>recr_subscription_plans</td><td>Subscription plan definitions</td><td>FR-021</td></tr>
   <tr><td><span class="req-id">DR-010</span></td><td>recr_subscriptions</td><td>User subscriptions</td><td>FR-023, FR-024</td></tr>
   <tr><td><span class="req-id">DR-011</span></td><td>recr_subscription_history</td><td>Subscription change history</td><td>FR-027</td></tr>
   <tr><td><span class="req-id">DR-012</span></td><td>recr_job_reviews</td><td>Job reviews from candidates</td><td>FR-030</td></tr>
@@ -1072,13 +1074,13 @@
     <th>Requirement</th>
     <th>Target</th>
   </tr>
-  <tr><td><span class="req-id">NFR-001</span></td><td>Performance</td><td>API response time for list queries</td><td>&lt; 500ms (p95)</td></tr>
-  <tr><td><span class="req-id">NFR-002</span></td><td>Performance</td><td>Application submission processing</td><td>&lt; 2s</td></tr>
-  <tr><td><span class="req-id">NFR-003</span></td><td>Scalability</td><td>Support concurrent users</td><td>500+ concurrent users</td></tr>
-  <tr><td><span class="req-id">NFR-004</span></td><td>Availability</td><td>System uptime</td><td>99.9%</td></tr>
-  <tr><td><span class="req-id">NFR-005</span></td><td>Security</td><td>Role-based access control</td><td>Candidate, HR, Employer roles</td></tr>
-  <tr><td><span class="req-id">NFR-006</span></td><td>Data</td><td>Resume file storage</td><td>S3-compatible, max 10MB per file</td></tr>
-  <tr><td><span class="req-id">NFR-007</span></td><td>Search</td><td>Job search capability</td><td>Full-text search within 500ms</td></tr>
+  <tr><td><span id="nfr-001" class="req-id">NFR-001</span></td><td>Performance</td><td>API response time for list queries</td><td>&lt; 500ms (p95)</td></tr>
+  <tr><td><span id="nfr-002" class="req-id">NFR-002</span></td><td>Performance</td><td>Application submission processing</td><td>&lt; 2s</td></tr>
+  <tr><td><span id="nfr-003" class="req-id">NFR-003</span></td><td>Scalability</td><td>Support concurrent users</td><td>500+ concurrent users</td></tr>
+  <tr><td><span id="nfr-004" class="req-id">NFR-004</span></td><td>Availability</td><td>System uptime</td><td>99.9%</td></tr>
+  <tr><td><span id="nfr-005" class="req-id">NFR-005</span></td><td>Security</td><td>Role-based access control</td><td>Candidate, HR, Employer roles</td></tr>
+  <tr><td><span id="nfr-006" class="req-id">NFR-006</span></td><td>Data</td><td>Resume file storage</td><td>S3-compatible, max 10MB per file</td></tr>
+  <tr><td><span id="nfr-007" class="req-id">NFR-007</span></td><td>Search</td><td>Job search capability</td><td>Full-text search within 500ms</td></tr>
 </table>
 
 <!-- 9. TRACEABILITY -->
@@ -1119,7 +1121,6 @@
   <tr><td>FR-024</td><td>Subscription Validation</td><td>System</td><td>4.4</td><td>recr_subscriptions</td><td>GET /recr/subscription/status</td></tr>
   <tr><td>FR-025</td><td>Subscription Renewal</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/renew</td></tr>
   <tr><td>FR-026</td><td>Subscription History</td><td>All</td><td>4.4</td><td>recr_subscription_history</td><td>GET /recr/subscription/history</td></tr>
-  <tr><td>FR-027</td><td>Subscription History</td><td>All</td><td>4.4</td><td>recr_subscription_history</td><td>GET /recr/subscription/history</td></tr>
   <tr><td>FR-028</td><td>HR Post Job</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>POST /recr/hr/jobs</td></tr>
   <tr><td>FR-029</td><td>HR Manage Jobs</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
   <tr><td>FR-030</td><td>Job Review</td><td>Candidate</td><td>3.3</td><td>recr_job_reviews</td><td>POST /recr/candidate/reviews/jobs</td></tr>

@@ -66,16 +66,31 @@
 <h2>1.1 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Candidate Registration</td><td>POST /recr/auth/register</td></tr>
-  <tr><td><span class="req-id">FR-002</span> Login</td><td>POST /recr/auth/login</td></tr>
-  <tr><td><span class="req-id">FR-003</span> Browse Jobs</td><td>GET /recr/jobs</td></tr>
-  <tr><td><span class="req-id">FR-004</span> Submit Application</td><td>POST /recr/applications</td></tr>
-  <tr><td><span class="req-id">FR-008</span> Review Applications</td><td>GET /recr/hr/applications</td></tr>
-  <tr><td><span class="req-id">FR-017</span> Post Job</td><td>POST /recr/employer/jobs</td></tr>
-  <tr><td><span class="req-id">FR-022</span> Subscription Plans</td><td>GET /recr/subscription/plans</td></tr>
-  <tr><td><span class="req-id">FR-023</span> Purchase Subscription</td><td>POST /recr/subscription/purchase</td></tr>
-  <tr><td><span class="req-id">FR-025</span> Subscription Validation</td><td>GET /recr/subscription/status</td></tr>
-  <tr><td><span class="req-id">FR-026</span> Subscription Renewal</td><td>POST /recr/subscription/renew</td></tr>
+  <tr><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> Candidate Registration</td><td>POST /recr/auth/register</td></tr>
+  <tr><td><a href="srs.html#fr-002"><span class="req-id">FR-002</span></a> Login</td><td>POST /recr/auth/login</td></tr>
+  <tr><td><a href="srs.html#fr-003"><span class="req-id">FR-003</span></a> Browse Jobs</td><td>GET /recr/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-004"><span class="req-id">FR-004</span></a> Submit Application</td><td>POST /recr/applications</td></tr>
+  <tr><td><a href="srs.html#fr-005"><span class="req-id">FR-005</span></a> View Application Status</td><td>GET /recr/candidate/applications</td></tr>
+  <tr><td><a href="srs.html#fr-006"><span class="req-id">FR-006</span></a> Update Profile</td><td>PATCH /recr/candidate/profile</td></tr>
+  <tr><td><a href="srs.html#fr-007"><span class="req-id">FR-007</span></a> Upload Resume</td><td>POST /recr/candidate/resume</td></tr>
+  <tr><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a> Review Applications</td><td>GET /recr/hr/applications</td></tr>
+  <tr><td><a href="srs.html#fr-009"><span class="req-id">FR-009</span></a> Screen Candidates</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
+  <tr><td><a href="srs.html#fr-010"><span class="req-id">FR-010</span></a> Schedule Interview</td><td>POST /recr/hr/interviews</td></tr>
+  <tr><td><a href="srs.html#fr-011"><span class="req-id">FR-011</span></a> Evaluate Candidate</td><td>POST /recr/hr/evaluations</td></tr>
+  <tr><td><a href="srs.html#fr-013"><span class="req-id">FR-013</span></a> Track Pipeline</td><td>GET /recr/hr/pipeline</td></tr>
+  <tr><td><a href="srs.html#fr-014"><span class="req-id">FR-014</span></a> Generate Reports</td><td>GET /recr/hr/reports</td></tr>
+  <tr><td><a href="srs.html#fr-016"><span class="req-id">FR-016</span></a> Post Job (Employer)</td><td>POST /recr/employer/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-017"><span class="req-id">FR-017</span></a> Manage Job Listings</td><td>GET/PATCH /recr/employer/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-018"><span class="req-id">FR-018</span></a> View Applicants</td><td>GET /recr/employer/jobs/:id/applicants</td></tr>
+  <tr><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> Subscription Plans</td><td>GET /recr/subscription/plans</td></tr>
+  <tr><td><a href="srs.html#fr-022"><span class="req-id">FR-022</span></a> Purchase Subscription</td><td>POST /recr/subscription/purchase</td></tr>
+  <tr><td><a href="srs.html#fr-024"><span class="req-id">FR-024</span></a> Subscription Validation</td><td>GET /recr/subscription/status</td></tr>
+  <tr><td><a href="srs.html#fr-025"><span class="req-id">FR-025</span></a> Subscription Renewal</td><td>POST /recr/subscription/renew</td></tr>
+  <tr><td><a href="srs.html#fr-026"><span class="req-id">FR-026</span></a> Subscription History</td><td>GET /recr/subscription/history</td></tr>
+  <tr><td><a href="srs.html#fr-028"><span class="req-id">FR-028</span></a> HR Post Job</td><td>POST /recr/hr/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-029"><span class="req-id">FR-029</span></a> HR Manage Jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a> Job Review</td><td>POST /recr/candidate/reviews/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-031"><span class="req-id">FR-031</span></a> Candidate Review</td><td>POST /recr/hr/reviews/candidates</td></tr>
 </table>
 
 <h2>1.2 API Principles</h2>
@@ -353,7 +368,7 @@
 
 <h2 id="section-5-5">5.5 Subscription Endpoints</h2>
 
-<h3>GET /recr/subscription/plans <span class="req-id">FR-022</span> <em>(Public)</em></h3>
+<h3>GET /recr/subscription/plans <a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> <em>(Public)</em></h3>
 <p>List available subscription plans.</p>
 <p><strong>Response 200:</strong></p>
 <pre><code>{
@@ -395,7 +410,7 @@
   ]
 }</code></pre>
 
-<h3>POST /recr/subscription/purchase <span class="req-id">FR-023</span></h3>
+<h3>POST /recr/subscription/purchase <a href="srs.html#fr-022"><span class="req-id">FR-022</span></a></h3>
 <p>Purchase a subscription plan. Requires authentication (all roles).</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
@@ -422,7 +437,7 @@
   }
 }</code></pre>
 
-<h3>GET /recr/subscription/status <span class="req-id">FR-025</span></h3>
+<h3>GET /recr/subscription/status <a href="srs.html#fr-024"><span class="req-id">FR-024</span></a></h3>
 <p>Get current subscription status. Requires authentication (all roles).</p>
 <p><strong>Response 200:</strong></p>
 <pre><code>{
@@ -445,7 +460,7 @@
   }
 }</code></pre>
 
-<h3>POST /recr/subscription/renew <span class="req-id">FR-026</span></h3>
+<h3>POST /recr/subscription/renew <a href="srs.html#fr-025"><span class="req-id">FR-025</span></a></h3>
 <p>Renew or upgrade subscription. Requires authentication (all roles).</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
@@ -471,7 +486,7 @@
   }
 }</code></pre>
 
-<h3>GET /recr/subscription/history <span class="req-id">FR-027</span></h3>
+<h3>GET /recr/subscription/history <a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></h3>
 <p>View subscription history. Requires authentication (all roles).</p>
 <p><strong>Query Params:</strong> <code>page</code>, <code>limit</code></p>
 <p><strong>Response 200:</strong></p>
