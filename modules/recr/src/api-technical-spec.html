@@ -52,6 +52,7 @@
         <li><a href="#section-5-3">5.3 HR Endpoints</a></li>
         <li><a href="#section-5-4">5.4 Employer Endpoints</a></li>
         <li><a href="#section-5-5">5.5 Subscription Endpoints</a></li>
+        <li><a href="#section-5-6">5.6 Dashboard Endpoints</a></li>
       </ul>
     </li>
     <li><a href="#section-6">6. Pagination</a></li>
@@ -93,6 +94,9 @@
   <tr><td><a href="srs.html#fr-031"><span class="req-id">FR-031</span></a> Candidate Review</td><td>POST /recr/hr/reviews/candidates</td></tr>
   <tr><td><a href="srs.html#fr-032"><span class="req-id">FR-032</span></a> Update HR Profile</td><td>PATCH /recr/hr/profile</td></tr>
   <tr><td><a href="srs.html#fr-033"><span class="req-id">FR-033</span></a> Update Employer Profile</td><td>PATCH /recr/employer/profile</td></tr>
+  <tr><td><a href="srs.html#fr-034"><span class="req-id">FR-034</span></a> User Registration Analytics</td><td>GET /recr/dashboard/registrations</td></tr>
+  <tr><td><a href="srs.html#fr-035"><span class="req-id">FR-035</span></a> User Login Analytics</td><td>GET /recr/dashboard/logins</td></tr>
+  <tr><td><a href="srs.html#fr-036"><span class="req-id">FR-036</span></a> Dashboard View</td><td>GET /recr/dashboard/overview</td></tr>
 </table>
 
 <h2>1.2 API Principles</h2>
@@ -536,6 +540,105 @@
     "total": 2,
     "page": 1,
     "limit": 10
+  }
+}</code></pre>
+
+<h2 id="section-5-6">5.6 Dashboard Endpoints</h2>
+
+<h3>GET /recr/dashboard/overview <a href="srs.html#fr-036"><span class="req-id">FR-036</span></a></h3>
+<p>Get dashboard overview with aggregated analytics. Requires <strong>hr</strong> or <strong>employer</strong> role.</p>
+<p><strong>Query Params:</strong> <code>start_date</code>, <code>end_date</code></p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "registrations": {
+      "total": 1500,
+      "by_role": {
+        "candidate": 1200,
+        "hr": 50,
+        "employer": 250
+      },
+      "daily": [
+        { "date": "2026-08-01", "count": 45 },
+        { "date": "2026-08-02", "count": 52 }
+      ]
+    },
+    "logins": {
+      "total": 8500,
+      "by_role": {
+        "candidate": 6000,
+        "hr": 800,
+        "employer": 1700
+      },
+      "peak_hours": [
+        { "hour": 9, "count": 1200 },
+        { "hour": 14, "count": 1100 }
+      ],
+      "failed_attempts": 23
+    },
+    "jobs": {
+      "active": 150,
+      "total_applications": 2500,
+      "interviews_scheduled": 800
+    }
+  }
+}</code></pre>
+
+<h3>GET /recr/dashboard/registrations <a href="srs.html#fr-034"><span class="req-id">FR-034</span></a></h3>
+<p>Get user registration statistics. Requires <strong>hr</strong> or <strong>employer</strong> role.</p>
+<p><strong>Query Params:</strong> <code>start_date</code>, <code>end_date</code>, <code>interval</code> (day/week/month)</p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "total": 1500,
+    "by_role": {
+      "candidate": 1200,
+      "hr": 50,
+      "employer": 250
+    },
+    "timeline": [
+      { "date": "2026-08-01", "candidate": 30, "hr": 2, "employer": 8 },
+      { "date": "2026-08-02", "candidate": 35, "hr": 1, "employer": 12 }
+    ],
+    "growth_rate": {
+      "daily": 5.2,
+      "weekly": 12.8,
+      "monthly": 45.6
+    }
+  }
+}</code></pre>
+
+<h3>GET /recr/dashboard/logins <a href="srs.html#fr-035"><span class="req-id">FR-035</span></a></h3>
+<p>Get user login statistics. Requires <strong>hr</strong> or <strong>employer</strong> role.</p>
+<p><strong>Query Params:</strong> <code>start_date</code>, <code>end_date</code>, <code>interval</code> (hour/day)</p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "total": 8500,
+    "by_role": {
+      "candidate": 6000,
+      "hr": 800,
+      "employer": 1700
+    },
+    "timeline": [
+      { "date": "2026-08-01", "hour": 9, "count": 120 },
+      { "date": "2026-08-01", "hour": 10, "count": 95 }
+    ],
+    "peak_hours": [
+      { "hour": 9, "count": 1200 },
+      { "hour": 14, "count": 1100 }
+    ],
+    "failed_attempts": {
+      "total": 23,
+      "by_role": {
+        "candidate": 15,
+        "hr": 2,
+        "employer": 6
+      }
+    }
   }
 }</code></pre>
 

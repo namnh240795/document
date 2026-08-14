@@ -93,7 +93,8 @@
   <tr><td>Employer</td><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a> - <a href="srs.html#fr-020"><span class="req-id">FR-020</span></a>, <a href="srs.html#fr-033"><span class="req-id">FR-033</span></a></td><td>Section 4, 5, 6</td></tr>
   <tr><td>Subscription</td><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> - <a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></td><td>Section 4, 5, 6</td></tr>
   <tr><td>Reviews</td><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a>, <a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td><td>Section 4, 5, 6</td></tr>
-  <tr><td>Non-Functional</td><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a> - <a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Section 9</td></tr>
+  <tr><td>Analytics</td><td><a href="srs.html#fr-034"><span class="req-id">FR-034</span></a> - <a href="srs.html#fr-036"><span class="req-id">FR-036</span></a></td><td>Section 8</td></tr>
+  <tr><td>Non-Functional</td><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a> - <a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Section 10</td></tr>
 </table>
 
 <!-- 2. ARCHITECTURE -->
@@ -216,11 +217,20 @@ libs/
 │       ├── job-review.schema.ts
 │       └── candidate-review.schema.ts
 │
+├── analytics/
+│   ├── analytics.module.ts
+│   ├── analytics.controller.ts
+│   ├── analytics.service.ts
+│   ├── opensearch.client.ts     # OpenSearch client
+│   └── dto/
+│       └── dashboard-query.dto.ts
+│
 └── events/
     ├── job-events.ts            # Job-related events
     ├── application-events.ts    # Application events
     ├── subscription-events.ts   # Subscription events
-    └── review-events.ts         # Review events</code></pre>
+    ├── review-events.ts         # Review events
+    └── analytics-events.ts      # Analytics tracking events</code></pre>
 
 <h2 id="section-3-2">3.2 File Organization</h2>
 <table>
@@ -481,8 +491,147 @@ this.eventEmitter.emit('application.submitted', {
 })
 export class WorkerModule {}</code></pre>
 
-<!-- 8. DATA ARCHITECTURE -->
-<h1 id="section-8">8. Data Architecture</h1>
+<!-- 8. OPENSEARCH INTEGRATION -->
+<h1 id="section-8">8. OpenSearch Integration</h1>
+
+<h2>8.1 Architecture Overview</h2>
+<p>The RECR module uses OpenSearch for analytics and <strong>OpenSearch Dashboards</strong> for visualization. Events are logged via RabbitMQ consumers and indexed in OpenSearch. Users access dashboards directly via OpenSearch Dashboards UI.</p>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    OPENSEARCH ARCHITECTURE                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Services ──► RabbitMQ ──► Analytics Consumer ──► OpenSearch    │
+│                                                  (Index)        │
+│                                                     │           │
+│                                                     ▼           │
+│                                          OpenSearch Dashboards  │
+│                                          (Built-in UI)          │
+│                                                     │           │
+│                                              ┌──────┴──────┐   │
+│                                              ▼             ▼   │
+│                                        User Analytics  Job     │
+│                                        Dashboard      Dashboard │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘</code></pre>
+
+<h2>8.2 Why OpenSearch Dashboards?</h2>
+<table>
+  <tr><th>Feature</th><th>OpenSearch Dashboards</th><th>Custom Dashboard</th></tr>
+  <tr><td>Setup</td><td>Built-in with OpenSearch</td><td>Requires frontend development</td></tr>
+  <tr><td>Visualization</td><td>Charts, graphs, maps out-of-the-box</td><td>Must build custom charts</td></tr>
+  <tr><td>Filters</td><td>Time range, field filters built-in</td><td>Must implement custom filters</td></tr>
+  <tr><td>Aggregations</td><td>Visual aggregation builder</td><td>Must write aggregation queries</td></tr>
+  <tr><td>Sharing</td><td>Share dashboards via URL</td><td>Must implement sharing</td></tr>
+  <tr><td>Cost</td><td>Free with OpenSearch</td><td>Development time cost</td></tr>
+</table>
+
+<h2>8.3 OpenSearch Indices</h2>
+<table>
+  <tr><th>Index</th><th>Purpose</th><th>Fields</th></tr>
+  <tr><td><code>recr-user-events</code></td><td>User registration and login events</td><td>userId, email, role, action, timestamp, ipAddress, userAgent</td></tr>
+  <tr><td><code>recr-job-events</code></td><td>Job-related events</td><td>jobId, createdBy, action, title, status, timestamp</td></tr>
+  <tr><td><code>recr-application-events</code></td><td>Application events</td><td>applicationId, candidateId, jobId, action, status, timestamp</td></tr>
+  <tr><td><code>recr-subscription-events</code></td><td>Subscription events</td><td>userId, planId, action, amount, timestamp</td></tr>
+</table>
+
+<h2>8.4 Event Schema</h2>
+<pre><code>// libs/recr-core/src/analytics/opensearch.schema.ts
+export interface UserEvent {
+  eventId: string;
+  userId: number;
+  email: string;
+  role: 'candidate' | 'hr' | 'employer';
+  action: 'registered' | 'logged_in' | 'logged_out' | 'login_failed';
+  timestamp: Date;
+  ipAddress?: string;
+  userAgent?: string;
+  metadata?: Record&lt;string, any&gt;;
+}
+
+export interface JobEvent {
+  eventId: string;
+  jobId: number;
+  createdBy: number;
+  action: 'created' | 'updated' | 'published' | 'closed';
+  title: string;
+  status: string;
+  timestamp: Date;
+}
+
+export interface ApplicationEvent {
+  eventId: string;
+  applicationId: number;
+  candidateId: number;
+  jobId: number;
+  action: 'submitted' | 'status_changed' | 'withdrawn';
+  status: string;
+  timestamp: Date;
+}</code></pre>
+
+<h2>8.5 OpenSearch Client</h2>
+<pre><code>// libs/recr-core/src/analytics/opensearch.client.ts
+import { Client } from '@opensearch-project/opensearch';
+
+@Injectable()
+export class OpenSearchClient {
+  private client: Client;
+
+  constructor(private readonly config: ConfigService) {
+    this.client = new Client({
+      node: this.config.get('OPENSEARCH_URL'),
+      auth: {
+        username: this.config.get('OPENSEARCH_USERNAME'),
+        password: this.config.get('OPENSEARCH_PASSWORD'),
+      },
+    });
+  }
+
+  async indexEvent(index: string, event: any): Promise&lt;void&gt; {
+    await this.client.index({
+      index,
+      body: {
+        ...event,
+        timestamp: new Date().toISOString(),
+      },
+    });
+  }
+}</code></pre>
+
+<h2>8.6 Pre-built Dashboards</h2>
+<p>OpenSearch Dashboards provides the following pre-built visualizations:</p>
+
+<h3>User Analytics Dashboard</h3>
+<table>
+  <tr><th>Visualization</th><th>Type</th><th>Description</th></tr>
+  <tr><td>Total Users by Role</td><td>Pie Chart</td><td>Breakdown of users by role (Candidate, HR, Employer)</td></tr>
+  <tr><td>Registration Trend</td><td>Line Chart</td><td>Daily/weekly/monthly registration count</td></tr>
+  <tr><td>Active Users</td><td> Metric</td><td>Users logged in within last 7 days</td></tr>
+  <tr><td>User Growth</td><td>Bar Chart</td><td>Month-over-month growth rate</td></tr>
+</table>
+
+<h3>Login Analytics Dashboard</h3>
+<table>
+  <tr><th>Visualization</th><th>Type</th><th>Description</th></tr>
+  <tr><td>Login Frequency</td><td>Line Chart</td><td>Logins per hour/day</td></tr>
+  <tr><td>Peak Login Times</td><td>Heatmap</td><td>Hours with highest login activity</td></tr>
+  <tr><td>Failed Logins</td><td> Metric</td><td>Count of failed login attempts</td></tr>
+  <tr><td>Login by Role</td><td>Bar Chart</td><td>Logins breakdown by user role</td></tr>
+</table>
+
+<h2>8.7 Dashboard Access</h2>
+<pre><code># OpenSearch Dashboards URL
+http://opensearch-dashboards:5601
+
+# Default credentials
+Username: admin
+Password: admin (or as configured)
+
+# Direct link to RECR dashboards
+http://opensearch-dashboards:5601/app/dashboards#/view/recr-user-analytics
+http://opensearch-dashboards:5601/app/dashboards#/view/recr-login-analytics</code></pre>
+
+<!-- 9. DATA ARCHITECTURE -->
+<h1 id="section-9">9. Data Architecture</h1>
 
 <h2>8.1 Drizzle Schema Structure</h2>
 <pre><code>// libs/recr-core/src/entities/job.schema.ts

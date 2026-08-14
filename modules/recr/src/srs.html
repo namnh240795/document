@@ -73,6 +73,7 @@
         <li><a href="#section-3-13">3.13 UC-13: Review Job</a></li>
         <li><a href="#section-3-14">3.14 UC-14: Review Candidate</a></li>
         <li><a href="#section-3-15">3.15 UC-15: Update Profile</a></li>
+        <li><a href="#section-3-16">3.16 UC-16: View Dashboard</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Functional Requirements</a>
@@ -82,6 +83,7 @@
         <li><a href="#section-4-3">4.3 Employer Requirements</a></li>
         <li><a href="#section-4-4">4.4 Subscription Requirements</a></li>
         <li><a href="#section-4-5">4.5 Review Requirements</a></li>
+        <li><a href="#section-4-6">4.6 Analytics Requirements</a></li>
       </ul>
     </li>
     <li><a href="#section-5">5. Data Model</a></li>
@@ -681,6 +683,64 @@
   <div class="caption">Figure 29: UC-15 Update Profile - Sequence Diagram</div>
 </div>
 
+<h2 id="section-3-16">3.16 UC-16: View Dashboard</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-16</td></tr>
+  <tr><td>Name</td><td>View Dashboard</td></tr>
+  <tr><td>Actor</td><td>HR, Employer</td></tr>
+  <tr><td>Precondition</td><td>User is logged in</td></tr>
+  <tr><td>Postcondition</td><td>User views analytics dashboard</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Dashboard" menu</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User navigates to dashboard page</li>
+  <li>System queries OpenSearch for aggregated data</li>
+  <li>System displays dashboard with:
+    <ul>
+      <li><strong>User Analytics:</strong>
+        <ul>
+          <li>Total registered users (by role: Candidate, HR, Employer)</li>
+          <li>New registrations (daily, weekly, monthly)</li>
+          <li>Active users (logged in within last 7 days)</li>
+          <li>User growth trend chart</li>
+        </ul>
+      </li>
+      <li><strong>Login Analytics:</strong>
+        <ul>
+          <li>Total logins (by role)</li>
+          <li>Login frequency (hourly, daily)</li>
+          <li>Failed login attempts</li>
+          <li>Peak login times</li>
+        </ul>
+      </li>
+      <li><strong>Recruitment Analytics:</strong> (HR only)
+        <ul>
+          <li>Active job listings</li>
+          <li>Applications received</li>
+          <li>Interviews scheduled</li>
+          <li>Offers sent</li>
+        </ul>
+      </li>
+      <li><strong>Subscription Analytics:</strong>
+        <ul>
+          <li>Active subscriptions by plan</li>
+          <li>Revenue by plan</li>
+          <li>Expiring subscriptions</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>User can filter by date range</li>
+  <li>System updates dashboard with filtered data</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>2a. OpenSearch unavailable: System shows cached data or error message</li>
+  <li>4a. No data: System shows "No data available" message</li>
+</ul>
+
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Functional Requirements</h1>
 
@@ -997,6 +1057,42 @@
     <td>UC-14</td>
     <td>Medium</td>
     <td>Interviewers can review candidates with ratings and recommendations</td>
+  </tr>
+</table>
+
+<h2 id="section-4-6">4.6 Analytics Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span id="fr-034" class="req-id">FR-034</span></td>
+    <td>RECR</td>
+    <td>User Registration Analytics</td>
+    <td>UC-16</td>
+    <td>Medium</td>
+    <td>Track and display user registration statistics (total, daily, weekly, monthly)</td>
+  </tr>
+  <tr>
+    <td><span id="fr-035" class="req-id">FR-035</span></td>
+    <td>RECR</td>
+    <td>User Login Analytics</td>
+    <td>UC-16</td>
+    <td>Medium</td>
+    <td>Track and display user login statistics (frequency, peak times, failed attempts)</td>
+  </tr>
+  <tr>
+    <td><span id="fr-036" class="req-id">FR-036</span></td>
+    <td>RECR</td>
+    <td>Dashboard View</td>
+    <td>UC-16</td>
+    <td>Medium</td>
+    <td>Display aggregated analytics dashboard with charts and filters</td>
   </tr>
 </table>
 
