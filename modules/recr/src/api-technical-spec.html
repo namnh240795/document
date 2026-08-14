@@ -91,6 +91,8 @@
   <tr><td><a href="srs.html#fr-029"><span class="req-id">FR-029</span></a> HR Manage Jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
   <tr><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a> Job Review</td><td>POST /recr/candidate/reviews/jobs</td></tr>
   <tr><td><a href="srs.html#fr-031"><span class="req-id">FR-031</span></a> Candidate Review</td><td>POST /recr/hr/reviews/candidates</td></tr>
+  <tr><td><a href="srs.html#fr-032"><span class="req-id">FR-032</span></a> Update HR Profile</td><td>PATCH /recr/hr/profile</td></tr>
+  <tr><td><a href="srs.html#fr-033"><span class="req-id">FR-033</span></a> Update Employer Profile</td><td>PATCH /recr/employer/profile</td></tr>
 </table>
 
 <h2>1.2 API Principles</h2>
@@ -560,7 +562,9 @@
 <table>
   <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
   <tr><td>2026-07-31</td><td>1.0.0</td><td>Initial release with 3 roles: Candidate, HR, Employer</td></tr>
-  <tr><td>2026-08-01</td><td>1.1.0</td><td>Add subscription system: 3 plans (1mo, 6mo, 1yr), access control for employer features</td></tr>
+  <tr><td>2026-08-01</td><td>1.1.0</td><td>Add subscription system: 3 plans (1mo, 6mo, 1yr), optional for all roles</td></tr>
+  <tr><td>2026-08-10</td><td>1.2.0</td><td>Add job reviews, candidate reviews, profile update endpoints</td></tr>
+  <tr><td>2026-08-13</td><td>1.3.0</td><td>Add HR/Employer job management, update profile endpoints (FR-032, FR-033)</td></tr>
 </table>
 
 </body>

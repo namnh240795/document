@@ -149,7 +149,8 @@
   user_id     BIGINT NOT NULL UNIQUE REFERENCES recr_users(id),
   department  VARCHAR(100),
   position    VARCHAR(100),
-  created_at  TIMESTAMP NOT NULL DEFAULT NOW()
+  created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at  TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
 <h3>Table: <code>recr_jobs</code> - Job Listings</h3>
@@ -413,18 +414,18 @@ CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(i
 
 <table class="trace-table">
   <tr><th>Table</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
-  <tr><td>recr_users</td><td>User accounts (all roles)</td><td>FR-001, FR-002, FR-016</td><td>15,000</td></tr>
+  <tr><td>recr_users</td><td>User accounts (all roles)</td><td>FR-001, FR-002, FR-015</td><td>15,000</td></tr>
   <tr><td>recr_candidates</td><td>Candidate profiles</td><td>FR-006, FR-007</td><td>10,000</td></tr>
-  <tr><td>recr_employers</td><td>Employer company profiles</td><td>FR-016</td><td>500</td></tr>
-  <tr><td>recr_hr_profiles</td><td>HR user profiles</td><td>-</td><td>50</td></tr>
-  <tr><td>recr_jobs</td><td>Job listings</td><td>FR-017, FR-018</td><td>2,000</td></tr>
+  <tr><td>recr_employers</td><td>Employer company profiles</td><td>FR-015, FR-033</td><td>500</td></tr>
+  <tr><td>recr_hr_profiles</td><td>HR user profiles</td><td>FR-032</td><td>50</td></tr>
+  <tr><td>recr_jobs</td><td>Job listings</td><td>FR-016, FR-017, FR-028, FR-029</td><td>2,000</td></tr>
   <tr><td>recr_applications</td><td>Job applications</td><td>FR-004, FR-005</td><td>25,000</td></tr>
   <tr><td>recr_interviews</td><td>Interview sessions</td><td>FR-010</td><td>8,000</td></tr>
   <tr><td>recr_evaluations</td><td>Interview evaluations</td><td>FR-011</td><td>8,000</td></tr>
-  <tr><td>recr_job_requirements</td><td>Job requirements</td><td>FR-017</td><td>5,000</td></tr>
-  <tr><td>recr_subscription_plans</td><td>Subscription plan definitions</td><td>FR-022</td><td>3</td></tr>
-  <tr><td>recr_subscriptions</td><td>User subscriptions</td><td>FR-023, FR-024</td><td>500</td></tr>
-  <tr><td>recr_subscription_history</td><td>Subscription change history</td><td>FR-027</td><td>2,000</td></tr>
+  <tr><td>recr_job_requirements</td><td>Job requirements</td><td>FR-016, FR-017</td><td>5,000</td></tr>
+  <tr><td>recr_subscription_plans</td><td>Subscription plan definitions</td><td>FR-021</td><td>3</td></tr>
+  <tr><td>recr_subscriptions</td><td>User subscriptions</td><td>FR-022, FR-023, FR-024</td><td>500</td></tr>
+  <tr><td>recr_subscription_history</td><td>Subscription change history</td><td>FR-026</td><td>2,000</td></tr>
   <tr><td>recr_job_reviews</td><td>Job reviews from candidates</td><td>FR-030</td><td>5,000</td></tr>
   <tr><td>recr_candidate_reviews</td><td>Candidate reviews from interviewers</td><td>FR-031</td><td>8,000</td></tr>
 </table>

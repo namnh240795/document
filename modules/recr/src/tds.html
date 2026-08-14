@@ -89,9 +89,9 @@
 <table class="trace-table">
   <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
   <tr><td>Candidate</td><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> - <a href="srs.html#fr-007"><span class="req-id">FR-007</span></a></td><td>Section 4, 5, 6</td></tr>
-  <tr><td>HR</td><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a> - <a href="srs.html#fr-014"><span class="req-id">FR-014</span></a>, <a href="srs.html#fr-028"><span class="req-id">FR-028</span></a>, <a href="srs.html#fr-029"><span class="req-id">FR-029</span></a></td><td>Section 4, 5, 6</td></tr>
-  <tr><td>Employer</td><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a> - <a href="srs.html#fr-020"><span class="req-id">FR-020</span></a></td><td>Section 4, 5, 6</td></tr>
-  <tr><td>Subscription</td><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> - <a href="srs.html#fr-027"><span class="req-id">FR-027</span></a></td><td>Section 4, 5, 6</td></tr>
+  <tr><td>HR</td><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a> - <a href="srs.html#fr-014"><span class="req-id">FR-014</span></a>, <a href="srs.html#fr-028"><span class="req-id">FR-028</span></a>, <a href="srs.html#fr-029"><span class="req-id">FR-029</span></a>, <a href="srs.html#fr-032"><span class="req-id">FR-032</span></a></td><td>Section 4, 5, 6</td></tr>
+  <tr><td>Employer</td><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a> - <a href="srs.html#fr-020"><span class="req-id">FR-020</span></a>, <a href="srs.html#fr-033"><span class="req-id">FR-033</span></a></td><td>Section 4, 5, 6</td></tr>
+  <tr><td>Subscription</td><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> - <a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></td><td>Section 4, 5, 6</td></tr>
   <tr><td>Reviews</td><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a>, <a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td><td>Section 4, 5, 6</td></tr>
   <tr><td>Non-Functional</td><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a> - <a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Section 9</td></tr>
 </table>
@@ -243,7 +243,8 @@ libs/
   <tr><td>ApplicationController</td><td><code>/recr/applications</code></td><td>Application submission, status tracking</td><td>FR-004, FR-005, FR-008, FR-009</td></tr>
   <tr><td>InterviewController</td><td><code>/recr/hr/interviews</code></td><td>Interview scheduling</td><td>FR-010</td></tr>
   <tr><td>EvaluationController</td><td><code>/recr/hr/evaluations</code></td><td>Candidate evaluation</td><td>FR-011</td></tr>
-  <tr><td>SubscriptionController</td><td><code>/recr/subscription</code></td><td>Plan listing, purchase, renewal</td><td>FR-021 - FR-027</td></tr>
+  <tr><td>ProfileController</td><td><code>/recr/candidate/profile</code>, <code>/recr/hr/profile</code>, <code>/recr/employer/profile</code></td><td>Profile update (all roles)</td><td>FR-006, FR-032, FR-033</td></tr>
+  <tr><td>SubscriptionController</td><td><code>/recr/subscription</code></td><td>Plan listing, purchase, renewal</td><td>FR-021 - FR-026</td></tr>
   <tr><td>ReviewController</td><td><code>/recr/candidate/reviews</code>, <code>/recr/hr/reviews</code></td><td>Job reviews, candidate reviews</td><td>FR-030, FR-031</td></tr>
 </table>
 
@@ -284,6 +285,7 @@ export class JobController {
   <tr><td>ApplicationService</td><td>Application submission, status workflow</td><td>ApplicationRepository, JobService, EventEmitter</td></tr>
   <tr><td>InterviewService</td><td>Interview scheduling, conflict detection</td><td>InterviewRepository, ApplicationService</td></tr>
   <tr><td>EvaluationService</td><td>Evaluation scoring, aggregation</td><td>EvaluationRepository, InterviewRepository</td></tr>
+  <tr><td>ProfileService</td><td>Profile update (all roles), file upload</td><td>UserRepository, CandidateRepository, HrProfileRepository, EmployerRepository</td></tr>
   <tr><td>SubscriptionService</td><td>Plan management, purchase, renewal, validation</td><td>SubscriptionRepository, PaymentService</td></tr>
   <tr><td>ReviewService</td><td>Job reviews, candidate reviews, rating aggregation</td><td>ReviewRepository, JobRepository</td></tr>
 </table>
