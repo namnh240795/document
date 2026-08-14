@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Design - Authentication (Better Auth)</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Database Design Document</h1>
+  <div class="subtitle">Authentication Module</div>
+  <span class="module-badge">AUTH</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>AUTH - Authentication</td></tr>
+    <tr><td>Database</td><td>auth_db</td></tr>
+    <tr><td>ORM</td><td>Drizzle ORM</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Authentication SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Schema Design</a></li>
+    <li><a href="#section-3">3. Indexes</a></li>
+    <li><a href="#section-4">4. Migrations</a></li>
+    <li><a href="#section-5">5. Data Dictionary</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>This document defines the database design for the <strong>Authentication</strong> module (database: <code>auth_db</code>).</p>
+
+<h2>1.2 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Database Solution</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Registration</td><td>auth_users, auth_accounts tables</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Login</td><td>auth_users, auth_sessions tables</td></tr>
+  <tr><td><span class="req-id">FR-008</span>/<span class="req-id">FR-009</span> Verify</td><td>auth_verification table</td></tr>
+  <tr><td><span class="req-id">FR-011</span> Roles</td><td>auth_roles, auth_user_roles tables</td></tr>
+</table>
+
+<h2>1.3 ERD Diagram</h2>
+<div class="diagram">
+  <img src="./images/erd/erd-diagram.png" alt="ERD Diagram">
+  <div class="caption">Figure 1: Authentication ERD</div>
+</div>
+
+<!-- 2. SCHEMA DESIGN -->
+<h1 id="section-2">2. Schema Design</h1>
+
+<h2>2.1 Database Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Database</td><td><code>auth_db</code></td></tr>
+  <tr><td>Table naming</td><td><code>auth_&lt;table_name&gt;</code></td></tr>
+  <tr><td>Primary keys</td><td>UUID (via gen_random_uuid())</td></tr>
+  <tr><td>Timestamps</td><td>created_at, updated_at with NOW() default</td></tr>
+</table>
+
+<h2>2.2 Table: <code>auth_users</code></h2>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Default</th><th>Description</th></tr>
+  <tr><td>id</td><td>uuid</td><td>NO</td><td>gen_random_uuid()</td><td>Primary key</td></tr>
+  <tr><td>email</td><td>varchar(255)</td><td>YES</td><td>NULL</td><td>Unique email</td></tr>
+  <tr><td>phone</td><td>varchar(20)</td><td>YES</td><td>NULL</td><td>Unique phone</td></tr>
+  <tr><td>name</td><td>varchar(100)</td><td>NO</td><td>-</td><td>Display name</td></tr>
+  <tr><td>password_hash</td><td>varchar(255)</td><td>YES</td><td>NULL</td><td>bcrypt hash</td></tr>
+  <tr><td>email_verified</td><td>boolean</td><td>NO</td><td>false</td><td>Email verified flag</td></tr>
+  <tr><td>phone_verified</td><td>boolean</td><td>NO</td><td>false</td><td>Phone verified flag</td></tr>
+  <tr><td>status</td><td>varchar(20)</td><td>NO</td><td>active</td><td>active, inactive, banned</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Creation time</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Last update time</td></tr>
+</table>
+
+<pre><code>CREATE TABLE auth_users (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email           VARCHAR(255) UNIQUE,
+  phone           VARCHAR(20) UNIQUE,
+  name            VARCHAR(100) NOT NULL,
+  password_hash   VARCHAR(255),
+  email_verified  BOOLEAN NOT NULL DEFAULT false,
+  phone_verified  BOOLEAN NOT NULL DEFAULT false,
+  status          VARCHAR(20) NOT NULL DEFAULT 'active'
+                  CHECK (status IN ('active', 'inactive', 'banned')),
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT auth_users_email_or_phone CHECK (email IS NOT NULL OR phone IS NOT NULL)
+);</code></pre>
+
+<h2>2.3 Table: <code>auth_sessions</code></h2>
+<pre><code>CREATE TABLE auth_sessions (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         UUID NOT NULL REFERENCES auth_users(id) ON DELETE CASCADE,
+  token           VARCHAR(500) NOT NULL,
+  refresh_token   VARCHAR(500),
+  ip_address      VARCHAR(45),
+  user_agent      TEXT,
+  expires_at      TIMESTAMP NOT NULL,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h2>2.4 Table: <code>auth_accounts</code></h2>
+<pre><code>CREATE TABLE auth_accounts (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         UUID NOT NULL REFERENCES auth_users(id) ON DELETE CASCADE,
+  provider        VARCHAR(50) NOT NULL,
+  provider_id     VARCHAR(255) NOT NULL,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT auth_accounts_provider_unique UNIQUE (provider, provider_id)
+);</code></pre>
+
+<h2>2.5 Table: <code>auth_verification</code></h2>
+<pre><code>CREATE TABLE auth_verification (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         UUID NOT NULL REFERENCES auth_users(id) ON DELETE CASCADE,
+  code            VARCHAR(10) NOT NULL,
+  type            VARCHAR(20) NOT NULL
+                  CHECK (type IN ('email', 'phone', 'password_reset')),
+  expires_at      TIMESTAMP NOT NULL,
+  used            BOOLEAN NOT NULL DEFAULT false,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h2>2.6 Table: <code>auth_roles</code></h2>
+<pre><code>CREATE TABLE auth_roles (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name            VARCHAR(50) NOT NULL UNIQUE,
+  description     TEXT,
+  permissions     JSONB DEFAULT '[]',
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h2>2.7 Table: <code>auth_user_roles</code></h2>
+<pre><code>CREATE TABLE auth_user_roles (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         UUID NOT NULL REFERENCES auth_users(id) ON DELETE CASCADE,
+  role_id         UUID NOT NULL REFERENCES auth_roles(id) ON DELETE CASCADE,
+  assigned_at     TIMESTAMP NOT NULL DEFAULT NOW(),
+  assigned_by     UUID REFERENCES auth_users(id),
+  CONSTRAINT auth_user_roles_unique UNIQUE (user_id, role_id)
+);</code></pre>
+
+<h2>2.8 Table: <code>auth_organizations</code></h2>
+<pre><code>CREATE TABLE auth_organizations (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name            VARCHAR(100) NOT NULL,
+  slug            VARCHAR(100) NOT NULL UNIQUE,
+  logo            VARCHAR(500),
+  metadata        JSONB,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h2>2.9 Table: <code>auth_members</code></h2>
+<pre><code>CREATE TABLE auth_members (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES auth_organizations(id) ON DELETE CASCADE,
+  user_id         UUID NOT NULL REFERENCES auth_users(id) ON DELETE CASCADE,
+  role            VARCHAR(50) NOT NULL DEFAULT 'member',
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT auth_members_unique UNIQUE (organization_id, user_id)
+);</code></pre>
+
+<h2>2.10 Table: <code>auth_teams</code></h2>
+<pre><code>CREATE TABLE auth_teams (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name            VARCHAR(100) NOT NULL,
+  organization_id UUID NOT NULL REFERENCES auth_organizations(id) ON DELETE CASCADE,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h2>2.11 Table: <code>auth_team_members</code></h2>
+<pre><code>CREATE TABLE auth_team_members (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  team_id         UUID NOT NULL REFERENCES auth_teams(id) ON DELETE CASCADE,
+  user_id         UUID NOT NULL REFERENCES auth_users(id) ON DELETE CASCADE,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT auth_team_members_unique UNIQUE (team_id, user_id)
+);</code></pre>
+
+<h2>2.12 Table: <code>auth_invitations</code></h2>
+<pre><code>CREATE TABLE auth_invitations (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES auth_organizations(id) ON DELETE CASCADE,
+  email           VARCHAR(255) NOT NULL,
+  role            VARCHAR(50) DEFAULT 'member',
+  team_id         UUID REFERENCES auth_teams(id) ON DELETE SET NULL,
+  status          VARCHAR(20) NOT NULL DEFAULT 'pending'
+                  CHECK (status IN ('pending', 'accepted', 'rejected', 'canceled')),
+  expires_at      TIMESTAMP NOT NULL,
+  inviter_id      UUID NOT NULL REFERENCES auth_users(id),
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);</code></pre>
+
+<h2>2.13 Table: <code>auth_organization_roles</code></h2>
+<pre><code>CREATE TABLE auth_organization_roles (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID NOT NULL REFERENCES auth_organizations(id) ON DELETE CASCADE,
+  role            VARCHAR(50) NOT NULL,
+  permission      VARCHAR(255) NOT NULL,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT auth_org_roles_unique UNIQUE (organization_id, role)
+);</code></pre>
+
+<!-- 3. INDEXES -->
+<h1 id="section-3">3. Indexes</h1>
+
+<pre><code>-- auth_users
+CREATE INDEX idx_auth_users_email ON auth_users(email);
+CREATE INDEX idx_auth_users_phone ON auth_users(phone);
+CREATE INDEX idx_auth_users_status ON auth_users(status);
+
+-- auth_sessions
+CREATE INDEX idx_auth_sessions_user_id ON auth_sessions(user_id);
+CREATE INDEX idx_auth_sessions_token ON auth_sessions(token);
+CREATE INDEX idx_auth_sessions_expires ON auth_sessions(expires_at);
+
+-- auth_verification
+CREATE INDEX idx_auth_verification_user_id ON auth_verification(user_id);
+CREATE INDEX idx_auth_verification_code ON auth_verification(code);
+CREATE INDEX idx_auth_verification_type ON auth_verification(type);
+
+-- auth_user_roles
+CREATE INDEX idx_auth_user_roles_user_id ON auth_user_roles(user_id);
+CREATE INDEX idx_auth_user_roles_role_id ON auth_user_roles(role_id);
+
+-- auth_organizations
+CREATE INDEX idx_auth_organizations_slug ON auth_organizations(slug);
+
+-- auth_members
+CREATE INDEX idx_auth_members_org_id ON auth_members(organization_id);
+CREATE INDEX idx_auth_members_user_id ON auth_members(user_id);
+
+-- auth_teams
+CREATE INDEX idx_auth_teams_org_id ON auth_teams(organization_id);
+
+-- auth_team_members
+CREATE INDEX idx_auth_team_members_team_id ON auth_team_members(team_id);
+CREATE INDEX idx_auth_team_members_user_id ON auth_team_members(user_id);
+
+-- auth_invitations
+CREATE INDEX idx_auth_invitations_org_id ON auth_invitations(organization_id);
+CREATE INDEX idx_auth_invitations_email ON auth_invitations(email);
+CREATE INDEX idx_auth_invitations_status ON auth_invitations(status);
+
+-- auth_organization_roles
+CREATE INDEX idx_auth_org_roles_org_id ON auth_organization_roles(organization_id);</code></pre>
+
+<!-- 4. MIGRATIONS -->
+<h1 id="section-4">4. Migrations</h1>
+
+<h2>4.1 Migration Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Tool</td><td>Drizzle ORM (drizzle-kit)</td></tr>
+  <tr><td>Database</td><td>auth_db</td></tr>
+  <tr><td>Rollback</td><td>Required for every migration</td></tr>
+</table>
+
+<h2>4.2 Migration Order</h2>
+<table>
+  <tr><th>Order</th><th>Migration</th><th>Description</th></tr>
+  <tr><td>1</td><td>001_create_users</td><td>Create auth_users table</td></tr>
+  <tr><td>2</td><td>002_create_sessions</td><td>Create auth_sessions table</td></tr>
+  <tr><td>3</td><td>003_create_accounts</td><td>Create auth_accounts table</td></tr>
+  <tr><td>4</td><td>004_create_verification</td><td>Create auth_verification table</td></tr>
+  <tr><td>5</td><td>005_create_roles</td><td>Create auth_roles table</td></tr>
+  <tr><td>6</td><td>006_create_user_roles</td><td>Create auth_user_roles table</td></tr>
+  <tr><td>7</td><td>007_create_organizations</td><td>Create auth_organizations table</td></tr>
+  <tr><td>8</td><td>008_create_members</td><td>Create auth_members table</td></tr>
+  <tr><td>9</td><td>009_create_teams</td><td>Create auth_teams table</td></tr>
+  <tr><td>10</td><td>010_create_team_members</td><td>Create auth_team_members table</td></tr>
+  <tr><td>11</td><td>011_create_invitations</td><td>Create auth_invitations table</td></tr>
+  <tr><td>12</td><td>012_create_org_roles</td><td>Create auth_organization_roles table</td></tr>
+  <tr><td>13</td><td>013_create_indexes</td><td>Create all indexes</td></tr>
+</table>
+
+<!-- 5. DATA DICTIONARY -->
+<h1 id="section-5">5. Data Dictionary</h1>
+
+<table class="trace-table">
+  <tr><th>Table</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
+  <tr><td>auth_users</td><td>User accounts</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td><td>10,000</td></tr>
+  <tr><td>auth_sessions</td><td>User sessions and tokens</td><td><span class="req-id">FR-002</span>, <span class="req-id">FR-003</span>, <span class="req-id">FR-004</span></td><td>50,000</td></tr>
+  <tr><td>auth_accounts</td><td>OAuth provider accounts</td><td><span class="req-id">FR-001</span></td><td>10,000</td></tr>
+  <tr><td>auth_verification</td><td>Email/phone verification codes</td><td><span class="req-id">FR-005</span>, <span class="req-id">FR-006</span>, <span class="req-id">FR-008</span>, <span class="req-id">FR-009</span></td><td>20,000</td></tr>
+  <tr><td>auth_roles</td><td>User roles</td><td><span class="req-id">FR-011</span></td><td>10</td></tr>
+  <tr><td>auth_user_roles</td><td>User-role assignments</td><td><span class="req-id">FR-011</span></td><td>15,000</td></tr>
+  <tr><td>auth_organizations</td><td>Organizations</td><td><span class="req-id">FR-015</span></td><td>100</td></tr>
+  <tr><td>auth_members</td><td>Organization membership</td><td><span class="req-id">FR-015</span></td><td>500</td></tr>
+  <tr><td>auth_teams</td><td>Teams within organizations</td><td><span class="req-id">FR-016</span></td><td>300</td></tr>
+  <tr><td>auth_team_members</td><td>Team membership</td><td><span class="req-id">FR-016</span></td><td>1,000</td></tr>
+  <tr><td>auth_invitations</td><td>Organization invitations</td><td><span class="req-id">FR-017</span></td><td>2,000</td></tr>
+  <tr><td>auth_organization_roles</td><td>Custom organization roles</td><td><span class="req-id">FR-015</span></td><td>50</td></tr>
+</table>
+
+</body>
+</html>

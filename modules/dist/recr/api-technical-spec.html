@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Technical Specification - Recruitment</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>API Technical Specification</h1>
+  <div class="subtitle">Recruitment API</div>
+  <span class="module-badge">RECR</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
+    <tr><td>System</td><td>HR Management System</td></tr>
+    <tr><td>Module</td><td>RECR - Recruitment</td></tr>
+    <tr><td>Date</td><td>2026-07-31</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Recruitment SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Response Format</a></li>
+    <li><a href="#section-3">3. Error Codes</a></li>
+    <li><a href="#section-4">4. Rate Limiting</a></li>
+    <li><a href="#section-5">5. Endpoints</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 Authentication (All Roles)</a></li>
+        <li><a href="#section-5-2">5.2 Candidate Endpoints</a></li>
+        <li><a href="#section-5-3">5.3 HR Endpoints</a></li>
+        <li><a href="#section-5-4">5.4 Employer Endpoints</a></li>
+        <li><a href="#section-5-5">5.5 Subscription Endpoints</a></li>
+        <li><a href="#section-5-6">5.6 Dashboard Endpoints</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. Pagination</a></li>
+    <li><a href="#section-7">7. Webhook Events</a></li>
+    <li><a href="#section-8">8. Changelog</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
+  <tr><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> Candidate Registration</td><td>POST /recr/auth/register</td></tr>
+  <tr><td><a href="srs.html#fr-002"><span class="req-id">FR-002</span></a> Login</td><td>POST /recr/auth/login</td></tr>
+  <tr><td><a href="srs.html#fr-003"><span class="req-id">FR-003</span></a> Browse Jobs</td><td>GET /recr/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-004"><span class="req-id">FR-004</span></a> Submit Application</td><td>POST /recr/applications</td></tr>
+  <tr><td><a href="srs.html#fr-005"><span class="req-id">FR-005</span></a> View Application Status</td><td>GET /recr/candidate/applications</td></tr>
+  <tr><td><a href="srs.html#fr-006"><span class="req-id">FR-006</span></a> Update Profile</td><td>PATCH /recr/candidate/profile</td></tr>
+  <tr><td><a href="srs.html#fr-007"><span class="req-id">FR-007</span></a> Upload Resume</td><td>POST /recr/candidate/resume</td></tr>
+  <tr><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a> Review Applications</td><td>GET /recr/hr/applications</td></tr>
+  <tr><td><a href="srs.html#fr-009"><span class="req-id">FR-009</span></a> Screen Candidates</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
+  <tr><td><a href="srs.html#fr-010"><span class="req-id">FR-010</span></a> Schedule Interview</td><td>POST /recr/hr/interviews</td></tr>
+  <tr><td><a href="srs.html#fr-011"><span class="req-id">FR-011</span></a> Evaluate Candidate</td><td>POST /recr/hr/evaluations</td></tr>
+  <tr><td><a href="srs.html#fr-013"><span class="req-id">FR-013</span></a> Track Pipeline</td><td>GET /recr/hr/pipeline</td></tr>
+  <tr><td><a href="srs.html#fr-014"><span class="req-id">FR-014</span></a> Generate Reports</td><td>GET /recr/hr/reports</td></tr>
+  <tr><td><a href="srs.html#fr-016"><span class="req-id">FR-016</span></a> Post Job (Employer)</td><td>POST /recr/employer/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-017"><span class="req-id">FR-017</span></a> Manage Job Listings</td><td>GET/PATCH /recr/employer/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-018"><span class="req-id">FR-018</span></a> View Applicants</td><td>GET /recr/employer/jobs/:id/applicants</td></tr>
+  <tr><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> Subscription Plans</td><td>GET /recr/subscription/plans</td></tr>
+  <tr><td><a href="srs.html#fr-022"><span class="req-id">FR-022</span></a> Purchase Subscription</td><td>POST /recr/subscription/purchase</td></tr>
+  <tr><td><a href="srs.html#fr-024"><span class="req-id">FR-024</span></a> Subscription Validation</td><td>GET /recr/subscription/status</td></tr>
+  <tr><td><a href="srs.html#fr-025"><span class="req-id">FR-025</span></a> Subscription Renewal</td><td>POST /recr/subscription/renew</td></tr>
+  <tr><td><a href="srs.html#fr-026"><span class="req-id">FR-026</span></a> Subscription History</td><td>GET /recr/subscription/history</td></tr>
+  <tr><td><a href="srs.html#fr-028"><span class="req-id">FR-028</span></a> HR Post Job</td><td>POST /recr/hr/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-029"><span class="req-id">FR-029</span></a> HR Manage Jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a> Job Review</td><td>POST /recr/candidate/reviews/jobs</td></tr>
+  <tr><td><a href="srs.html#fr-031"><span class="req-id">FR-031</span></a> Candidate Review</td><td>POST /recr/hr/reviews/candidates</td></tr>
+  <tr><td><a href="srs.html#fr-032"><span class="req-id">FR-032</span></a> Update HR Profile</td><td>PATCH /recr/hr/profile</td></tr>
+  <tr><td><a href="srs.html#fr-033"><span class="req-id">FR-033</span></a> Update Employer Profile</td><td>PATCH /recr/employer/profile</td></tr>
+  <tr><td><a href="srs.html#fr-034"><span class="req-id">FR-034</span></a> User Registration Analytics</td><td>GET /recr/dashboard/registrations</td></tr>
+  <tr><td><a href="srs.html#fr-035"><span class="req-id">FR-035</span></a> User Login Analytics</td><td>GET /recr/dashboard/logins</td></tr>
+  <tr><td><a href="srs.html#fr-036"><span class="req-id">FR-036</span></a> Dashboard View</td><td>GET /recr/dashboard/overview</td></tr>
+</table>
+
+<h2>1.2 API Principles</h2>
+<ul>
+  <li>RESTful design</li>
+  <li>JSON request/response</li>
+  <li>Versioned via URL path (<code>/v1/</code>)</li>
+  <li>Stateless (JWT authentication)</li>
+  <li>Role-based endpoints: <code>/candidate/</code>, <code>/hr/</code>, <code>/employer/</code></li>
+</ul>
+
+<h2>1.3 Authentication</h2>
+<p>All endpoints require JWT Bearer token unless marked as <strong>Public</strong>. The JWT includes the user's role.</p>
+<pre><code>Authorization: Bearer &lt;access_token&gt;
+
+// JWT Payload includes:
+{
+  "sub": "user_id",
+  "email": "user@example.com",
+  "role": "candidate" | "hr" | "employer"
+}</code></pre>
+
+<!-- 2. RESPONSE FORMAT -->
+<h1 id="section-2">2. Response Format</h1>
+
+<h2>2.1 Success Response</h2>
+<pre><code>{
+  "success": true,
+  "data": { ... },
+  "meta": {
+    "requestId": "req-abc-123",
+    "timestamp": "2026-07-31T10:30:00Z"
+  }
+}</code></pre>
+
+<h2>2.2 Error Response</h2>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      { "field": "email", "message": "Invalid email format" }
+    ]
+  }
+}</code></pre>
+
+<!-- 3. ERROR CODES -->
+<h1 id="section-3">3. Error Codes</h1>
+
+<table>
+  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Request validation failed</td></tr>
+  <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid token</td></tr>
+  <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions for role</td></tr>
+  <tr><td>403</td><td>SUBSCRIPTION_REQUIRED</td><td>Active subscription required to access this feature</td></tr>
+  <tr><td>403</td><td>SUBSCRIPTION_EXPIRED</td><td>Your subscription has expired</td></tr>
+  <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
+  <tr><td>404</td><td>SUBSCRIPTION_PLAN_NOT_FOUND</td><td>Subscription plan not found</td></tr>
+  <tr><td>409</td><td>APPLICATION_EXISTS</td><td>Candidate already applied to this job</td></tr>
+  <tr><td>409</td><td>ACTIVE_SUBSCRIPTION_EXISTS</td><td>User already has an active subscription</td></tr>
+  <tr><td>422</td><td>INVALID_STATUS_TRANSITION</td><td>Invalid status change</td></tr>
+  <tr><td>422</td><td>INVALID_SUBSCRIPTION_ACTION</td><td>Cannot perform this action on subscription</td></tr>
+  <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
+  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
+  <tr><td>502</td><td>PAYMENT_GATEWAY_ERROR</td><td>Payment processing failed</td></tr>
+</table>
+
+<!-- 4. RATE LIMITING -->
+<h1 id="section-4">4. Rate Limiting</h1>
+
+<table>
+  <tr><th>Endpoint Category</th><th>Requests/min</th><th>Burst</th></tr>
+  <tr><td>Auth endpoints</td><td>10</td><td>5</td></tr>
+  <tr><td>Candidate endpoints</td><td>60</td><td>20</td></tr>
+  <tr><td>HR endpoints</td><td>100</td><td>30</td></tr>
+  <tr><td>Employer endpoints</td><td>60</td><td>20</td></tr>
+</table>
+
+<!-- 5. ENDPOINTS -->
+<h1 id="section-5">5. Endpoints</h1>
+
+<h2 id="section-5-1">5.1 Authentication (All Roles)</h2>
+
+<h3>POST /recr/auth/register <em>(Public)</em> <span class="req-id">FR-001, FR-016</span></h3>
+<p>Register new user as candidate, HR, or employer.</p>
+<p><strong>Note:</strong> All users can optionally purchase subscription (POST /recr/subscription/purchase) for premium features.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "email": "john@example.com",
+  "password": "securepassword123",
+  "full_name": "John Doe",
+  "phone": "0901234567",
+  "role": "candidate",
+  // For employer only:
+  "company_name": "Tech Corp",
+  "industry": "Technology"
+}</code></pre>
+<p><strong>Response 201:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "email": "john@example.com",
+    "role": "candidate",
+    "token": "jwt_token_here"
+  }
+}</code></pre>
+
+<h3>POST /recr/auth/login <em>(Public)</em> <span class="req-id">FR-002</span></h3>
+<p>Login with email/password. Returns JWT with role claim.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "email": "john@example.com",
+  "password": "securepassword123"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "email": "john@example.com",
+    "role": "candidate",
+    "token": "jwt_token_here"
+  }
+}</code></pre>
+
+<h2 id="section-5-2">5.2 Candidate Endpoints</h2>
+
+<h3>GET /recr/jobs <span class="req-id">FR-003</span></h3>
+<p>Browse job listings. Public endpoint (no auth required).</p>
+<p><strong>Query Params:</strong> <code>search</code>, <code>location</code>, <code>salary_min</code>, <code>employment_type</code>, <code>page</code>, <code>limit</code></p>
+
+<h3>POST /recr/applications <span class="req-id">FR-004</span></h3>
+<p>Submit job application. Requires <strong>candidate</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "job_id": 1,
+  "cover_letter": "I am interested in this position..."
+}</code></pre>
+
+<h3>GET /recr/candidate/applications <span class="req-id">FR-005</span></h3>
+<p>View my applications. Requires <strong>candidate</strong> role.</p>
+
+<h3>PATCH /recr/candidate/profile <span class="req-id">FR-006</span></h3>
+<p>Update profile. Requires <strong>candidate</strong> role.</p>
+
+<h3>POST /recr/candidate/resume <span class="req-id">FR-007</span></h3>
+<p>Upload resume. Requires <strong>candidate</strong> role. Max 10MB.</p>
+
+<h3>POST /recr/candidate/reviews/jobs <span class="req-id">FR-030</span></h3>
+<p>Review a job. Requires <strong>candidate</strong> role. Must have applied to the job.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "job_id": 1,
+  "overall_rating": 4,
+  "work_life_balance": 5,
+  "compensation": 3,
+  "career_growth": 4,
+  "company_culture": 4,
+  "title": "Great work environment",
+  "description": "Good company culture but salary could be better...",
+  "is_anonymous": false
+}</code></pre>
+
+<h3>GET /recr/candidate/reviews/jobs/:jobId <span class="req-id">FR-030</span></h3>
+<p>Get reviews for a job. Public endpoint.</p>
+
+<h2 id="section-5-3">5.3 HR Endpoints</h2>
+
+<h3>GET /recr/hr/applications <span class="req-id">FR-008</span></h3>
+<p>Review applications. Requires <strong>hr</strong> role.</p>
+<p><strong>Query Params:</strong> <code>job_id</code>, <code>status</code>, <code>page</code>, <code>limit</code></p>
+
+<h3>PATCH /recr/hr/applications/:id/status <span class="req-id">FR-009</span></h3>
+<p>Update application status. Requires <strong>hr</strong> role.</p>
+
+<h3>POST /recr/hr/interviews <span class="req-id">FR-010</span></h3>
+<p>Schedule interview. Requires <strong>hr</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "application_id": 1,
+  "interviewer_id": 201,
+  "scheduled_at": "2026-08-05T14:00:00Z",
+  "duration_minutes": 60,
+  "location": "Meeting Room A",
+  "meeting_link": "https://meet.google.com/abc-defg-hij"
+}</code></pre>
+
+<h3>POST /recr/hr/evaluations <span class="req-id">FR-011</span></h3>
+<p>Submit evaluation. Requires <strong>hr</strong> role.</p>
+
+<h3>GET /recr/hr/pipeline <span class="req-id">FR-014</span></h3>
+<p>View recruitment pipeline. Requires <strong>hr</strong> role.</p>
+
+<h3>GET /recr/hr/reports <span class="req-id">FR-015</span></h3>
+<p>Generate reports. Requires <strong>hr</strong> role.</p>
+
+<h3>PATCH /recr/hr/profile <span class="req-id">FR-032</span></h3>
+<p>Update HR profile. Requires <strong>hr</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "department": "Engineering",
+  "position": "Senior Recruiter",
+  "phone": "0901234567",
+  "avatar_url": "https://example.com/avatar.jpg"
+}</code></pre>
+
+<h3>POST /recr/hr/jobs <span class="req-id">FR-028</span></h3>
+<p>Create job listing. Requires <strong>hr</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "title": "Senior Software Engineer",
+  "description": "We are looking for a senior engineer...",
+  "department": "Engineering",
+  "location": "Ho Chi Minh City",
+  "salary_min": 20000000,
+  "salary_max": 40000000,
+  "employment_type": "full_time",
+  "requirements": [
+    { "type": "skill", "description": "5+ years Node.js", "is_mandatory": true }
+  ]
+}</code></pre>
+
+<h3>GET /recr/hr/jobs <span class="req-id">FR-029</span></h3>
+<p>List my jobs. Requires <strong>hr</strong> role.</p>
+
+<h3>PATCH /recr/hr/jobs/:id <span class="req-id">FR-029</span></h3>
+<p>Update job listing. Requires <strong>hr</strong> role.</p>
+
+<h3>GET /recr/hr/jobs/:id/applicants <span class="req-id">FR-029</span></h3>
+<p>View applicants for my job. Requires <strong>hr</strong> role.</p>
+
+<h3>POST /recr/hr/reviews/candidates <span class="req-id">FR-031</span></h3>
+<p>Review a candidate after interview. Requires <strong>hr</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "candidate_id": 1,
+  "interview_id": 1,
+  "technical_skills": 4,
+  "communication_skills": 5,
+  "cultural_fit": 4,
+  "problem_solving": 4,
+  "team_collaboration": 5,
+  "title": "Strong technical candidate",
+  "description": "Excellent problem-solving skills...",
+  "recommendation": "yes"
+}</code></pre>
+
+<h3>GET /recr/hr/reviews/candidates/:candidateId <span class="req-id">FR-031</span></h3>
+<p>Get reviews for a candidate. Requires <strong>hr</strong> role.</p>
+
+<h2 id="section-5-4">5.4 Employer Endpoints</h2>
+
+<h3>POST /recr/employer/jobs <span class="req-id">FR-017</span></h3>
+<p>Create job listing. Requires <strong>employer</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "title": "Senior Software Engineer",
+  "description": "We are looking for a senior engineer...",
+  "department": "Engineering",
+  "location": "Ho Chi Minh City",
+  "salary_min": 20000000,
+  "salary_max": 40000000,
+  "employment_type": "full_time",
+  "requirements": [
+    { "type": "skill", "description": "5+ years Node.js", "is_mandatory": true }
+  ]
+}</code></pre>
+
+<h3>GET /recr/employer/jobs <span class="req-id">FR-018</span></h3>
+<p>List my jobs. Requires <strong>employer</strong> role.</p>
+
+<h3>PATCH /recr/employer/jobs/:id <span class="req-id">FR-018</span></h3>
+<p>Update job listing. Requires <strong>employer</strong> role.</p>
+
+<h3>GET /recr/employer/jobs/:id/applicants <span class="req-id">FR-019</span></h3>
+<p>View applicants. Requires <strong>employer</strong> role.</p>
+
+<h3>PATCH /recr/employer/jobs/:id/submit <span class="req-id">FR-020</span></h3>
+<p>Submit for HR approval. Requires <strong>employer</strong> role.</p>
+
+<h3>GET /recr/employer/analytics <span class="req-id">FR-021</span></h3>
+<p>View analytics. Requires <strong>employer</strong> role. <em>Requires active subscription.</em></p>
+
+<h3>PATCH /recr/employer/profile <span class="req-id">FR-033</span></h3>
+<p>Update employer profile. Requires <strong>employer</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "company_name": "Tech Corp",
+  "company_website": "https://techcorp.com",
+  "company_description": "Leading technology company...",
+  "industry": "Technology",
+  "company_size": "51-200",
+  "logo_url": "https://example.com/logo.png"
+}</code></pre>
+
+<h2 id="section-5-5">5.5 Subscription Endpoints</h2>
+
+<h3>GET /recr/subscription/plans <a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> <em>(Public)</em></h3>
+<p>List available subscription plans.</p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "1_month",
+      "display_name": "1 Month",
+      "duration_months": 1,
+      "base_price": 500000,
+      "discount_percent": 0,
+      "free_months": 0,
+      "final_price": 500000,
+      "features": ["post_jobs", "manage_candidates", "analytics"]
+    },
+    {
+      "id": 2,
+      "name": "6_months",
+      "display_name": "6 Months",
+      "duration_months": 6,
+      "base_price": 3000000,
+      "discount_percent": 10,
+      "free_months": 0,
+      "final_price": 2700000,
+      "features": ["post_jobs", "manage_candidates", "analytics", "priority_support"]
+    },
+    {
+      "id": 3,
+      "name": "1_year",
+      "display_name": "1 Year",
+      "duration_months": 12,
+      "base_price": 6000000,
+      "discount_percent": 0,
+      "free_months": 2,
+      "final_price": 5000000,
+      "features": ["post_jobs", "manage_candidates", "analytics", "priority_support", "dedicated_account_manager"]
+    }
+  ]
+}</code></pre>
+
+<h3>POST /recr/subscription/purchase <a href="srs.html#fr-022"><span class="req-id">FR-022</span></a></h3>
+<p>Purchase a subscription plan. Requires authentication (all roles).</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "plan_id": 2,
+  "payment_method": "credit_card",
+  "payment_token": "tok_visa_123"  // From payment gateway
+}</code></pre>
+<p><strong>Response 201:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "plan": {
+      "id": 2,
+      "name": "6_months",
+      "display_name": "6 Months"
+    },
+    "status": "active",
+    "start_date": "2026-08-01T00:00:00Z",
+    "end_date": "2027-02-01T00:00:00Z",
+    "payment_amount": 2700000,
+    "payment_method": "credit_card",
+    "payment_reference": "pay_abc123"
+  }
+}</code></pre>
+
+<h3>GET /recr/subscription/status <a href="srs.html#fr-024"><span class="req-id">FR-024</span></a></h3>
+<p>Get current subscription status. Requires authentication (all roles).</p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "has_subscription": true,
+    "subscription": {
+      "id": 1,
+      "plan": {
+        "id": 2,
+        "name": "6_months",
+        "display_name": "6 Months"
+      },
+      "status": "active",
+      "start_date": "2026-08-01T00:00:00Z",
+      "end_date": "2027-02-01T00:00:00Z",
+      "days_remaining": 153,
+      "auto_renew": false
+    }
+  }
+}</code></pre>
+
+<h3>POST /recr/subscription/renew <a href="srs.html#fr-025"><span class="req-id">FR-025</span></a></h3>
+<p>Renew or upgrade subscription. Requires authentication (all roles).</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "plan_id": 3,  // Optional: upgrade to different plan
+  "payment_method": "credit_card",
+  "payment_token": "tok_visa_123"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 2,
+    "plan": {
+      "id": 3,
+      "name": "1_year",
+      "display_name": "1 Year"
+    },
+    "status": "active",
+    "start_date": "2027-02-01T00:00:00Z",
+    "end_date": "2028-02-01T00:00:00Z",
+    "payment_amount": 5000000,
+    "payment_method": "credit_card"
+  }
+}</code></pre>
+
+<h3>GET /recr/subscription/history <a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></h3>
+<p>View subscription history. Requires authentication (all roles).</p>
+<p><strong>Query Params:</strong> <code>page</code>, <code>limit</code></p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "action": "created",
+      "plan": "6 Months",
+      "amount": 2700000,
+      "created_at": "2026-08-01T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "action": "renewed",
+      "plan": "1 Year",
+      "amount": 5000000,
+      "created_at": "2027-02-01T09:00:00Z"
+    }
+  ],
+  "meta": {
+    "total": 2,
+    "page": 1,
+    "limit": 10
+  }
+}</code></pre>
+
+<h2 id="section-5-6">5.6 Dashboard Endpoints</h2>
+
+<h3>GET /recr/dashboard/overview <a href="srs.html#fr-036"><span class="req-id">FR-036</span></a></h3>
+<p>Get dashboard overview with aggregated analytics. Requires <strong>hr</strong> or <strong>employer</strong> role.</p>
+<p><strong>Query Params:</strong> <code>start_date</code>, <code>end_date</code></p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "registrations": {
+      "total": 1500,
+      "by_role": {
+        "candidate": 1200,
+        "hr": 50,
+        "employer": 250
+      },
+      "daily": [
+        { "date": "2026-08-01", "count": 45 },
+        { "date": "2026-08-02", "count": 52 }
+      ]
+    },
+    "logins": {
+      "total": 8500,
+      "by_role": {
+        "candidate": 6000,
+        "hr": 800,
+        "employer": 1700
+      },
+      "peak_hours": [
+        { "hour": 9, "count": 1200 },
+        { "hour": 14, "count": 1100 }
+      ],
+      "failed_attempts": 23
+    },
+    "jobs": {
+      "active": 150,
+      "total_applications": 2500,
+      "interviews_scheduled": 800
+    }
+  }
+}</code></pre>
+
+<h3>GET /recr/dashboard/registrations <a href="srs.html#fr-034"><span class="req-id">FR-034</span></a></h3>
+<p>Get user registration statistics. Requires <strong>hr</strong> or <strong>employer</strong> role.</p>
+<p><strong>Query Params:</strong> <code>start_date</code>, <code>end_date</code>, <code>interval</code> (day/week/month)</p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "total": 1500,
+    "by_role": {
+      "candidate": 1200,
+      "hr": 50,
+      "employer": 250
+    },
+    "timeline": [
+      { "date": "2026-08-01", "candidate": 30, "hr": 2, "employer": 8 },
+      { "date": "2026-08-02", "candidate": 35, "hr": 1, "employer": 12 }
+    ],
+    "growth_rate": {
+      "daily": 5.2,
+      "weekly": 12.8,
+      "monthly": 45.6
+    }
+  }
+}</code></pre>
+
+<h3>GET /recr/dashboard/logins <a href="srs.html#fr-035"><span class="req-id">FR-035</span></a></h3>
+<p>Get user login statistics. Requires <strong>hr</strong> or <strong>employer</strong> role.</p>
+<p><strong>Query Params:</strong> <code>start_date</code>, <code>end_date</code>, <code>interval</code> (hour/day)</p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "total": 8500,
+    "by_role": {
+      "candidate": 6000,
+      "hr": 800,
+      "employer": 1700
+    },
+    "timeline": [
+      { "date": "2026-08-01", "hour": 9, "count": 120 },
+      { "date": "2026-08-01", "hour": 10, "count": 95 }
+    ],
+    "peak_hours": [
+      { "hour": 9, "count": 1200 },
+      { "hour": 14, "count": 1100 }
+    ],
+    "failed_attempts": {
+      "total": 23,
+      "by_role": {
+        "candidate": 15,
+        "hr": 2,
+        "employer": 6
+      }
+    }
+  }
+}</code></pre>
+
+<!-- 6. PAGINATION -->
+<h1 id="section-6">6. Pagination</h1>
+<p>All list endpoints support offset pagination.</p>
+<pre><code>GET /recr/jobs?page=2&amp;limit=20</code></pre>
+
+<!-- 7. WEBHOOK EVENTS -->
+<h1 id="section-7">7. Webhook Events</h1>
+
+<table>
+  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
+  <tr><td>application.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate submits application</td></tr>
+  <tr><td>interview.scheduled</td><td>Outbound</td><td>RabbitMQ</td><td>HR schedules interview</td></tr>
+  <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>HR/Employer submits job for approval</td></tr>
+  <tr><td>subscription.purchased</td><td>Outbound</td><td>RabbitMQ</td><td>User purchases subscription</td></tr>
+  <tr><td>job.review.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate submits job review</td></tr>
+  <tr><td>candidate.review.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Interviewer submits candidate review</td></tr>
+</table>
+
+<!-- 8. CHANGELOG -->
+<h1 id="section-8">8. Changelog</h1>
+<table>
+  <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
+  <tr><td>2026-07-31</td><td>1.0.0</td><td>Initial release with 3 roles: Candidate, HR, Employer</td></tr>
+  <tr><td>2026-08-01</td><td>1.1.0</td><td>Add subscription system: 3 plans (1mo, 6mo, 1yr), optional for all roles</td></tr>
+  <tr><td>2026-08-10</td><td>1.2.0</td><td>Add job reviews, candidate reviews, profile update endpoints</td></tr>
+  <tr><td>2026-08-13</td><td>1.3.0</td><td>Add HR/Employer job management, update profile endpoints (FR-032, FR-033)</td></tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Technical Specification - Email Notification</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>API Technical Specification</h1>
+  <div class="subtitle">Email Notification API</div>
+  <span class="module-badge">EMAIL</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>EMAIL - Email Notification</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Email Notification SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Response Format</a></li>
+    <li><a href="#section-3">3. Error Codes</a></li>
+    <li><a href="#section-4">4. Rate Limiting</a></li>
+    <li><a href="#section-5">5. Endpoints</a></li>
+    <li><a href="#section-6">6. Pagination</a></li>
+    <li><a href="#section-7">7. Webhook Events</a></li>
+    <li><a href="#section-8">8. Changelog</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Send Verification Email</td><td>RabbitMQ: verification.email</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Resend Verification Email</td><td>RabbitMQ: verification.email</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Track Email Delivery</td><td>POST /api/webhooks/email/delivered</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Log Email Events</td><td>RabbitMQ: log.events</td></tr>
+</table>
+
+<h2>1.2 API Principles</h2>
+<ul>
+  <li>Event-driven via RabbitMQ for async processing</li>
+  <li>Webhook callbacks for delivery tracking</li>
+  <li>JSON request/response</li>
+  <li>Stateless (JWT authentication via Better Auth)</li>
+</ul>
+
+<h2>1.3 Authentication</h2>
+<p>Webhook endpoints require signature verification.</p>
+<pre><code>X-Webhook-Signature: HMAC-SHA256 of request body</code></pre>
+
+<!-- 2. RESPONSE FORMAT -->
+<h1 id="section-2">2. Response Format</h1>
+
+<h2>2.1 Success Response</h2>
+<pre><code>{
+  "success": true,
+  "data": { ... },
+  "meta": {
+    "requestId": "req-abc-123",
+    "timestamp": "2026-07-24T10:30:00Z"
+  }
+}</code></pre>
+
+<h2>2.2 Error Response</h2>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": [
+      { "field": "email", "message": "Invalid email format" }
+    ]
+  }
+}</code></pre>
+
+<!-- 3. ERROR CODES -->
+<h1 id="section-3">3. Error Codes</h1>
+
+<table>
+  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
+  <tr><td>400</td><td>EMAIL_001</td><td>Invalid email address</td></tr>
+  <tr><td>400</td><td>EMAIL_002</td><td>Email template not found</td></tr>
+  <tr><td>502</td><td>EMAIL_003</td><td>Provider error - delivery failed</td></tr>
+  <tr><td>429</td><td>EMAIL_004</td><td>Rate limit exceeded</td></tr>
+  <tr><td>401</td><td>EMAIL_005</td><td>Invalid webhook signature</td></tr>
+</table>
+
+<!-- 4. RATE LIMITING -->
+<h1 id="section-4">4. Rate Limiting</h1>
+
+<table>
+  <tr><th>Endpoint Category</th><th>Requests/min</th><th>Burst</th></tr>
+  <tr><td>Webhook endpoints</td><td>100</td><td>50</td></tr>
+  <tr><td>Email sending (per user)</td><td>5</td><td>2</td></tr>
+</table>
+
+<!-- 5. ENDPOINTS -->
+<h1 id="section-5">5. Endpoints</h1>
+
+<h2>5.1 Webhook Endpoints</h2>
+
+<h3>POST /api/webhooks/email/delivered <span class="req-id">FR-003</span></h3>
+<p>Receives email delivery status callback from email provider.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "verification_id": "string (required)",
+  "status": "delivered | failed (required)",
+  "provider_message_id": "string (required)",
+  "error_message": "string | null (optional)"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "message": "Webhook processed"
+}</code></pre>
+<p><strong>Response 400:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": "Invalid webhook payload"
+}</code></pre>
+
+<!-- 6. PAGINATION -->
+<h1 id="section-6">6. Pagination</h1>
+<p>All list endpoints support offset pagination.</p>
+<pre><code>GET /email/logs?page=2&amp;limit=20</code></pre>
+
+<!-- 7. WEBHOOK EVENTS -->
+<h1 id="section-7">7. Webhook Events</h1>
+
+<h2>7.1 RabbitMQ Queues</h2>
+
+<h3>verification.email</h3>
+<p>Queue for email verification requests from AUTH module.</p>
+<table>
+  <tr><th>Event</th><th>Producer</th><th>Description</th></tr>
+  <tr><td>verification.email.requested</td><td>AUTH</td><td>User requests email verification</td></tr>
+  <tr><td>verification.email.resent</td><td>AUTH</td><td>User resends email verification</td></tr>
+</table>
+
+<h3>Message Format</h3>
+<pre><code>{
+  "user_id": "uuid",
+  "email": "string",
+  "channel": "email",
+  "otp": "string",
+  "verification_id": "string"
+}</code></pre>
+
+<h3>log.events</h3>
+<p>Queue for publishing email delivery events to Logger module.</p>
+<table>
+  <tr><th>Event</th><th>Producer</th><th>Description</th></tr>
+  <tr><td>email.event.logged</td><td>EMAIL</td><td>Email delivery event (sent, delivered, failed)</td></tr>
+</table>
+
+<!-- 8. CHANGELOG -->
+<h1 id="section-8">8. Changelog</h1>
+<table>
+  <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
+  <tr><td>2026-07-24</td><td>1.0.0</td><td>Initial release</td></tr>
+</table>
+
+</body>
+</html>

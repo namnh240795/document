@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Technical Design Specification - Authentication (Better Auth)</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Technical Design Specification</h1>
+  <div class="subtitle">Authentication Module</div>
+  <span class="module-badge">AUTH</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>AUTH - Authentication</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Authentication SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Architecture</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Architecture Style</a></li>
+        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Component Design</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 Component Diagram</a></li>
+        <li><a href="#section-3-2">3.2 Module Structure</a></li>
+        <li><a href="#section-3-3">3.3 Component to Requirements Mapping</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Data Architecture</a>
+      <ul>
+        <li><a href="#section-4-1">4.1 Database</a></li>
+        <li><a href="#section-4-2">4.2 Data Requirements Resolution</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. API Design</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 Endpoint to Requirements Mapping</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. Integration Flows</a>
+      <ul>
+        <li><a href="#section-6-1">6.1 Login Flow</a></li>
+        <li><a href="#section-6-2">6.2 Registration Flow</a></li>
+        <li><a href="#section-6-3">6.3 Password Reset Flow</a></li>
+        <li><a href="#section-6-4">6.4 Logout Flow</a></li>
+        <li><a href="#section-6-5">6.5 Account Verification Flow</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-7">7. Security Design</a></li>
+    <li><a href="#section-8">8. Traceability Summary</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>This document describes the technical design decisions for the <strong>Authentication</strong> module.</p>
+
+<h2>1.2 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
+  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-017</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-007</span></td><td>Section 6</td></tr>
+</table>
+
+<!-- 2. ARCHITECTURE -->
+<h1 id="section-2">2. Architecture</h1>
+
+<h2>2.1 Architecture Style</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th><th>Resolves</th></tr>
+  <tr><td>Pattern</td><td>NestJS Module (Monolith)</td><td><span class="req-id">NFR-007</span></td></tr>
+  <tr><td>Auth Library</td><td>Better Auth</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-009</span></td></tr>
+  <tr><td>ORM</td><td>Drizzle ORM</td><td>All data requirements</td></tr>
+  <tr><td>Database</td><td>PostgreSQL (auth_db)</td><td><span class="req-id">NFR-006</span></td></tr>
+  <tr><td>Token Strategy</td><td>JWT (access + refresh)</td><td><span class="req-id">NFR-004</span></td></tr>
+</table>
+
+<h2>2.2 Key Design Decisions</h2>
+<table class="trace-table">
+  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
+  <tr>
+    <td>1</td><td>Use Better Auth</td>
+    <td>Handles session management, token generation, credential verification</td>
+    <td><span class="req-id">FR-001</span> - <span class="req-id">FR-009</span></td>
+  </tr>
+  <tr>
+    <td>2</td><td>PostgreSQL</td>
+    <td>ACID compliance, JSON support, mature ecosystem</td>
+    <td><span class="req-id">NFR-006</span></td>
+  </tr>
+  <tr>
+    <td>3</td><td>JWT access + refresh tokens</td>
+    <td>Stateless access for performance, refresh for security</td>
+    <td><span class="req-id">NFR-004</span></td>
+  </tr>
+  <tr>
+    <td>4</td><td>bcrypt password hashing</td>
+    <td>Industry standard, adaptive cost factor</td>
+    <td><span class="req-id">NFR-003</span></td>
+  </tr>
+  <tr>
+    <td>5</td><td>Redis for rate limiting</td>
+    <td>Fast lookup, TTL support</td>
+    <td><span class="req-id">NFR-005</span></td>
+  </tr>
+</table>
+
+<!-- 3. COMPONENT DESIGN -->
+<h1 id="section-3">3. Component Design</h1>
+
+<h2>3.1 Component Diagram</h2>
+<div class="diagram">
+  <img src="./images/component/component-diagram.png" alt="AUTH Component Diagram">
+  <div class="caption">Figure 1: AUTH Module Components</div>
+</div>
+
+<h2>3.2 Module Structure</h2>
+<pre><code>src/
+  auth/
+    auth.module.ts
+    auth.controller.ts
+    auth.service.ts
+    auth.guard.ts
+    dto/
+  users/
+    users.module.ts
+    users.controller.ts
+    users.service.ts
+  roles/
+    roles.module.ts
+    roles.controller.ts
+    roles.service.ts
+  organizations/
+    organizations.module.ts
+    organizations.controller.ts
+    organizations.service.ts
+  teams/
+    teams.module.ts
+    teams.controller.ts
+    teams.service.ts
+  invitations/
+    invitations.module.ts
+    invitations.controller.ts
+    invitations.service.ts</code></pre>
+
+<h2>3.2 Component to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
+  <tr><td>AuthController</td><td>Login, register, logout, refresh, reset password</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-009</span></td></tr>
+  <tr><td>AuthService</td><td>Token generation, password hashing, verification</td><td><span class="req-id">NFR-003</span>, <span class="req-id">NFR-004</span></td></tr>
+  <tr><td>UsersController</td><td>User CRUD operations</td><td><span class="req-id">FR-010</span></td></tr>
+  <tr><td>RolesController</td><td>Role management, assignment</td><td><span class="req-id">FR-011</span></td></tr>
+  <tr><td>SocialAuthController</td><td>Social sign-in, account linking/unlinking</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>SessionController</td><td>Session listing, revocation, impersonation</td><td><span class="req-id">FR-013</span>, <span class="req-id">FR-014</span></td></tr>
+  <tr><td>OrganizationsController</td><td>Organization CRUD, membership, roles</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>TeamsController</td><td>Team CRUD, membership management</td><td><span class="req-id">FR-016</span></td></tr>
+  <tr><td>InvitationsController</td><td>Invite, accept, reject, cancel invitations</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>AuthGuard</td><td>JWT validation, route protection</td><td><span class="req-id">NFR-004</span></td></tr>
+</table>
+
+<!-- 4. DATA ARCHITECTURE -->
+<h1 id="section-4">4. Data Architecture</h1>
+
+<h2>4.1 Database</h2>
+<p>Database: <code>auth_db</code> (PostgreSQL)</p>
+<p>Refer to: <a href="database-design.html">Database Design</a></p>
+
+<h2>4.2 Data Requirements Resolution</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Registration</td><td>Insert user + account records</td><td>auth_users, auth_accounts</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Login</td><td>Query user, verify password, create session</td><td>auth_users, auth_sessions</td></tr>
+  <tr><td><span class="req-id">FR-008</span>/<span class="req-id">FR-009</span> Verify</td><td>Store verification codes, update user status</td><td>auth_verification, auth_users</td></tr>
+  <tr><td><span class="req-id">FR-011</span> Roles</td><td>RBAC with roles and permissions</td><td>auth_roles, auth_user_roles</td></tr>
+</table>
+
+<!-- 5. API DESIGN -->
+<h1 id="section-5">5. API Design</h1>
+
+<h2>5.1 Endpoint to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
+  <tr><td>POST</td><td>/sign-up/email</td><td>Register new user</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>POST</td><td>/sign-in/email</td><td>Email sign-in</td><td><span class="req-id">FR-002</span></td></tr>
+  <tr><td>POST</td><td>/sign-in/social</td><td>Social sign-in</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>POST</td><td>/sign-out</td><td>Logout</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>POST</td><td>/refresh-token</td><td>Refresh token</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>POST</td><td>/request-password-reset</td><td>Request password reset</td><td><span class="req-id">FR-005</span></td></tr>
+  <tr><td>POST</td><td>/change-password</td><td>Change password</td><td><span class="req-id">FR-007</span></td></tr>
+  <tr><td>GET</td><td>/verify-email</td><td>Verify email</td><td><span class="req-id">FR-008</span></td></tr>
+  <tr><td>GET</td><td>/list-sessions</td><td>List sessions</td><td><span class="req-id">FR-013</span></td></tr>
+  <tr><td>POST</td><td>/revoke-session</td><td>Revoke session</td><td><span class="req-id">FR-013</span></td></tr>
+  <tr><td>POST</td><td>/link-social</td><td>Link social account</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>POST</td><td>/admin/set-role</td><td>Set user role</td><td><span class="req-id">FR-011</span></td></tr>
+  <tr><td>POST</td><td>/admin/ban-user</td><td>Ban user</td><td><span class="req-id">FR-014</span></td></tr>
+  <tr><td>POST</td><td>/admin/impersonate-user</td><td>Impersonate user</td><td><span class="req-id">FR-014</span></td></tr>
+  <tr><td>POST</td><td>/organization/create</td><td>Create organization</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>POST</td><td>/organization/invite-member</td><td>Invite member</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>POST</td><td>/organization/create-team</td><td>Create team</td><td><span class="req-id">FR-016</span></td></tr>
+</table>
+
+<!-- 6. INTEGRATION FLOWS -->
+<h1 id="section-6">6. Integration Flows</h1>
+
+<h2>6.1 Login Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/login-activity.png" alt="Login Activity Diagram">
+  <div class="caption">Figure 1: Login Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/login-sequence.png" alt="Login Sequence Diagram">
+  <div class="caption">Figure 2: Login Integration Flow</div>
+</div>
+
+<h2>6.2 Registration Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/registration-activity.png" alt="Registration Activity Diagram">
+  <div class="caption">Figure 3: Registration Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/registration-sequence.png" alt="Registration Sequence Diagram">
+  <div class="caption">Figure 4: Registration Integration Flow</div>
+</div>
+
+<h2>6.3 Password Reset Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/password-reset-activity.png" alt="Password Reset Activity Diagram">
+  <div class="caption">Figure 5: Password Reset Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
+  <div class="caption">Figure 6: Password Reset Integration Flow</div>
+</div>
+
+<h2>6.4 Logout Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/logout-activity.png" alt="Logout Activity Diagram">
+  <div class="caption">Figure 7: Logout Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/logout-sequence.png" alt="Logout Sequence Diagram">
+  <div class="caption">Figure 8: Logout Integration Flow</div>
+</div>
+
+<h2>6.5 Account Verification Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/activity-diagram.png" alt="Verification Activity Diagram">
+  <div class="caption">Figure 9: Account Verification Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/sequence-diagram.png" alt="Verification Sequence Diagram">
+  <div class="caption">Figure 10: Account Verification Integration Flow</div>
+</div>
+
+<!-- 7. SECURITY -->
+<h1 id="section-7">7. Security Design</h1>
+
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
+  <tr>
+    <td><span class="req-id">NFR-003</span> Password hashing</td>
+    <td>bcrypt with 12 rounds</td>
+    <td>bcrypt.hash(password, 12)</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-004</span> Token expiry</td>
+    <td>Short-lived access + long-lived refresh</td>
+    <td>Access: 15min, Refresh: 7 days</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-005</span> Rate limiting</td>
+    <td>Redis-based rate limiter</td>
+    <td>10 req/min for auth endpoints</td>
+  </tr>
+</table>
+
+<!-- 8. TRACEABILITY -->
+<h1 id="section-8">8. Traceability Summary</h1>
+
+<table class="trace-table">
+  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
+  <tr><td><span class="req-id">FR-001</span></td><td>User Registration</td><td>3.2, 5.1</td><td>AuthController + POST /auth/register</td></tr>
+  <tr><td><span class="req-id">FR-002</span></td><td>User Login</td><td>2.2, 5.1</td><td>Better Auth + JWT + POST /auth/login</td></tr>
+  <tr><td><span class="req-id">FR-003</span></td><td>Logout</td><td>5.1</td><td>POST /auth/logout (session delete)</td></tr>
+  <tr><td><span class="req-id">FR-004</span></td><td>Refresh Token</td><td>2.2, 5.1</td><td>JWT refresh + POST /auth/refresh</td></tr>
+  <tr><td><span class="req-id">FR-005</span></td><td>Reset Password (Email)</td><td>5.1</td><td>POST /auth/forgot-password</td></tr>
+  <tr><td><span class="req-id">FR-006</span></td><td>Reset Password (Phone)</td><td>5.1</td><td>POST /auth/forgot-password-phone</td></tr>
+  <tr><td><span class="req-id">FR-007</span></td><td>Change Password</td><td>5.1</td><td>POST /auth/change-password</td></tr>
+  <tr><td><span class="req-id">FR-008</span></td><td>Verify Email</td><td>5.1</td><td>GET /auth/verify-email</td></tr>
+  <tr><td><span class="req-id">FR-009</span></td><td>Verify Phone</td><td>5.1</td><td>POST /auth/verify-phone</td></tr>
+  <tr><td><span class="req-id">FR-010</span></td><td>Manage Users</td><td>3.2, 5.1</td><td>UsersController + GET/PUT/DELETE /users/:id</td></tr>
+  <tr><td><span class="req-id">FR-011</span></td><td>Manage Roles</td><td>3.2, 5.1</td><td>RolesController + POST /admin/set-role</td></tr>
+  <tr><td><span class="req-id">FR-012</span></td><td>Social Authentication</td><td>3.2, 5.1</td><td>SocialAuthController + POST /sign-in/social</td></tr>
+  <tr><td><span class="req-id">FR-013</span></td><td>Session Management</td><td>3.2, 5.1</td><td>SessionController + GET /list-sessions</td></tr>
+  <tr><td><span class="req-id">FR-014</span></td><td>User Ban & Impersonation</td><td>3.2, 5.1</td><td>SessionController + POST /admin/ban-user</td></tr>
+  <tr><td><span class="req-id">FR-015</span></td><td>Organization Management</td><td>3.2, 5.1</td><td>OrganizationsController + POST /organization/create</td></tr>
+  <tr><td><span class="req-id">FR-016</span></td><td>Team Management</td><td>3.2, 5.1</td><td>TeamsController + POST /organization/create-team</td></tr>
+  <tr><td><span class="req-id">FR-017</span></td><td>Invitation Management</td><td>3.2, 5.1</td><td>InvitationsController + POST /organization/invite-member</td></tr>
+  <tr><td><span class="req-id">NFR-001</span></td><td>Login &lt; 500ms</td><td>2.1</td><td>Redis cache, DB indexing</td></tr>
+  <tr><td><span class="req-id">NFR-003</span></td><td>bcrypt 12 rounds</td><td>6</td><td>bcrypt.hash(password, 12)</td></tr>
+  <tr><td><span class="req-id">NFR-004</span></td><td>JWT expiry</td><td>6</td><td>Access: 15min, Refresh: 7 days</td></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>Rate limiting</td><td>6</td><td>Redis 10 req/min</td></tr>
+</table>
+
+</body>
+</html>

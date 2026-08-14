@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Software Requirements Specification - Logger</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Software Requirements Specification</h1>
+  <div class="subtitle">Logger Module</div>
+  <span class="module-badge">LOG</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>LOG - Logger</td></tr>
+    <tr><td>Database</td><td>OpenSearch (log-events index)</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Introduction</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 Scope</a></li>
+        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
+        <li><a href="#section-1-4">1.4 Definitions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-2">2. Module Overview</a></li>
+    <li><a href="#section-3">3. Functional Requirements</a>
+      <ul>
+        <li><a href="#fr-001">FR-001: Ingest Log Events</a></li>
+        <li><a href="#fr-002">FR-002: Query Logs</a></li>
+        <li><a href="#fr-003">FR-003: Log Analytics</a></li>
+        <li><a href="#fr-004">FR-004: Real-time Monitoring</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Non-Functional Requirements</a>
+      <ul>
+        <li><a href="#nfr-001">NFR-001: Ingestion Throughput</a></li>
+        <li><a href="#nfr-002">NFR-002: Query Response Time</a></li>
+        <li><a href="#nfr-003">NFR-003: Service Uptime</a></li>
+        <li><a href="#nfr-004">NFR-004: Log Retention</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Traceability Matrix</a>
+      <ul>
+        <li><a href="#trace-fr-001">FR-001: Ingest Log Events</a></li>
+        <li><a href="#trace-fr-002">FR-002: Query Logs</a></li>
+        <li><a href="#trace-fr-003">FR-003: Log Analytics</a></li>
+        <li><a href="#trace-fr-004">FR-004: Real-time Monitoring</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<!-- 1. INTRODUCTION -->
+<h1 id="section-1">1. Introduction</h1>
+
+<h2 id="section-1-1">1.1 Purpose</h2>
+<p>This document defines the software requirements for the <strong>Logger</strong> module of the Authentication System.</p>
+
+<h2 id="section-1-2">1.2 Scope</h2>
+<p>The Logger module handles:</p>
+<ul>
+  <li>Centralized event logging from all services via RabbitMQ</li>
+  <li>Storage in OpenSearch for full-text search and analytics</li>
+  <li>Log querying and filtering</li>
+  <li>Real-time monitoring dashboards</li>
+</ul>
+
+<h2 id="section-1-3">1.3 Module Dependencies</h2>
+<p>Receives events from: AUTH, SMS, EMAIL, RECR, WALLET (all modules publish logs)</p>
+
+<h2 id="section-1-4">1.4 Definitions</h2>
+<table>
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td>FR</td><td>Functional Requirement</td></tr>
+  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
+  <tr><td>OpenSearch</td><td>Distributed search and analytics engine</td></tr>
+  <tr><td>RabbitMQ</td><td>Message broker for async event delivery</td></tr>
+</table>
+
+<!-- 2. MODULE OVERVIEW -->
+<h1 id="section-2">2. Module Overview</h1>
+
+<table>
+  <tr><th>Aspect</th><th>Value</th></tr>
+  <tr><td>Module Code</td><td>LOG</td></tr>
+  <tr><td>Module Name</td><td>Logger</td></tr>
+  <tr><td>Description</td><td>Centralized event logging via RabbitMQ, stored in OpenSearch</td></tr>
+  <tr><td>Database</td><td>OpenSearch (log-events index)</td></tr>
+  <tr><td>Tech Stack</td><td>NestJS, RabbitMQ (amqplib), OpenSearch</td></tr>
+</table>
+
+<!-- 3. FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-3">3. Functional Requirements</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr id="fr-001">
+    <td><span class="req-id">FR-001</span></td>
+    <td>LOG</td>
+    <td>Ingest Log Events</td>
+    <td>High</td>
+    <td>System shall consume log events from RabbitMQ and index to OpenSearch</td>
+  </tr>
+  <tr id="fr-002">
+    <td><span class="req-id">FR-002</span></td>
+    <td>LOG</td>
+    <td>Query Logs</td>
+    <td>High</td>
+    <td>System shall provide API to query logs with filters (level, source, time range)</td>
+  </tr>
+  <tr id="fr-003">
+    <td><span class="req-id">FR-003</span></td>
+    <td>LOG</td>
+    <td>Log Analytics</td>
+    <td>Medium</td>
+    <td>System shall provide analytics on log data (error rates, response times)</td>
+  </tr>
+  <tr id="fr-004">
+    <td><span class="req-id">FR-004</span></td>
+    <td>LOG</td>
+    <td>Real-time Monitoring</td>
+    <td>Medium</td>
+    <td>System shall support real-time log streaming via WebSocket</td>
+  </tr>
+</table>
+
+<!-- 4. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-4">4. Non-Functional Requirements</h1>
+
+<table class="trace-table">
+  <tr><th>Req ID</th><th>Category</th><th>Requirement</th><th>Target</th></tr>
+  <tr id="nfr-001">
+    <td><span class="req-id">NFR-001</span></td>
+    <td>Performance</td>
+    <td>Log ingestion throughput</td>
+    <td>10,000 events/sec</td>
+  </tr>
+  <tr id="nfr-002">
+    <td><span class="req-id">NFR-002</span></td>
+    <td>Performance</td>
+    <td>Query response time</td>
+    <td>&lt; 500ms (p95)</td>
+  </tr>
+  <tr id="nfr-003">
+    <td><span class="req-id">NFR-003</span></td>
+    <td>Availability</td>
+    <td>Log service uptime</td>
+    <td>99.9%</td>
+  </tr>
+  <tr id="nfr-004">
+    <td><span class="req-id">NFR-004</span></td>
+    <td>Storage</td>
+    <td>Log retention</td>
+    <td>90 days (configurable)</td>
+  </tr>
+</table>
+
+<!-- 5. TRACEABILITY -->
+<h1 id="section-5">5. Requirements Traceability Matrix</h1>
+
+<table class="trace-table">
+  <tr><th>Req ID</th><th>Requirement</th><th>Technology</th><th>Integration</th></tr>
+  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>Ingest Log Events</td><td>RabbitMQ + OpenSearch</td><td>All modules publish to log.events queue</td></tr>
+  <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>Query Logs</td><td>OpenSearch Query API</td><td>REST API</td></tr>
+  <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>Log Analytics</td><td>OpenSearch Aggregations</td><td>Dashboard integration</td></tr>
+  <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Real-time Monitoring</td><td>WebSocket + OpenSearch</td><td>Dashboard streaming</td></tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Technical Specification - SMS Service</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>API Technical Specification</h1>
+  <div class="subtitle">SMS Service API</div>
+  <span class="module-badge">SMS</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>SMS - SMS Service</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">SMS Service SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Response Format</a></li>
+    <li><a href="#section-3">3. Endpoints</a></li>
+    <li><a href="#section-4">4. Error Codes</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Send SMS OTP</td><td>POST /sms/send</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Verify OTP</td><td>POST /sms/verify</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Log SMS Delivery</td><td>POST /webhooks/sms/delivered (inbound)</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Get SMS Status</td><td>GET /sms/:id/status</td></tr>
+</table>
+
+<h2>1.2 Authentication</h2>
+<p>All internal endpoints require service-to-service authentication.</p>
+<p>Webhook endpoints are called by Twilio (external).</p>
+
+<!-- 2. RESPONSE FORMAT -->
+<h1 id="section-2">2. Response Format</h1>
+
+<h2>2.1 Success Response</h2>
+<pre><code>{
+  "success": true,
+  "data": { ... },
+  "meta": {
+    "requestId": "req-abc-123",
+    "timestamp": "2026-07-24T10:30:00Z"
+  }
+}</code></pre>
+
+<h2>2.2 Error Response</h2>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "SMS_SEND_FAILED",
+    "message": "Failed to send SMS via provider"
+  }
+}</code></pre>
+
+<!-- 3. ENDPOINTS -->
+<h1 id="section-3">3. Endpoints</h1>
+
+<h2>3.1 SMS Operations</h2>
+
+<h3 id="fr-001">POST /sms/send <span class="req-id">FR-001</span></h3>
+<p>Send SMS OTP to phone number. Internal service-to-service call.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "phone": "+84901234567",
+  "message": "Your verification code is: 123456",
+  "otpCode": "123456",
+  "userId": "550e8400-e29b-41d4-a716-446655440000",
+  "expiresIn": 300
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": "sms-uuid-123",
+    "status": "sent",
+    "providerMessageId": "SM1234567890"
+  }
+}</code></pre>
+
+<h3 id="fr-002">POST /sms/verify <span class="req-id">FR-002</span></h3>
+<p>Verify OTP code.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "phone": "+84901234567",
+  "otpCode": "123456"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "verified": true,
+    "userId": "550e8400-e29b-41d4-a716-446655440000"
+  }
+}</code></pre>
+
+<h3 id="fr-004">GET /sms/:id/status <span class="req-id">FR-004</span></h3>
+<p>Get SMS delivery status.</p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": "sms-uuid-123",
+    "status": "delivered",
+    "sentAt": "2026-07-24T10:30:00Z",
+    "deliveredAt": "2026-07-24T10:30:05Z"
+  }
+}</code></pre>
+
+<h2>3.2 Webhooks</h2>
+
+<h3 id="fr-003">POST /webhooks/sms/delivered <span class="req-id">FR-003</span></h3>
+<p>Twilio delivery status callback. External webhook endpoint.</p>
+<p><strong>Request (Twilio format):</strong></p>
+<pre><code>{
+  "MessageSid": "SM1234567890",
+  "MessageStatus": "delivered",
+  "To": "+84901234567",
+  "ErrorCode": null
+}</code></pre>
+
+<!-- 4. ERROR CODES -->
+<h1 id="section-4">4. Error Codes</h1>
+
+<table>
+  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Invalid phone number or message</td></tr>
+  <tr><td>404</td><td>SMS_NOT_FOUND</td><td>SMS log not found</td></tr>
+  <tr><td>422</td><td>OTP_EXPIRED</td><td>OTP code has expired</td></tr>
+  <tr><td>422</td><td>OTP_INVALID</td><td>OTP code is incorrect</td></tr>
+  <tr><td>500</td><td>SMS_SEND_FAILED</td><td>Failed to send SMS via provider</td></tr>
+  <tr><td>503</td><td>SMS_PROVIDER_UNAVAILABLE</td><td>SMS provider is down</td></tr>
+</table>
+
+</body>
+</html>

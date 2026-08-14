@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Technical Design Specification - Logger</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Technical Design Specification</h1>
+  <div class="subtitle">Logger Module</div>
+  <span class="module-badge">LOG</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>LOG - Logger</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Logger SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Architecture</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Architecture Style</a></li>
+        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Component Design</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 Component Diagram</a></li>
+        <li><a href="#section-3-2">3.2 Module Structure</a></li>
+        <li><a href="#section-3-3">3.3 Component to Requirements Mapping</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Data Architecture</a>
+      <ul>
+        <li><a href="#section-4-1">4.1 Database</a></li>
+        <li><a href="#section-4-2">4.2 Index Schema</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Integration Flows</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 Log Ingestion Flow</a></li>
+        <li><a href="#section-5-2">5.2 AUTH to LOG Integration</a></li>
+        <li><a href="#section-5-3">5.3 Log Query Flow</a></li>
+        <li><a href="#section-5-4">5.4 Log Ingestion Activity</a></li>
+        <li><a href="#section-5-5">5.5 Inbound Events</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. Traceability Summary</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>This document describes the technical design decisions for the <strong>Logger</strong> module.</p>
+
+<h2>1.2 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
+  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-004</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-004</span></td><td>Section 2, 5</td></tr>
+</table>
+
+<!-- 2. ARCHITECTURE -->
+<h1 id="section-2">2. Architecture</h1>
+
+<h2>2.1 Architecture Style</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th><th>Resolves</th></tr>
+  <tr><td>Pattern</td><td>Event-driven Consumer</td><td><span class="req-id">NFR-001</span></td></tr>
+  <tr><td>Message Queue</td><td>RabbitMQ (queue: log.events)</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>Primary Store</td><td>OpenSearch (index: log-events)</td><td><span class="req-id">FR-002</span>, <span class="req-id">NFR-002</span></td></tr>
+  <tr><td>API</td><td>NestJS REST + WebSocket</td><td><span class="req-id">FR-002</span>, <span class="req-id">FR-004</span></td></tr>
+</table>
+
+<h2>2.2 Key Design Decisions</h2>
+<table class="trace-table">
+  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
+  <tr>
+    <td>1</td><td>OpenSearch as primary store</td>
+    <td>Full-text search, aggregations, dashboards</td>
+    <td><span class="req-id">FR-002</span>, <span class="req-id">FR-003</span></td>
+  </tr>
+  <tr>
+    <td>2</td><td>RabbitMQ for ingestion</td>
+    <td>Buffer events, decouple producers from consumer</td>
+    <td><span class="req-id">NFR-001</span></td>
+  </tr>
+  <tr>
+    <td>3</td><td>No PostgreSQL</td>
+    <td>OpenSearch handles search, analytics, and storage</td>
+    <td><span class="req-id">NFR-004</span></td>
+  </tr>
+</table>
+
+<!-- 3. COMPONENT DESIGN -->
+<h1 id="section-3">3. Component Design</h1>
+
+<h2>3.1 Component Diagram</h2>
+<div class="diagram">
+  <img src="./images/component/component-diagram.png" alt="LOG Component Diagram">
+  <div class="caption">Figure 1: LOG Module Components</div>
+</div>
+
+<h2>3.2 Module Structure</h2>
+<pre><code>src/
+  log/
+    log.module.ts
+    log.controller.ts      # Query API
+    log.service.ts         # OpenSearch operations
+    log.consumer.ts        # RabbitMQ consumer
+    log.gateway.ts         # WebSocket gateway
+    dto/</code></pre>
+
+<h2>3.2 Component to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
+  <tr><td>LogConsumer</td><td>Consume from RabbitMQ, index to OpenSearch</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>LogService</td><td>Query, aggregate, search logs</td><td><span class="req-id">FR-002</span>, <span class="req-id">FR-003</span></td></tr>
+  <tr><td>LogController</td><td>REST API for log queries</td><td><span class="req-id">FR-002</span></td></tr>
+  <tr><td>LogGateway</td><td>WebSocket for real-time streaming</td><td><span class="req-id">FR-004</span></td></tr>
+</table>
+
+<!-- 4. DATA ARCHITECTURE -->
+<h1 id="section-4">4. Data Architecture</h1>
+
+<h2>4.1 Database</h2>
+<p>Primary Store: <strong>OpenSearch</strong> (index: <code>log-events</code>)</p>
+<p>Refer to: <a href="database-design.html">Database Design</a></p>
+
+<h2>4.2 Index Schema</h2>
+<pre><code>{
+  "index": "log-events",
+  "mappings": {
+    "properties": {
+      "eventId":     { "type": "keyword" },
+      "source":      { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+      "level":       { "type": "keyword" },
+      "action":      { "type": "keyword" },
+      "message":     { "type": "text" },
+      "input":       { "type": "text" },
+      "output":      { "type": "text" },
+      "error":       { "type": "text" },
+      "exception":   { "type": "text" },
+      "metadata":    { "type": "object", "enabled": true },
+      "traceId":     { "type": "keyword" },
+      "userId":      { "type": "keyword" },
+      "timestamp":   { "type": "date" }
+    }
+  }
+}</code></pre>
+
+<!-- 5. INTEGRATION FLOWS -->
+<h1 id="section-5">5. Integration Flows</h1>
+
+<h2>5.1 Log Ingestion Flow</h2>
+<div class="diagram">
+  <img src="./images/sequence/sequence-diagram.png" alt="Log Ingestion Sequence Diagram">
+  <div class="caption">Figure 1: Log Event Pipeline - Ingestion Flow</div>
+</div>
+
+<h2>5.2 AUTH to LOG Integration</h2>
+<div class="diagram">
+  <img src="./images/sequence/auth-log-sequence.png" alt="AUTH-LOG Sequence Diagram">
+  <div class="caption">Figure 2: AUTH Module to Logger Integration</div>
+</div>
+
+<h2>5.3 Log Query Flow</h2>
+<div class="diagram">
+  <img src="./images/sequence/query-sequence.png" alt="Query Sequence Diagram">
+  <div class="caption">Figure 3: Log Query API Flow</div>
+</div>
+
+<h2>5.4 Log Ingestion Activity</h2>
+<div class="diagram">
+  <img src="./images/activity/activity-diagram.png" alt="Log Activity Diagram">
+  <div class="caption">Figure 4: Log Ingestion Process Flow</div>
+</div>
+
+<h2>5.5 Inbound Events</h2>
+<table>
+  <tr><th>Event</th><th>From</th><th>Protocol</th><th>Queue</th><th>Description</th></tr>
+  <tr><td>auth.event.logged</td><td>AUTH</td><td>RabbitMQ</td><td>log.events</td><td>Auth events (login, logout, register)</td></tr>
+  <tr><td>sms.event.logged</td><td>SMS</td><td>RabbitMQ</td><td>log.events</td><td>SMS delivery events</td></tr>
+  <tr><td>email.event.logged</td><td>EMAIL</td><td>RabbitMQ</td><td>log.events</td><td>Email delivery events</td></tr>
+  <tr><td>recruitment.event.logged</td><td>RECR</td><td>RabbitMQ</td><td>log.events</td><td>Recruitment events (application, interview, offer)</td></tr>
+  <tr><td>wallet.event.logged</td><td>WALLET</td><td>RabbitMQ</td><td>log.events</td><td>Wallet events (deposit, withdrawal, transfer, payment)</td></tr>
+</table>
+
+<h2>5.3 External Services</h2>
+<table>
+  <tr><th>Service</th><th>Protocol</th><th>Purpose</th></tr>
+  <tr><td>OpenSearch</td><td>REST API</td><td>Index and query logs</td></tr>
+  <tr><td>RabbitMQ</td><td>AMQP</td><td>Consume log events</td></tr>
+</table>
+
+<!-- 6. TRACEABILITY -->
+<h1 id="section-6">6. Traceability Summary</h1>
+
+<table class="trace-table">
+  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
+  <tr><td><span class="req-id">FR-001</span></td><td>Ingest Log Events</td><td>3.2, 5.2</td><td>LogConsumer + RabbitMQ + OpenSearch</td></tr>
+  <tr><td><span class="req-id">FR-002</span></td><td>Query Logs</td><td>3.2, 4.2</td><td>LogService + OpenSearch Query API</td></tr>
+  <tr><td><span class="req-id">FR-003</span></td><td>Log Analytics</td><td>3.2, 4.2</td><td>OpenSearch Aggregations</td></tr>
+  <tr><td><span class="req-id">FR-004</span></td><td>Real-time Monitoring</td><td>3.2</td><td>LogGateway (WebSocket)</td></tr>
+  <tr><td><span class="req-id">NFR-001</span></td><td>10k events/sec</td><td>2.1</td><td>RabbitMQ batching + OpenSearch bulk API</td></tr>
+  <tr><td><span class="req-id">NFR-002</span></td><td>Query &lt; 500ms</td><td>2.2</td><td>OpenSearch indexing + caching</td></tr>
+  <tr><td><span class="req-id">NFR-004</span></td><td>90 day retention</td><td>2.2</td><td>ISM policy in OpenSearch</td></tr>
+</table>
+
+</body>
+</html>

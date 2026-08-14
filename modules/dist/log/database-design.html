@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Design - Logger</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Database Design Document</h1>
+  <div class="subtitle">Logger Module</div>
+  <span class="module-badge">LOG</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>LOG - Logger</td></tr>
+    <tr><td>Database</td><td>OpenSearch</td></tr>
+    <tr><td>Index</td><td>log-events</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Logger SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Index Schema</a></li>
+    <li><a href="#section-3">3. Field Mappings</a></li>
+    <li><a href="#section-4">4. Index Lifecycle</a></li>
+    <li><a href="#section-5">5. Data Dictionary</a></li>
+    <li><a href="#section-6">6. Backup & Recovery</a></li>
+    <li><a href="#section-7">7. Performance Tuning</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>This document defines the data storage design for the <strong>Logger</strong> module. Unlike other modules that use PostgreSQL, the Logger module uses <strong>OpenSearch</strong> as its primary data store for full-text search, analytics, and dashboards.</p>
+
+<h2>1.2 Database Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Database</td><td>OpenSearch (primary store)</td></tr>
+  <tr><td>Index</td><td><code>log-events</code></td></tr>
+  <tr><td>Primary Key</td><td><code>eventId</code> (UUID)</td></tr>
+  <tr><td>Timestamp Field</td><td><code>timestamp</code> (ISO 8601)</td></tr>
+  <tr><td>Retention</td><td>90 days (configurable via ISM policy)</td></tr>
+</table>
+
+<h2>1.3 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Database Solution</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Ingest Log Events</td><td>OpenSearch index for log storage</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Query Logs</td><td>Full-text search via OpenSearch</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Log Analytics</td><td>OpenSearch aggregations</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Real-time Monitoring</td><td>OpenSearch change feed + WebSocket</td></tr>
+  <tr><td><span class="req-id">NFR-002</span> Query Response Time</td><td>Field-level keyword indexes for fast filtering</td></tr>
+  <tr><td><span class="req-id">NFR-004</span> Log Retention</td><td>ISM policy: 90-day lifecycle (hot/warm/cold/delete)</td></tr>
+</table>
+
+<h2>1.4 Index Schema Diagram</h2>
+<div class="diagram">
+  <img src="./images/erd/erd-diagram.png" alt="LOG ERD Diagram">
+  <div class="caption">Figure 1: Logger Module - OpenSearch Index Schema</div>
+</div>
+
+<!-- 2. INDEX SCHEMA -->
+<h1 id="section-2">2. Index Schema</h1>
+
+<h2>2.1 Index: <code>log-events</code></h2>
+
+<pre><code>{
+  "index": "log-events",
+  "mappings": {
+    "properties": {
+      "eventId":     { "type": "keyword" },
+      "source":      { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+      "level":       { "type": "keyword" },
+      "action":      { "type": "keyword" },
+      "message":     { "type": "text" },
+      "input":       { "type": "text" },
+      "output":      { "type": "text" },
+      "error":       { "type": "text" },
+      "exception":   { "type": "text" },
+      "metadata":    { "type": "object", "enabled": true },
+      "traceId":     { "type": "keyword" },
+      "userId":      { "type": "keyword" },
+      "timestamp":   { "type": "date" }
+    }
+  }
+}</code></pre>
+
+<!-- 3. FIELD MAPPINGS -->
+<h1 id="section-3">3. Field Mappings</h1>
+
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Searchable</th><th>Description</th></tr>
+  <tr><td><code>eventId</code></td><td>keyword</td><td>Exact</td><td>Unique event identifier (UUID)</td></tr>
+  <tr><td><code>source</code></td><td>text + keyword</td><td>Full-text + Exact</td><td>Producing service name (auth, sms, etc.)</td></tr>
+  <tr><td><code>level</code></td><td>keyword</td><td>Exact</td><td>Log level: debug, info, warn, error</td></tr>
+  <tr><td><code>action</code></td><td>keyword</td><td>Exact</td><td>Event action (login, register, send_otp, etc.)</td></tr>
+  <tr><td><code>message</code></td><td>text</td><td>Full-text</td><td>Human-readable log message</td></tr>
+  <tr><td><code>input</code></td><td>text</td><td>Full-text</td><td>Input data as JSON string</td></tr>
+  <tr><td><code>output</code></td><td>text</td><td>Full-text</td><td>Success output as JSON string</td></tr>
+  <tr><td><code>error</code></td><td>text</td><td>Full-text</td><td>Error message on failure</td></tr>
+  <tr><td><code>exception</code></td><td>text</td><td>Full-text</td><td>Exception with stack trace</td></tr>
+  <tr><td><code>metadata</code></td><td>object</td><td>Nested</td><td>Additional context data</td></tr>
+  <tr><td><code>traceId</code></td><td>keyword</td><td>Exact</td><td>Distributed trace ID</td></tr>
+  <tr><td><code>userId</code></td><td>keyword</td><td>Exact</td><td>Associated user ID</td></tr>
+  <tr><td><code>timestamp</code></td><td>date</td><td>Range</td><td>Event timestamp (ISO 8601)</td></tr>
+</table>
+
+<!-- 4. INDEX LIFECYCLE -->
+<h1 id="section-4">4. Index Lifecycle</h1>
+
+<table>
+  <tr><th>Phase</th><th>Action</th><th>Condition</th></tr>
+  <tr><td>Hot</td><td>Index documents</td><td>Default</td></tr>
+  <tr><td>Warm</td><td>Force merge, shrink</td><td>After 7 days</td></tr>
+  <tr><td>Cold</td><td>Read-only, compress</td><td>After 30 days</td></tr>
+  <tr><td>Delete</td><td>Delete index</td><td>After 90 days</td></tr>
+</table>
+
+<!-- 5. DATA DICTIONARY -->
+<h1 id="section-5">5. Data Dictionary</h1>
+
+<table class="trace-table">
+  <tr><th>Index</th><th>Description</th><th>Resolves</th><th>Est. Docs (Y1)</th></tr>
+  <tr><td>log-events</td><td>Application logs from all services</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-003</span>, <span class="req-id">FR-004</span></td><td>10,000,000</td></tr>
+</table>
+
+<!-- 6. BACKUP & RECOVERY -->
+<h1 id="section-6">6. Backup &amp; Recovery</h1>
+
+<table>
+  <tr><th>Type</th><th>Frequency</th><th>Method</th></tr>
+  <tr><td>Snapshot</td><td>Daily</td><td>OpenSearch Snapshot API to S3</td></tr>
+  <tr><td>Index Recovery</td><td>On demand</td><td>Restore from snapshot</td></tr>
+</table>
+
+<!-- 7. PERFORMANCE -->
+<h1 id="section-7">7. Performance Tuning</h1>
+
+<table>
+  <tr><th>Setting</th><th>Value</th><th>Description</th></tr>
+  <tr><td>Refresh Interval</td><td>30s</td><td>Batch indexing for throughput</td></tr>
+  <tr><td>Number of Shards</td><td>3</td><td>Based on data volume</td></tr>
+  <tr><td>Number of Replicas</td><td>1</td><td>High availability</td></tr>
+  <tr><td>Heap Size</td><td>4GB</td><td>50% of available RAM (max 32GB)</td></tr>
+</table>
+
+</body>
+</html>

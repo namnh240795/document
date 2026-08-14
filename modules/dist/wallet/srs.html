@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Software Requirements Specification - Wallet</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Software Requirements Specification</h1>
+  <div class="subtitle">Wallet Module</div>
+  <span class="module-badge">WALLET</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>HR Management System</td></tr>
+    <tr><td>Module</td><td>WALLET - Electronic Wallet</td></tr>
+    <tr><td>Database</td><td>wallet_db</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Introduction</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 Scope</a></li>
+        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
+        <li><a href="#section-1-4">1.4 Definitions</a></li>
+        <li><a href="#section-1-5">1.5 User Roles</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-2">2. Module Overview</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Module Description</a></li>
+        <li><a href="#section-2-2">2.2 Use Case Diagram</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Detailed Use Case Specifications</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 UC-01: View Wallet Balance</a></li>
+        <li><a href="#section-3-2">3.2 UC-02: Deposit Funds</a></li>
+        <li><a href="#section-3-3">3.3 UC-03: View Transaction History</a></li>
+        <li><a href="#section-3-4">3.4 UC-04: Set Wallet PIN</a></li>
+        <li><a href="#section-3-5">3.5 UC-05: Add Payment Method</a></li>
+        <li><a href="#section-3-6">3.6 UC-06: Request Withdrawal</a></li>
+        <li><a href="#section-3-7">3.7 UC-07: Transfer to Another Wallet</a></li>
+        <li><a href="#section-3-8">3.8 UC-08: Pay for Job Posting</a></li>
+        <li><a href="#section-3-9">3.9 UC-09: Pay for Featured Job</a></li>
+        <li><a href="#section-3-10">3.10 UC-10: Manage Payment Methods</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Functional Requirements</a>
+      <ul>
+        <li><a href="#section-4-1">4.1 Wallet Management Requirements</a></li>
+        <li><a href="#section-4-2">4.2 Transaction Requirements</a></li>
+        <li><a href="#section-4-3">4.3 Payment Requirements</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Data Model</a></li>
+    <li><a href="#section-6">6. API Specification</a></li>
+    <li><a href="#section-7">7. Integration</a></li>
+    <li><a href="#section-8">8. Non-Functional Requirements</a></li>
+    <li><a href="#section-9">9. Requirements Traceability Matrix</a></li>
+  </ul>
+</div>
+
+<!-- 1. INTRODUCTION -->
+<h1 id="section-1">1. Introduction</h1>
+
+<h2 id="section-1-1">1.1 Purpose</h2>
+<p>This document defines the software requirements for the <strong>Wallet</strong> module of the HR Management System. The Wallet module provides electronic wallet functionality for managing payments, deposits, withdrawals, and financial transactions within the recruitment platform.</p>
+
+<h2 id="section-1-2">1.2 Scope</h2>
+<p>The Wallet module manages electronic wallet operations including:</p>
+<ul>
+  <li><strong>Wallet Management</strong>: Create wallets, view balances, set PINs</li>
+  <li><strong>Deposits</strong>: Add funds via bank transfer, credit card, or e-wallet</li>
+  <li><strong>Withdrawals</strong>: Request and process fund withdrawals to bank accounts</li>
+  <li><strong>Payments</strong>: Pay for job postings, featured listings, and premium services</li>
+  <li><strong>Transfers</strong>: Transfer funds between user wallets</li>
+  <li><strong>Transactions</strong>: Complete transaction history and audit trail</li>
+</ul>
+
+<h2 id="section-1-3">1.3 Module Dependencies</h2>
+<table>
+  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
+  <tr><td>AUTH</td><td>Hard</td><td>User authentication and JWT token validation</td></tr>
+  <tr><td>RECR</td><td>Soft</td><td>Job posting payments and recruitment services</td></tr>
+  <tr><td>LOG</td><td>Soft</td><td>Event logging for financial audit trail</td></tr>
+</table>
+
+<h2 id="section-1-4">1.4 Definitions</h2>
+<table>
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td>SRS</td><td>Software Requirements Specification</td></tr>
+  <tr><td>FR</td><td>Functional Requirement</td></tr>
+  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
+  <tr><td>UC</td><td>Use Case</td></tr>
+  <tr><td>DR</td><td>Data Requirement</td></tr>
+  <tr><td>IR</td><td>Integration Requirement</td></tr>
+  <tr><td>PG</td><td>Payment Gateway</td></tr>
+</table>
+
+<h2 id="section-1-5">1.5 User Roles</h2>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Key Permissions</th></tr>
+  <tr><td><strong>User</strong></td><td>All registered users (Candidate, HR, Employer)</td><td>View balance, deposit, withdraw, make payments, view transactions</td></tr>
+  <tr><td><strong>Admin</strong></td><td>System administrators</td><td>Approve withdrawals, freeze wallets, view all wallets, process payouts</td></tr>
+  <tr><td><strong>Payment Gateway</strong></td><td>External payment processors</td><td>Process payments, send webhooks, verify transactions</td></tr>
+</table>
+
+<!-- 2. MODULE OVERVIEW -->
+<h1 id="section-2">2. Module Overview</h1>
+
+<h2 id="section-2-1">2.1 Module Description</h2>
+<table>
+  <tr><th>Aspect</th><th>Value</th></tr>
+  <tr><td>Module Code</td><td>WALLET</td></tr>
+  <tr><td>Module Name</td><td>Electronic Wallet</td></tr>
+  <tr><td>Description</td><td>Electronic wallet for payments, deposits, withdrawals, and financial transactions</td></tr>
+  <tr><td>Database</td><td>wallet_db</td></tr>
+  <tr><td>Tables</td><td>wallet_wallets, wallet_transactions, wallet_payment_methods, wallet_payment_orders, wallet_payout_requests</td></tr>
+  <tr><td>Tech Stack</td><td>NestJS, Drizzle ORM, PostgreSQL, RabbitMQ</td></tr>
+</table>
+
+<h2 id="section-2-2">2.2 Use Case Diagram</h2>
+<div class="diagram">
+  <img src="./images/usecase/wallet-usecase.png" alt="Use Case Diagram">
+  <div class="caption">Figure 1: Wallet Use Case Diagram</div>
+</div>
+
+<!-- 3. DETAILED USE CASE SPECIFICATIONS -->
+<h1 id="section-3">3. Detailed Use Case Specifications</h1>
+
+<h2 id="section-3-1">3.1 UC-01: View Wallet Balance</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-01</td></tr>
+  <tr><td>Name</td><td>View Wallet Balance</td></tr>
+  <tr><td>Actor</td><td>User (all roles)</td></tr>
+  <tr><td>Precondition</td><td>User is logged in</td></tr>
+  <tr><td>Postcondition</td><td>User views wallet balance and status</td></tr>
+  <tr><td>Trigger</td><td>User accesses wallet page</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User navigates to wallet page</li>
+  <li>System validates JWT token</li>
+  <li>System retrieves user_id from token</li>
+  <li>System queries wallet_wallets table</li>
+  <li>System returns wallet data (balance, currency, status)</li>
+  <li>User views wallet balance</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>3a. Invalid token: System returns 401 Unauthorized</li>
+  <li>4a. No wallet found: System returns 404, user sees empty state</li>
+</ul>
+<div class="diagram">
+  <img src="./images/activity/uc01-view-balance-activity.png" alt="UC-01 Activity Diagram">
+  <div class="caption">Figure 2: UC-01 View Wallet Balance - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc01-view-balance-sequence.png" alt="UC-01 Sequence Diagram">
+  <div class="caption">Figure 3: UC-01 View Wallet Balance - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-2">3.2 UC-02: Deposit Funds</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-02</td></tr>
+  <tr><td>Name</td><td>Deposit Funds</td></tr>
+  <tr><td>Actor</td><td>User</td></tr>
+  <tr><td>Precondition</td><td>User is logged in, wallet exists</td></tr>
+  <tr><td>Postcondition</td><td>Funds added to wallet balance</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Deposit" button</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User selects deposit method (bank transfer, credit card, e-wallet)</li>
+  <li>User enters deposit amount</li>
+  <li>System validates amount (min/max limits)</li>
+  <li>System creates wallet_transactions record (status: pending)</li>
+  <li>System redirects to Payment Gateway</li>
+  <li>User completes payment on Payment Gateway</li>
+  <li>Payment Gateway sends webhook callback</li>
+  <li>System updates transaction status (completed)</li>
+  <li>System updates wallet balance</li>
+  <li>User sees updated balance</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>3a. Amount out of range: System returns validation error</li>
+  <li>7a. Payment failed: System updates transaction status (failed), user sees error</li>
+</ul>
+<div class="diagram">
+  <img src="./images/activity/uc02-deposit-activity.png" alt="UC-02 Activity Diagram">
+  <div class="caption">Figure 4: UC-02 Deposit Funds - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc02-deposit-sequence.png" alt="UC-02 Sequence Diagram">
+  <div class="caption">Figure 5: UC-02 Deposit Funds - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-3">3.3 UC-03: View Transaction History</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-03</td></tr>
+  <tr><td>Name</td><td>View Transaction History</td></tr>
+  <tr><td>Actor</td><td>User</td></tr>
+  <tr><td>Precondition</td><td>User is logged in, wallet has transactions</td></tr>
+  <tr><td>Postcondition</td><td>User views transaction history</td></tr>
+  <tr><td>Trigger</td><td>User accesses transaction history page</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User navigates to transaction history</li>
+  <li>System retrieves transactions with filters (type, date range, status)</li>
+  <li>System returns paginated transaction list</li>
+  <li>User views transaction details</li>
+</ol>
+
+<h2 id="section-3-4">3.4 UC-04: Set Wallet PIN</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-04</td></tr>
+  <tr><td>Name</td><td>Set Wallet PIN</td></tr>
+  <tr><td>Actor</td><td>User</td></tr>
+  <tr><td>Precondition</td><td>User is logged in, wallet exists</td></tr>
+  <tr><td>Postcondition</td><td>Wallet PIN set for transaction authorization</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Set PIN" or "Change PIN"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User enters new PIN (6 digits)</li>
+  <li>System validates PIN format</li>
+  <li>System hashes PIN and stores in wallet_wallets</li>
+  <li>System confirms PIN set successfully</li>
+</ol>
+
+<h2 id="section-3-5">3.5 UC-05: Add Payment Method</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-05</td></tr>
+  <tr><td>Name</td><td>Add Payment Method</td></tr>
+  <tr><td>Actor</td><td>User</td></tr>
+  <tr><td>Precondition</td><td>User is logged in, wallet exists</td></tr>
+  <tr><td>Postcondition</td><td>Payment method added to wallet</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Add Payment Method"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User selects payment method type (bank account, credit card, debit card, e-wallet)</li>
+  <li>User enters account details</li>
+  <li>System validates account details</li>
+  <li>System saves payment method (is_verified: false)</li>
+  <li>System initiates verification process</li>
+  <li>Payment method verified and activated</li>
+</ol>
+
+<h2 id="section-3-6">3.6 UC-06: Request Withdrawal</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-06</td></tr>
+  <tr><td>Name</td><td>Request Withdrawal</td></tr>
+  <tr><td>Actor</td><td>User</td></tr>
+  <tr><td>Precondition</td><td>User is logged in, wallet has sufficient balance</td></tr>
+  <tr><td>Postcondition</td><td>Withdrawal request submitted for approval</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Withdraw"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User selects payment method for withdrawal</li>
+  <li>User enters withdrawal amount</li>
+  <li>System validates amount and checks limits</li>
+  <li>System creates wallet_payout_requests record (status: pending)</li>
+  <li>System freezes withdrawal amount in wallet</li>
+  <li>System notifies admin for approval</li>
+  <li>Admin reviews and approves request</li>
+  <li>System processes payment to bank account</li>
+  <li>System updates wallet balance</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>3a. Amount exceeds balance: System returns error</li>
+  <li>3b. Daily/monthly limit exceeded: System returns limit error</li>
+  <li>7a. Admin rejects: System unfreezes amount, user notified</li>
+</ul>
+<div class="diagram">
+  <img src="./images/activity/uc09-withdrawal-activity.png" alt="UC-06 Activity Diagram">
+  <div class="caption">Figure 6: UC-06 Request Withdrawal - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc09-withdrawal-sequence.png" alt="UC-06 Sequence Diagram">
+  <div class="caption">Figure 7: UC-06 Request Withdrawal - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-7">3.7 UC-07: Transfer to Another Wallet</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-07</td></tr>
+  <tr><td>Name</td><td>Transfer to Another Wallet</td></tr>
+  <tr><td>Actor</td><td>User</td></tr>
+  <tr><td>Precondition</td><td>User is logged in, sufficient balance</td></tr>
+  <tr><td>Postcondition</td><td>Funds transferred to recipient wallet</td></tr>
+  <tr><td>Trigger</td><td>User clicks "Transfer"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User enters recipient email or wallet ID</li>
+  <li>System validates recipient exists</li>
+  <li>User enters transfer amount</li>
+  <li>System validates amount and balance</li>
+  <li>User confirms with wallet PIN</li>
+  <li>System deducts from sender wallet</li>
+  <li>System credits to recipient wallet</li>
+  <li>System creates transaction records for both wallets</li>
+</ol>
+
+<h2 id="section-3-8">3.8 UC-08: Pay for Job Posting</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-08</td></tr>
+  <tr><td>Name</td><td>Pay for Job Posting</td></tr>
+  <tr><td>Actor</td><td>Employer</td></tr>
+  <tr><td>Precondition</td><td>Employer is logged in, job created</td></tr>
+  <tr><td>Postcondition</td><td>Payment completed, job posting activated</td></tr>
+  <tr><td>Trigger</td><td>Employer submits job for payment</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Employer creates job posting</li>
+  <li>System creates wallet_payment_orders record</li>
+  <li>System checks wallet balance</li>
+  <li>System prompts for wallet PIN</li>
+  <li>Employer enters PIN</li>
+  <li>System verifies PIN and deducts amount</li>
+  <li>System updates payment order status (paid)</li>
+  <li>System notifies RECR module to activate job</li>
+  <li>Employer sees job posted successfully</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc12-payment-activity.png" alt="UC-08 Activity Diagram">
+  <div class="caption">Figure 8: UC-08 Pay for Job Posting - Activity Diagram</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc12-payment-sequence.png" alt="UC-08 Sequence Diagram">
+  <div class="caption">Figure 9: UC-08 Pay for Job Posting - Sequence Diagram</div>
+</div>
+
+<h2 id="section-3-9">3.9 UC-09: Pay for Featured Job</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-09</td></tr>
+  <tr><td>Name</td><td>Pay for Featured Job</td></tr>
+  <tr><td>Actor</td><td>Employer</td></tr>
+  <tr><td>Precondition</td><td>Job is active</td></tr>
+  <tr><td>Postcondition</td><td>Job marked as featured</td></tr>
+  <tr><td>Trigger</td><td>Employer clicks "Feature Job"</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Employer selects job to feature</li>
+  <li>System displays featured job pricing</li>
+  <li>Employer confirms payment</li>
+  <li>System processes payment from wallet</li>
+  <li>System updates job status to featured</li>
+</ol>
+
+<h2 id="section-3-10">3.10 UC-10: Manage Payment Methods</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-10</td></tr>
+  <tr><td>Name</td><td>Manage Payment Methods</td></tr>
+  <tr><td>Actor</td><td>User</td></tr>
+  <tr><td>Precondition</td><td>User has payment methods</td></tr>
+  <tr><td>Postcondition</td><td>Payment methods updated</td></tr>
+  <tr><td>Trigger</td><td>User accesses payment methods page</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>User views list of payment methods</li>
+  <li>User can add new payment method</li>
+  <li>User can set default payment method</li>
+  <li>User can remove payment method</li>
+</ol>
+
+<!-- 4. FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-4">4. Functional Requirements</h1>
+
+<h2 id="section-4-1">4.1 Wallet Management Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-001</span></td>
+    <td>WALLET</td>
+    <td>Create Wallet</td>
+    <td>UC-01</td>
+    <td>High</td>
+    <td>System automatically creates a wallet when user registers</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-002</span></td>
+    <td>WALLET</td>
+    <td>View Wallet Balance</td>
+    <td>UC-01</td>
+    <td>High</td>
+    <td>Users can view their wallet balance and status</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-003</span></td>
+    <td>WALLET</td>
+    <td>Set Wallet PIN</td>
+    <td>UC-04</td>
+    <td>High</td>
+    <td>Users can set a 6-digit PIN for transaction authorization</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-004</span></td>
+    <td>WALLET</td>
+    <td>View Transaction History</td>
+    <td>UC-03</td>
+    <td>High</td>
+    <td>Users can view complete transaction history with filters</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-005</span></td>
+    <td>WALLET</td>
+    <td>Manage Payment Methods</td>
+    <td>UC-05, UC-10</td>
+    <td>Medium</td>
+    <td>Users can add, remove, and set default payment methods</td>
+  </tr>
+</table>
+
+<h2 id="section-4-2">4.2 Transaction Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-006</span></td>
+    <td>WALLET</td>
+    <td>Deposit Funds</td>
+    <td>UC-02</td>
+    <td>High</td>
+    <td>Users can deposit funds via bank transfer, credit card, or e-wallet</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-007</span></td>
+    <td>WALLET</td>
+    <td>Request Withdrawal</td>
+    <td>UC-06</td>
+    <td>High</td>
+    <td>Users can request withdrawals to bank accounts (admin approval required)</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-008</span></td>
+    <td>WALLET</td>
+    <td>Transfer Funds</td>
+    <td>UC-07</td>
+    <td>Medium</td>
+    <td>Users can transfer funds to other user wallets</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-009</span></td>
+    <td>WALLET</td>
+    <td>Transaction Audit Trail</td>
+    <td>UC-03</td>
+    <td>High</td>
+    <td>All transactions are logged with before/after balance</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-010</span></td>
+    <td>WALLET</td>
+    <td>Transaction Limits</td>
+    <td>UC-02, UC-06</td>
+    <td>Medium</td>
+    <td>System enforces daily and monthly transaction limits</td>
+  </tr>
+</table>
+
+<h2 id="section-4-3">4.3 Payment Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-011</span></td>
+    <td>WALLET</td>
+    <td>Pay for Job Posting</td>
+    <td>UC-08</td>
+    <td>High</td>
+    <td>Employers can pay for job postings using wallet balance</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-012</span></td>
+    <td>WALLET</td>
+    <td>Pay for Featured Job</td>
+    <td>UC-09</td>
+    <td>Medium</td>
+    <td>Employers can pay to feature their job listings</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-013</span></td>
+    <td>WALLET</td>
+    <td>Payment Orders</td>
+    <td>UC-08, UC-09</td>
+    <td>High</td>
+    <td>System creates payment orders for all financial transactions</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-014</span></td>
+    <td>WALLET</td>
+    <td>Refund Processing</td>
+    <td>UC-06</td>
+    <td>Medium</td>
+    <td>System can process refunds for cancelled services</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-015</span></td>
+    <td>WALLET</td>
+    <td>Admin Approval</td>
+    <td>UC-06</td>
+    <td>High</td>
+    <td>Admins can approve or reject withdrawal requests</td>
+  </tr>
+</table>
+
+<!-- 5. DATA MODEL -->
+<h1 id="section-5">5. Data Model</h1>
+
+<h2>5.1 Entity Relationship Diagram</h2>
+<div class="diagram">
+  <img src="./images/erd/erd-wallet.png" alt="ERD Diagram">
+  <div class="caption">Figure 10: Wallet ERD</div>
+</div>
+
+<h2>5.2 Data Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Entity</th>
+    <th>Description</th>
+    <th>Related FR</th>
+  </tr>
+  <tr><td><span class="req-id">DR-001</span></td><td>wallet_wallets</td><td>User wallet accounts with balance and limits</td><td>FR-001, FR-002</td></tr>
+  <tr><td><span class="req-id">DR-002</span></td><td>wallet_transactions</td><td>Complete transaction history with audit trail</td><td>FR-004, FR-009</td></tr>
+  <tr><td><span class="req-id">DR-003</span></td><td>wallet_payment_methods</td><td>Linked bank accounts and payment cards</td><td>FR-005</td></tr>
+  <tr><td><span class="req-id">DR-004</span></td><td>wallet_payment_orders</td><td>Payment orders for services</td><td>FR-011, FR-012, FR-013</td></tr>
+  <tr><td><span class="req-id">DR-005</span></td><td>wallet_payout_requests</td><td>Withdrawal requests for admin approval</td><td>FR-007, FR-015</td></tr>
+</table>
+
+<!-- 6. API SPECIFICATION -->
+<h1 id="section-6">6. API Specification</h1>
+
+<h2>6.1 Endpoint Summary</h2>
+
+<h3>Wallet Endpoints (All Users)</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>GET</td><td>/wallet/balance</td><td>View wallet balance</td><td>FR-002</td></tr>
+  <tr><td>POST</td><td>/wallet/pin</td><td>Set or change wallet PIN</td><td>FR-003</td></tr>
+  <tr><td>GET</td><td>/wallet/transactions</td><td>View transaction history</td><td>FR-004</td></tr>
+  <tr><td>POST</td><td>/wallet/deposit</td><td>Deposit funds</td><td>FR-006</td></tr>
+  <tr><td>POST</td><td>/wallet/withdraw</td><td>Request withdrawal</td><td>FR-007</td></tr>
+  <tr><td>POST</td><td>/wallet/transfer</td><td>Transfer to another wallet</td><td>FR-008</td></tr>
+  <tr><td>POST</td><td>/wallet/pay</td><td>Pay for service</td><td>FR-011, FR-012</td></tr>
+</table>
+
+<h3>Payment Methods Endpoints</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>GET</td><td>/wallet/payment-methods</td><td>List payment methods</td><td>FR-005</td></tr>
+  <tr><td>POST</td><td>/wallet/payment-methods</td><td>Add payment method</td><td>FR-005</td></tr>
+  <tr><td>PATCH</td><td>/wallet/payment-methods/:id</td><td>Update payment method</td><td>FR-005</td></tr>
+  <tr><td>DELETE</td><td>/wallet/payment-methods/:id</td><td>Remove payment method</td><td>FR-005</td></tr>
+</table>
+
+<h3>Admin Endpoints</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>GET</td><td>/admin/wallet/payouts</td><td>List payout requests</td><td>FR-015</td></tr>
+  <tr><td>PATCH</td><td>/admin/wallet/payouts/:id</td><td>Approve/reject payout</td><td>FR-015</td></tr>
+  <tr><td>PATCH</td><td>/admin/wallet/wallets/:id/freeze</td><td>Freeze/unfreeze wallet</td><td>FR-015</td></tr>
+  <tr><td>GET</td><td>/admin/wallet/wallets</td><td>List all wallets</td><td>FR-015</td></tr>
+</table>
+
+<h3>Webhook Endpoints</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>POST</td><td>/webhooks/payment/callback</td><td>Payment Gateway callback</td><td>FR-006</td></tr>
+</table>
+
+<!-- 7. INTEGRATION -->
+<h1 id="section-7">7. Integration</h1>
+
+<h2>7.1 Sequence Diagram</h2>
+<div class="diagram">
+  <img src="./images/sequence/wallet-integration.png" alt="Sequence Diagram">
+  <div class="caption">Figure 11: Wallet Integration Flow</div>
+</div>
+
+<h2>7.2 Webhook Events</h2>
+<table>
+  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
+  <tr><td>wallet.deposit.completed</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when deposit is completed</td></tr>
+  <tr><td>wallet.payment.completed</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when payment for service is completed</td></tr>
+  <tr><td>wallet.withdrawal.completed</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when withdrawal is processed</td></tr>
+  <tr><td>wallet.transfer.completed</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when transfer is completed</td></tr>
+  <tr><td>payment.callback.received</td><td>Inbound</td><td>Webhook</td><td>Payment Gateway sends payment status</td></tr>
+</table>
+
+<h2>7.3 Integration with Recruitment Module</h2>
+<table>
+  <tr><th>Integration</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
+  <tr><td>Job Posting Payment</td><td>WALLET -> RECR</td><td>RabbitMQ</td><td>Notify RECR when job posting is paid</td></tr>
+  <tr><td>Featured Job Payment</td><td>WALLET -> RECR</td><td>RabbitMQ</td><td>Notify RECR when job is featured</td></tr>
+  <tr><td>Refund Request</td><td>RECR -> WALLET</td><td>RabbitMQ</td><td>Request refund for cancelled job</td></tr>
+</table>
+
+<!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-8">8. Non-Functional Requirements</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Category</th>
+    <th>Requirement</th>
+    <th>Target</th>
+  </tr>
+  <tr><td><span class="req-id">NFR-001</span></td><td>Performance</td><td>API response time for balance queries</td><td>&lt; 200ms (p95)</td></tr>
+  <tr><td><span class="req-id">NFR-002</span></td><td>Performance</td><td>Transaction processing time</td><td>&lt; 1s</td></tr>
+  <tr><td><span class="req-id">NFR-003</span></td><td>Scalability</td><td>Support concurrent transactions</td><td>1000+ concurrent users</td></tr>
+  <tr><td><span class="req-id">NFR-004</span></td><td>Availability</td><td>System uptime</td><td>99.99%</td></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>Security</td><td>Transaction authorization</td><td>PIN-based authentication</td></tr>
+  <tr><td><span class="req-id">NFR-006</span></td><td>Security</td><td>Data encryption</td><td>AES-256 for sensitive data</td></tr>
+  <tr><td><span class="req-id">NFR-007</span></td><td>Compliance</td><td>Financial audit trail</td><td>Complete transaction history with timestamps</td></tr>
+  <tr><td><span class="req-id">NFR-008</span></td><td>Data</td><td>Transaction retention</td><td>Minimum 7 years</td></tr>
+</table>
+
+<!-- 9. TRACEABILITY -->
+<h1 id="section-9">9. Requirements Traceability Matrix</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Requirement</th>
+    <th>Role</th>
+    <th>TDS Section</th>
+    <th>DB Table</th>
+    <th>API Endpoint</th>
+  </tr>
+  <tr><td>FR-001</td><td>Create Wallet</td><td>System</td><td>3.1</td><td>wallet_wallets</td><td>POST /wallet (auto)</td></tr>
+  <tr><td>FR-002</td><td>View Wallet Balance</td><td>User</td><td>3.1</td><td>wallet_wallets</td><td>GET /wallet/balance</td></tr>
+  <tr><td>FR-003</td><td>Set Wallet PIN</td><td>User</td><td>3.1</td><td>wallet_wallets</td><td>POST /wallet/pin</td></tr>
+  <tr><td>FR-004</td><td>View Transaction History</td><td>User</td><td>3.2</td><td>wallet_transactions</td><td>GET /wallet/transactions</td></tr>
+  <tr><td>FR-005</td><td>Manage Payment Methods</td><td>User</td><td>3.3</td><td>wallet_payment_methods</td><td>GET/POST/PATCH/DELETE /wallet/payment-methods</td></tr>
+  <tr><td>FR-006</td><td>Deposit Funds</td><td>User</td><td>3.4</td><td>wallet_transactions</td><td>POST /wallet/deposit</td></tr>
+  <tr><td>FR-007</td><td>Request Withdrawal</td><td>User</td><td>3.5</td><td>wallet_payout_requests</td><td>POST /wallet/withdraw</td></tr>
+  <tr><td>FR-008</td><td>Transfer Funds</td><td>User</td><td>3.6</td><td>wallet_transactions</td><td>POST /wallet/transfer</td></tr>
+  <tr><td>FR-009</td><td>Transaction Audit Trail</td><td>System</td><td>3.2</td><td>wallet_transactions</td><td>-</td></tr>
+  <tr><td>FR-010</td><td>Transaction Limits</td><td>System</td><td>3.4, 3.5</td><td>wallet_wallets</td><td>-</td></tr>
+  <tr><td>FR-011</td><td>Pay for Job Posting</td><td>Employer</td><td>3.7</td><td>wallet_payment_orders</td><td>POST /wallet/pay</td></tr>
+  <tr><td>FR-012</td><td>Pay for Featured Job</td><td>Employer</td><td>3.7</td><td>wallet_payment_orders</td><td>POST /wallet/pay</td></tr>
+  <tr><td>FR-013</td><td>Payment Orders</td><td>System</td><td>3.7</td><td>wallet_payment_orders</td><td>-</td></tr>
+  <tr><td>FR-014</td><td>Refund Processing</td><td>System</td><td>3.2</td><td>wallet_transactions</td><td>POST /wallet/refund</td></tr>
+  <tr><td>FR-015</td><td>Admin Approval</td><td>Admin</td><td>3.5</td><td>wallet_payout_requests</td><td>PATCH /admin/wallet/payouts/:id</td></tr>
+</table>
+
+</body>
+</html>
