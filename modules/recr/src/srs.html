@@ -70,6 +70,8 @@
         <li><a href="#section-3-10">3.10 UC-10: Evaluate Candidate</a></li>
         <li><a href="#section-3-11">3.11 UC-11: Post Job</a></li>
         <li><a href="#section-3-12">3.12 UC-12: Manage Jobs</a></li>
+        <li><a href="#section-3-13">3.13 UC-13: Review Job</a></li>
+        <li><a href="#section-3-14">3.14 UC-14: Review Candidate</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Functional Requirements</a>
@@ -78,6 +80,7 @@
         <li><a href="#section-4-2">4.2 HR Requirements</a></li>
         <li><a href="#section-4-3">4.3 Employer Requirements</a></li>
         <li><a href="#section-4-4">4.4 Subscription Requirements</a></li>
+        <li><a href="#section-4-5">4.5 Review Requirements</a></li>
       </ul>
     </li>
     <li><a href="#section-5">5. Data Model</a></li>
@@ -133,7 +136,7 @@
   <tr><td>Module Name</td><td>Recruitment</td></tr>
   <tr><td>Description</td><td>End-to-end recruitment management with 3 roles: Candidate, HR, Employer</td></tr>
   <tr><td>Database</td><td>recr_db</td></tr>
-  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history</td></tr>
+  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history, recr_job_reviews, recr_candidate_reviews</td></tr>
   <tr><td>Tech Stack</td><td>Node.js, NestJS, PostgreSQL, Drizzle ORM, RabbitMQ, Elasticsearch</td></tr>
 </table>
 
@@ -551,6 +554,75 @@
   <li>2a. Employer without subscription: System shows subscription required message</li>
 </ul>
 
+<h2 id="section-3-13">3.13 UC-13: Review Job</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-13</td></tr>
+  <tr><td>Name</td><td>Review Job</td></tr>
+  <tr><td>Actor</td><td>Candidate</td></tr>
+  <tr><td>Precondition</td><td>Candidate has applied to or worked at the company</td></tr>
+  <tr><td>Postcondition</td><td>Job review submitted and visible to other users</td></tr>
+  <tr><td>Trigger</td><td>Candidate clicks "Review" on a job listing</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Candidate navigates to job listing</li>
+  <li>Candidate clicks "Write Review"</li>
+  <li>Candidate rates the job on multiple dimensions:
+    <ul>
+      <li>Overall rating (1-5 stars)</li>
+      <li>Work-life balance</li>
+      <li>Compensation</li>
+      <li>Career growth</li>
+      <li>Company culture</li>
+    </ul>
+  </li>
+  <li>Candidate writes review title and description</li>
+  <li>Candidate submits review</li>
+  <li>System saves review record</li>
+  <li>System updates job average rating</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>1a. Candidate hasn't applied: System shows "Only applicants can review" message</li>
+  <li>2a. Already reviewed: System shows "You've already reviewed this job" message</li>
+</ul>
+
+<h2 id="section-3-14">3.14 UC-14: Review Candidate</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-14</td></tr>
+  <tr><td>Name</td><td>Review Candidate</td></tr>
+  <tr><td>Actor</td><td>HR, Interviewer</td></tr>
+  <tr><td>Precondition</td><td>Interview has been completed</td></tr>
+  <tr><td>Postcondition</td><td>Candidate review submitted</td></tr>
+  <tr><td>Trigger</td><td>Interviewer clicks "Review Candidate" after interview</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Interviewer navigates to completed interview</li>
+  <li>Interviewer clicks "Write Review"</li>
+  <li>Interviewer rates the candidate on multiple dimensions:
+    <ul>
+      <li>Technical skills (1-5 stars)</li>
+      <li>Communication skills</li>
+      <li>Cultural fit</li>
+      <li>Problem-solving ability</li>
+      <li>Team collaboration</li>
+    </ul>
+  </li>
+  <li>Interviewer writes review title and description</li>
+  <li>Interviewer selects recommendation (strong_yes/yes/neutral/no/strong_no)</li>
+  <li>Interviewer submits review</li>
+  <li>System saves review record</li>
+  <li>System updates candidate average rating</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>1a. Interview not completed: System shows "Interview must be completed first" message</li>
+  <li>2a. Already reviewed: System shows "You've already reviewed this candidate" message</li>
+</ul>
+
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Functional Requirements</h1>
 
@@ -608,7 +680,7 @@
     <td><span class="req-id">FR-006</span></td>
     <td>RECR</td>
     <td>Update Profile</td>
-    <td>UC-06</td>
+    <td>UC-01</td>
     <td>Medium</td>
     <td>Candidates can update their profile, skills, and experience</td>
   </tr>
@@ -616,7 +688,7 @@
     <td><span class="req-id">FR-007</span></td>
     <td>RECR</td>
     <td>Upload Resume</td>
-    <td>UC-07</td>
+    <td>UC-06</td>
     <td>High</td>
     <td>Candidates can upload and manage their resume files (PDF, DOCX)</td>
   </tr>
@@ -644,7 +716,7 @@
     <td><span class="req-id">FR-009</span></td>
     <td>RECR</td>
     <td>Screen Candidates</td>
-    <td>UC-09</td>
+    <td>UC-08</td>
     <td>High</td>
     <td>HR can screen candidates and move them through recruitment stages</td>
   </tr>
@@ -652,7 +724,7 @@
     <td><span class="req-id">FR-010</span></td>
     <td>RECR</td>
     <td>Schedule Interview</td>
-    <td>UC-10</td>
+    <td>UC-09</td>
     <td>High</td>
     <td>HR can schedule interviews with date/time, location, meeting link</td>
   </tr>
@@ -668,23 +740,23 @@
     <td><span class="req-id">FR-012</span></td>
     <td>RECR</td>
     <td>Reject Candidate</td>
-    <td>UC-12</td>
+    <td>UC-08</td>
     <td>High</td>
     <td>HR can reject candidates with optional rejection reason</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-014</span></td>
+    <td><span class="req-id">FR-013</span></td>
     <td>RECR</td>
     <td>Track Pipeline</td>
-    <td>UC-14</td>
+    <td>UC-08</td>
     <td>High</td>
     <td>HR can view recruitment pipeline with candidate counts per stage</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-015</span></td>
+    <td><span class="req-id">FR-014</span></td>
     <td>RECR</td>
     <td>Generate Reports</td>
-    <td>UC-15</td>
+    <td>UC-08</td>
     <td>Medium</td>
     <td>HR can generate recruitment metrics and analytics reports</td>
   </tr>
@@ -717,7 +789,7 @@
     <th>Description</th>
   </tr>
   <tr>
-    <td><span class="req-id">FR-016</span></td>
+    <td><span class="req-id">FR-015</span></td>
     <td>RECR</td>
     <td>Employer Registration</td>
     <td>UC-01</td>
@@ -725,42 +797,42 @@
     <td>Employers can register company accounts with company details</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-017</span></td>
+    <td><span class="req-id">FR-016</span></td>
     <td>RECR</td>
     <td>Post Job</td>
-    <td>UC-12</td>
+    <td>UC-11</td>
     <td>High</td>
     <td>Employers can create job listings with requirements and salary range</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-018</span></td>
+    <td><span class="req-id">FR-017</span></td>
     <td>RECR</td>
     <td>Manage Job Listings</td>
-    <td>UC-17</td>
+    <td>UC-12</td>
     <td>High</td>
     <td>Employers can edit, close, or archive their job listings</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-019</span></td>
+    <td><span class="req-id">FR-018</span></td>
     <td>RECR</td>
     <td>View Applicants</td>
-    <td>UC-18</td>
+    <td>UC-12</td>
     <td>High</td>
     <td>Employers can view applicants for their posted jobs</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-020</span></td>
+    <td><span class="req-id">FR-019</span></td>
     <td>RECR</td>
     <td>Approve Job Posting</td>
-    <td>UC-19</td>
+    <td>UC-11</td>
     <td>Medium</td>
     <td>Employers can submit jobs for HR approval before publishing</td>
   </tr>
   <tr>
-    <td><span class="req-id">FR-021</span></td>
+    <td><span class="req-id">FR-020</span></td>
     <td>RECR</td>
     <td>View Analytics</td>
-    <td>UC-20</td>
+    <td>UC-12</td>
     <td>Medium</td>
     <td>Employers can view recruitment analytics for their job postings</td>
   </tr>
@@ -826,6 +898,34 @@
   </tr>
 </table>
 
+<h2 id="section-4-5">4.5 Review Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-030</span></td>
+    <td>RECR</td>
+    <td>Job Review</td>
+    <td>UC-13</td>
+    <td>Medium</td>
+    <td>Candidates can review jobs with ratings and descriptions</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">FR-031</span></td>
+    <td>RECR</td>
+    <td>Candidate Review</td>
+    <td>UC-14</td>
+    <td>Medium</td>
+    <td>Interviewers can review candidates with ratings and recommendations</td>
+  </tr>
+</table>
+
 <!-- 5. DATA MODEL -->
 <h1 id="section-5">5. Data Model</h1>
 
@@ -853,6 +953,8 @@
   <tr><td><span class="req-id">DR-009</span></td><td>recr_subscription_plans</td><td>Subscription plan definitions</td><td>FR-022</td></tr>
   <tr><td><span class="req-id">DR-010</span></td><td>recr_subscriptions</td><td>User subscriptions</td><td>FR-023, FR-024</td></tr>
   <tr><td><span class="req-id">DR-011</span></td><td>recr_subscription_history</td><td>Subscription change history</td><td>FR-027</td></tr>
+  <tr><td><span class="req-id">DR-012</span></td><td>recr_job_reviews</td><td>Job reviews from candidates</td><td>FR-030</td></tr>
+  <tr><td><span class="req-id">DR-013</span></td><td>recr_candidate_reviews</td><td>Candidate reviews from interviewers</td><td>FR-031</td></tr>
 </table>
 
 <!-- 6. API SPECIFICATION -->
@@ -885,6 +987,8 @@
   <tr><td>GET</td><td>/recr/candidate/applications</td><td>View my applications</td><td>FR-005</td></tr>
   <tr><td>PATCH</td><td>/recr/candidate/profile</td><td>Update profile</td><td>FR-006</td></tr>
   <tr><td>POST</td><td>/recr/candidate/resume</td><td>Upload resume</td><td>FR-007</td></tr>
+  <tr><td>POST</td><td>/recr/candidate/reviews/jobs</td><td>Review a job</td><td>FR-030</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/reviews/jobs/:jobId</td><td>Get job reviews</td><td>FR-030</td></tr>
 </table>
 
 <h3>HR Endpoints</h3>
@@ -899,11 +1003,14 @@
   <tr><td>PATCH</td><td>/recr/hr/applications/:id/status</td><td>Update application status</td><td>FR-009</td></tr>
   <tr><td>POST</td><td>/recr/hr/interviews</td><td>Schedule interview</td><td>FR-010</td></tr>
   <tr><td>POST</td><td>/recr/hr/evaluations</td><td>Submit evaluation</td><td>FR-011</td></tr>
-  <tr><td>GET</td><td>/recr/hr/pipeline</td><td>View recruitment pipeline</td><td>FR-014</td></tr>
-  <tr><td>GET</td><td>/recr/hr/reports</td><td>Generate reports</td><td>FR-015</td></tr>
+  <tr><td>GET</td><td>/recr/hr/pipeline</td><td>View recruitment pipeline</td><td>FR-013</td></tr>
+  <tr><td>GET</td><td>/recr/hr/reports</td><td>Generate reports</td><td>FR-014</td></tr>
   <tr><td>POST</td><td>/recr/hr/jobs</td><td>Create job listing</td><td>FR-028</td></tr>
   <tr><td>GET</td><td>/recr/hr/jobs</td><td>List my jobs</td><td>FR-029</td></tr>
   <tr><td>PATCH</td><td>/recr/hr/jobs/:id</td><td>Update job listing</td><td>FR-029</td></tr>
+  <tr><td>GET</td><td>/recr/hr/jobs/:id/applicants</td><td>View applicants for my job</td><td>FR-029</td></tr>
+  <tr><td>POST</td><td>/recr/hr/reviews/candidates</td><td>Review a candidate</td><td>FR-031</td></tr>
+  <tr><td>GET</td><td>/recr/hr/reviews/candidates/:candidateId</td><td>Get candidate reviews</td><td>FR-031</td></tr>
 </table>
 
 <h3>Subscription Endpoints (All Roles)</h3>
@@ -914,10 +1021,11 @@
     <th>Description</th>
     <th>Requirement IDs</th>
   </tr>
-  <tr><td>GET</td><td>/recr/subscription/plans</td><td>List subscription plans</td><td>FR-022</td></tr>
-  <tr><td>POST</td><td>/recr/subscription/purchase</td><td>Purchase subscription</td><td>FR-023</td></tr>
-  <tr><td>GET</td><td>/recr/subscription/status</td><td>Get subscription status</td><td>FR-025</td></tr>
-  <tr><td>POST</td><td>/recr/subscription/renew</td><td>Renew subscription</td><td>FR-026</td></tr>
+  <tr><td>GET</td><td>/recr/subscription/plans</td><td>List subscription plans</td><td>FR-021</td></tr>
+  <tr><td>POST</td><td>/recr/subscription/purchase</td><td>Purchase subscription</td><td>FR-022</td></tr>
+  <tr><td>GET</td><td>/recr/subscription/status</td><td>Get subscription status</td><td>FR-024</td></tr>
+  <tr><td>POST</td><td>/recr/subscription/renew</td><td>Renew subscription</td><td>FR-025</td></tr>
+  <tr><td>GET</td><td>/recr/subscription/history</td><td>View subscription history</td><td>FR-026</td></tr>
 </table>
 
 <h3>Employer Endpoints</h3>
@@ -928,12 +1036,12 @@
     <th>Description</th>
     <th>Requirement IDs</th>
   </tr>
-  <tr><td>POST</td><td>/recr/employer/jobs</td><td>Create job listing</td><td>FR-017</td></tr>
-  <tr><td>GET</td><td>/recr/employer/jobs</td><td>List my jobs</td><td>FR-018</td></tr>
-  <tr><td>PATCH</td><td>/recr/employer/jobs/:id</td><td>Update job listing</td><td>FR-018</td></tr>
-  <tr><td>GET</td><td>/recr/employer/jobs/:id/applicants</td><td>View applicants</td><td>FR-019</td></tr>
-  <tr><td>PATCH</td><td>/recr/employer/jobs/:id/submit</td><td>Submit for approval</td><td>FR-020</td></tr>
-  <tr><td>GET</td><td>/recr/employer/analytics</td><td>View analytics</td><td>FR-021</td></tr>
+  <tr><td>POST</td><td>/recr/employer/jobs</td><td>Create job listing</td><td>FR-016</td></tr>
+  <tr><td>GET</td><td>/recr/employer/jobs</td><td>List my jobs</td><td>FR-017</td></tr>
+  <tr><td>PATCH</td><td>/recr/employer/jobs/:id</td><td>Update job listing</td><td>FR-017</td></tr>
+  <tr><td>GET</td><td>/recr/employer/jobs/:id/applicants</td><td>View applicants</td><td>FR-018</td></tr>
+  <tr><td>PATCH</td><td>/recr/employer/jobs/:id/submit</td><td>Submit for approval</td><td>FR-019</td></tr>
+  <tr><td>GET</td><td>/recr/employer/analytics</td><td>View analytics</td><td>FR-020</td></tr>
 </table>
 
 <!-- 7. INTEGRATION -->
@@ -990,21 +1098,39 @@
   <tr><td>FR-003</td><td>Browse Jobs</td><td>Candidate</td><td>3.1</td><td>recr_jobs</td><td>GET /recr/jobs</td></tr>
   <tr><td>FR-004</td><td>Submit Application</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>POST /recr/applications</td></tr>
   <tr><td>FR-005</td><td>View Application Status</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>GET /recr/candidate/applications</td></tr>
+  <tr><td>FR-006</td><td>Update Profile</td><td>Candidate</td><td>3.1</td><td>recr_candidates</td><td>PATCH /recr/candidate/profile</td></tr>
+  <tr><td>FR-007</td><td>Upload Resume</td><td>Candidate</td><td>3.1</td><td>recr_candidates</td><td>POST /recr/candidate/resume</td></tr>
   <tr><td>FR-008</td><td>Review Applications</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/applications</td></tr>
+  <tr><td>FR-009</td><td>Screen Candidates</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
   <tr><td>FR-010</td><td>Schedule Interview</td><td>HR</td><td>3.2</td><td>recr_interviews</td><td>POST /recr/hr/interviews</td></tr>
   <tr><td>FR-011</td><td>Evaluate Candidate</td><td>HR</td><td>3.2</td><td>recr_evaluations</td><td>POST /recr/hr/evaluations</td></tr>
   <tr><td>FR-012</td><td>Reject Candidate</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
-  <tr><td>FR-017</td><td>Post Job</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>POST /recr/employer/jobs</td></tr>
-  <tr><td>FR-018</td><td>Manage Job Listings</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>GET/PATCH /recr/employer/jobs</td></tr>
-  <tr><td>FR-019</td><td>View Applicants</td><td>Employer</td><td>3.3</td><td>recr_applications</td><td>GET /recr/employer/jobs/:id/applicants</td></tr>
+  <tr><td>FR-013</td><td>Track Pipeline</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/pipeline</td></tr>
+  <tr><td>FR-014</td><td>Generate Reports</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/reports</td></tr>
+  <tr><td>FR-015</td><td>Employer Registration</td><td>Employer</td><td>3.1</td><td>recr_employers</td><td>POST /recr/auth/register</td></tr>
+  <tr><td>FR-016</td><td>Post Job (Employer)</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>POST /recr/employer/jobs</td></tr>
+  <tr><td>FR-017</td><td>Manage Job Listings</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>GET/PATCH /recr/employer/jobs</td></tr>
+  <tr><td>FR-018</td><td>View Applicants</td><td>Employer</td><td>3.3</td><td>recr_applications</td><td>GET /recr/employer/jobs/:id/applicants</td></tr>
+  <tr><td>FR-019</td><td>Approve Job Posting</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>PATCH /recr/employer/jobs/:id/submit</td></tr>
+  <tr><td>FR-020</td><td>View Analytics</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>GET /recr/employer/analytics</td></tr>
+  <tr><td>FR-021</td><td>Subscription Plans</td><td>All</td><td>4.4</td><td>recr_subscription_plans</td><td>GET /recr/subscription/plans</td></tr>
+  <tr><td>FR-022</td><td>Purchase Subscription</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/purchase</td></tr>
+  <tr><td>FR-023</td><td>Subscription Access Control</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>-</td></tr>
+  <tr><td>FR-024</td><td>Subscription Validation</td><td>System</td><td>4.4</td><td>recr_subscriptions</td><td>GET /recr/subscription/status</td></tr>
+  <tr><td>FR-025</td><td>Subscription Renewal</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/renew</td></tr>
+  <tr><td>FR-026</td><td>Subscription History</td><td>All</td><td>4.4</td><td>recr_subscription_history</td><td>GET /recr/subscription/history</td></tr>
+  <tr><td>FR-027</td><td>Subscription History</td><td>All</td><td>4.4</td><td>recr_subscription_history</td><td>GET /recr/subscription/history</td></tr>
   <tr><td>FR-028</td><td>HR Post Job</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>POST /recr/hr/jobs</td></tr>
   <tr><td>FR-029</td><td>HR Manage Jobs</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
-  <tr><td>FR-022</td><td>Subscription Plans</td><td>All</td><td>4.4</td><td>recr_subscription_plans</td><td>GET /recr/subscription/plans</td></tr>
-  <tr><td>FR-023</td><td>Purchase Subscription</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/purchase</td></tr>
-  <tr><td>FR-024</td><td>Subscription Access Control</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>-</td></tr>
-  <tr><td>FR-025</td><td>Subscription Validation</td><td>System</td><td>4.4</td><td>recr_subscriptions</td><td>GET /recr/subscription/status</td></tr>
-  <tr><td>FR-026</td><td>Subscription Renewal</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/renew</td></tr>
+  <tr><td>FR-030</td><td>Job Review</td><td>Candidate</td><td>3.3</td><td>recr_job_reviews</td><td>POST /recr/candidate/reviews/jobs</td></tr>
+  <tr><td>FR-031</td><td>Candidate Review</td><td>HR</td><td>3.3</td><td>recr_candidate_reviews</td><td>POST /recr/hr/reviews/candidates</td></tr>
+  <tr><td>NFR-001</td><td>API Response Time</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
+  <tr><td>NFR-002</td><td>Application Processing</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
+  <tr><td>NFR-003</td><td>Concurrent Users</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
+  <tr><td>NFR-004</td><td>System Uptime</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-005</td><td>RBAC</td><td>All</td><td>6.1</td><td>recr_users</td><td>-</td></tr>
+  <tr><td>NFR-006</td><td>Resume Storage</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
+  <tr><td>NFR-007</td><td>Job Search</td><td>All</td><td>6.1</td><td>recr_jobs</td><td>GET /recr/jobs</td></tr>
 </table>
 
 </body>

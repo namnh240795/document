@@ -61,14 +61,16 @@
 <h2>1.2 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>Database Solution</th></tr>
-  <tr><td><span class="req-id">FR-001, FR-016</span> User Registration</td><td>recr_users, recr_candidates, recr_employers tables</td></tr>
-  <tr><td><span class="req-id">FR-017, FR-018</span> Job Management</td><td>recr_jobs, recr_job_requirements tables</td></tr>
+  <tr><td><span class="req-id">FR-001, FR-015</span> User Registration</td><td>recr_users, recr_candidates, recr_employers tables</td></tr>
+  <tr><td><span class="req-id">FR-016, FR-017</span> Job Management</td><td>recr_jobs, recr_job_requirements tables</td></tr>
   <tr><td><span class="req-id">FR-004, FR-005</span> Application Management</td><td>recr_applications table</td></tr>
   <tr><td><span class="req-id">FR-010</span> Interview Scheduling</td><td>recr_interviews table</td></tr>
   <tr><td><span class="req-id">FR-011</span> Evaluation</td><td>recr_evaluations table</td></tr>
-  <tr><td><span class="req-id">FR-012</span> Offer Management</td><td>recr_offers table</td></tr>
-  <tr><td><span class="req-id">FR-022, FR-023</span> Subscription Plans</td><td>recr_subscription_plans table</td></tr>
-  <tr><td><span class="req-id">FR-024, FR-025</span> Subscription Access Control</td><td>recr_subscriptions table</td></tr>
+  <tr><td><span class="req-id">FR-012</span> Reject Candidate</td><td>recr_applications table (status update)</td></tr>
+  <tr><td><span class="req-id">FR-030</span> Job Reviews</td><td>recr_job_reviews table</td></tr>
+  <tr><td><span class="req-id">FR-031</span> Candidate Reviews</td><td>recr_candidate_reviews table</td></tr>
+  <tr><td><span class="req-id">FR-021, FR-022</span> Subscription Plans</td><td>recr_subscription_plans table</td></tr>
+  <tr><td><span class="req-id">FR-023, FR-024</span> Subscription Access Control</td><td>recr_subscriptions table</td></tr>
 </table>
 
 <h2>1.3 ERD Diagram</h2>
@@ -281,12 +283,51 @@ CREATE UNIQUE INDEX idx_recr_subscriptions_active ON recr_subscriptions(user_id)
   created_at        TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
+<h3>Table: <code>recr_job_reviews</code> - Job Reviews</h3>
+<p><strong>Description:</strong> Candidate reviews and ratings for jobs they applied to.</p>
+<pre><code>CREATE TABLE recr_job_reviews (
+  id                BIGSERIAL PRIMARY KEY,
+  job_id            BIGINT NOT NULL REFERENCES recr_jobs(id),
+  user_id           BIGINT NOT NULL REFERENCES recr_users(id),
+  overall_rating    INT NOT NULL CHECK (overall_rating >= 1 AND overall_rating <= 5),
+  work_life_balance INT CHECK (work_life_balance >= 1 AND work_life_balance <= 5),
+  compensation      INT CHECK (compensation >= 1 AND compensation <= 5),
+  career_growth     INT CHECK (career_growth >= 1 AND career_growth <= 5),
+  company_culture   INT CHECK (company_culture >= 1 AND company_culture <= 5),
+  title             VARCHAR(200) NOT NULL,
+  description       TEXT,
+  is_anonymous      BOOLEAN DEFAULT false,
+  status            VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected')),
+  created_at        TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at        TIMESTAMP NOT NULL DEFAULT NOW(),
+  UNIQUE(job_id, user_id)
+);</code></pre>
+
+<h3>Table: <code>recr_candidate_reviews</code> - Candidate Reviews</h3>
+<p><strong>Description:</strong> Interviewer reviews and ratings for candidates after interviews.</p>
+<pre><code>CREATE TABLE recr_candidate_reviews (
+  id                  BIGSERIAL PRIMARY KEY,
+  candidate_id        BIGINT NOT NULL REFERENCES recr_candidates(id),
+  interviewer_id      BIGINT NOT NULL REFERENCES recr_users(id),
+  interview_id        BIGINT NOT NULL REFERENCES recr_interviews(id),
+  technical_skills    INT CHECK (technical_skills >= 1 AND technical_skills <= 5),
+  communication_skills INT CHECK (communication_skills >= 1 AND communication_skills <= 5),
+  cultural_fit        INT CHECK (cultural_fit >= 1 AND cultural_fit <= 5),
+  problem_solving     INT CHECK (problem_solving >= 1 AND problem_solving <= 5),
+  team_collaboration  INT CHECK (team_collaboration >= 1 AND team_collaboration <= 5),
+  title               VARCHAR(200) NOT NULL,
+  description         TEXT,
+  recommendation      VARCHAR(20) CHECK (recommendation IN ('strong_yes','yes','neutral','no','strong_no')),
+  created_at          TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at          TIMESTAMP NOT NULL DEFAULT NOW(),
+  UNIQUE(interview_id, interviewer_id)
+);</code></pre>
+
 <!-- 3. INDEXES -->
 <h1 id="section-3">3. Indexes</h1>
 
 <pre><code>-- Users indexes
-CREATE INDEX idx_recr_users_email ON recr_users(email);
-CREATE INDEX idx_recr_users_role ON recr_users(role);
+CREATE INDEX idx_recr_users_user_id ON recr_users(user_id);
 
 -- Candidates indexes
 CREATE INDEX idx_recr_candidates_user_id ON recr_candidates(user_id);
@@ -326,7 +367,17 @@ CREATE INDEX idx_recr_subscriptions_user_status ON recr_subscriptions(user_id, s
 
 -- Subscription History indexes
 CREATE INDEX idx_recr_subscription_history_subscription_id ON recr_subscription_history(subscription_id);
-CREATE INDEX idx_recr_subscription_history_created_at ON recr_subscription_history(created_at);</code></pre>
+CREATE INDEX idx_recr_subscription_history_created_at ON recr_subscription_history(created_at);
+
+-- Job Reviews indexes
+CREATE INDEX idx_recr_job_reviews_job_id ON recr_job_reviews(job_id);
+CREATE INDEX idx_recr_job_reviews_user_id ON recr_job_reviews(user_id);
+CREATE INDEX idx_recr_job_reviews_status ON recr_job_reviews(status);
+
+-- Candidate Reviews indexes
+CREATE INDEX idx_recr_candidate_reviews_candidate_id ON recr_candidate_reviews(candidate_id);
+CREATE INDEX idx_recr_candidate_reviews_interviewer_id ON recr_candidate_reviews(interviewer_id);
+CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(interview_id);</code></pre>
 
 <!-- 4. MIGRATIONS -->
 <h1 id="section-4">4. Migrations</h1>
@@ -352,7 +403,9 @@ CREATE INDEX idx_recr_subscription_history_created_at ON recr_subscription_histo
   <tr><td>8</td><td>008_create_evaluations.sql</td><td>Create recr_evaluations table</td></tr>
   <tr><td>9</td><td>009_create_subscription_plans.sql</td><td>Create recr_subscription_plans table and seed data</td></tr>
   <tr><td>10</td><td>010_create_subscriptions.sql</td><td>Create recr_subscriptions and recr_subscription_history tables</td></tr>
-  <tr><td>11</td><td>011_create_indexes.sql</td><td>Create all indexes</td></tr>
+  <tr><td>11</td><td>011_create_job_reviews.sql</td><td>Create recr_job_reviews table</td></tr>
+  <tr><td>12</td><td>012_create_candidate_reviews.sql</td><td>Create recr_candidate_reviews table</td></tr>
+  <tr><td>13</td><td>013_create_indexes.sql</td><td>Create all indexes</td></tr>
 </table>
 
 <!-- 5. DATA DICTIONARY -->
@@ -372,6 +425,8 @@ CREATE INDEX idx_recr_subscription_history_created_at ON recr_subscription_histo
   <tr><td>recr_subscription_plans</td><td>Subscription plan definitions</td><td>FR-022</td><td>3</td></tr>
   <tr><td>recr_subscriptions</td><td>User subscriptions</td><td>FR-023, FR-024</td><td>500</td></tr>
   <tr><td>recr_subscription_history</td><td>Subscription change history</td><td>FR-027</td><td>2,000</td></tr>
+  <tr><td>recr_job_reviews</td><td>Job reviews from candidates</td><td>FR-030</td><td>5,000</td></tr>
+  <tr><td>recr_candidate_reviews</td><td>Candidate reviews from interviewers</td><td>FR-031</td><td>8,000</td></tr>
 </table>
 
 <!-- 6. BACKUP & RECOVERY -->

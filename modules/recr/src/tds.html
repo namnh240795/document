@@ -28,7 +28,7 @@
   <span class="module-badge">RECR</span>
   <table class="meta-table">
     <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td> Authentication System</td></tr>
+    <tr><td>System</td><td>HR Management System</td></tr>
     <tr><td>Module</td><td>RECR -  Recruitment</td></tr>
     <tr><td>Date</td><td>2026-07-31</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
@@ -81,8 +81,11 @@
 <h2 id="section-1-3">1.3 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-021</span></td><td>Section 3, 5</td></tr>
-  <tr><td>Subscription</td><td><span class="req-id">FR-022</span> - <span class="req-id">FR-027</span></td><td>Section 3, 5, 6</td></tr>
+  <tr><td>Candidate</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-007</span></td><td>Section 3, 5</td></tr>
+  <tr><td>HR</td><td><span class="req-id">FR-008</span> - <span class="req-id">FR-014</span>, <span class="req-id">FR-028</span>, <span class="req-id">FR-029</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Employer</td><td><span class="req-id">FR-015</span> - <span class="req-id">FR-020</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Subscription</td><td><span class="req-id">FR-021</span> - <span class="req-id">FR-027</span></td><td>Section 3, 5, 6</td></tr>
+  <tr><td>Reviews</td><td><span class="req-id">FR-030</span>, <span class="req-id">FR-031</span></td><td>Section 3, 5</td></tr>
   <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-007</span></td><td>Section 6, 8</td></tr>
 </table>
 
@@ -151,6 +154,7 @@
   <tr><td>JobModule</td><td>Job CRUD, search, filtering (HR & Employer)</td><td><span class="req-id">FR-017</span>, <span class="req-id">FR-018</span>, <span class="req-id">FR-028</span>, <span class="req-id">FR-029</span></td></tr>
   <tr><td>ApplicationModule</td><td>Application management, status tracking</td><td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td></tr>
   <tr><td>InterviewModule</td><td>Interview scheduling, evaluation</td><td><span class="req-id">FR-010</span>, <span class="req-id">FR-011</span></td></tr>
+  <tr><td>ReviewModule</td><td>Job reviews, candidate reviews, rating aggregation</td><td><span class="req-id">FR-030</span>, <span class="req-id">FR-031</span></td></tr>
   <tr><td>SubscriptionModule</td><td>Plan management, subscription CRUD, access control</td><td><span class="req-id">FR-022</span> - <span class="req-id">FR-027</span></td></tr>
   <tr><td>SubscriptionGuard</td><td>Middleware for subscription validation on employer routes</td><td><span class="req-id">FR-024</span>, <span class="req-id">FR-025</span></td></tr>
 </table>
@@ -169,6 +173,8 @@
   <tr><td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td><td>Application tracking with status workflow</td><td>recr_applications</td></tr>
   <tr><td><span class="req-id">FR-010</span></td><td>Interview scheduling with time slots</td><td>recr_interviews</td></tr>
   <tr><td><span class="req-id">FR-011</span></td><td>Evaluation scoring system</td><td>recr_evaluations</td></tr>
+  <tr><td><span class="req-id">FR-030</span></td><td>Job reviews with multi-dimensional ratings</td><td>recr_job_reviews</td></tr>
+  <tr><td><span class="req-id">FR-031</span></td><td>Candidate reviews from interviewers</td><td>recr_candidate_reviews</td></tr>
   <tr><td><span class="req-id">FR-022</span></td><td>Subscription plan definitions with pricing</td><td>recr_subscription_plans</td></tr>
   <tr><td><span class="req-id">FR-023</span>, <span class="req-id">FR-024</span></td><td>User subscription tracking and access control</td><td>recr_subscriptions</td></tr>
   <tr><td><span class="req-id">FR-027</span></td><td>Subscription change audit trail</td><td>recr_subscription_history</td></tr>
@@ -188,7 +194,8 @@
   <tr><td>GET</td><td>/recr/hr/applications</td><td>Review applications</td><td><span class="req-id">FR-008</span></td></tr>
   <tr><td>POST</td><td>/recr/hr/interviews</td><td>Schedule interview</td><td><span class="req-id">FR-010</span></td></tr>
   <tr><td>POST</td><td>/recr/hr/evaluations</td><td>Submit evaluation</td><td><span class="req-id">FR-011</span></td></tr>
-  <tr><td>POST</td><td>/recr/hr/offers</td><td>Create offer</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>POST</td><td>/recr/candidate/reviews/jobs</td><td>Review a job</td><td><span class="req-id">FR-030</span></td></tr>
+  <tr><td>POST</td><td>/recr/hr/reviews/candidates</td><td>Review a candidate</td><td><span class="req-id">FR-031</span></td></tr>
   <tr><td>POST</td><td>/recr/employer/jobs</td><td>Create job listing</td><td><span class="req-id">FR-017</span></td></tr>
   <tr><td>GET</td><td>/recr/employer/jobs</td><td>List my jobs</td><td><span class="req-id">FR-018</span></td></tr>
   <tr><td>GET</td><td>/recr/subscription/plans</td><td>List subscription plans</td><td><span class="req-id">FR-022</span></td></tr>

@@ -19,9 +19,9 @@ body {
   line-height: 1.6;
   color: var(--text);
   background: var(--bg);
-  max-width: 210mm;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20mm;
+  padding: 40px;
 }
 
 /* --- Logo Header --- */
@@ -169,6 +169,8 @@ table {
   border-collapse: collapse;
   margin: 12px 0;
   font-size: 13px;
+  display: block;
+  overflow-x: auto;
 }
 
 th, td {
@@ -284,6 +286,22 @@ hr {
   pre { white-space: pre-wrap; word-wrap: break-word; }
   .toc { page-break-inside: avoid; }
   .logo-header { page-break-inside: avoid; }
+}
+
+/* --- Responsive Table Container --- */
+.table-container {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+/* --- Wide Tables --- */
+.trace-table {
+  min-width: 800px;
+}
+
+.trace-table td, .trace-table th {
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 @page {

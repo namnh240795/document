@@ -226,6 +226,24 @@
 <h3>POST /recr/candidate/resume <span class="req-id">FR-007</span></h3>
 <p>Upload resume. Requires <strong>candidate</strong> role. Max 10MB.</p>
 
+<h3>POST /recr/candidate/reviews/jobs <span class="req-id">FR-030</span></h3>
+<p>Review a job. Requires <strong>candidate</strong> role. Must have applied to the job.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "job_id": 1,
+  "overall_rating": 4,
+  "work_life_balance": 5,
+  "compensation": 3,
+  "career_growth": 4,
+  "company_culture": 4,
+  "title": "Great work environment",
+  "description": "Good company culture but salary could be better...",
+  "is_anonymous": false
+}</code></pre>
+
+<h3>GET /recr/candidate/reviews/jobs/:jobId <span class="req-id">FR-030</span></h3>
+<p>Get reviews for a job. Public endpoint.</p>
+
 <h2 id="section-5-3">5.3 HR Endpoints</h2>
 
 <h3>GET /recr/hr/applications <span class="req-id">FR-008</span></h3>
@@ -280,6 +298,25 @@
 
 <h3>GET /recr/hr/jobs/:id/applicants <span class="req-id">FR-029</span></h3>
 <p>View applicants for my job. Requires <strong>hr</strong> role.</p>
+
+<h3>POST /recr/hr/reviews/candidates <span class="req-id">FR-031</span></h3>
+<p>Review a candidate after interview. Requires <strong>hr</strong> role.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "candidate_id": 1,
+  "interview_id": 1,
+  "technical_skills": 4,
+  "communication_skills": 5,
+  "cultural_fit": 4,
+  "problem_solving": 4,
+  "team_collaboration": 5,
+  "title": "Strong technical candidate",
+  "description": "Excellent problem-solving skills...",
+  "recommendation": "yes"
+}</code></pre>
+
+<h3>GET /recr/hr/reviews/candidates/:candidateId <span class="req-id">FR-031</span></h3>
+<p>Get reviews for a candidate. Requires <strong>hr</strong> role.</p>
 
 <h2 id="section-5-4">5.4 Employer Endpoints</h2>
 
@@ -359,7 +396,7 @@
 }</code></pre>
 
 <h3>POST /recr/subscription/purchase <span class="req-id">FR-023</span></h3>
-<p>Purchase a subscription plan. Requires <strong>employer</strong> role.</p>
+<p>Purchase a subscription plan. Requires authentication (all roles).</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "plan_id": 2,
@@ -386,7 +423,7 @@
 }</code></pre>
 
 <h3>GET /recr/subscription/status <span class="req-id">FR-025</span></h3>
-<p>Get current subscription status. Requires <strong>employer</strong> role.</p>
+<p>Get current subscription status. Requires authentication (all roles).</p>
 <p><strong>Response 200:</strong></p>
 <pre><code>{
   "success": true,
@@ -409,7 +446,7 @@
 }</code></pre>
 
 <h3>POST /recr/subscription/renew <span class="req-id">FR-026</span></h3>
-<p>Renew or upgrade subscription. Requires <strong>employer</strong> role.</p>
+<p>Renew or upgrade subscription. Requires authentication (all roles).</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "plan_id": 3,  // Optional: upgrade to different plan
@@ -435,7 +472,7 @@
 }</code></pre>
 
 <h3>GET /recr/subscription/history <span class="req-id">FR-027</span></h3>
-<p>View subscription history. Requires <strong>employer</strong> role.</p>
+<p>View subscription history. Requires authentication (all roles).</p>
 <p><strong>Query Params:</strong> <code>page</code>, <code>limit</code></p>
 <p><strong>Response 200:</strong></p>
 <pre><code>{
@@ -475,12 +512,10 @@
   <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
   <tr><td>application.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate submits application</td></tr>
   <tr><td>interview.scheduled</td><td>Outbound</td><td>RabbitMQ</td><td>HR schedules interview</td></tr>
-  <tr><td>offer.sent</td><td>Outbound</td><td>RabbitMQ</td><td>HR sends offer letter</td></tr>
-  <tr><td>candidate.hired</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate accepts offer</td></tr>
-  <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Employer submits job for approval</td></tr>
-  <tr><td>subscription.purchased</td><td>Outbound</td><td>RabbitMQ</td><td>Employer purchases subscription</td></tr>
-  <tr><td>subscription.expiring</td><td>Outbound</td><td>RabbitMQ</td><td>Subscription expiring in 7 days</td></tr>
-  <tr><td>subscription.expired</td><td>Outbound</td><td>RabbitMQ</td><td>Subscription has expired</td></tr>
+  <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>HR/Employer submits job for approval</td></tr>
+  <tr><td>subscription.purchased</td><td>Outbound</td><td>RabbitMQ</td><td>User purchases subscription</td></tr>
+  <tr><td>job.review.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate submits job review</td></tr>
+  <tr><td>candidate.review.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Interviewer submits candidate review</td></tr>
 </table>
 
 <!-- 8. CHANGELOG -->
