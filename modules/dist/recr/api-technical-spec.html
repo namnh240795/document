@@ -27,11 +27,11 @@
   <div class="subtitle">Recruitment API</div>
   <span class="module-badge">RECR</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.1</td></tr>
+    <tr><td>Version</td><td>1.3</td></tr>
     <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
     <tr><td>System</td><td>HR Management System</td></tr>
     <tr><td>Module</td><td>RECR - Recruitment</td></tr>
-    <tr><td>Date</td><td>2026-07-31</td></tr>
+    <tr><td>Date</td><td>2026-08-17</td></tr>
     <tr><td>Author</td><td>Nam Nguyen</td></tr>
     <tr><td>Related SRS</td><td><a href="srs.html">Recruitment SRS</a></td></tr>
   </table>
@@ -70,13 +70,15 @@
 <h2>1.1 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Candidate Registration</td><td>POST /recr/auth/register</td></tr>
-  <tr><td><span class="req-id">FR-016</span> Employer Registration</td><td>POST /recr/auth/register</td></tr>
+  <tr><td><span class="req-id">FR-001</span> User Registration (system role: <code>user</code>)</td><td>POST /recr/auth/register</td></tr>
   <tr><td><span class="req-id">FR-002</span> Login</td><td>POST /recr/auth/login</td></tr>
   <tr><td><span class="req-id">FR-003</span> Browse Jobs</td><td>GET /recr/jobs</td></tr>
   <tr><td><span class="req-id">FR-004</span> Submit Application</td><td>POST /recr/applications</td></tr>
+  <tr><td><span class="req-id">FR-007</span> Upload Resume</td><td>POST /recr/candidate/resume</td></tr>
   <tr><td><span class="req-id">FR-008</span> Review Applications</td><td>GET /recr/hr/applications</td></tr>
   <tr><td><span class="req-id">FR-017</span> Post Job</td><td>POST /recr/employer/jobs</td></tr>
+  <tr><td><span class="req-id">FR-037</span> Manage Candidate Resumes</td><td>GET /recr/candidate/resumes, POST /recr/candidate/resume, DELETE /recr/candidate/resumes/:id</td></tr>
+  <tr><td><span class="req-id">FR-038</span> Application Resume Linking</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
 </table>
 
 <h2>1.2 API Principles</h2>
@@ -85,19 +87,28 @@
   <li>JSON request/response</li>
   <li>Versioned via URL path (<code>/v1/</code>)</li>
   <li>Stateless (JWT authentication)</li>
-  <li>Role-based endpoints: <code>/candidate/</code>, <code>/hr/</code>, <code>/employer/</code></li>
+  <li>Two-level role system:
+    <ul>
+      <li><strong>System-level roles</strong> (managed by AUTH): <code>user</code> (self-registered), <code>super_admin</code> (admin-created only)</li>
+      <li><strong>Organization-level roles</strong> (managed within orgs): <code>HR</code>, <code>Candidate</code>, <code>Employer</code></li>
+    </ul>
+  </li>
+  <li>Org-level role-based endpoints: <code>/candidate/</code>, <code>/hr/</code>, <code>/employer/</code></li>
 </ul>
 
 <h2>1.3 Authentication</h2>
-<p>All endpoints require JWT Bearer token unless marked as <strong>Public</strong>. The JWT includes the user's role.</p>
+<p>All endpoints require JWT Bearer token unless marked as <strong>Public</strong>. The JWT includes the user's <strong>system-level role</strong>.</p>
 <pre><code>Authorization: Bearer &lt;access_token&gt;
 
 // JWT Payload includes:
 {
   "sub": "user_id",
   "email": "user@example.com",
-  "role": "candidate" | "hr" | "employer"
-}</code></pre>
+  "role": "user" | "super_admin"
+}
+
+// Note: Organization-level roles (HR, Candidate, Employer)
+// are managed within organizations, not in the system JWT.</code></pre>
 
 <!-- 2. RESPONSE FORMAT -->
 <h1 id="section-2">2. Response Format</h1>
@@ -130,12 +141,17 @@
 <table>
   <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
   <tr><td>400</td><td>VALIDATION_ERROR</td><td>Request validation failed</td></tr>
-  <tr><td>400</td><td>INVALID_ROLE</td><td>Invalid role for self-registration (HR must be created by admin)</td></tr>
+  <tr><td>400</td><td>INVALID_ROLE</td><td>Invalid role for self-registration (<code>super_admin</code> must be created by admin)</td></tr>
   <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid token</td></tr>
   <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions for role</td></tr>
   <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
   <tr><td>409</td><td>EMAIL_EXISTS</td><td>Email already registered (from AUTH module)</td></tr>
   <tr><td>409</td><td>APPLICATION_EXISTS</td><td>Candidate already applied to this job</td></tr>
+  <tr><td>409</td><td>RESUME_LINKED</td><td>Cannot delete resume that is linked to a submitted application</td></tr>
+  <tr><td>400</td><td>INVALID_FILE</td><td>File not found in FILE module or is not a RESUME category file</td></tr>
+  <tr><td>400</td><td>INVALID_RESUME_FILE</td><td>Resume file_id does not exist or does not belong to candidate</td></tr>
+  <tr><td>400</td><td>INVALID_FILE_CATEGORY</td><td>Only RESUME category files can be linked to applications</td></tr>
+  <tr><td>400</td><td>FILE_TOO_LARGE</td><td>File size exceeds 10MB limit</td></tr>
   <tr><td>422</td><td>INVALID_STATUS_TRANSITION</td><td>Invalid status change</td></tr>
   <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
   <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
@@ -148,9 +164,9 @@
 <table>
   <tr><th>Endpoint Category</th><th>Requests/min</th><th>Burst</th></tr>
   <tr><td>Auth endpoints</td><td>10</td><td>5</td></tr>
-  <tr><td>Candidate endpoints</td><td>60</td><td>20</td></tr>
-  <tr><td>HR endpoints</td><td>100</td><td>30</td></tr>
-  <tr><td>Employer endpoints</td><td>60</td><td>20</td></tr>
+  <tr><td>Candidate endpoints (org role)</td><td>60</td><td>20</td></tr>
+  <tr><td>HR endpoints (org role)</td><td>100</td><td>30</td></tr>
+  <tr><td>Employer endpoints (org role)</td><td>60</td><td>20</td></tr>
 </table>
 
 <!-- 5. ENDPOINTS -->
@@ -158,69 +174,45 @@
 
 <h2 id="section-5-1">5.1 Authentication (All Roles)</h2>
 
-<h3 id="register">POST /recr/auth/register <em>(Public)</em> <span class="req-id">FR-001, FR-016</span></h3>
-<p>Register a new user account. Supports two roles: <code>candidate</code> and <code>employer</code>.</p>
-<p><strong>Cross-module dependency:</strong> RECR Service calls AUTH Service to create the user account (email, password, role). AUTH returns <code>user_id</code> + JWT token. RECR then creates the recruitment-specific profile (candidate or employer) in <code>recr_db</code>.</p>
+<h3 id="register">POST /recr/auth/register <em>(Public)</em> <span class="req-id">FR-001</span></h3>
+<p>Register a new user account. Creates a user with the system-level role <code>user</code>. The <code>role</code> parameter is not required and defaults to <code>user</code>. Organization-level roles (HR, Candidate, Employer) are assigned within organizations after registration.</p>
+<p><strong>Cross-module dependency:</strong> RECR Service calls AUTH Service to create the user account (email, password). AUTH creates user with system role <code>user</code> and returns <code>user_id</code> + JWT token. RECR then creates the recruitment-specific profile in <code>recr_db</code>.</p>
 
 <h4>Flow Summary</h4>
 <ol>
   <li>Frontend sends registration request to RECR Service</li>
   <li>RECR validates input, calls AUTH Service to create user account</li>
-  <li>AUTH checks email availability, hashes password, creates user with role, generates JWT</li>
-  <li>RECR creates profile (candidate or employer) in <code>recr_db</code></li>
+  <li>AUTH checks email availability, hashes password, creates user with system role <code>user</code>, generates JWT</li>
+  <li>RECR creates profile in <code>recr_db</code> (if needed)</li>
   <li>RECR publishes <code>user.registered</code> event to Event Bus</li>
   <li>RECR returns 201 Created with user profile + JWT token</li>
 </ol>
+<p><strong>Note:</strong> The <code>role</code> parameter in the request body is optional. If provided, it must be <code>user</code>. The system does not allow self-registration with <code>super_admin</code> role. Organization-level roles (HR, Candidate, Employer) are managed within organizations by org owners/admins.</p>
 <div class="diagram">
   <img src="./images/sequence/uc01-register-sequence.png" alt="UC-01 Register Sequence Diagram">
   <div class="caption">Figure: UC-01 Register Account - Cross-Module Sequence (RECR → AUTH → RECR DB)</div>
 </div>
 
-<h4>Request Body — Candidate Registration</h4>
+<h4>Request Body</h4>
 <table class="trace-table">
   <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
   <tr><td><code>email</code></td><td>string</td><td>Yes</td><td>Valid email format, max 255 chars</td><td>User email address (unique)</td></tr>
   <tr><td><code>password</code></td><td>string</td><td>Yes</td><td>Min 8 chars, at least 1 uppercase, 1 lowercase, 1 number</td><td>Plain text (hashed by AUTH)</td></tr>
   <tr><td><code>full_name</code></td><td>string</td><td>Yes</td><td>2-100 chars, no special characters except spaces and hyphens</td><td>Full name</td></tr>
   <tr><td><code>phone</code></td><td>string</td><td>No</td><td>Valid phone format (e.g., +84xxx or 09xxxxxxx)</td><td>Phone number</td></tr>
-  <tr><td><code>role</code></td><td>string</td><td>Yes</td><td>Enum: <code>"candidate"</code></td><td>Account role</td></tr>
+  <tr><td><code>role</code></td><td>string</td><td>No</td><td>Enum: <code>"user"</code> (default)</td><td>System role. Defaults to <code>user</code>. Only <code>user</code> allowed for self-registration.</td></tr>
 </table>
 
 <pre><code>{
   "email": "john@example.com",
   "password": "SecurePass123",
   "full_name": "John Doe",
-  "phone": "+84901234567",
-  "role": "candidate"
+  "phone": "+84901234567"
 }</code></pre>
 
-<h4>Request Body — Employer Registration</h4>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
-  <tr><td><code>email</code></td><td>string</td><td>Yes</td><td>Valid email format, max 255 chars</td><td>User email address (unique)</td></tr>
-  <tr><td><code>password</code></td><td>string</td><td>Yes</td><td>Min 8 chars, at least 1 uppercase, 1 lowercase, 1 number</td><td>Plain text (hashed by AUTH)</td></tr>
-  <tr><td><code>full_name</code></td><td>string</td><td>Yes</td><td>2-100 chars</td><td>Full name</td></tr>
-  <tr><td><code>phone</code></td><td>string</td><td>No</td><td>Valid phone format</td><td>Phone number</td></tr>
-  <tr><td><code>role</code></td><td>string</td><td>Yes</td><td>Enum: <code>"employer"</code></td><td>Account role</td></tr>
-  <tr><td><code>company_name</code></td><td>string</td><td>Yes</td><td>2-200 chars</td><td>Company name</td></tr>
-  <tr><td><code>industry</code></td><td>string</td><td>No</td><td>Max 100 chars</td><td>Industry sector</td></tr>
-  <tr><td><code>company_size</code></td><td>string</td><td>No</td><td>Enum: <code>"1-10"</code>, <code>"11-50"</code>, <code>"51-200"</code>, <code>"201-500"</code>, <code>"501-1000"</code>, <code>"1000+"</code></td><td>Company size range</td></tr>
-  <tr><td><code>company_website</code></td><td>string</td><td>No</td><td>Valid URL format, max 300 chars</td><td>Company website</td></tr>
-</table>
+<p><strong>Note:</strong> The <code>role</code> field is optional. If omitted, the user is created with the <code>user</code> system role. Organization-level roles (HR, Candidate, Employer) are assigned when the user joins or is added to an organization.</p>
 
-<pre><code>{
-  "email": "hr@techcorp.com",
-  "password": "SecurePass456",
-  "full_name": "Jane Smith",
-  "phone": "+84909876543",
-  "role": "employer",
-  "company_name": "Tech Corp",
-  "industry": "Technology",
-  "company_size": "51-200",
-  "company_website": "https://techcorp.com"
-}</code></pre>
-
-<h4>Response 201 — Candidate</h4>
+<h4>Response 201</h4>
 <pre><code>{
   "success": true,
   "data": {
@@ -228,14 +220,7 @@
     "email": "john@example.com",
     "full_name": "John Doe",
     "phone": "+84901234567",
-    "role": "candidate",
-    "profile": {
-      "user_id": 1,
-      "resume_url": null,
-      "linkedin_url": null,
-      "skills": [],
-      "experience_years": 0
-    },
+    "role": "user",
     "token": "eyJhbGciOiJIUzI1NiIs...",
     "expires_at": "2026-08-12T10:30:00Z"
   },
@@ -245,31 +230,7 @@
   }
 }</code></pre>
 
-<h4>Response 201 — Employer</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "id": 2,
-    "email": "hr@techcorp.com",
-    "full_name": "Jane Smith",
-    "phone": "+84909876543",
-    "role": "employer",
-    "profile": {
-      "user_id": 2,
-      "company_name": "Tech Corp",
-      "company_website": "https://techcorp.com",
-      "industry": "Technology",
-      "company_size": "51-200",
-      "is_verified": false
-    },
-    "token": "eyJhbGciOiJIUzI1NiIs...",
-    "expires_at": "2026-08-12T10:30:00Z"
-  },
-  "meta": {
-    "requestId": "req-def-456",
-    "timestamp": "2026-08-12T10:00:00Z"
-  }
-}</code></pre>
+<p><strong>Note:</strong> The response contains the system-level role (<code>user</code>). Organization-level roles (HR, Candidate, Employer) are retrieved when the user accesses an organization context.</p>
 
 <h4>Error Responses</h4>
 
@@ -290,8 +251,7 @@
     "message": "Invalid input data",
     "details": [
       { "field": "email", "message": "Invalid email format" },
-      { "field": "password", "message": "Password must be at least 8 characters with uppercase, lowercase, and number" },
-      { "field": "company_name", "message": "Company name is required for employer registration" }
+      { "field": "password", "message": "Password must be at least 8 characters with uppercase, lowercase, and number" }
     ]
   }
 }</code></pre>
@@ -301,7 +261,7 @@
   "success": false,
   "error": {
     "code": "INVALID_ROLE",
-    "message": "Role must be 'candidate' or 'employer'. HR accounts are created by admin."
+    "message": "Role must be 'user'. Super admin accounts are created by admin only."
   }
 }</code></pre>
 
@@ -319,16 +279,16 @@
   <tr><th>Rule</th><th>Description</th></tr>
   <tr><td>BR-AUTH-01</td><td>Email must be unique across the entire system (checked by AUTH module)</td></tr>
   <tr><td>BR-AUTH-02</td><td>Password is hashed by AUTH module (bcrypt, 12 rounds) — RECR never stores plain text</td></tr>
-  <tr><td>BR-RECR-01</td><td>Candidate registration creates <code>recr_candidates</code> record linked to <code>recr_users</code></td></tr>
-  <tr><td>BR-RECR-02</td><td>Employer registration creates <code>recr_employers</code> record linked to <code>recr_users</code></td></tr>
-  <tr><td>BR-RECR-03</td><td>HR accounts are created by admin only — self-registration not allowed for HR role</td></tr>
+  <tr><td>BR-RECR-01</td><td>Registration creates user with system-level role <code>user</code> (via AUTH module)</td></tr>
+  <tr><td>BR-RECR-02</td><td><code>super_admin</code> role cannot be self-registered — must be created by an existing admin</td></tr>
+  <tr><td>BR-RECR-03</td><td>Organization-level roles (HR, Candidate, Employer) are managed within organizations, not at registration</td></tr>
   <tr><td>BR-RECR-04</td><td>Registration is atomic: if AUTH succeeds but RECR profile creation fails, AUTH account is rolled back</td></tr>
   <tr><td>BR-RECR-05</td><td><code>user.registered</code> event is published after successful registration (async, non-blocking)</td></tr>
 </table>
 
 <h3 id="login">POST /recr/auth/login <em>(Public)</em> <span class="req-id">FR-002</span></h3>
-<p>Login with email and password. Returns JWT token with role claim and user profile.</p>
-<p><strong>Cross-module dependency:</strong> RECR Service calls AUTH Service to verify credentials. AUTH checks email, compares password hash, verifies account status, and generates JWT. RECR then fetches recruitment-specific profile from <code>recr_db</code>.</p>
+<p>Login with email and password. Returns JWT token with system-level role claim and user profile.</p>
+<p><strong>Cross-module dependency:</strong> RECR Service calls AUTH Service to verify credentials. AUTH checks email, compares password hash, verifies account status, and generates JWT with system-level role. RECR then fetches user profile from <code>recr_db</code>.</p>
 
 <h4>Flow Summary</h4>
 <ol>
@@ -336,8 +296,8 @@
   <li>RECR validates input, calls AUTH Service to authenticate</li>
   <li>AUTH finds user by email, compares password hash (bcrypt)</li>
   <li>AUTH checks account is active (not locked, not deleted)</li>
-  <li>AUTH generates JWT token with role claim</li>
-  <li>RECR fetches profile (candidate/employer) from <code>recr_db</code></li>
+  <li>AUTH generates JWT token with system-level role claim (<code>user</code> or <code>super_admin</code>)</li>
+  <li>RECR fetches user profile from <code>recr_db</code></li>
   <li>RECR returns 200 OK with user profile + JWT token</li>
 </ol>
 <div class="diagram">
@@ -357,7 +317,7 @@
   "password": "SecurePass123"
 }</code></pre>
 
-<h4>Response 200 — Candidate</h4>
+<h4>Response 200</h4>
 <pre><code>{
   "success": true,
   "data": {
@@ -365,14 +325,7 @@
     "email": "john@example.com",
     "full_name": "John Doe",
     "phone": "+84901234567",
-    "role": "candidate",
-    "profile": {
-      "user_id": 1,
-      "resume_url": "https://storage.example.com/resumes/john-doe.pdf",
-      "linkedin_url": "https://linkedin.com/in/johndoe",
-      "skills": ["Node.js", "TypeScript", "React"],
-      "experience_years": 5
-    },
+    "role": "user",
     "token": "eyJhbGciOiJIUzI1NiIs...",
     "token_type": "Bearer",
     "expires_at": "2026-08-12T22:00:00Z"
@@ -383,56 +336,7 @@
   }
 }</code></pre>
 
-<h4>Response 200 — Employer</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "id": 2,
-    "email": "hr@techcorp.com",
-    "full_name": "Jane Smith",
-    "phone": "+84909876543",
-    "role": "employer",
-    "profile": {
-      "user_id": 2,
-      "company_name": "Tech Corp",
-      "company_website": "https://techcorp.com",
-      "industry": "Technology",
-      "company_size": "51-200",
-      "is_verified": true
-    },
-    "token": "eyJhbGciOiJIUzI1NiIs...",
-    "token_type": "Bearer",
-    "expires_at": "2026-08-12T22:00:00Z"
-  },
-  "meta": {
-    "requestId": "req-xyz-790",
-    "timestamp": "2026-08-12T10:00:00Z"
-  }
-}</code></pre>
-
-<h4>Response 200 — HR</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "id": 3,
-    "email": "hr.admin@company.com",
-    "full_name": "Admin HR",
-    "phone": "+84911223344",
-    "role": "hr",
-    "profile": {
-      "user_id": 3,
-      "department": "Human Resources",
-      "position": "HR Manager"
-    },
-    "token": "eyJhbGciOiJIUzI1NiIs...",
-    "token_type": "Bearer",
-    "expires_at": "2026-08-12T22:00:00Z"
-  },
-  "meta": {
-    "requestId": "req-xyz-791",
-    "timestamp": "2026-08-12T10:00:00Z"
-  }
-}</code></pre>
+<p><strong>Note:</strong> The JWT contains the system-level role (<code>user</code> or <code>super_admin</code>). Organization-level roles (HR, Candidate, Employer) are retrieved when the user accesses an organization context. The frontend uses the system role to determine initial navigation, and org roles are loaded when the user selects an organization.</p>
 
 <h4>Error Responses</h4>
 
@@ -492,25 +396,95 @@
   <tr><td>BR-AUTH-11</td><td>Password is verified via bcrypt hash comparison (12 rounds)</td></tr>
   <tr><td>BR-AUTH-12</td><td>After 5 consecutive failed attempts, account is locked for 15 minutes</td></tr>
   <tr><td>BR-AUTH-13</td><td>JWT token expires in 24 hours (configurable via AUTH module)</td></tr>
-  <tr><td>BR-AUTH-14</td><td>JWT payload includes: <code>sub</code> (user_id), <code>email</code>, <code>role</code>, <code>iat</code>, <code>exp</code></td></tr>
-  <tr><td>BR-RECR-10</td><td>Login returns recruitment-specific profile (candidate/employer/hr) based on role</td></tr>
-  <tr><td>BR-RECR-11</td><td>Employer profile includes <code>is_verified</code> status for trust indicator</td></tr>
-  <tr><td>BR-RECR-12</td><td>Failed login attempt is logged via LOG module for audit trail</td></tr>
+  <tr><td>BR-AUTH-14</td><td>JWT payload includes: <code>sub</code> (user_id), <code>email</code>, <code>role</code> (system role: <code>user</code> or <code>super_admin</code>), <code>iat</code>, <code>exp</code></td></tr>
+  <tr><td>BR-RECR-10</td><td>Login returns user profile with system-level role; org-level roles loaded on demand</td></tr>
+  <tr><td>BR-RECR-11</td><td>Failed login attempt is logged via LOG module for audit trail</td></tr>
 </table>
 
 <h2 id="section-5-2">5.2 Candidate Endpoints</h2>
+<p><strong>Note:</strong> These endpoints require the <strong>Candidate</strong> organization-level role within an active organization context. The Candidate role is assigned by organization owners/admins, not at system registration.</p>
 
 <h3>GET /recr/jobs <span class="req-id">FR-003</span></h3>
 <p>Browse job listings. Public endpoint (no auth required).</p>
 <p><strong>Query Params:</strong> <code>search</code>, <code>location</code>, <code>salary_min</code>, <code>employment_type</code>, <code>page</code>, <code>limit</code></p>
 
-<h3>POST /recr/applications <span class="req-id">FR-004</span></h3>
+<h3>POST /recr/applications <span class="req-id">FR-004, FR-038</span></h3>
 <p>Submit job application. Requires <strong>candidate</strong> role.</p>
-<p><strong>Request:</strong></p>
+<p><strong>Cross-module dependency:</strong> ApplicationService calls FileService (FILE) to validate the resume_file_id exists and is a RESUME category file. The resume_file_id is frozen (copied) to the application record at submission time.</p>
+
+<h4>Flow Summary</h4>
+<ol>
+  <li>Frontend sends application with job_id, cover_letter, and resume_file_id (or resume_id from candidate's resume list)</li>
+  <li>ApplicationService validates the candidate exists and has not already applied to this job</li>
+  <li>ApplicationService calls FileService (FILE) to validate resume_file_id exists and is accessible to the candidate</li>
+  <li>ApplicationService creates application record with frozen resume_file_id</li>
+  <li>ApplicationService emits application.submitted event</li>
+  <li>ApplicationService returns 201 Created with application details</li>
+</ol>
+
+<h4>Request Body</h4>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
+  <tr><td><code>job_id</code></td><td>integer</td><td>Yes</td><td>Valid job ID, job must be open</td><td>Target job listing</td></tr>
+  <tr><td><code>cover_letter</code></td><td>string</td><td>No</td><td>Max 5000 chars</td><td>Cover letter text</td></tr>
+  <tr><td><code>resume_file_id</code></td><td>string (UUID)</td><td>Yes</td><td>Must exist in FILE module, must be RESUME category, must belong to candidate</td><td>File ID from FILE module (frozen at submission)</td></tr>
+</table>
+
 <pre><code>{
   "job_id": 1,
-  "cover_letter": "I am interested in this position..."
+  "cover_letter": "I am interested in this position...",
+  "resume_file_id": "550e8400-e29b-41d4-a716-446655440000"
 }</code></pre>
+
+<h4>Response 201</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": 1,
+    "job_id": 1,
+    "candidate_id": 101,
+    "resume_file_id": "550e8400-e29b-41d4-a716-446655440000",
+    "cover_letter": "I am interested in this position...",
+    "status": "submitted",
+    "applied_at": "2026-08-17T10:00:00Z"
+  }
+}</code></pre>
+
+<h4>Error Responses</h4>
+
+<p><strong>409 Conflict — Already applied:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "APPLICATION_EXISTS",
+    "message": "Candidate already applied to this job"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — Invalid resume file:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVALID_RESUME_FILE",
+    "message": "Resume file not found or does not belong to candidate"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — Wrong file category:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVALID_FILE_CATEGORY",
+    "message": "Only RESUME category files can be linked to applications"
+  }
+}</code></pre>
+
+<h4>Business Rules</h4>
+<table>
+  <tr><th>Rule</th><th>Description</th></tr>
+  <tr><td>BR-RECR-08</td><td>Application freezes resume at submission: resume_file_id is immutable after application creation</td></tr>
+  <tr><td>BR-RECR-09</td><td>Only RESUME category files (from FILE module) can be linked to applications</td></tr>
+</table>
 
 <h3>GET /recr/candidate/applications <span class="req-id">FR-005</span></h3>
 <p>View my applications. Requires <strong>candidate</strong> role.</p>
@@ -518,10 +492,139 @@
 <h3>PATCH /recr/candidate/profile <span class="req-id">FR-006</span></h3>
 <p>Update profile. Requires <strong>candidate</strong> role.</p>
 
-<h3>POST /recr/candidate/resume <span class="req-id">FR-007</span></h3>
-<p>Upload resume. Requires <strong>candidate</strong> role. Max 10MB.</p>
+<h3>POST /recr/candidate/resume <span class="req-id">FR-007, FR-037</span></h3>
+<p>Upload a resume file to the candidate's resume list. Requires <strong>candidate</strong> role. File stored via FILE module.</p>
+<p><strong>Cross-module dependency:</strong> ProfileService calls FileService (FILE) to get a presigned upload URL, then the file is uploaded to FILE module. ProfileService stores the returned file_id in <code>recr_candidate_resumes</code> table.</p>
+
+<h4>Flow Summary</h4>
+<ol>
+  <li>Frontend requests a presigned upload URL from RECR (or directly calls FILE module)</li>
+  <li>Frontend uploads file to FILE module via presigned URL</li>
+  <li>Frontend calls POST /recr/candidate/resume with file_id from FILE module</li>
+  <li>ProfileService validates the file_id exists in FILE module and is RESUME category</li>
+  <li>ProfileService creates record in recr_candidate_resumes with file_id reference</li>
+  <li>ProfileService returns 201 Created with resume metadata</li>
+</ol>
+
+<h4>Request Body</h4>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
+  <tr><td><code>file_id</code></td><td>string (UUID)</td><td>Yes</td><td>Must exist in FILE module, must be RESUME category</td><td>File ID returned by FILE module after upload</td></tr>
+</table>
+
+<pre><code>{
+  "file_id": "550e8400-e29b-41d4-a716-446655440000"
+}</code></pre>
+
+<h4>Response 201</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "resume_id": 1,
+    "file_id": "550e8400-e29b-41d4-a716-446655440000",
+    "file_name": "john_doe_resume.pdf",
+    "mime_type": "application/pdf",
+    "file_size": 245760,
+    "is_primary": false,
+    "uploaded_at": "2026-08-17T10:00:00Z"
+  }
+}</code></pre>
+
+<h4>Error Responses</h4>
+
+<p><strong>400 Bad Request — Invalid file:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVALID_FILE",
+    "message": "File not found in FILE module or is not a RESUME category file"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — File too large:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "FILE_TOO_LARGE",
+    "message": "File size must not exceed 10MB"
+  }
+}</code></pre>
+
+<h4>Business Rules</h4>
+<table>
+  <tr><th>Rule</th><th>Description</th></tr>
+  <tr><td>BR-RECR-07</td><td>Resume files must be stored via FILE module; direct file uploads to RECR are not allowed</td></tr>
+  <tr><td>BR-RECR-09</td><td>Only RESUME category files can be uploaded as candidate resumes</td></tr>
+</table>
+
+<h3>GET /recr/candidate/resumes <span class="req-id">FR-037</span></h3>
+<p>List all resumes for the current candidate. Requires <strong>candidate</strong> role.</p>
+
+<h4>Response 200</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "resumes": [
+      {
+        "id": 1,
+        "file_id": "550e8400-e29b-41d4-a716-446655440000",
+        "file_name": "john_doe_resume.pdf",
+        "mime_type": "application/pdf",
+        "file_size": 245760,
+        "is_primary": true,
+        "created_at": "2026-08-17T10:00:00Z"
+      },
+      {
+        "id": 2,
+        "file_id": "660e8400-e29b-41d4-a716-446655440001",
+        "file_name": "john_doe_resume_v2.docx",
+        "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "file_size": 189440,
+        "is_primary": false,
+        "created_at": "2026-08-15T14:30:00Z"
+      }
+    ]
+  }
+}</code></pre>
+
+<h3>DELETE /recr/candidate/resumes/:id <span class="req-id">FR-037</span></h3>
+<p>Delete a resume from the candidate's list. Requires <strong>candidate</strong> role. Only allowed if the resume is not linked to any submitted application.</p>
+
+<h4>Response 200</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "message": "Resume deleted successfully"
+  }
+}</code></pre>
+
+<h4>Error Responses</h4>
+
+<p><strong>409 Conflict — Resume linked to application:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "RESUME_LINKED",
+    "message": "Cannot delete resume that is linked to a submitted application"
+  }
+}</code></pre>
+
+<h3>GET /recr/candidate/applications/:id/resume <span class="req-id">FR-038</span></h3>
+<p>Get presigned download URL for an application's frozen resume. Requires <strong>candidate</strong> role. Candidate can only view resumes from their own applications.</p>
+<p><strong>Cross-module dependency:</strong> ApplicationController calls FileService (FILE) to generate a time-limited presigned download URL for the frozen resume_file_id.</p>
+
+<h4>Response 200</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "download_url": "https://file-storage.example.com/presigned/...",
+    "expires_at": "2026-08-17T11:00:00Z",
+    "file_name": "john_doe_resume.pdf"
+  }
+}</code></pre>
 
 <h2 id="section-5-3">5.3 HR Endpoints</h2>
+<p><strong>Note:</strong> These endpoints require the <strong>HR</strong> organization-level role within an active organization context. The HR role is assigned by organization owners/admins.</p>
 
 <h3>GET /recr/hr/applications <span class="req-id">FR-008</span></h3>
 <p>Review applications. Requires <strong>hr</strong> role.</p>
@@ -555,6 +658,7 @@
 <p>Generate reports. Requires <strong>hr</strong> role.</p>
 
 <h2 id="section-5-4">5.4 Employer Endpoints</h2>
+<p><strong>Note:</strong> These endpoints require the <strong>Employer</strong> organization-level role within an active organization context. The Employer role is typically assigned to organization owners/admins who create job listings.</p>
 
 <h3>POST /recr/employer/jobs <span class="req-id">FR-017</span></h3>
 <p>Create job listing. Requires <strong>employer</strong> role.</p>
@@ -597,12 +701,13 @@
 
 <table>
   <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
-  <tr><td>user.registered</td><td>Outbound</td><td>RabbitMQ</td><td>New user registered (candidate or employer)</td></tr>
+  <tr><td>user.registered</td><td>Outbound</td><td>RabbitMQ</td><td>New user registered with system role <code>user</code></td></tr>
   <tr><td>application.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate submits application</td></tr>
   <tr><td>interview.scheduled</td><td>Outbound</td><td>RabbitMQ</td><td>HR schedules interview</td></tr>
   <tr><td>offer.sent</td><td>Outbound</td><td>RabbitMQ</td><td>HR sends offer letter</td></tr>
   <tr><td>candidate.hired</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate accepts offer</td></tr>
   <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Employer submits job for approval</td></tr>
+  <tr><td>file.deleted</td><td>Inbound</td><td>RabbitMQ</td><td>FILE module notifies RECR when a file is deleted; RECR cleans up references in recr_candidate_resumes and recr_applications</td></tr>
 </table>
 
 <!-- 8. CHANGELOG -->
@@ -611,6 +716,8 @@
   <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
   <tr><td>2026-07-31</td><td>1.0.0</td><td>Initial release with 3 roles: Candidate, HR, Employer</td></tr>
   <tr><td>2026-08-12</td><td>1.1.0</td><td>Detailed register API: separate request/response for Candidate &amp; Employer, validation rules, error responses, business rules, cross-module flow</td></tr>
+  <tr><td>2026-08-17</td><td>1.2.0</td><td>New two-level role system: system roles (user, super_admin) and org roles (HR, Candidate, Employer). Registration creates user with <code>user</code> role. JWT contains system role. Org roles managed within organizations.</td></tr>
+  <tr><td>2026-08-17</td><td>1.3.0</td><td>FILE module integration: Resume uploads via FILE module with file_id references. New endpoints: GET /recr/candidate/resumes, DELETE /recr/candidate/resumes/:id, GET /recr/candidate/applications/:id/resume. POST /recr/applications now requires resume_file_id. Added business rules BR-RECR-07, BR-RECR-08, BR-03-RECR-09. Inbound file.deleted event handling.</td></tr>
 </table>
 
 </body>

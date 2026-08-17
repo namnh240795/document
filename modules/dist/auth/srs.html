@@ -69,6 +69,9 @@
         <li><a href="#fr-015">FR-015: Organization Management</a></li>
         <li><a href="#fr-016">FR-016: Team Management</a></li>
         <li><a href="#fr-017">FR-017: Invitation Management</a></li>
+        <li><a href="#fr-018">FR-018: Resend Invitation</a></li>
+        <li><a href="#fr-019">FR-019: Revoke Invitation</a></li>
+        <li><a href="#fr-020">FR-020: Verify Invitation Token</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Use Cases</a>
@@ -91,6 +94,9 @@
         <li><a href="#uc-15">4.15 UC-15: Organization Management</a></li>
         <li><a href="#uc-16">4.16 UC-16: Team Management</a></li>
         <li><a href="#uc-17">4.17 UC-17: Invitation Management</a></li>
+        <li><a href="#uc-18">4.18 UC-18: Resend Invitation</a></li>
+        <li><a href="#uc-19">4.19 UC-19: Revoke Invitation</a></li>
+        <li><a href="#uc-20">4.20 UC-20: Verify Invitation Token</a></li>
       </ul>
     </li>
     <li><a href="#section-5">5. Non-Functional Requirements</a>
@@ -119,6 +125,9 @@
         <li><a href="#trace-fr-015">FR-015: Organization Management</a></li>
         <li><a href="#trace-fr-016">FR-016: Team Management</a></li>
         <li><a href="#trace-fr-017">FR-017: Invitation Management</a></li>
+        <li><a href="#trace-fr-018">FR-018: Resend Invitation</a></li>
+        <li><a href="#trace-fr-019">FR-019: Revoke Invitation</a></li>
+        <li><a href="#trace-fr-020">FR-020: Verify Invitation Token</a></li>
       </ul>
     </li>
   </ul>
@@ -192,7 +201,7 @@
     <td>User Registration</td>
     <td>UC-01</td>
     <td>High</td>
-    <td>System shall allow users to register with email or phone + password + name</td>
+    <td>System shall allow users to register with email or phone + password + name. Registered users receive the <code>user</code> system role by default.</td>
   </tr>
   <tr id="fr-002">
     <td><span class="req-id">FR-002</span></td>
@@ -269,10 +278,10 @@
   <tr id="fr-011">
     <td><span class="req-id">FR-011</span></td>
     <td>AUTH</td>
-    <td>Manage Roles</td>
+    <td>Manage System Roles</td>
     <td>UC-11</td>
     <td>Medium</td>
-    <td>Admin shall be able to create roles and assign to users</td>
+    <td>Admin shall be able to manage system-level roles (<code>user</code>, <code>super_admin</code>) and assign them to users</td>
   </tr>
   <tr id="fr-012">
     <td><span class="req-id">FR-012</span></td>
@@ -304,7 +313,7 @@
     <td>Organization Management</td>
     <td>UC-15</td>
     <td>High</td>
-    <td>System shall allow users to create, update, delete organizations and manage membership</td>
+    <td>System shall allow users to create, update, delete organizations, manage membership, and create/manage organization-level roles (HR, Candidate, Employer) with fine-grained permissions</td>
   </tr>
   <tr id="fr-016">
     <td><span class="req-id">FR-016</span></td>
@@ -320,7 +329,31 @@
     <td>Invitation Management</td>
     <td>UC-17</td>
     <td>High</td>
-    <td>System shall allow inviting members to organizations via email, with accept/reject flow</td>
+    <td>System shall allow inviting members to organizations via email with token-based verification. Invitations include: SHA-256 hashed tokens (only hash stored in DB), configurable expiry (default 72 hours), duplicate detection (same email + role), and email delivery via EMAIL module</td>
+  </tr>
+  <tr id="fr-018">
+    <td><span class="req-id">FR-018</span></td>
+    <td>AUTH</td>
+    <td>Resend Invitation</td>
+    <td>UC-18</td>
+    <td>Medium</td>
+    <td>System shall allow the inviter to resend an invitation, generating a new token and invalidating the previous one. Expiry is reset to 72 hours from resend time</td>
+  </tr>
+  <tr id="fr-019">
+    <td><span class="req-id">FR-019</span></td>
+    <td>AUTH</td>
+    <td>Revoke Invitation</td>
+    <td>UC-19</td>
+    <td>Medium</td>
+    <td>System shall allow the inviter (owner) to revoke a pending invitation. Only the original inviter can revoke. Already accepted or revoked invitations cannot be revoked again</td>
+  </tr>
+  <tr id="fr-020">
+    <td><span class="req-id">FR-020</span></td>
+    <td>AUTH</td>
+    <td>Verify Invitation Token</td>
+    <td>UC-20</td>
+    <td>High</td>
+    <td>System shall provide a public endpoint (no auth required) to verify invitation token validity. Returns status: valid, expired, already accepted, or revoked. Expired invitations are auto-updated to expired status</td>
   </tr>
 </table>
 
@@ -338,11 +371,17 @@
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Guest (unauthenticated user)</td></tr>
   <tr><td>Preconditions</td><td>User is not logged in; user does not have an existing account</td></tr>
-  <tr><td>Main Flow</td><td>1. User navigates to registration page<br>2. User enters name, email (or phone), and password<br>3. System validates input (email/phone format, password strength)<br>4. System creates user account with hashed password<br>5. System sends verification email/SMS via EMAIL/SMS module<br>6. System returns success response with user ID</td></tr>
-  <tr><td>Alternative Flows</td><td>4a. Email/phone already exists → System returns 409 Conflict<br>4b. Password too weak → System returns 400 Validation Error<br>5a. Verification service unavailable → Account created, verification queued</td></tr>
-  <tr><td>Postconditions</td><td>User account created (unverified); verification email/SMS sent</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to registration page<br>2. User enters name, email, and password<br>3. System validates input (email format, password strength)<br>4. System creates user account with hashed password and assigns <code>user</code> system role<br>5. System sends verification email via EMAIL module<br>6. System returns success response with user ID and JWT token</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Email already exists → System returns 409 Conflict<br>3b. Password too weak → System returns 400 Validation Error<br>5a. Verification service unavailable → Account created, verification queued</td></tr>
+  <tr><td>Postconditions</td><td>User account created with <code>user</code> role (unverified); verification email sent; JWT token issued</td></tr>
   <tr><td>Related FR</td><td><span class="req-id">FR-001</span></td></tr>
 </table>
+<p><strong>Available Roles for Self-Registration:</strong></p>
+<table>
+  <tr><th>Role</th><th>Description</th></tr>
+  <tr><td><code>user</code></td><td>Standard user account (default). Users can create organizations and receive organization-level roles (HR, Candidate, Employer).</td></tr>
+</table>
+<p><strong>Note:</strong> <code>super_admin</code> accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
 
 <h3>Activity Diagram</h3>
 <div class="diagram">
@@ -574,12 +613,30 @@
 <h2 id="uc-15">4.15 UC-15: Organization Management</h2>
 <table>
   <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Actor</td><td>Authenticated user (owner/admin for role management)</td></tr>
   <tr><td>Preconditions</td><td>User is logged in</td></tr>
-  <tr><td>Main Flow</td><td>1. User creates organization with name and slug<br>2. System validates slug uniqueness<br>3. System creates organization, user becomes owner<br>4. Owner can update org details, manage members, set roles<br>5. Owner can delete organization</td></tr>
-  <tr><td>Alternative Flows</td><td>2a. Slug already taken → System returns 409<br>4a. Unauthorized → System returns 403</td></tr>
-  <tr><td>Postconditions</td><td>Organization created/updated/deleted; membership managed</td></tr>
+  <tr><td>Main Flow</td><td>1. User creates organization with name and slug<br>2. System validates slug uniqueness<br>3. System creates organization, user becomes owner with <code>Employer</code> role<br>4. Owner can update org details, manage members<br>5. Owner/admin can assign organization roles (HR, Candidate, Employer) to members<br>6. Owner/admin can create additional custom organization roles with permissions<br>7. Owner can delete organization</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Slug already taken → System returns 409<br>5a. Invalid permission → System returns 400<br>5b. Role name already exists → System returns 409<br>6a. Unauthorized → System returns 403</td></tr>
+  <tr><td>Postconditions</td><td>Organization created/updated/deleted; membership managed; organization roles (HR, Candidate, Employer) assigned</td></tr>
   <tr><td>Related FR</td><td><span class="req-id">FR-015</span></td></tr>
+</table>
+<p><strong>Organization Roles:</strong></p>
+<p>Each organization can define roles with fine-grained permissions. Standard organization roles include <code>Employer</code>, <code>HR</code>, and <code>Candidate</code>. Additional custom roles can be created by the organization owner or admin.</p>
+<table>
+  <tr><th>Standard Role</th><th>Description</th></tr>
+  <tr><td><code>Employer</code></td><td>Organization owner/admin. Manages company profile and job postings. Assigned automatically when creating an organization.</td></tr>
+  <tr><td><code>HR</code></td><td>Internal recruitment team. Manages hiring workflows, applications, and interviews.</td></tr>
+  <tr><td><code>Candidate</code></td><td>Job seekers. Browse jobs and submit applications within the organization.</td></tr>
+</table>
+<p><strong>Available Permissions:</strong></p>
+<table>
+  <tr><th>Permission</th><th>Description</th></tr>
+  <tr><td><code>member:read/update/delete</code></td><td>Manage organization members</td></tr>
+  <tr><td><code>job:read/create/update/delete</code></td><td>Manage job listings</td></tr>
+  <tr><td><code>application:read/update/delete</code></td><td>Manage applications</td></tr>
+  <tr><td><code>interview:read/create/update/delete</code></td><td>Manage interviews</td></tr>
+  <tr><td><code>report:read/create</code></td><td>View and generate reports</td></tr>
+  <tr><td><code>settings:read/update</code></td><td>Manage organization settings</td></tr>
 </table>
 
 <h2 id="uc-16">4.16 UC-16: Team Management</h2>
@@ -598,10 +655,43 @@
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Organization admin / Invited user</td></tr>
   <tr><td>Preconditions</td><td>Admin is logged in; invitee has email address</td></tr>
-  <tr><td>Main Flow</td><td>1. Admin invites user by email with role and optional team<br>2. System sends invitation email via EMAIL module<br>3. Invitee receives email, clicks invitation link<br>4. Invitee accepts or rejects invitation<br>5. If accepted: System adds user to organization with specified role</td></tr>
-  <tr><td>Alternative Flows</td><td>2a. Email already member → System returns 409<br>4a. Invitation expired → System returns 410<br>4b. Invitation rejected → Status updated to rejected</td></tr>
-  <tr><td>Postconditions</td><td>Invitation sent; user added to organization (if accepted)</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>Main Flow</td><td>1. Admin invites user by email with role and optional team<br>2. System generates random token (crypto.randomBytes(32)), computes SHA-256 hash<br>3. System stores only the hash in auth_invitations (token_hash column)<br>4. System constructs invite URL: {FRONTEND_DOMAIN}/invitations/verify?token={raw_token}<br>5. System sends invitation email via EMAIL module with the invite URL<br>6. Invitee receives email, clicks invitation link<br>7. Invitee's browser calls GET /organization/verify-invitation?token={raw_token} (public)<br>8. System hashes token, looks up by hash, returns validity status<br>9. Invitee accepts or rejects invitation</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Duplicate pending invitation (same email + role) → System returns 409 Conflict<br>8a. Token expired → System auto-updates status to EXPIRED, returns 410<br>8b. Invitation already accepted → System returns status "accepted"<br>8c. Invitation revoked → System returns status "revoked"</td></tr>
+  <tr><td>Postconditions</td><td>Invitation sent with secure token; user added to organization (if accepted)</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-017</span>, <span class="req-id">FR-020</span></td></tr>
+</table>
+
+<h2 id="uc-18">4.18 UC-18: Resend Invitation</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Organization admin (original inviter)</td></tr>
+  <tr><td>Preconditions</td><td>Admin is logged in; invitation exists and is pending</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin selects invitation to resend<br>2. System generates new token (old token invalidated)<br>3. System resets status to PENDING, extends expiry by 72 hours<br>4. System sends new invitation email via EMAIL module<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>1a. Invitation already accepted → System returns 409<br>1b. Invitation not found → System returns 404<br>1c. Requester is not the original inviter → System returns 403</td></tr>
+  <tr><td>Postconditions</td><td>New token generated; old token invalidated; email sent</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-018</span></td></tr>
+</table>
+
+<h2 id="uc-19">4.19 UC-19: Revoke Invitation</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Organization admin (original inviter)</td></tr>
+  <tr><td>Preconditions</td><td>Admin is logged in; invitation exists and is pending</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin selects invitation to revoke<br>2. System verifies ownership (only original inviter can revoke)<br>3. System updates status to REVOKED<br>4. System emits invitation.revoked event<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Invitation already accepted → System returns 409<br>2b. Invitation already revoked → System returns 409<br>2c. Requester is not the original inviter → System returns 403</td></tr>
+  <tr><td>Postconditions</td><td>Invitation revoked; token no longer valid</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-019</span></td></tr>
+</table>
+
+<h2 id="uc-20">4.20 UC-20: Verify Invitation Token</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Invited user (unauthenticated)</td></tr>
+  <tr><td>Preconditions</td><td>User received invitation email with token URL</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks invitation link in email<br>2. Frontend calls GET /organization/verify-invitation?token={raw_token}<br>3. System computes SHA-256 hash of token<br>4. System looks up invitation by token_hash<br>5. System checks status and expiry<br>6. If expired: auto-updates status to EXPIRED<br>7. System returns validity status with invitation details</td></tr>
+  <tr><td>Alternative Flows</td><td>4a. Token not found → System returns 404<br>4b. Already accepted → System returns { valid: false, reason: "accepted" }<br>4c. Expired → System returns { valid: false, reason: "expired" }<br>4d. Revoked → System returns { valid: false, reason: "revoked" }</td></tr>
+  <tr><td>Postconditions</td><td>Token validity confirmed; user can proceed to accept/reject</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-020</span></td></tr>
 </table>
 
 <!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
@@ -685,6 +775,9 @@
   <tr id="trace-fr-015"><td><span class="req-id">FR-015</span></td><td>Organization Management</td><td>auth_organizations, auth_members</td><td>POST /organization/create, GET /organization/list</td></tr>
   <tr id="trace-fr-016"><td><span class="req-id">FR-016</span></td><td>Team Management</td><td>auth_teams, auth_team_members</td><td>POST /organization/create-team, POST /organization/add-team-member</td></tr>
   <tr id="trace-fr-017"><td><span class="req-id">FR-017</span></td><td>Invitation Management</td><td>auth_invitations</td><td>POST /organization/invite-member, POST /organization/accept-invitation</td></tr>
+  <tr id="trace-fr-018"><td><span class="req-id">FR-018</span></td><td>Resend Invitation</td><td>auth_invitations</td><td>POST /organization/resend-invitation</td></tr>
+  <tr id="trace-fr-019"><td><span class="req-id">FR-019</span></td><td>Revoke Invitation</td><td>auth_invitations</td><td>DELETE /organization/cancel-invitation</td></tr>
+  <tr id="trace-fr-020"><td><span class="req-id">FR-020</span></td><td>Verify Invitation Token</td><td>auth_invitations</td><td>GET /organization/verify-invitation</td></tr>
 </table>
 
 </body>

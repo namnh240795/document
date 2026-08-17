@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make serve *)",
+      "Bash(make build-all *)",
+      "Bash(gh pr *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)"
+    ]
+  }
+}

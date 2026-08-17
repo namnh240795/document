@@ -92,6 +92,9 @@
   <tr><td><span class="req-id">FR-015</span> Organization Management</td><td>POST /organization/create, POST /organization/update, POST /organization/delete, GET /organization/list</td></tr>
   <tr><td><span class="req-id">FR-016</span> Team Management</td><td>POST /organization/create-team, POST /organization/update-team, POST /organization/remove-team</td></tr>
   <tr><td><span class="req-id">FR-017</span> Invitation Management</td><td>POST /organization/invite-member, POST /organization/accept-invitation, POST /organization/reject-invitation</td></tr>
+  <tr><td><span class="req-id">FR-018</span> Resend Invitation</td><td>POST /organization/resend-invitation</td></tr>
+  <tr><td><span class="req-id">FR-019</span> Revoke Invitation</td><td>DELETE /organization/cancel-invitation</td></tr>
+  <tr><td><span class="req-id">FR-020</span> Verify Invitation Token</td><td>GET /organization/verify-invitation</td></tr>
 </table>
 
 <h2 id="section-1-2">1.2 Authentication</h2>
@@ -146,11 +149,18 @@
   <tr><td>image</td><td>string</td><td>No</td><td>Profile image URL</td></tr>
   <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Account creation timestamp</td></tr>
   <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
-  <tr><td>role</td><td>string</td><td>No</td><td>User role (default: "user")</td></tr>
+  <tr><td>role</td><td>string</td><td>Yes</td><td>System role: <code>"user"</code> or <code>"super_admin"</code> (default: <code>"user"</code>)</td></tr>
   <tr><td>banned</td><td>boolean</td><td>No</td><td>Whether user is banned (default: false)</td></tr>
   <tr><td>banReason</td><td>string</td><td>No</td><td>Reason for ban</td></tr>
   <tr><td>banExpires</td><td>datetime</td><td>No</td><td>When ban expires</td></tr>
 </table>
+<p><strong>System Role Descriptions:</strong></p>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Self-Registration</th></tr>
+  <tr><td><code>user</code></td><td>Standard user account (default). Users can create organizations and receive organization-level roles (HR, Candidate, Employer).</td><td>Yes (default)</td></tr>
+  <tr><td><code>super_admin</code></td><td>System administrators with full access. Can manage all users, roles, and organizations.</td><td>No (admin-created only via <code>POST /admin/create-user</code>)</td></tr>
+</table>
+<p><strong>Note:</strong> Organization-level roles (HR, Candidate, Employer) are defined per-organization and assigned to members via the organization role system (see section 6.3). They are not system-level roles.</p>
 
 <h2>3.2 Session</h2>
 <table class="trace-table">
@@ -224,12 +234,16 @@
   <tr><td>id</td><td>string</td><td>Yes</td><td>Invitation identifier</td></tr>
   <tr><td>organizationId</td><td>string</td><td>Yes</td><td>Target organization ID</td></tr>
   <tr><td>email</td><td>string</td><td>Yes</td><td>Invitee email</td></tr>
+  <tr><td>tokenHash</td><td>string</td><td>No</td><td>SHA-256 hash of invitation token (never exposed in responses)</td></tr>
   <tr><td>role</td><td>string</td><td>No</td><td>Assigned role</td></tr>
   <tr><td>teamId</td><td>string</td><td>No</td><td>Target team ID</td></tr>
-  <tr><td>status</td><td>string</td><td>Yes</td><td>Status: pending, accepted, rejected, canceled</td></tr>
+  <tr><td>employerId</td><td>string</td><td>No</td><td>Employer ID (required for HR role)</td></tr>
+  <tr><td>status</td><td>string</td><td>Yes</td><td>Status: pending, accepted, rejected, canceled, expired, revoked</td></tr>
   <tr><td>expiresAt</td><td>datetime</td><td>Yes</td><td>Invitation expiry</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Creation timestamp</td></tr>
+  <tr><td>acceptedAt</td><td>datetime</td><td>No</td><td>When invitation was accepted</td></tr>
   <tr><td>inviterId</td><td>string</td><td>Yes</td><td>User who sent invitation</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Creation timestamp</td></tr>
+  <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
 </table>
 
 <!-- 4. CORE AUTH ENDPOINTS -->
@@ -238,13 +252,22 @@
 <h2 id="section-4-1">4.1 Registration</h2>
 
 <h3 id="fr-001">POST /sign-up/email <em>(Public)</em> <span class="req-id">FR-001</span></h3>
-<p>Register new user with email and password.</p>
+<p>Register new user with email and password. Users are assigned the <code>user</code> system role by default.</p>
+<p><strong>Note:</strong> <code>super_admin</code> accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "name": "John Doe",
   "email": "john@example.com",
   "password": "securepassword123"
 }</code></pre>
+<p><strong>Request Fields:</strong></p>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+  <tr><td>name</td><td>string</td><td>Yes</td><td>User's display name (2-100 chars)</td></tr>
+  <tr><td>email</td><td>string</td><td>Yes</td><td>Unique email address</td></tr>
+  <tr><td>password</td><td>string</td><td>Yes</td><td>Min 8 chars, at least 1 uppercase, 1 lowercase, 1 number</td></tr>
+  <tr><td>role</td><td>string</td><td>No</td><td>Enum: <code>"user"</code> (default). Only <code>"user"</code> is allowed for self-registration.</td></tr>
+</table>
 <p><strong>Response 200:</strong></p>
 <pre><code>{
   "token": "eyJhbGciOiJSUzI1NiIs...",
@@ -257,6 +280,10 @@
     "createdAt": "2026-08-05T10:30:00Z",
     "updatedAt": "2026-08-05T10:30:00Z"
   }
+}</code></pre>
+<p><strong>Error 400 — Invalid role:</strong></p>
+<pre><code>{
+  "message": "Role must be 'user'. super_admin accounts are created by admin."
 }</code></pre>
 
 <h2 id="section-4-2">4.2 Sign In</h2>
@@ -499,14 +526,15 @@
 }</code></pre>
 
 <h3>POST /admin/create-user</h3>
-<p>Create a new user (admin).</p>
+<p>Create a new user (admin). This is the only way to create <code>super_admin</code> accounts.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "name": "Jane Doe",
   "email": "jane@example.com",
   "password": "tempPassword123",
-  "role": "user"
+  "role": "super_admin"
 }</code></pre>
+<p><strong>Role Options:</strong> <code>user</code>, <code>super_admin</code></p>
 
 <h3>POST /admin/update-user</h3>
 <p>Update user details (admin).</p>
@@ -514,7 +542,7 @@
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
   "name": "Jane Updated",
-  "role": "admin"
+  "role": "super_admin"
 }</code></pre>
 
 <h3>POST /admin/remove-user</h3>
@@ -525,12 +553,13 @@
 }</code></pre>
 
 <h3 id="fr-011">POST /admin/set-role <span class="req-id">FR-011</span></h3>
-<p>Set user role.</p>
+<p>Set user system role.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
-  "role": "admin"
+  "role": "super_admin"
 }</code></pre>
+<p><strong>Role Options:</strong> <code>user</code>, <code>super_admin</code></p>
 
 <h3 id="fr-014">POST /admin/ban-user <span class="req-id">FR-014</span></h3>
 <p>Ban a user.</p>
@@ -660,7 +689,7 @@
 <pre><code>{
   "organizationId": "org-123",
   "userId": "user-456",
-  "role": "admin"
+  "role": "HR"
 }</code></pre>
 
 <h3>POST /organization/leave</h3>
@@ -684,13 +713,35 @@
 <h2>6.1 Invitations</h2>
 
 <h3 id="fr-017">POST /organization/invite-member <span class="req-id">FR-017</span></h3>
-<p>Invite a member to the organization.</p>
+<p>Invite a member to the organization. Generates a secure token (SHA-256 hash stored, raw token sent via email).</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "email": "jane@example.com",
-  "role": "member",
-  "teamId": "team-789"
+  "role": "HR",
+  "teamId": "team-789",
+  "employerId": "emp-456"
+}</code></pre>
+<p><strong>Request Fields:</strong></p>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+  <tr><td>organizationId</td><td>string</td><td>Yes</td><td>Target organization ID</td></tr>
+  <tr><td>email</td><td>string</td><td>Yes</td><td>Invitee email address</td></tr>
+  <tr><td>role</td><td>string</td><td>Yes</td><td>Organization role: HR, Candidate, Employer</td></tr>
+  <tr><td>teamId</td><td>string</td><td>No</td><td>Target team ID</td></tr>
+  <tr><td>employerId</td><td>string</td><td>No</td><td>Employer ID (required for HR role)</td></tr>
+</table>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "id": "inv-123",
+  "email": "jane@example.com",
+  "role": "HR",
+  "status": "pending",
+  "expiresAt": "2026-08-12T10:30:00Z"
+}</code></pre>
+<p><strong>Error 409 — Duplicate:</strong></p>
+<pre><code>{
+  "message": "A pending invitation already exists for this email with the same role"
 }</code></pre>
 
 <h3>GET /organization/get-invitation</h3>
@@ -720,6 +771,82 @@
 <p><strong>Request:</strong></p>
 <pre><code>{
   "invitationId": "inv-123"
+}</code></pre>
+
+<h3 id="fr-020">GET /organization/verify-invitation <em>(Public)</em> <span class="req-id">FR-020</span></h3>
+<p>Verify invitation token validity. No authentication required. Used by frontend when user clicks invitation link from email.</p>
+<p><strong>Query:</strong> <code>?token={raw_token}</code></p>
+<p><strong>Response 200 — Valid:</strong></p>
+<pre><code>{
+  "valid": true,
+  "invitation": {
+    "id": "inv-123",
+    "email": "jane@example.com",
+    "role": "HR",
+    "organizationId": "org-123",
+    "expiresAt": "2026-08-12T10:30:00Z"
+  }
+}</code></pre>
+<p><strong>Response 200 — Invalid (expired):</strong></p>
+<pre><code>{
+  "valid": false,
+  "reason": "expired"
+}</code></pre>
+<p><strong>Response 200 — Invalid (already accepted):</strong></p>
+<pre><code>{
+  "valid": false,
+  "reason": "accepted"
+}</code></pre>
+<p><strong>Response 200 — Invalid (revoked):</strong></p>
+<pre><code>{
+  "valid": false,
+  "reason": "revoked"
+}</code></pre>
+<p><strong>Error 404 — Token not found:</strong></p>
+<pre><code>{
+  "message": "Invalid invitation token"
+}</code></pre>
+
+<h3 id="fr-018">POST /organization/resend-invitation <span class="req-id">FR-018</span></h3>
+<p>Resend an invitation with a new token. The previous token is invalidated. Requires authentication and ownership.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "invitationId": "inv-123"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "id": "inv-123",
+  "email": "jane@example.com",
+  "status": "pending",
+  "expiresAt": "2026-08-12T10:30:00Z",
+  "message": "Invitation resent successfully"
+}</code></pre>
+<p><strong>Error 403 — Not owner:</strong></p>
+<pre><code>{
+  "message": "Only the original inviter can resend this invitation"
+}</code></pre>
+<p><strong>Error 409 — Already accepted:</strong></p>
+<pre><code>{
+  "message": "Cannot resend an accepted invitation"
+}</code></pre>
+
+<h3 id="fr-019">DELETE /organization/cancel-invitation <span class="req-id">FR-019</span></h3>
+<p>Revoke a pending invitation. Only the original inviter can revoke. Already accepted or revoked invitations cannot be revoked.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "invitationId": "inv-123"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "message": "Invitation revoked successfully"
+}</code></pre>
+<p><strong>Error 403 — Not owner:</strong></p>
+<pre><code>{
+  "message": "Only the original inviter can revoke this invitation"
+}</code></pre>
+<p><strong>Error 409 — Already accepted/revoked:</strong></p>
+<pre><code>{
+  "message": "Cannot revoke an already accepted or revoked invitation"
 }</code></pre>
 
 <!-- 6.2 Teams -->
@@ -784,14 +911,67 @@
 
 <!-- 6.3 Organization Roles -->
 <h2>6.3 Organization Roles</h2>
+<p>Each organization can define its own roles with fine-grained permissions scoped to that organization. These roles are independent of system-level roles (<code>user</code>, <code>super_admin</code>).</p>
+<p><strong>Standard Organization Roles:</strong></p>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Typical Permissions</th></tr>
+  <tr><td><code>Employer</code></td><td>Organization owner/admin who manages the company profile and job postings</td><td>job:create, job:update, job:delete, application:read, member:read, settings:read, settings:update</td></tr>
+  <tr><td><code>HR</code></td><td>Internal recruitment team members who manage hiring workflows</td><td>job:read, job:create, job:update, application:read, application:update, interview:create, interview:update, member:read</td></tr>
+  <tr><td><code>Candidate</code></td><td>Job seekers who apply for positions within the organization</td><td>job:read, application:create, application:read (own only)</td></tr>
+</table>
+<p><strong>Note:</strong> When a user creates an organization, they automatically receive the <code>Employer</code> role in that organization. Additional roles can be created via <code>POST /organization/create-role</code> and assigned to members via invitations or <code>POST /organization/update-member-role</code>.</p>
+
+<h3>Authorization Rules</h3>
+<table>
+  <tr><th>Action</th><th>Allowed For</th></tr>
+  <tr><td>Create role</td><td>Organization owner or admin</td></tr>
+  <tr><td>Update role</td><td>Organization owner or admin</td></tr>
+  <tr><td>Delete role</td><td>Organization owner or admin</td></tr>
+  <tr><td>List roles</td><td>All organization members</td></tr>
+  <tr><td>Get role</td><td>All organization members</td></tr>
+  <tr><td>Check permission</td><td>All authenticated users</td></tr>
+</table>
+
+<h3>Permission Catalog</h3>
+<p>Valid permissions follow the format <code>resource:action</code>. Multiple permissions are comma-separated.</p>
+<table>
+  <tr><th>Permission</th><th>Description</th></tr>
+  <tr><td><code>member:read</code></td><td>View organization members</td></tr>
+  <tr><td><code>member:update</code></td><td>Update member roles</td></tr>
+  <tr><td><code>member:delete</code></td><td>Remove members from organization</td></tr>
+  <tr><td><code>job:read</code></td><td>View job listings</td></tr>
+  <tr><td><code>job:create</code></td><td>Create new job listings</td></tr>
+  <tr><td><code>job:update</code></td><td>Update job listings</td></tr>
+  <tr><td><code>job:delete</code></td><td>Delete job listings</td></tr>
+  <tr><td><code>application:read</code></td><td>View job applications</td></tr>
+  <tr><td><code>application:update</code></td><td>Update application status</td></tr>
+  <tr><td><code>application:delete</code></td><td>Delete applications</td></tr>
+  <tr><td><code>interview:read</code></td><td>View interviews</td></tr>
+  <tr><td><code>interview:create</code></td><td>Schedule interviews</td></tr>
+  <tr><td><code>interview:update</code></td><td>Update interview details</td></tr>
+  <tr><td><code>interview:delete</code></td><td>Cancel interviews</td></tr>
+  <tr><td><code>report:read</code></td><td>View reports and analytics</td></tr>
+  <tr><td><code>report:create</code></td><td>Generate reports</td></tr>
+  <tr><td><code>settings:read</code></td><td>View organization settings</td></tr>
+  <tr><td><code>settings:update</code></td><td>Update organization settings</td></tr>
+</table>
+
+<h3>Validation Rules</h3>
+<ul>
+  <li>Role name: 2-50 chars, alphanumeric and underscores only, unique within organization</li>
+  <li>Permissions: comma-separated string, max 255 chars total</li>
+  <li>Each permission must match format <code>resource:action</code></li>
+  <li>Each permission must be from the allowed catalog above</li>
+</ul>
 
 <h3>POST /organization/create-role</h3>
 <p>Create a custom role in the organization.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
-  "role": "moderator",
-  "permission": "member:read,member:update"
+  "role": "recruiter",
+  "description": "Can manage jobs and applications",
+  "permission": "job:read,job:create,job:update,application:read,application:update"
 }</code></pre>
 
 <h3>POST /organization/update-role</h3>
@@ -800,11 +980,12 @@
 <pre><code>{
   "organizationId": "org-123",
   "roleId": "role-123",
-  "permission": "member:read,member:update,member:delete"
+  "description": "Updated description",
+  "permission": "job:read,job:create,job:update,job:delete,application:read,application:update"
 }</code></pre>
 
 <h3>POST /organization/delete-role</h3>
-<p>Delete a custom role from the organization.</p>
+<p>Delete a custom role from the organization. Cannot delete if any member is assigned this role.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
@@ -814,6 +995,19 @@
 <h3>GET /organization/list-roles</h3>
 <p>List all roles in the organization.</p>
 <p><strong>Query:</strong> <code>?organizationId=org-123</code></p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "roles": [
+    {
+      "id": "role-123",
+      "name": "recruiter",
+      "description": "Can manage jobs and applications",
+      "permissions": ["job:read", "job:create", "job:update", "application:read", "application:update"],
+      "memberCount": 5,
+      "createdAt": "2026-08-05T10:30:00Z"
+    }
+  ]
+}</code></pre>
 
 <h3>GET /organization/get-role</h3>
 <p>Get role details.</p>
@@ -824,7 +1018,11 @@
 <p><strong>Request:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
-  "permission": "member:delete"
+  "permission": "job:create"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "hasPermission": true
 }</code></pre>
 
 <!-- 7. JWT ENDPOINTS -->
@@ -859,7 +1057,8 @@
   <tr><td>401</td><td>TOKEN_EXPIRED</td><td>JWT token expired</td></tr>
   <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions</td></tr>
   <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
-  <tr><td>409</td><td>CONFLICT</td><td>Email or phone already registered</td></tr>
+  <tr><td>409</td><td>CONFLICT</td><td>Email or phone already registered; duplicate invitation</td></tr>
+  <tr><td>410</td><td>INVITATION_EXPIRED</td><td>Invitation token has expired</td></tr>
   <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
   <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
 </table>

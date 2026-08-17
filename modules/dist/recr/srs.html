@@ -74,6 +74,7 @@
         <li><a href="#section-3-14">3.14 UC-14: Review Candidate</a></li>
         <li><a href="#section-3-15">3.15 UC-15: Update Profile</a></li>
         <li><a href="#section-3-16">3.16 UC-16: View Dashboard</a></li>
+        <li><a href="#section-3-18">3.17 UC-18: Manage Resumes</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Functional Requirements</a>
@@ -90,7 +91,8 @@
     <li><a href="#section-6">6. API Specification</a></li>
     <li><a href="#section-7">7. Integration</a></li>
     <li><a href="#section-8">8. Non-Functional Requirements</a></li>
-    <li><a href="#section-9">9. Requirements Traceability Matrix</a></li>
+    <li><a href="#section-9">9. RBAC Resume Access Matrix</a></li>
+    <li><a href="#section-10">10. Requirements Traceability Matrix</a></li>
   </ul>
 </div>
 
@@ -101,12 +103,13 @@
 <p>This document defines the software requirements for the <strong>Recruitment</strong> module of the HR Management System.</p>
 
 <h2 id="section-1-2">1.2 Scope</h2>
-<p>The Recruitment module manages the end-to-end hiring process with three distinct user roles: <strong>Candidate</strong> (job seekers), <strong>HR</strong> (recruitment team), and <strong>Employer</strong> (companies posting jobs). Each role has specific permissions and workflows.</p>
+<p>The Recruitment module manages the end-to-end hiring process with a two-level role system. <strong>System-level roles</strong> (<code>user</code>, <code>super_admin</code>) are managed by the AUTH module. <strong>Organization-level roles</strong> (<code>HR</code>, <code>Candidate</code>, <code>Employer</code>) are managed within organizations. Users self-register with the <code>user</code> system role and receive org-level roles when they join or are added to an organization.</p>
 
 <h2 id="section-1-3">1.3 Module Dependencies</h2>
 <table>
   <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
   <tr><td>AUTH</td><td>Hard</td><td>User authentication and role-based access control</td></tr>
+  <tr><td>FILE</td><td>Hard</td><td>File storage for candidate resumes and application attachments (presigned upload/download URLs, file metadata management)</td></tr>
   <tr><td>LOG</td><td>Soft</td><td>Event logging for audit trail</td></tr>
 </table>
 
@@ -122,12 +125,23 @@
 </table>
 
 <h2 id="section-1-5">1.5 User Roles</h2>
+
+<h3>System-Level Roles (managed by AUTH module)</h3>
 <table>
-  <tr><th>Role</th><th>Description</th><th>Key Permissions</th></tr>
-  <tr><td><strong>Candidate</strong></td><td>Job seekers looking for employment</td><td>Browse jobs, submit applications, view application status, manage profile</td></tr>
-  <tr><td><strong>HR</strong></td><td>Internal recruitment team members</td><td>Review applications, schedule interviews, evaluate candidates, manage offers, generate reports</td></tr>
-  <tr><td><strong>Employer</strong></td><td>Companies/organizations posting jobs</td><td>Create job postings, view applicants, approve job postings, view analytics</td></tr>
+  <tr><th>Role</th><th>Description</th><th>Creation</th><th>Key Permissions</th></tr>
+  <tr><td><strong>user</strong></td><td>Default role for self-registered users</td><td>Self-registration via POST /recr/auth/register</td><td>Create organizations, access basic features</td></tr>
+  <tr><td><strong>super_admin</strong></td><td>System administrator</td><td>Created by existing admin only (not self-registered)</td><td>Full system access, manage all organizations and users</td></tr>
 </table>
+
+<h3>Organization-Level Roles (managed within organizations)</h3>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Creation</th><th>Key Permissions</th></tr>
+  <tr><td><strong>Candidate</strong></td><td>Job seekers looking for employment within an organization</td><td>Assigned by org owner/admin</td><td>Browse jobs, submit applications, view application status, manage profile</td></tr>
+  <tr><td><strong>HR</strong></td><td>Internal recruitment team members within an organization</td><td>Assigned by org owner/admin</td><td>Review applications, schedule interviews, evaluate candidates, manage offers, generate reports</td></tr>
+  <tr><td><strong>Employer</strong></td><td>Organization owner/admin who posts jobs</td><td>Assigned by org owner/admin (typically the org creator)</td><td>Create job postings, view applicants, approve job postings, view analytics</td></tr>
+</table>
+
+<p><strong>Note:</strong> A single user can have different org-level roles in different organizations. The system-level role determines what the user can do across the entire system, while org-level roles determine what the user can do within a specific organization.</p>
 
 <!-- 2. MODULE OVERVIEW -->
 <h1 id="section-2">2. Module Overview</h1>
@@ -137,9 +151,9 @@
   <tr><th>Aspect</th><th>Value</th></tr>
   <tr><td>Module Code</td><td>RECR</td></tr>
   <tr><td>Module Name</td><td>Recruitment</td></tr>
-  <tr><td>Description</td><td>End-to-end recruitment management with 3 roles: Candidate, HR, Employer</td></tr>
+  <tr><td>Description</td><td>End-to-end recruitment management with two-level role system: system roles (user, super_admin) and org roles (Candidate, HR, Employer). Integrates with FILE module for secure resume storage via presigned URLs.</td></tr>
   <tr><td>Database</td><td>recr_db</td></tr>
-  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history, recr_job_reviews, recr_candidate_reviews</td></tr>
+  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_candidate_resumes, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history, recr_job_reviews, recr_candidate_reviews</td></tr>
   <tr><td>Tech Stack</td><td>Node.js, NestJS, PostgreSQL, Drizzle ORM, RabbitMQ, Elasticsearch</td></tr>
 </table>
 
@@ -157,42 +171,46 @@
   <tr><th>Field</th><th>Description</th></tr>
   <tr><td>Use Case ID</td><td>UC-01</td></tr>
   <tr><td>Name</td><td>Register Account</td></tr>
-  <tr><td>Actor</td><td>Candidate, Employer</td></tr>
+  <tr><td>Actor</td><td>User (any person registering for the first time)</td></tr>
   <tr><td>Precondition</td><td>User is not logged in</td></tr>
-  <tr><td>Postcondition</td><td>User account created, JWT token issued</td></tr>
+  <tr><td>Postcondition</td><td>User account created with system role <code>user</code>, JWT token issued</td></tr>
   <tr><td>Trigger</td><td>User clicks "Register" button</td></tr>
 </table>
 <p><strong>Main Flow:</strong></p>
 <ol>
   <li>User navigates to registration page</li>
   <li>User enters email, password, full name, phone</li>
-  <li>User selects role (Candidate or Employer)</li>
-  <li>If Employer: user enters company name, industry, company size</li>
   <li>System validates input data</li>
   <li>System checks email availability</li>
-  <li>System hashes password and creates user record <strong>with role</strong></li>
-  <li>System creates profile (candidate or employer)</li>
-  <li>System generates JWT token <strong>with role claim</strong></li>
+  <li>System hashes password and creates user record <strong>with system role <code>user</code></strong></li>
+  <li>System generates JWT token <strong>with system role claim</strong></li>
   <li>System returns success response</li>
 </ol>
 <p><strong>AUTH Module Dependency:</strong></p>
 <ul>
-  <li>Steps 5-7 (validate, check email, hash password, create user <strong>with role</strong>) are handled by <strong>AUTH module</strong> (FR-001)</li>
-  <li>Role is passed from RECR to AUTH during registration</li>
+  <li>Steps 3-5 (validate, check email, hash password, create user <strong>with system role</strong>) are handled by <strong>AUTH module</strong> (FR-001)</li>
+  <li>AUTH creates user with system role <code>user</code> (self-registration always uses <code>user</code> role)</li>
   <li>AUTH stores role in auth_users and includes it in JWT token</li>
-  <li>AUTH returns user_id and JWT token (with role) to RECR</li>
-  <li>RECR then creates recruitment-specific profile (candidate or employer) and links to auth user</li>
+  <li>AUTH returns user_id and JWT token (with system role) to RECR</li>
+  <li>RECR then creates recruitment-specific profile if needed and links to auth user</li>
+</ul>
+<p><strong>Organization Roles Note:</strong></p>
+<ul>
+  <li>After registration, the user has system role <code>user</code> but <strong>no organization-level roles</strong></li>
+  <li>Organization-level roles (HR, Candidate, Employer) are assigned when the user joins or is added to an organization</li>
+  <li>The user can create a new organization (becoming its owner/Employer) or be invited to an existing organization</li>
 </ul>
 <p><strong>Subscription Note:</strong></p>
 <ul>
-  <li>All roles (Candidate, HR, Employer) can <strong>optionally</strong> purchase subscription</li>
+  <li>All users can <strong>optionally</strong> purchase subscription after joining an organization</li>
   <li>Subscription provides premium features but is <strong>not required</strong> for basic functionality</li>
   <li>See UC-03: Purchase Subscription for details</li>
 </ul>
 <p><strong>Alternative Flows:</strong></p>
 <ul>
-  <li>4a. Email already exists: System returns error "Email already registered"</li>
-  <li>4b. Invalid input: System returns validation error with details</li>
+  <li>3a. Email already exists: System returns error "Email already registered"</li>
+  <li>3b. Invalid input: System returns validation error with details</li>
+  <li>3c. User tries to register with <code>super_admin</code> role: System returns error "Super admin accounts cannot be self-registered"</li>
 </ul>
 <div class="diagram">
   <img src="./images/activity/uc01-register-activity.png" alt="UC-01 Activity Diagram">
@@ -208,9 +226,9 @@
   <tr><th>Field</th><th>Description</th></tr>
   <tr><td>Use Case ID</td><td>UC-02</td></tr>
   <tr><td>Name</td><td>Login</td></tr>
-  <tr><td>Actor</td><td>All (Candidate, HR, Employer)</td></tr>
+  <tr><td>Actor</td><td>All (user, super_admin)</td></tr>
   <tr><td>Precondition</td><td>User has registered account</td></tr>
-  <tr><td>Postcondition</td><td>User authenticated, JWT token issued</td></tr>
+  <tr><td>Postcondition</td><td>User authenticated, JWT token issued with system-level role</td></tr>
   <tr><td>Trigger</td><td>User clicks "Login" button</td></tr>
 </table>
 <p><strong>Main Flow:</strong></p>
@@ -220,16 +238,16 @@
   <li>System checks email exists</li>
   <li>System verifies password hash</li>
   <li>System checks account is active</li>
-  <li>System generates JWT token with role claim</li>
-  <li>System returns token and role</li>
-  <li>Frontend redirects to role-specific dashboard</li>
+  <li>System generates JWT token with <strong>system-level role</strong> claim (<code>user</code> or <code>super_admin</code>)</li>
+  <li>System returns token and system role</li>
+  <li>Frontend redirects based on system role; org-level roles loaded when user selects an organization</li>
 </ol>
 <p><strong>AUTH Module Dependency:</strong></p>
 <ul>
   <li>Steps 2-6 (validate, check email, verify password, check active, generate JWT) are handled by <strong>AUTH module</strong> (FR-002)</li>
-  <li>AUTH reads role from auth_users table (stored during registration in UC-01)</li>
-  <li>AUTH returns JWT token with role claim to RECR</li>
-  <li>RECR uses role claim to redirect to appropriate dashboard (Candidate/HR/Employer)</li>
+  <li>AUTH reads system role from auth_users table (stored during registration in UC-01)</li>
+  <li>AUTH returns JWT token with system-level role claim to RECR</li>
+  <li>RECR uses system role claim for initial navigation; org-level roles are loaded on demand when user accesses an organization</li>
 </ul>
 <div class="diagram">
   <img src="./images/activity/uc02-login-activity.png" alt="UC-02 Activity Diagram">
@@ -354,11 +372,12 @@
 <p><strong>Main Flow:</strong></p>
 <ol>
   <li>Candidate selects job and clicks "Apply"</li>
-  <li>Candidate uploads resume (PDF/DOCX, max 10MB)</li>
+  <li>Candidate selects an existing resume from their resume list, or uploads a new resume (PDF/DOCX, max 10MB via FILE module)</li>
   <li>Candidate enters cover letter</li>
   <li>Candidate reviews and submits application</li>
-  <li>System validates application</li>
+  <li>System validates application (validates resume_file_id exists in FILE module)</li>
   <li>System checks for duplicate application</li>
+  <li>System freezes the resume by copying <code>resume_file_id</code> to the application record (immutable after submission)</li>
   <li>System creates application record</li>
   <li>System sends notification to employer</li>
   <li>Candidate sees success message</li>
@@ -421,7 +440,7 @@
   <li>HR applies filters (job, status)</li>
   <li>System returns filtered results</li>
   <li>HR selects an application to review</li>
-  <li>HR views candidate profile, resume, cover letter</li>
+  <li>HR views candidate profile, cover letter, and resume (via presigned download URL from FILE module)</li>
   <li>HR updates application status (screening/rejected)</li>
 </ol>
 <div class="diagram">
@@ -741,6 +760,41 @@
   <li>4a. No data: System shows "No data available" message</li>
 </ul>
 
+<h2 id="section-3-18">3.17 UC-18: Manage Resumes</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-18</td></tr>
+  <tr><td>Name</td><td>Manage Resumes</td></tr>
+  <tr><td>Actor</td><td>Candidate</td></tr>
+  <tr><td>Precondition</td><td>Candidate is logged in</td></tr>
+  <tr><td>Postcondition</td><td>Candidate's resume list is updated</td></tr>
+  <tr><td>Trigger</td><td>Candidate navigates to "My Resumes" page</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Candidate navigates to "My Resumes" management page</li>
+  <li>System displays list of all uploaded resumes with metadata (file name, type, size, upload date)</li>
+  <li>Candidate can:
+    <ul>
+      <li><strong>Upload new resume:</strong> Select file (PDF/DOCX, max 10MB) - file stored via FILE module with path <code>{candidate_user_id}/resumes/{uuid}.pdf</code></li>
+      <li><strong>Set primary resume:</strong> Mark a resume as primary (default for new applications)</li>
+      <li><strong>Delete resume:</strong> Remove a resume that is not linked to any submitted application</li>
+      <li><strong>Download resume:</strong> Get presigned download URL from FILE module to view resume</li>
+    </ul>
+  </li>
+  <li>System validates file type and size</li>
+  <li>System calls FILE module to store file and receive file_id</li>
+  <li>System creates <code>recr_candidate_resumes</code> record with file_id reference</li>
+  <li>System returns updated resume list</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>3a. Invalid file type: System returns error "Only PDF and DOCX files are allowed"</li>
+  <li>3b. File too large: System returns error "File size must not exceed 10MB"</li>
+  <li>3c. Delete linked resume: System returns error "Cannot delete resume linked to submitted application"</li>
+  <li>4a. FILE module unavailable: System returns error "File service temporarily unavailable"</li>
+</ul>
+
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Functional Requirements</h1>
 
@@ -757,10 +811,10 @@
   <tr>
     <td><span id="fr-001" class="req-id">FR-001</span></td>
     <td>RECR</td>
-    <td>Candidate Registration</td>
+    <td>User Registration</td>
     <td>UC-01</td>
     <td>High</td>
-    <td>Candidates can register accounts with email, password, and basic profile information</td>
+    <td>Users can register accounts with email, password, and basic profile information. Creates user with system role <code>user</code>. Organization-level roles (HR, Candidate, Employer) are assigned within organizations.</td>
   </tr>
   <tr>
     <td><span id="fr-002" class="req-id">FR-002</span></td>
@@ -784,7 +838,7 @@
     <td>Submit Application</td>
     <td>UC-06</td>
     <td>High</td>
-    <td>Candidates can submit applications with resume, cover letter for specific jobs</td>
+    <td>Candidates can submit applications with a selected resume (from their resume list) or a newly uploaded resume, plus cover letter. The <code>resume_file_id</code> is frozen at submission time and becomes immutable on the application record.</td>
   </tr>
   <tr>
     <td><span id="fr-005" class="req-id">FR-005</span></td>
@@ -806,9 +860,25 @@
     <td><span id="fr-007" class="req-id">FR-007</span></td>
     <td>RECR</td>
     <td>Upload Resume</td>
+    <td>UC-18</td>
+    <td>High</td>
+    <td>Candidates can upload and manage multiple resume files (PDF/DOCX, max 10MB each) via FILE module. Files stored at <code>{candidate_user_id}/resumes/{uuid}.pdf</code>. Metadata stored in <code>recr_candidate_resumes</code> table with file_id reference to <code>sys_files</code>.</td>
+  </tr>
+  <tr>
+    <td><span id="fr-037" class="req-id">FR-037</span></td>
+    <td>RECR</td>
+    <td>Manage Candidate Resumes</td>
+    <td>UC-18</td>
+    <td>High</td>
+    <td>Candidates can list, upload, set primary, and delete resumes from their resume list. Deleting a resume is only allowed if it is not linked to any submitted application.</td>
+  </tr>
+  <tr>
+    <td><span id="fr-038" class="req-id">FR-038</span></td>
+    <td>RECR</td>
+    <td>Application Resume Linking</td>
     <td>UC-06</td>
     <td>High</td>
-    <td>Candidates can upload and manage their resume files (PDF, DOCX)</td>
+    <td>When a candidate submits an application, the selected resume is linked by copying <code>resume_file_id</code> to the application record. This file reference is immutable after submission (frozen at submission time).</td>
   </tr>
 </table>
 
@@ -828,7 +898,7 @@
     <td>Review Applications</td>
     <td>UC-08</td>
     <td>High</td>
-    <td>HR can review applications, filter by job, status, and candidate qualifications</td>
+    <td>HR can review applications, filter by job, status, and candidate qualifications. View candidate resume via presigned download URL from FILE module.</td>
   </tr>
   <tr>
     <td><span id="fr-009" class="req-id">FR-009</span></td>
@@ -952,7 +1022,7 @@
     <td>Approve Job Posting</td>
     <td>UC-11</td>
     <td>Medium</td>
-    <td>Employers can submit jobs for HR approval before publishing</td>
+    <td>Employers can submit jobs for HR approval before publishing. Employers can also view applicant resumes via presigned download URL from FILE module when reviewing applicants for their job postings.</td>
   </tr>
   <tr>
     <td><span id="fr-020" class="req-id">FR-020</span></td>
@@ -1114,10 +1184,11 @@
     <th>Related FR</th>
   </tr>
   <tr><td><span class="req-id">DR-001</span></td><td>recr_users</td><td>User accounts with role-based authentication</td><td>FR-001, FR-002, FR-016</td></tr>
-  <tr><td><span class="req-id">DR-002</span></td><td>recr_candidates</td><td>Candidate profiles with resume and skills</td><td>FR-006, FR-007</td></tr>
+  <tr><td><span class="req-id">DR-002</span></td><td>recr_candidates</td><td>Candidate profiles with skills (resume_link replaced by file_id references via recr_candidate_resumes)</td><td>FR-006, FR-007</td></tr>
+  <tr><td><span class="req-id">DR-002a</span></td><td>recr_candidate_resumes</td><td>Candidate resume list with FILE module file_id references (supports multiple resumes per candidate)</td><td>FR-007, FR-037, FR-038</td></tr>
   <tr><td><span class="req-id">DR-003</span></td><td>recr_employers</td><td>Employer company profiles</td><td>FR-016</td></tr>
   <tr><td><span class="req-id">DR-004</span></td><td>recr_jobs</td><td>Job listings with requirements</td><td>FR-017, FR-018</td></tr>
-  <tr><td><span class="req-id">DR-005</span></td><td>recr_applications</td><td>Job applications linking candidates to jobs</td><td>FR-004, FR-005</td></tr>
+  <tr><td><span class="req-id">DR-005</span></td><td>recr_applications</td><td>Job applications linking candidates to jobs, with frozen resume_file_id reference to FILE module</td><td>FR-004, FR-005, FR-038</td></tr>
   <tr><td><span class="req-id">DR-006</span></td><td>recr_interviews</td><td>Interview scheduling and status</td><td>FR-010</td></tr>
   <tr><td><span class="req-id">DR-007</span></td><td>recr_evaluations</td><td>Interview evaluation scores</td><td>FR-011</td></tr>
   <tr><td><span class="req-id">DR-008</span></td><td>recr_hr_profiles</td><td>HR user profiles</td><td>-</td></tr>
@@ -1142,7 +1213,7 @@
     <th>Description</th>
     <th>Requirement IDs</th>
   </tr>
-  <tr><td>POST</td><td>/recr/auth/register</td><td>Register new user (candidate/employer)</td><td>FR-001, FR-016</td></tr>
+  <tr><td>POST</td><td>/recr/auth/register</td><td>Register new user with system role <code>user</code></td><td>FR-001</td></tr>
   <tr><td>POST</td><td>/recr/auth/login</td><td>Login with email/password</td><td>FR-002</td></tr>
 </table>
 
@@ -1155,10 +1226,13 @@
     <th>Requirement IDs</th>
   </tr>
   <tr><td>GET</td><td>/recr/jobs</td><td>Browse job listings</td><td>FR-003</td></tr>
-  <tr><td>POST</td><td>/recr/applications</td><td>Submit application</td><td>FR-004</td></tr>
+  <tr><td>POST</td><td>/recr/applications</td><td>Submit application</td><td>FR-004, FR-038</td></tr>
   <tr><td>GET</td><td>/recr/candidate/applications</td><td>View my applications</td><td>FR-005</td></tr>
   <tr><td>PATCH</td><td>/recr/candidate/profile</td><td>Update profile</td><td>FR-006</td></tr>
-  <tr><td>POST</td><td>/recr/candidate/resume</td><td>Upload resume</td><td>FR-007</td></tr>
+  <tr><td>POST</td><td>/recr/candidate/resume</td><td>Upload resume (via FILE module)</td><td>FR-007, FR-037</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/resumes</td><td>List my resumes</td><td>FR-037</td></tr>
+  <tr><td>DELETE</td><td>/recr/candidate/resumes/:id</td><td>Delete a resume</td><td>FR-037</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/applications/:id/resume</td><td>Get presigned download URL for application resume</td><td>FR-038</td></tr>
   <tr><td>POST</td><td>/recr/candidate/reviews/jobs</td><td>Review a job</td><td>FR-030</td></tr>
   <tr><td>GET</td><td>/recr/candidate/reviews/jobs/:jobId</td><td>Get job reviews</td><td>FR-030</td></tr>
 </table>
@@ -1232,6 +1306,7 @@
   <tr><td>interview.scheduled</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when interview is scheduled</td></tr>
   <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when HR/Employer submits job for approval</td></tr>
   <tr><td>subscription.purchased</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when user purchases subscription</td></tr>
+  <tr><td>file.deleted</td><td>Inbound</td><td>RabbitMQ</td><td>Received from FILE module when a file is deleted; RECR cleans up references in recr_candidate_resumes and recr_applications</td></tr>
 </table>
 
 <!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
@@ -1249,12 +1324,56 @@
   <tr><td><span id="nfr-003" class="req-id">NFR-003</span></td><td>Scalability</td><td>Support concurrent users</td><td>500+ concurrent users</td></tr>
   <tr><td><span id="nfr-004" class="req-id">NFR-004</span></td><td>Availability</td><td>System uptime</td><td>99.9%</td></tr>
   <tr><td><span id="nfr-005" class="req-id">NFR-005</span></td><td>Security</td><td>Role-based access control</td><td>Candidate, HR, Employer roles</td></tr>
-  <tr><td><span id="nfr-006" class="req-id">NFR-006</span></td><td>Data</td><td>Resume file storage</td><td>S3-compatible, max 10MB per file</td></tr>
+  <tr><td><span id="nfr-006" class="req-id">NFR-006</span></td><td>Data</td><td>Resume file storage via FILE module</td><td>FILE module manages file storage (S3-compatible), max 10MB per file, presigned URL access</td></tr>
   <tr><td><span id="nfr-007" class="req-id">NFR-007</span></td><td>Search</td><td>Job search capability</td><td>Full-text search within 500ms</td></tr>
 </table>
 
-<!-- 9. TRACEABILITY -->
-<h1 id="section-9">9. Requirements Traceability Matrix</h1>
+<!-- 9. RBAC MATRIX -->
+<h1 id="section-9">9. RBAC Resume Access Matrix</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Action</th>
+    <th>Candidate (Owner)</th>
+    <th>HR (Organization)</th>
+    <th>Employer (Organization)</th>
+  </tr>
+  <tr>
+    <td>Upload Resume</td>
+    <td>Own only</td>
+    <td>Not allowed</td>
+    <td>Not allowed</td>
+  </tr>
+  <tr>
+    <td>List Own Resumes</td>
+    <td>Own only</td>
+    <td>Not allowed</td>
+    <td>Not allowed</td>
+  </tr>
+  <tr>
+    <td>Delete Resume</td>
+    <td>Own only (if not linked to application)</td>
+    <td>Not allowed</td>
+    <td>Not allowed</td>
+  </tr>
+  <tr>
+    <td>View Application Resume</td>
+    <td>Own applications</td>
+    <td>Organization applications</td>
+    <td>Organization applications</td>
+  </tr>
+  <tr>
+    <td>Download Resume</td>
+    <td>Own only</td>
+    <td>Via presigned URL (organization applications)</td>
+    <td>Via presigned URL (organization applications)</td>
+  </tr>
+</table>
+
+<p><strong>Note:</strong> All resume downloads by HR and Employer are via time-limited presigned URLs generated by the FILE module. Direct file access is never exposed.</p>
+
+<!-- 10. TRACEABILITY -->
+<h1 id="section-10">10. Requirements Traceability Matrix</h1>
 
 <table class="trace-table">
   <tr>
@@ -1271,7 +1390,7 @@
   <tr><td>FR-004</td><td>Submit Application</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>POST /recr/applications</td></tr>
   <tr><td>FR-005</td><td>View Application Status</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>GET /recr/candidate/applications</td></tr>
   <tr><td>FR-006</td><td>Update Profile</td><td>Candidate</td><td>3.1</td><td>recr_candidates</td><td>PATCH /recr/candidate/profile</td></tr>
-  <tr><td>FR-007</td><td>Upload Resume</td><td>Candidate</td><td>3.1</td><td>recr_candidates</td><td>POST /recr/candidate/resume</td></tr>
+  <tr><td>FR-007</td><td>Upload Resume</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>POST /recr/candidate/resume</td></tr>
   <tr><td>FR-008</td><td>Review Applications</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/applications</td></tr>
   <tr><td>FR-009</td><td>Screen Candidates</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
   <tr><td>FR-010</td><td>Schedule Interview</td><td>HR</td><td>3.2</td><td>recr_interviews</td><td>POST /recr/hr/interviews</td></tr>
@@ -1295,12 +1414,14 @@
   <tr><td>FR-029</td><td>HR Manage Jobs</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
   <tr><td>FR-030</td><td>Job Review</td><td>Candidate</td><td>3.3</td><td>recr_job_reviews</td><td>POST /recr/candidate/reviews/jobs</td></tr>
   <tr><td>FR-031</td><td>Candidate Review</td><td>HR</td><td>3.3</td><td>recr_candidate_reviews</td><td>POST /recr/hr/reviews/candidates</td></tr>
+  <tr><td>FR-037</td><td>Manage Candidate Resumes</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>GET/POST/DELETE /recr/candidate/resumes</td></tr>
+  <tr><td>FR-038</td><td>Application Resume Linking</td><td>Candidate</td><td>3.1</td><td>recr_applications, sys_files (FILE)</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
   <tr><td>NFR-001</td><td>API Response Time</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-002</td><td>Application Processing</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-003</td><td>Concurrent Users</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-004</td><td>System Uptime</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-005</td><td>RBAC</td><td>All</td><td>6.1</td><td>recr_users</td><td>-</td></tr>
-  <tr><td>NFR-006</td><td>Resume Storage</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
+  <tr><td>NFR-006</td><td>Resume Storage</td><td>All</td><td>6.1</td><td>sys_files (FILE)</td><td>FILE module API (presigned URLs)</td></tr>
   <tr><td>NFR-007</td><td>Job Search</td><td>All</td><td>6.1</td><td>recr_jobs</td><td>GET /recr/jobs</td></tr>
 </table>
 

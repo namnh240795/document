@@ -58,12 +58,21 @@
 <h2>1.1 Purpose</h2>
 <p>This document defines the database design for the <strong>Recruitment</strong> module (database: <code>recr_db</code>).</p>
 
-<h2>1.2 Requirements Addressed</h2>
+<h2>1.2 Module Dependencies</h2>
+<table>
+  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
+  <tr><td>AUTH</td><td>Hard</td><td>User authentication (auth_users table reference)</td></tr>
+  <tr><td>FILE</td><td>Hard</td><td>File storage for candidate resumes (sys_files table reference via file_id UUID columns)</td></tr>
+</table>
+
+<h2>1.3 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>Database Solution</th></tr>
   <tr><td><span class="req-id">FR-001, FR-015</span> User Registration</td><td>recr_users, recr_candidates, recr_employers tables</td></tr>
   <tr><td><span class="req-id">FR-016, FR-017</span> Job Management</td><td>recr_jobs, recr_job_requirements tables</td></tr>
-  <tr><td><span class="req-id">FR-004, FR-005</span> Application Management</td><td>recr_applications table</td></tr>
+  <tr><td><span class="req-id">FR-004, FR-005</span> Application Management</td><td>recr_applications table (with frozen resume_file_id)</td></tr>
+  <tr><td><span class="req-id">FR-007, FR-037</span> Resume Management</td><td>recr_candidate_resumes table (FILE module integration)</td></tr>
+  <tr><td><span class="req-id">FR-038</span> Application Resume Linking</td><td>recr_applications.resume_file_id (references sys_files via FILE module)</td></tr>
   <tr><td><span class="req-id">FR-010</span> Interview Scheduling</td><td>recr_interviews table</td></tr>
   <tr><td><span class="req-id">FR-011</span> Evaluation</td><td>recr_evaluations table</td></tr>
   <tr><td><span class="req-id">FR-012</span> Reject Candidate</td><td>recr_applications table (status update)</td></tr>
@@ -114,10 +123,11 @@
 );</code></pre>
 
 <h3>Table: <code>recr_candidates</code> - Candidate Profile</h3>
+<p><strong>Note:</strong> Resume storage has been migrated to the FILE module. The <code>resume_url</code> column is deprecated. Resume file references are now stored in the <code>recr_candidate_resumes</code> table via <code>file_id</code> (UUID referencing <code>sys_files.id</code> in the FILE module).</p>
 <pre><code>CREATE TABLE recr_candidates (
   id               BIGSERIAL PRIMARY KEY,
   user_id          BIGINT NOT NULL UNIQUE REFERENCES recr_users(id),
-  resume_url       VARCHAR(500),
+  resume_url       VARCHAR(500),              -- DEPRECATED: use recr_candidate_resumes instead
   linkedin_url     VARCHAR(300),
   skills           JSONB DEFAULT '[]',
   experience_years INT DEFAULT 0,
@@ -127,6 +137,22 @@
   created_at       TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at       TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
+
+<h3>Table: <code>recr_candidate_resumes</code> - Candidate Resume List (FILE Module Integration)</h3>
+<p><strong>Description:</strong> Stores references to candidate resume files managed by the FILE module. Each candidate can have multiple resumes. The <code>file_id</code> references <code>sys_files.id</code> in the FILE module's database.</p>
+<pre><code>CREATE TABLE recr_candidate_resumes (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  candidate_id    BIGINT NOT NULL REFERENCES recr_candidates(id) ON DELETE CASCADE,
+  file_id         UUID NOT NULL REFERENCES sys_files(id) ON DELETE CASCADE,
+  is_primary      BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Indexes for resume management
+CREATE INDEX idx_recr_candidate_resumes_candidate_id ON recr_candidate_resumes(candidate_id);
+CREATE INDEX idx_recr_candidate_resumes_file_id ON recr_candidate_resumes(file_id);
+CREATE INDEX idx_recr_candidate_resumes_primary ON recr_candidate_resumes(candidate_id, is_primary) WHERE is_primary = TRUE;</code></pre>
 
 <h3>Table: <code>recr_employers</code> - Employer Profile</h3>
 <pre><code>CREATE TABLE recr_employers (
@@ -174,14 +200,16 @@
 );</code></pre>
 
 <h3>Table: <code>recr_applications</code> - Job Applications</h3>
+<p><strong>Note:</strong> The <code>resume_file_id</code> column stores a frozen (immutable) copy of the resume file reference at submission time. This ensures the resume reviewed by HR/Employer is the same one the candidate submitted, even if the candidate later updates or deletes the original resume from their resume list.</p>
 <pre><code>CREATE TABLE recr_applications (
-  id           BIGSERIAL PRIMARY KEY,
-  job_id       BIGINT NOT NULL REFERENCES recr_jobs(id),
-  candidate_id BIGINT NOT NULL REFERENCES recr_candidates(id),
-  cover_letter TEXT,
-  status       VARCHAR(20) NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted','screening','interview','offer','rejected','hired')),
-  applied_at   TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at   TIMESTAMP NOT NULL DEFAULT NOW(),
+  id              BIGSERIAL PRIMARY KEY,
+  job_id          BIGINT NOT NULL REFERENCES recr_jobs(id),
+  candidate_id    BIGINT NOT NULL REFERENCES recr_candidates(id),
+  resume_file_id  UUID REFERENCES sys_files(id),  -- Frozen resume at submission (FILE module)
+  cover_letter    TEXT,
+  status          VARCHAR(20) NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted','screening','interview','offer','rejected','hired')),
+  applied_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
   UNIQUE(job_id, candidate_id)
 );</code></pre>
 
@@ -348,6 +376,7 @@ CREATE INDEX idx_recr_jobs_location ON recr_jobs(location);
 CREATE INDEX idx_recr_applications_job_id ON recr_applications(job_id);
 CREATE INDEX idx_recr_applications_candidate_id ON recr_applications(candidate_id);
 CREATE INDEX idx_recr_applications_status ON recr_applications(status);
+CREATE INDEX idx_recr_applications_resume_file_id ON recr_applications(resume_file_id);
 
 -- Interviews indexes
 CREATE INDEX idx_recr_interviews_application_id ON recr_interviews(application_id);
@@ -400,6 +429,7 @@ CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(i
   <tr><td>4</td><td>004_create_hr_profiles.sql</td><td>Create recr_hr_profiles table</td></tr>
   <tr><td>5</td><td>005_create_jobs.sql</td><td>Create recr_jobs and recr_job_requirements</td></tr>
   <tr><td>6</td><td>006_create_applications.sql</td><td>Create recr_applications table</td></tr>
+  <tr><td>6a</td><td>006a_create_candidate_resumes.sql</td><td>Create recr_candidate_resumes table, add resume_file_id to recr_applications (FILE module integration)</td></tr>
   <tr><td>7</td><td>007_create_interviews.sql</td><td>Create recr_interviews table</td></tr>
   <tr><td>8</td><td>008_create_evaluations.sql</td><td>Create recr_evaluations table</td></tr>
   <tr><td>9</td><td>009_create_subscription_plans.sql</td><td>Create recr_subscription_plans table and seed data</td></tr>
@@ -416,10 +446,11 @@ CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(i
   <tr><th>Table</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
   <tr><td>recr_users</td><td>User accounts (all roles)</td><td>FR-001, FR-002, FR-015</td><td>15,000</td></tr>
   <tr><td>recr_candidates</td><td>Candidate profiles</td><td>FR-006, FR-007</td><td>10,000</td></tr>
+  <tr><td>recr_candidate_resumes</td><td>Candidate resume list (FILE module file_id references)</td><td>FR-007, FR-037, FR-038</td><td>20,000</td></tr>
   <tr><td>recr_employers</td><td>Employer company profiles</td><td>FR-015, FR-033</td><td>500</td></tr>
   <tr><td>recr_hr_profiles</td><td>HR user profiles</td><td>FR-032</td><td>50</td></tr>
   <tr><td>recr_jobs</td><td>Job listings</td><td>FR-016, FR-017, FR-028, FR-029</td><td>2,000</td></tr>
-  <tr><td>recr_applications</td><td>Job applications</td><td>FR-004, FR-005</td><td>25,000</td></tr>
+  <tr><td>recr_applications</td><td>Job applications with frozen resume_file_id</td><td>FR-004, FR-005, FR-038</td><td>25,000</td></tr>
   <tr><td>recr_interviews</td><td>Interview sessions</td><td>FR-010</td><td>8,000</td></tr>
   <tr><td>recr_evaluations</td><td>Interview evaluations</td><td>FR-011</td><td>8,000</td></tr>
   <tr><td>recr_job_requirements</td><td>Job requirements</td><td>FR-016, FR-017</td><td>5,000</td></tr>
