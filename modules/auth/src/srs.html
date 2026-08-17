@@ -192,7 +192,7 @@
     <td>User Registration</td>
     <td>UC-01</td>
     <td>High</td>
-    <td>System shall allow users to register with email or phone + password + name</td>
+    <td>System shall allow users to register with email or phone + password + name. Registered users receive the <code>user</code> system role by default.</td>
   </tr>
   <tr id="fr-002">
     <td><span class="req-id">FR-002</span></td>
@@ -272,7 +272,7 @@
     <td>Manage System Roles</td>
     <td>UC-11</td>
     <td>Medium</td>
-    <td>Admin shall be able to manage system-level roles (candidate, employer, hr, admin) and assign them to users</td>
+    <td>Admin shall be able to manage system-level roles (<code>user</code>, <code>super_admin</code>) and assign them to users</td>
   </tr>
   <tr id="fr-012">
     <td><span class="req-id">FR-012</span></td>
@@ -304,7 +304,7 @@
     <td>Organization Management</td>
     <td>UC-15</td>
     <td>High</td>
-    <td>System shall allow users to create, update, delete organizations, manage membership, and create/manage organization-level custom roles with fine-grained permissions</td>
+    <td>System shall allow users to create, update, delete organizations, manage membership, and create/manage organization-level roles (HR, Candidate, Employer) with fine-grained permissions</td>
   </tr>
   <tr id="fr-016">
     <td><span class="req-id">FR-016</span></td>
@@ -338,18 +338,17 @@
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Guest (unauthenticated user)</td></tr>
   <tr><td>Preconditions</td><td>User is not logged in; user does not have an existing account</td></tr>
-  <tr><td>Main Flow</td><td>1. User navigates to registration page<br>2. User selects role (<code>candidate</code> or <code>employer</code>)<br>3. User enters name, email, and password<br>4. System validates input (email format, password strength, role validity)<br>5. System creates user account with hashed password and assigned role<br>6. System sends verification email via EMAIL module<br>7. System returns success response with user ID and JWT token</td></tr>
-  <tr><td>Alternative Flows</td><td>4a. Email already exists → System returns 409 Conflict<br>4b. Password too weak → System returns 400 Validation Error<br>4c. Invalid role (hr or admin) → System returns 400 Invalid Role Error<br>6a. Verification service unavailable → Account created, verification queued</td></tr>
-  <tr><td>Postconditions</td><td>User account created with role (unverified); verification email sent; JWT token issued</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to registration page<br>2. User enters name, email, and password<br>3. System validates input (email format, password strength)<br>4. System creates user account with hashed password and assigns <code>user</code> system role<br>5. System sends verification email via EMAIL module<br>6. System returns success response with user ID and JWT token</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Email already exists → System returns 409 Conflict<br>3b. Password too weak → System returns 400 Validation Error<br>5a. Verification service unavailable → Account created, verification queued</td></tr>
+  <tr><td>Postconditions</td><td>User account created with <code>user</code> role (unverified); verification email sent; JWT token issued</td></tr>
   <tr><td>Related FR</td><td><span class="req-id">FR-001</span></td></tr>
 </table>
 <p><strong>Available Roles for Self-Registration:</strong></p>
 <table>
   <tr><th>Role</th><th>Description</th></tr>
-  <tr><td><code>candidate</code></td><td>Job seekers who browse and apply for jobs</td></tr>
-  <tr><td><code>employer</code></td><td>Companies that post job listings</td></tr>
+  <tr><td><code>user</code></td><td>Standard user account (default). Users can create organizations and receive organization-level roles (HR, Candidate, Employer).</td></tr>
 </table>
-<p><strong>Note:</strong> HR accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
+<p><strong>Note:</strong> <code>super_admin</code> accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
 
 <h3>Activity Diagram</h3>
 <div class="diagram">
@@ -583,13 +582,20 @@
   <tr><th>Aspect</th><th>Description</th></tr>
   <tr><td>Actor</td><td>Authenticated user (owner/admin for role management)</td></tr>
   <tr><td>Preconditions</td><td>User is logged in</td></tr>
-  <tr><td>Main Flow</td><td>1. User creates organization with name and slug<br>2. System validates slug uniqueness<br>3. System creates organization, user becomes owner<br>4. Owner can update org details, manage members<br>5. Owner/admin can create organization-level custom roles with permissions<br>6. Owner/admin can assign organization roles to members<br>7. Owner can delete organization</td></tr>
+  <tr><td>Main Flow</td><td>1. User creates organization with name and slug<br>2. System validates slug uniqueness<br>3. System creates organization, user becomes owner with <code>Employer</code> role<br>4. Owner can update org details, manage members<br>5. Owner/admin can assign organization roles (HR, Candidate, Employer) to members<br>6. Owner/admin can create additional custom organization roles with permissions<br>7. Owner can delete organization</td></tr>
   <tr><td>Alternative Flows</td><td>2a. Slug already taken → System returns 409<br>5a. Invalid permission → System returns 400<br>5b. Role name already exists → System returns 409<br>6a. Unauthorized → System returns 403</td></tr>
-  <tr><td>Postconditions</td><td>Organization created/updated/deleted; membership managed; custom roles created</td></tr>
+  <tr><td>Postconditions</td><td>Organization created/updated/deleted; membership managed; organization roles (HR, Candidate, Employer) assigned</td></tr>
   <tr><td>Related FR</td><td><span class="req-id">FR-015</span></td></tr>
 </table>
 <p><strong>Organization Roles:</strong></p>
-<p>Organization owners and admins can create custom roles with fine-grained permissions. These roles are scoped to the organization and independent of system-level roles.</p>
+<p>Each organization can define roles with fine-grained permissions. Standard organization roles include <code>Employer</code>, <code>HR</code>, and <code>Candidate</code>. Additional custom roles can be created by the organization owner or admin.</p>
+<table>
+  <tr><th>Standard Role</th><th>Description</th></tr>
+  <tr><td><code>Employer</code></td><td>Organization owner/admin. Manages company profile and job postings. Assigned automatically when creating an organization.</td></tr>
+  <tr><td><code>HR</code></td><td>Internal recruitment team. Manages hiring workflows, applications, and interviews.</td></tr>
+  <tr><td><code>Candidate</code></td><td>Job seekers. Browse jobs and submit applications within the organization.</td></tr>
+</table>
+<p><strong>Available Permissions:</strong></p>
 <table>
   <tr><th>Permission</th><th>Description</th></tr>
   <tr><td><code>member:read/update/delete</code></td><td>Manage organization members</td></tr>

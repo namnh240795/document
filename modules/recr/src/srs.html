@@ -101,7 +101,7 @@
 <p>This document defines the software requirements for the <strong>Recruitment</strong> module of the HR Management System.</p>
 
 <h2 id="section-1-2">1.2 Scope</h2>
-<p>The Recruitment module manages the end-to-end hiring process with three distinct user roles: <strong>Candidate</strong> (job seekers), <strong>HR</strong> (recruitment team), and <strong>Employer</strong> (companies posting jobs). Each role has specific permissions and workflows.</p>
+<p>The Recruitment module manages the end-to-end hiring process with a two-level role system. <strong>System-level roles</strong> (<code>user</code>, <code>super_admin</code>) are managed by the AUTH module. <strong>Organization-level roles</strong> (<code>HR</code>, <code>Candidate</code>, <code>Employer</code>) are managed within organizations. Users self-register with the <code>user</code> system role and receive org-level roles when they join or are added to an organization.</p>
 
 <h2 id="section-1-3">1.3 Module Dependencies</h2>
 <table>
@@ -122,12 +122,23 @@
 </table>
 
 <h2 id="section-1-5">1.5 User Roles</h2>
+
+<h3>System-Level Roles (managed by AUTH module)</h3>
 <table>
-  <tr><th>Role</th><th>Description</th><th>Key Permissions</th></tr>
-  <tr><td><strong>Candidate</strong></td><td>Job seekers looking for employment</td><td>Browse jobs, submit applications, view application status, manage profile</td></tr>
-  <tr><td><strong>HR</strong></td><td>Internal recruitment team members</td><td>Review applications, schedule interviews, evaluate candidates, manage offers, generate reports</td></tr>
-  <tr><td><strong>Employer</strong></td><td>Companies/organizations posting jobs</td><td>Create job postings, view applicants, approve job postings, view analytics</td></tr>
+  <tr><th>Role</th><th>Description</th><th>Creation</th><th>Key Permissions</th></tr>
+  <tr><td><strong>user</strong></td><td>Default role for self-registered users</td><td>Self-registration via POST /recr/auth/register</td><td>Create organizations, access basic features</td></tr>
+  <tr><td><strong>super_admin</strong></td><td>System administrator</td><td>Created by existing admin only (not self-registered)</td><td>Full system access, manage all organizations and users</td></tr>
 </table>
+
+<h3>Organization-Level Roles (managed within organizations)</h3>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Creation</th><th>Key Permissions</th></tr>
+  <tr><td><strong>Candidate</strong></td><td>Job seekers looking for employment within an organization</td><td>Assigned by org owner/admin</td><td>Browse jobs, submit applications, view application status, manage profile</td></tr>
+  <tr><td><strong>HR</strong></td><td>Internal recruitment team members within an organization</td><td>Assigned by org owner/admin</td><td>Review applications, schedule interviews, evaluate candidates, manage offers, generate reports</td></tr>
+  <tr><td><strong>Employer</strong></td><td>Organization owner/admin who posts jobs</td><td>Assigned by org owner/admin (typically the org creator)</td><td>Create job postings, view applicants, approve job postings, view analytics</td></tr>
+</table>
+
+<p><strong>Note:</strong> A single user can have different org-level roles in different organizations. The system-level role determines what the user can do across the entire system, while org-level roles determine what the user can do within a specific organization.</p>
 
 <!-- 2. MODULE OVERVIEW -->
 <h1 id="section-2">2. Module Overview</h1>
@@ -137,7 +148,7 @@
   <tr><th>Aspect</th><th>Value</th></tr>
   <tr><td>Module Code</td><td>RECR</td></tr>
   <tr><td>Module Name</td><td>Recruitment</td></tr>
-  <tr><td>Description</td><td>End-to-end recruitment management with 3 roles: Candidate, HR, Employer</td></tr>
+  <tr><td>Description</td><td>End-to-end recruitment management with two-level role system: system roles (user, super_admin) and org roles (Candidate, HR, Employer)</td></tr>
   <tr><td>Database</td><td>recr_db</td></tr>
   <tr><td>Tables</td><td>recr_users, recr_candidates, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history, recr_job_reviews, recr_candidate_reviews</td></tr>
   <tr><td>Tech Stack</td><td>Node.js, NestJS, PostgreSQL, Drizzle ORM, RabbitMQ, Elasticsearch</td></tr>
@@ -157,42 +168,46 @@
   <tr><th>Field</th><th>Description</th></tr>
   <tr><td>Use Case ID</td><td>UC-01</td></tr>
   <tr><td>Name</td><td>Register Account</td></tr>
-  <tr><td>Actor</td><td>Candidate, Employer</td></tr>
+  <tr><td>Actor</td><td>User (any person registering for the first time)</td></tr>
   <tr><td>Precondition</td><td>User is not logged in</td></tr>
-  <tr><td>Postcondition</td><td>User account created, JWT token issued</td></tr>
+  <tr><td>Postcondition</td><td>User account created with system role <code>user</code>, JWT token issued</td></tr>
   <tr><td>Trigger</td><td>User clicks "Register" button</td></tr>
 </table>
 <p><strong>Main Flow:</strong></p>
 <ol>
   <li>User navigates to registration page</li>
   <li>User enters email, password, full name, phone</li>
-  <li>User selects role (Candidate or Employer)</li>
-  <li>If Employer: user enters company name, industry, company size</li>
   <li>System validates input data</li>
   <li>System checks email availability</li>
-  <li>System hashes password and creates user record <strong>with role</strong></li>
-  <li>System creates profile (candidate or employer)</li>
-  <li>System generates JWT token <strong>with role claim</strong></li>
+  <li>System hashes password and creates user record <strong>with system role <code>user</code></strong></li>
+  <li>System generates JWT token <strong>with system role claim</strong></li>
   <li>System returns success response</li>
 </ol>
 <p><strong>AUTH Module Dependency:</strong></p>
 <ul>
-  <li>Steps 5-7 (validate, check email, hash password, create user <strong>with role</strong>) are handled by <strong>AUTH module</strong> (FR-001)</li>
-  <li>Role is passed from RECR to AUTH during registration</li>
+  <li>Steps 3-5 (validate, check email, hash password, create user <strong>with system role</strong>) are handled by <strong>AUTH module</strong> (FR-001)</li>
+  <li>AUTH creates user with system role <code>user</code> (self-registration always uses <code>user</code> role)</li>
   <li>AUTH stores role in auth_users and includes it in JWT token</li>
-  <li>AUTH returns user_id and JWT token (with role) to RECR</li>
-  <li>RECR then creates recruitment-specific profile (candidate or employer) and links to auth user</li>
+  <li>AUTH returns user_id and JWT token (with system role) to RECR</li>
+  <li>RECR then creates recruitment-specific profile if needed and links to auth user</li>
+</ul>
+<p><strong>Organization Roles Note:</strong></p>
+<ul>
+  <li>After registration, the user has system role <code>user</code> but <strong>no organization-level roles</strong></li>
+  <li>Organization-level roles (HR, Candidate, Employer) are assigned when the user joins or is added to an organization</li>
+  <li>The user can create a new organization (becoming its owner/Employer) or be invited to an existing organization</li>
 </ul>
 <p><strong>Subscription Note:</strong></p>
 <ul>
-  <li>All roles (Candidate, HR, Employer) can <strong>optionally</strong> purchase subscription</li>
+  <li>All users can <strong>optionally</strong> purchase subscription after joining an organization</li>
   <li>Subscription provides premium features but is <strong>not required</strong> for basic functionality</li>
   <li>See UC-03: Purchase Subscription for details</li>
 </ul>
 <p><strong>Alternative Flows:</strong></p>
 <ul>
-  <li>4a. Email already exists: System returns error "Email already registered"</li>
-  <li>4b. Invalid input: System returns validation error with details</li>
+  <li>3a. Email already exists: System returns error "Email already registered"</li>
+  <li>3b. Invalid input: System returns validation error with details</li>
+  <li>3c. User tries to register with <code>super_admin</code> role: System returns error "Super admin accounts cannot be self-registered"</li>
 </ul>
 <div class="diagram">
   <img src="./images/activity/uc01-register-activity.png" alt="UC-01 Activity Diagram">
@@ -208,9 +223,9 @@
   <tr><th>Field</th><th>Description</th></tr>
   <tr><td>Use Case ID</td><td>UC-02</td></tr>
   <tr><td>Name</td><td>Login</td></tr>
-  <tr><td>Actor</td><td>All (Candidate, HR, Employer)</td></tr>
+  <tr><td>Actor</td><td>All (user, super_admin)</td></tr>
   <tr><td>Precondition</td><td>User has registered account</td></tr>
-  <tr><td>Postcondition</td><td>User authenticated, JWT token issued</td></tr>
+  <tr><td>Postcondition</td><td>User authenticated, JWT token issued with system-level role</td></tr>
   <tr><td>Trigger</td><td>User clicks "Login" button</td></tr>
 </table>
 <p><strong>Main Flow:</strong></p>
@@ -220,16 +235,16 @@
   <li>System checks email exists</li>
   <li>System verifies password hash</li>
   <li>System checks account is active</li>
-  <li>System generates JWT token with role claim</li>
-  <li>System returns token and role</li>
-  <li>Frontend redirects to role-specific dashboard</li>
+  <li>System generates JWT token with <strong>system-level role</strong> claim (<code>user</code> or <code>super_admin</code>)</li>
+  <li>System returns token and system role</li>
+  <li>Frontend redirects based on system role; org-level roles loaded when user selects an organization</li>
 </ol>
 <p><strong>AUTH Module Dependency:</strong></p>
 <ul>
   <li>Steps 2-6 (validate, check email, verify password, check active, generate JWT) are handled by <strong>AUTH module</strong> (FR-002)</li>
-  <li>AUTH reads role from auth_users table (stored during registration in UC-01)</li>
-  <li>AUTH returns JWT token with role claim to RECR</li>
-  <li>RECR uses role claim to redirect to appropriate dashboard (Candidate/HR/Employer)</li>
+  <li>AUTH reads system role from auth_users table (stored during registration in UC-01)</li>
+  <li>AUTH returns JWT token with system-level role claim to RECR</li>
+  <li>RECR uses system role claim for initial navigation; org-level roles are loaded on demand when user accesses an organization</li>
 </ul>
 <div class="diagram">
   <img src="./images/activity/uc02-login-activity.png" alt="UC-02 Activity Diagram">
@@ -757,10 +772,10 @@
   <tr>
     <td><span id="fr-001" class="req-id">FR-001</span></td>
     <td>RECR</td>
-    <td>Candidate Registration</td>
+    <td>User Registration</td>
     <td>UC-01</td>
     <td>High</td>
-    <td>Candidates can register accounts with email, password, and basic profile information</td>
+    <td>Users can register accounts with email, password, and basic profile information. Creates user with system role <code>user</code>. Organization-level roles (HR, Candidate, Employer) are assigned within organizations.</td>
   </tr>
   <tr>
     <td><span id="fr-002" class="req-id">FR-002</span></td>
@@ -1142,7 +1157,7 @@
     <th>Description</th>
     <th>Requirement IDs</th>
   </tr>
-  <tr><td>POST</td><td>/recr/auth/register</td><td>Register new user (candidate/employer)</td><td>FR-001, FR-016</td></tr>
+  <tr><td>POST</td><td>/recr/auth/register</td><td>Register new user with system role <code>user</code></td><td>FR-001</td></tr>
   <tr><td>POST</td><td>/recr/auth/login</td><td>Login with email/password</td><td>FR-002</td></tr>
 </table>
 

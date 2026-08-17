@@ -268,15 +268,13 @@
 </div>
 
 <h3>Registration Details</h3>
-<p>The registration endpoint supports two roles for self-registration:</p>
+<p>The registration endpoint assigns the <code>user</code> system role by default:</p>
 <table>
-  <tr><th>Role</th><th>Description</th><th>Self-Registration</th></tr>
-  <tr><td><code>candidate</code></td><td>Job seekers who browse and apply for jobs</td><td>Yes</td></tr>
-  <tr><td><code>employer</code></td><td>Companies that post job listings</td><td>Yes</td></tr>
-  <tr><td><code>hr</code></td><td>Internal recruitment team members</td><td>No (admin-created only)</td></tr>
-  <tr><td><code>admin</code></td><td>System administrators with full access</td><td>No (admin-created only)</td></tr>
+  <tr><th>System Role</th><th>Description</th><th>Self-Registration</th></tr>
+  <tr><td><code>user</code></td><td>Standard user account (default). Can create organizations and receive organization-level roles.</td><td>Yes (default)</td></tr>
+  <tr><td><code>super_admin</code></td><td>System administrators with full access.</td><td>No (admin-created only via <code>POST /admin/create-user</code>)</td></tr>
 </table>
-<p><strong>Note:</strong> HR accounts must be created by an admin via <code>POST /admin/create-user</code>. The registration endpoint only accepts <code>candidate</code> and <code>employer</code> roles.</p>
+<p><strong>Note:</strong> Organization-level roles (HR, Candidate, Employer) are defined per-organization and assigned to members via the organization role system. They are not system-level roles.</p>
 
 <h2>6.3 Password Reset Flow</h2>
 

@@ -146,19 +146,18 @@
   <tr><td>image</td><td>string</td><td>No</td><td>Profile image URL</td></tr>
   <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Account creation timestamp</td></tr>
   <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
-  <tr><td>role</td><td>string</td><td>Yes</td><td>User role: <code>"candidate"</code>, <code>"employer"</code>, <code>"hr"</code>, or <code>"admin"</code></td></tr>
+  <tr><td>role</td><td>string</td><td>Yes</td><td>System role: <code>"user"</code> or <code>"super_admin"</code> (default: <code>"user"</code>)</td></tr>
   <tr><td>banned</td><td>boolean</td><td>No</td><td>Whether user is banned (default: false)</td></tr>
   <tr><td>banReason</td><td>string</td><td>No</td><td>Reason for ban</td></tr>
   <tr><td>banExpires</td><td>datetime</td><td>No</td><td>When ban expires</td></tr>
 </table>
-<p><strong>Role Descriptions:</strong></p>
+<p><strong>System Role Descriptions:</strong></p>
 <table>
   <tr><th>Role</th><th>Description</th><th>Self-Registration</th></tr>
-  <tr><td><code>candidate</code></td><td>Job seekers who browse and apply for jobs</td><td>Yes</td></tr>
-  <tr><td><code>employer</code></td><td>Companies that post job listings</td><td>Yes</td></tr>
-  <tr><td><code>hr</code></td><td>Internal recruitment team members</td><td>No (admin-created only)</td></tr>
-  <tr><td><code>admin</code></td><td>System administrators with full access</td><td>No (admin-created only)</td></tr>
+  <tr><td><code>user</code></td><td>Standard user account (default). Users can create organizations and receive organization-level roles (HR, Candidate, Employer).</td><td>Yes (default)</td></tr>
+  <tr><td><code>super_admin</code></td><td>System administrators with full access. Can manage all users, roles, and organizations.</td><td>No (admin-created only via <code>POST /admin/create-user</code>)</td></tr>
 </table>
+<p><strong>Note:</strong> Organization-level roles (HR, Candidate, Employer) are defined per-organization and assigned to members via the organization role system (see section 6.3). They are not system-level roles.</p>
 
 <h2>3.2 Session</h2>
 <table class="trace-table">
@@ -246,14 +245,13 @@
 <h2 id="section-4-1">4.1 Registration</h2>
 
 <h3 id="fr-001">POST /sign-up/email <em>(Public)</em> <span class="req-id">FR-001</span></h3>
-<p>Register new user with email and password. Supports <code>candidate</code> and <code>employer</code> roles for self-registration.</p>
-<p><strong>Note:</strong> HR accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
+<p>Register new user with email and password. Users are assigned the <code>user</code> system role by default.</p>
+<p><strong>Note:</strong> <code>super_admin</code> accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "name": "John Doe",
   "email": "john@example.com",
-  "password": "securepassword123",
-  "role": "candidate"
+  "password": "securepassword123"
 }</code></pre>
 <p><strong>Request Fields:</strong></p>
 <table class="trace-table">
@@ -261,7 +259,7 @@
   <tr><td>name</td><td>string</td><td>Yes</td><td>User's display name (2-100 chars)</td></tr>
   <tr><td>email</td><td>string</td><td>Yes</td><td>Unique email address</td></tr>
   <tr><td>password</td><td>string</td><td>Yes</td><td>Min 8 chars, at least 1 uppercase, 1 lowercase, 1 number</td></tr>
-  <tr><td>role</td><td>string</td><td>Yes</td><td>Enum: <code>"candidate"</code>, <code>"employer"</code></td></tr>
+  <tr><td>role</td><td>string</td><td>No</td><td>Enum: <code>"user"</code> (default). Only <code>"user"</code> is allowed for self-registration.</td></tr>
 </table>
 <p><strong>Response 200:</strong></p>
 <pre><code>{
@@ -271,14 +269,14 @@
     "name": "John Doe",
     "email": "john@example.com",
     "emailVerified": false,
-    "role": "candidate",
+    "role": "user",
     "createdAt": "2026-08-05T10:30:00Z",
     "updatedAt": "2026-08-05T10:30:00Z"
   }
 }</code></pre>
 <p><strong>Error 400 — Invalid role:</strong></p>
 <pre><code>{
-  "message": "Role must be 'candidate' or 'employer'. HR accounts are created by admin."
+  "message": "Role must be 'user'. super_admin accounts are created by admin."
 }</code></pre>
 
 <h2 id="section-4-2">4.2 Sign In</h2>
@@ -298,7 +296,7 @@
     "name": "John Doe",
     "email": "john@example.com",
     "emailVerified": true,
-    "role": "candidate"
+    "role": "user"
   }
 }</code></pre>
 
@@ -521,15 +519,15 @@
 }</code></pre>
 
 <h3>POST /admin/create-user</h3>
-<p>Create a new user (admin). This is the only way to create HR accounts.</p>
+<p>Create a new user (admin). This is the only way to create <code>super_admin</code> accounts.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "name": "Jane Doe",
   "email": "jane@example.com",
   "password": "tempPassword123",
-  "role": "hr"
+  "role": "super_admin"
 }</code></pre>
-<p><strong>Role Options:</strong> <code>candidate</code>, <code>employer</code>, <code>hr</code>, <code>admin</code></p>
+<p><strong>Role Options:</strong> <code>user</code>, <code>super_admin</code></p>
 
 <h3>POST /admin/update-user</h3>
 <p>Update user details (admin).</p>
@@ -537,7 +535,7 @@
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
   "name": "Jane Updated",
-  "role": "admin"
+  "role": "super_admin"
 }</code></pre>
 
 <h3>POST /admin/remove-user</h3>
@@ -548,13 +546,13 @@
 }</code></pre>
 
 <h3 id="fr-011">POST /admin/set-role <span class="req-id">FR-011</span></h3>
-<p>Set user role.</p>
+<p>Set user system role.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
-  "role": "hr"
+  "role": "super_admin"
 }</code></pre>
-<p><strong>Role Options:</strong> <code>candidate</code>, <code>employer</code>, <code>hr</code>, <code>admin</code></p>
+<p><strong>Role Options:</strong> <code>user</code>, <code>super_admin</code></p>
 
 <h3 id="fr-014">POST /admin/ban-user <span class="req-id">FR-014</span></h3>
 <p>Ban a user.</p>
@@ -684,7 +682,7 @@
 <pre><code>{
   "organizationId": "org-123",
   "userId": "user-456",
-  "role": "admin"
+  "role": "HR"
 }</code></pre>
 
 <h3>POST /organization/leave</h3>
@@ -713,7 +711,7 @@
 <pre><code>{
   "organizationId": "org-123",
   "email": "jane@example.com",
-  "role": "member",
+  "role": "HR",
   "teamId": "team-789"
 }</code></pre>
 
@@ -808,7 +806,15 @@
 
 <!-- 6.3 Organization Roles -->
 <h2>6.3 Organization Roles</h2>
-<p>Organization roles allow each organization to define custom roles with fine-grained permissions scoped to their organization. These roles are independent of system-level roles (candidate, employer, hr, admin).</p>
+<p>Each organization can define its own roles with fine-grained permissions scoped to that organization. These roles are independent of system-level roles (<code>user</code>, <code>super_admin</code>).</p>
+<p><strong>Standard Organization Roles:</strong></p>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Typical Permissions</th></tr>
+  <tr><td><code>Employer</code></td><td>Organization owner/admin who manages the company profile and job postings</td><td>job:create, job:update, job:delete, application:read, member:read, settings:read, settings:update</td></tr>
+  <tr><td><code>HR</code></td><td>Internal recruitment team members who manage hiring workflows</td><td>job:read, job:create, job:update, application:read, application:update, interview:create, interview:update, member:read</td></tr>
+  <tr><td><code>Candidate</code></td><td>Job seekers who apply for positions within the organization</td><td>job:read, application:create, application:read (own only)</td></tr>
+</table>
+<p><strong>Note:</strong> When a user creates an organization, they automatically receive the <code>Employer</code> role in that organization. Additional roles can be created via <code>POST /organization/create-role</code> and assigned to members via invitations or <code>POST /organization/update-member-role</code>.</p>
 
 <h3>Authorization Rules</h3>
 <table>
