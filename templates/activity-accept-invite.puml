@@ -1,0 +1,99 @@
+@startuml Accept Invitation
+title Activity Diagram: Accept Invitation
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam activityBackgroundColor #FFFFFF
+skinparam activityBorderColor #333333
+skinparam activityDiamondBackgroundColor #FFFFCC
+skinparam activityDiamondBorderColor #333333
+skinparam noteBackgroundColor #FFFACD
+skinparam noteBorderColor #999999
+
+|#LightBlue|
+|System|
+start
+
+:Candidate fills registration form
+(name, password);
+
+:Extract token from session/storage;
+
+:Compute SHA-256 hash;
+
+:Lookup invitation by token_hash;
+
+if (Invitation found?) then (no)
+  |#LightRed|
+  :Return 404
+  INVITE_NOT_FOUND;
+  stop
+else (yes)
+  |#LightBlue|
+endif
+
+if (Status is PENDING?) then (no)
+  |#LightRed|
+  :Return 400
+  INVITE_INVALID_STATE;
+  stop
+else (yes)
+  |#LightBlue|
+endif
+
+:Check expiry
+(expired_at < NOW());
+
+if (Expired?) then (yes)
+  |#LightRed|
+  :Return 410
+  INVITE_EXPIRED;
+  stop
+else (no)
+  |#LightBlue|
+endif
+
+:Validate password strength;
+
+if (Password strong enough?) then (no)
+  |#LightRed|
+  :Return 400
+  "Password does not meet requirements";
+  stop
+else (yes)
+  |#LightBlue|
+endif
+
+note right
+  **Security**: Optimistic locking with
+  WHERE status='PENDING' prevents
+  race conditions on concurrent
+  acceptance attempts.
+end note
+
+:UPDATE invitation
+SET status='ACCEPTED',
+    accepted_at=NOW()
+WHERE id=? AND status='PENDING';
+
+if (Rows updated > 0?) then (no)
+  |#LightRed|
+  :Return 409
+  "Race condition - invite already accepted";
+  stop
+else (yes)
+  |#LightBlue|
+endif
+
+:Emit "invitation.accepted" event
+to RabbitMQ;
+
+:AUTH service creates/activates
+user account;
+
+|#LightGreen|
+:Return 200
+{success, invitation_id};
+
+stop
+
+@enduml

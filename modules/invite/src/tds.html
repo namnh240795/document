@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Technical Design Specification - Invitation Management</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Technical Design Specification</h1>
+  <div class="subtitle">Invitation Management Module</div>
+  <span class="module-badge">INVITE</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Invitation Management System</td></tr>
+    <tr><td>Module</td><td>INVITE - Invitation Management</td></tr>
+    <tr><td>Date</td><td>2026-08-17</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Invitation Management SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Architecture</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Architecture Style</a></li>
+        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Component Design</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 Component Diagram</a></li>
+        <li><a href="#section-3-2">3.2 Module Structure</a></li>
+        <li><a href="#section-3-3">3.3 Component to Requirements Mapping</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Data Architecture</a>
+      <ul>
+        <li><a href="#section-4-1">4.1 Database</a></li>
+        <li><a href="#section-4-2">4.2 Data Requirements Resolution</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. API Design</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 Endpoint to Requirements Mapping</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. Integration Flows</a>
+      <ul>
+        <li><a href="#section-6-1">6.1 Send Invitation Flow</a></li>
+        <li><a href="#section-6-2">6.2 Verify Invitation Flow</a></li>
+        <li><a href="#section-6-3">6.3 Accept Invitation Flow</a></li>
+        <li><a href="#section-6-4">6.4 Revoke Invitation Flow</a></li>
+        <li><a href="#section-6-5">6.5 Resend Invitation Flow</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-7">7. Security Design</a></li>
+    <li><a href="#section-8">8. Cross-Module Integration</a></li>
+    <li><a href="#section-9">9. Traceability Summary</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>This document describes the technical design decisions for the <strong>Invitation Management</strong> module.</p>
+
+<h2>1.2 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
+  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-008</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-007</span></td><td>Section 7</td></tr>
+</table>
+
+<!-- 2. ARCHITECTURE -->
+<h1 id="section-2">2. Architecture</h1>
+
+<h2 id="section-2-1">2.1 Architecture Style</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th><th>Resolves</th></tr>
+  <tr><td>Pattern</td><td>NestJS Module (Microservice / Monolith module)</td><td><span class="req-id">NFR-006</span></td></tr>
+  <tr><td>ORM</td><td>Drizzle ORM</td><td>All data requirements</td></tr>
+  <tr><td>Database</td><td>PostgreSQL (invite_db)</td><td><span class="req-id">NFR-006</span></td></tr>
+  <tr><td>Message Broker</td><td>RabbitMQ (async events)</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>Token Strategy</td><td>SHA-256 hash (storage) + raw token (URL)</td><td><span class="req-id">NFR-004</span></td></tr>
+</table>
+
+<h2 id="section-2-2">2.2 Key Design Decisions</h2>
+<table class="trace-table">
+  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
+  <tr>
+    <td>1</td><td>SHA-256 token hashing</td>
+    <td>Raw tokens never stored in DB; prevents token leakage from database compromise</td>
+    <td><span class="req-id">NFR-004</span></td>
+  </tr>
+  <tr>
+    <td>2</td><td>RabbitMQ for email events</td>
+    <td>Decoupled email sending; allows retry and scalability</td>
+    <td><span class="req-id">FR-003</span>, <span class="req-id">NFR-002</span></td>
+  </tr>
+  <tr>
+    <td>3</td><td>Public verify endpoint</td>
+    <td>Allows unauthenticated users to view invitation details before accepting</td>
+    <td><span class="req-id">FR-004</span></td>
+  </tr>
+  <tr>
+    <td>4</td><td>Configurable token expiry</td>
+    <td>7-day default with environment variable override for flexibility</td>
+    <td><span class="req-id">NFR-001</span></td>
+  </tr>
+  <tr>
+    <td>5</td><td>Redis-based rate limiting</td>
+    <td>Fast lookup, TTL support for hourly rate limits</td>
+    <td><span class="req-id">NFR-003</span></td>
+  </tr>
+  <tr>
+    <td>6</td><td>Cross-module event publishing</td>
+    <td>invitation.accepted event triggers AUTH module for account creation</td>
+    <td><span class="req-id">FR-005</span></td>
+  </tr>
+</table>
+
+<!-- 3. COMPONENT DESIGN -->
+<h1 id="section-3">3. Component Design</h1>
+
+<h2 id="section-3-1">3.1 Component Diagram</h2>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="INVITE Component Diagram">
+  <div class="caption">Figure 1: INVITE Module Components</div>
+</div>
+
+<h2 id="section-3-2">3.2 Module Structure</h2>
+<pre><code>src/
+  invite/
+    invite.module.ts
+    invite.controller.ts
+    invite.service.ts
+    invite.guard.ts
+    invite.consumer.ts        # RabbitMQ consumer (if needed)
+    dto/
+      send-invitation.dto.ts
+      accept-invitation.dto.ts
+      verify-invitation.dto.ts
+    entities/
+      invitation.entity.ts
+    utils/
+      token.util.ts           # SHA-256 hash generation</code></pre>
+
+<h2>3.3 Component Responsibilities</h2>
+<table>
+  <tr><th>Component</th><th>Responsibility</th><th>File</th></tr>
+  <tr><td>InviteController</td><td>Handle HTTP requests for all invitation endpoints</td><td>invite.controller.ts</td></tr>
+  <tr><td>InviteService</td><td>Business logic: token generation, validation, status management</td><td>invite.service.ts</td></tr>
+  <tr><td>InviteGuard</td><td>Authorization: validate user has HR/Employer role</td><td>invite.guard.ts</td></tr>
+  <tr><td>InviteConsumer</td><td>Handle RabbitMQ events (if async processing needed)</td><td>invite.consumer.ts</td></tr>
+  <tr><td>TokenUtil</td><td>Generate secure tokens and compute SHA-256 hashes</td><td>utils/token.util.ts</td></tr>
+</table>
+
+<h2 id="section-3-3">3.3 Component to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
+  <tr><td>InviteController</td><td>Route handling, request validation, response formatting</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-008</span></td></tr>
+  <tr><td>InviteService</td><td>Token generation, SHA-256 hashing, status transitions, event publishing</td><td><span class="req-id">FR-002</span>, <span class="req-id">FR-003</span>, <span class="req-id">FR-005</span></td></tr>
+  <tr><td>InviteGuard</td><td>Role-based access control for send/revoke/resend</td><td><span class="req-id">NFR-005</span></td></tr>
+  <tr><td>TokenUtil</td><td>Cryptographic token operations</td><td><span class="req-id">NFR-004</span></td></tr>
+</table>
+
+<!-- 4. DATA ARCHITECTURE -->
+<h1 id="section-4">4. Data Architecture</h1>
+
+<h2 id="section-4-1">4.1 Database</h2>
+<p>Database: <code>invite_db</code> (PostgreSQL)</p>
+<p>Refer to: <a href="database-design.html">Database Design</a></p>
+
+<h2 id="section-4-2">4.2 Data Requirements Resolution</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Send Invitation</td><td>Insert invitation record with token_hash</td><td>invitations</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Generate Token</td><td>SHA-256 hash stored, raw token in URL only</td><td>invitations.token_hash</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Verify Token</td><td>Lookup by token_hash, check status and expiry</td><td>invitations</td></tr>
+  <tr><td><span class="req-id">FR-005</span> Accept Invitation</td><td>Update status to ACCEPTED, set accepted_at</td><td>invitations</td></tr>
+  <tr><td><span class="req-id">FR-006</span> Revoke Invitation</td><td>Update status to REVOKED</td><td>invitations</td></tr>
+  <tr><td><span class="req-id">FR-007</span> List Invitations</td><td>Query with filters (employer_id, status) and pagination</td><td>invitations</td></tr>
+  <tr><td><span class="req-id">FR-008</span> Resend Invitation</td><td>Generate new token_hash, update expired_at</td><td>invitations</td></tr>
+</table>
+
+<!-- 5. API DESIGN -->
+<h1 id="section-5">5. API Design</h1>
+
+<h2 id="section-5-1">5.1 Endpoint to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
+  <tr><td>POST</td><td>/invitations/send</td><td>Send invitation to email</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-003</span></td></tr>
+  <tr><td>GET</td><td>/invitations/verify</td><td>Verify invitation token (public)</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>POST</td><td>/invitations/accept</td><td>Accept invitation</td><td><span class="req-id">FR-005</span></td></tr>
+  <tr><td>GET</td><td>/invitations</td><td>List invitations with filters</td><td><span class="req-id">FR-007</span></td></tr>
+  <tr><td>DELETE</td><td>/invitations/:id</td><td>Revoke invitation</td><td><span class="req-id">FR-006</span></td></tr>
+  <tr><td>POST</td><td>/invitations/:id/resend</td><td>Resend invitation</td><td><span class="req-id">FR-008</span></td></tr>
+</table>
+
+<!-- 6. INTEGRATION FLOWS -->
+<h1 id="section-6">6. Integration Flows</h1>
+
+<h2 id="section-6-1">6.1 Send Invitation Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Send Invitation Activity Diagram">
+  <div class="caption">Figure 2: Send Invitation Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Send Invitation Sequence Diagram">
+  <div class="caption">Figure 3: Send Invitation Sequence Flow</div>
+</div>
+
+<h3>Flow Steps</h3>
+<table>
+  <tr><th>Step</th><th>Component</th><th>Action</th></tr>
+  <tr><td>1</td><td>InviteController</td><td>Receive POST /invitations/send request</td></tr>
+  <tr><td>2</td><td>InviteGuard</td><td>Validate user has HR or Employer role</td></tr>
+  <tr><td>3</td><td>InviteService</td><td>Validate input (email, role, no self-invite)</td></tr>
+  <tr><td>4</td><td>TokenUtil</td><td>Generate secure random token</td></tr>
+  <tr><td>5</td><td>TokenUtil</td><td>Compute SHA-256 hash of token</td></tr>
+  <tr><td>6</td><td>InviteService</td><td>Insert invitation record with token_hash</td></tr>
+  <tr><td>7</td><td>InviteService</td><td>Publish invitation.created event to RabbitMQ</td></tr>
+  <tr><td>8</td><td>EMAIL Module</td><td>Send invitation email with raw token in URL</td></tr>
+</table>
+
+<h2 id="section-6-2">6.2 Verify Invitation Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Verify Invitation Activity Diagram">
+  <div class="caption">Figure 4: Verify Invitation Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Verify Invitation Sequence Diagram">
+  <div class="caption">Figure 5: Verify Invitation Sequence Flow</div>
+</div>
+
+<h3>Flow Steps</h3>
+<table>
+  <tr><th>Step</th><th>Component</th><th>Action</th></tr>
+  <tr><td>1</td><td>Frontend</td><td>Extract raw token from URL query parameter</td></tr>
+  <tr><td>2</td><td>InviteController</td><td>Receive GET /invitations/verify?token={raw_token}</td></tr>
+  <tr><td>3</td><td>TokenUtil</td><td>Compute SHA-256 hash of provided token</td></tr>
+  <tr><td>4</td><td>InviteService</td><td>Lookup invitation by token_hash</td></tr>
+  <tr><td>5</td><td>InviteService</td><td>Validate status is PENDING and not expired</td></tr>
+  <tr><td>6</td><td>InviteController</td><td>Return invitation details (email, role, employer_id)</td></tr>
+</table>
+
+<h2 id="section-6-3">6.3 Accept Invitation Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Accept Invitation Activity Diagram">
+  <div class="caption">Figure 6: Accept Invitation Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Accept Invitation Sequence Diagram">
+  <div class="caption">Figure 7: Accept Invitation Sequence Flow</div>
+</div>
+
+<h3>Flow Steps</h3>
+<table>
+  <tr><th>Step</th><th>Component</th><th>Action</th></tr>
+  <tr><td>1</td><td>Frontend</td><td>Candidate fills registration form</td></tr>
+  <tr><td>2</td><td>InviteController</td><td>Receive POST /invitations/accept with token and user data</td></tr>
+  <tr><td>3</td><td>InviteService</td><td>Validate logged-in user email matches invitation</td></tr>
+  <tr><td>4</td><td>InviteService</td><td>Validate invitation is PENDING and not expired</td></tr>
+  <tr><td>5</td><td>InviteService</td><td>Update status to ACCEPTED, set accepted_at</td></tr>
+  <tr><td>6</td><td>InviteService</td><td>Publish invitation.accepted event to RabbitMQ</td></tr>
+  <tr><td>7</td><td>AUTH Module</td><td>Create/activate user account and assign organization role</td></tr>
+</table>
+
+<h2 id="section-6-4">6.4 Revoke Invitation Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Revoke Invitation Activity Diagram">
+  <div class="caption">Figure 8: Revoke Invitation Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Revoke Invitation Sequence Diagram">
+  <div class="caption">Figure 9: Revoke Invitation Sequence Flow</div>
+</div>
+
+<h3>Flow Steps</h3>
+<table>
+  <tr><th>Step</th><th>Component</th><th>Action</th></tr>
+  <tr><td>1</td><td>InviteController</td><td>Receive DELETE /invitations/:id</td></tr>
+  <tr><td>2</td><td>InviteGuard</td><td>Validate user is inviter or admin</td></tr>
+  <tr><td>3</td><td>InviteService</td><td>Validate invitation is PENDING</td></tr>
+  <tr><td>4</td><td>InviteService</td><td>Update status to REVOKED</td></tr>
+  <tr><td>5</td><td>InviteController</td><td>Return success response</td></tr>
+</table>
+
+<h2 id="section-6-5">6.5 Resend Invitation Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Resend Invitation Activity Diagram">
+  <div class="caption">Figure 10: Resend Invitation Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Resend Invitation Sequence Diagram">
+  <div class="caption">Figure 11: Resend Invitation Sequence Flow</div>
+</div>
+
+<h3>Flow Steps</h3>
+<table>
+  <tr><th>Step</th><th>Component</th><th>Action</th></tr>
+  <tr><td>1</td><td>InviteController</td><td>Receive POST /invitations/:id/resend</td></tr>
+  <tr><td>2</td><td>InviteGuard</td><td>Validate user is inviter or admin</td></tr>
+  <tr><td>3</td><td>InviteService</td><td>Validate invitation is EXPIRED or REVOKED</td></tr>
+  <tr><td>4</td><td>TokenUtil</td><td>Generate new secure token</td></tr>
+  <tr><td>5</td><td>TokenUtil</td><td>Compute new SHA-256 hash</td></tr>
+  <tr><td>6</td><td>InviteService</td><td>Update token_hash, status to PENDING, set new expired_at</td></tr>
+  <tr><td>7</td><td>InviteService</td><td>Publish invitation.created event to RabbitMQ</td></tr>
+  <tr><td>8</td><td>EMAIL Module</td><td>Send new invitation email</td></tr>
+</table>
+
+<!-- 7. SECURITY -->
+<h1 id="section-7">7. Security Design</h1>
+
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
+  <tr>
+    <td><span class="req-id">NFR-001</span> Token expiry</td>
+    <td>Configurable expiry with 7-day default</td>
+    <td>Environment variable <code>INVITE_TOKEN_EXPIRY_DAYS=7</code></td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-003</span> Rate limiting</td>
+    <td>Redis-based rate limiter</td>
+    <td>10 invitations per hour per user</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-004</span> Token storage</td>
+    <td>SHA-256 hash only in database</td>
+    <td><code>crypto.createHash('sha256').update(rawToken).digest('hex')</code></td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-005</span> Ownership validation</td>
+    <td>Authorization check on revoke/resend</td>
+    <td>InviteGuard validates inviter_id or admin role</td>
+  </tr>
+</table>
+
+<h2>7.1 Token Security</h2>
+<table>
+  <tr><th>Aspect</th><th>Implementation</th></tr>
+  <tr><td>Token generation</td><td><code>crypto.randomBytes(32).toString('base64url')</code></td></tr>
+  <tr><td>Token storage</td><td>SHA-256 hash only (raw token never in DB)</td></tr>
+  <tr><td>Token delivery</td><td>Raw token in URL: <code>https://app.example.com/invite?token={raw_token}</code></td></tr>
+  <tr><td>Token verification</td><td>Compute hash of provided token, lookup by token_hash</td></tr>
+  <tr><td>Token uniqueness</td><td>UNIQUE constraint on token_hash column</td></tr>
+</table>
+
+<!-- 8. CROSS-MODULE INTEGRATION -->
+<h1 id="section-8">8. Cross-Module Integration</h1>
+
+<h2>8.1 Integration Summary</h2>
+<table>
+  <tr><th>Target Module</th><th>Integration Type</th><th>Direction</th><th>Description</th></tr>
+  <tr><td>AUTH</td><td>Sync (API Call)</td><td>INVITE → AUTH</td><td>Create/activate user account on invitation acceptance</td></tr>
+  <tr><td>EMAIL</td><td>Async (RabbitMQ)</td><td>INVITE → EMAIL</td><td>Send invitation email notifications</td></tr>
+  <tr><td>RECR/Organization</td><td>Sync (API Call)</td><td>INVITE ← RECR</td><td>Employer context and organization validation</td></tr>
+</table>
+
+<h2>8.2 Event Publishing</h2>
+<table>
+  <tr><th>Event</th><th>Publisher</th><th>Consumer</th><th>Payload</th></tr>
+  <tr><td>invitation.created</td><td>INVITE</td><td>EMAIL</td><td>{ invitation_id, email, token, role, employer_id, message }</td></tr>
+  <tr><td>invitation.accepted</td><td>INVITE</td><td>AUTH</td><td>{ invitation_id, email, role, employer_id, user_id }</td></tr>
+</table>
+
+<h2>8.3 Event Flow Diagram</h2>
+<div class="diagram">
+  <img src="../../images/sequence/sequence-invite.png" alt="Event Flow Diagram">
+  <div class="caption">Figure 12: INVITE Module Event Flow</div>
+</div>
+
+<h2>8.4 AUTH Module Integration</h2>
+<p>On invitation acceptance, INVITE module publishes <code>invitation.accepted</code> event. AUTH module consumes this event to:</p>
+<table>
+  <tr><th>Action</th><th>Details</th></tr>
+  <tr><td>Create user account</td><td>If user does not exist, create with provided name and email</td></tr>
+  <tr><td>Activate account</td><td>If user exists, mark as active</td></tr>
+  <tr><td>Assign organization role</td><td>Add user to organization with specified role (HR, Candidate, Employer)</td></tr>
+  <tr><td>Set email verified</td><td>Mark email as verified (invitation implies email ownership)</td></tr>
+</table>
+
+<!-- 9. TRACEABILITY -->
+<h1 id="section-9">9. Traceability Summary</h1>
+
+<table class="trace-table">
+  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
+  <tr><td><span class="req-id">FR-001</span></td><td>Send Invitation</td><td>3.2, 5.1, 6.1</td><td>InviteController + POST /invitations/send</td></tr>
+  <tr><td><span class="req-id">FR-002</span></td><td>Generate Token</td><td>2.2, 3.2, 7.1</td><td>TokenUtil with SHA-256 hashing</td></tr>
+  <tr><td><span class="req-id">FR-003</span></td><td>Send Email Event</td><td>2.2, 6.1, 8.2</td><td>RabbitMQ event to EMAIL module</td></tr>
+  <tr><td><span class="req-id">FR-004</span></td><td>Verify Token</td><td>5.1, 6.2</td><td>GET /invitations/verify (public)</td></tr>
+  <tr><td><span class="req-id">FR-005</span></td><td>Accept Invitation</td><td>5.1, 6.3, 8.4</td><td>POST /invitations/accept + event to AUTH</td></tr>
+  <tr><td><span class="req-id">FR-006</span></td><td>Revoke Invitation</td><td>5.1, 6.4</td><td>DELETE /invitations/:id</td></tr>
+  <tr><td><span class="req-id">FR-007</span></td><td>List Invitations</td><td>5.1</td><td>GET /invitations with filters</td></tr>
+  <tr><td><span class="req-id">FR-008</span></td><td>Resend Invitation</td><td>5.1, 6.5</td><td>POST /invitations/:id/resend</td></tr>
+  <tr><td><span class="req-id">NFR-001</span></td><td>Token expiry (7 days)</td><td>2.2, 7</td><td>Configurable via env variable</td></tr>
+  <tr><td><span class="req-id">NFR-002</span></td><td>Email within 5 seconds</td><td>2.2, 6.1</td><td>Async RabbitMQ event</td></tr>
+  <tr><td><span class="req-id">NFR-003</span></td><td>Rate limiting (10/hour)</td><td>7</td><td>Redis-based rate limiter</td></tr>
+  <tr><td><span class="req-id">NFR-004</span></td><td>SHA-256 token storage</td><td>2.2, 7.1</td><td>crypto.createHash('sha256')</td></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>Ownership validation</td><td>3.2, 7</td><td>InviteGuard authorization check</td></tr>
+</table>
+
+</body>
+</html>

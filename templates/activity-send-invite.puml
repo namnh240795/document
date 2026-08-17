@@ -1,0 +1,78 @@
+@startuml Send Invitation
+title Activity Diagram: Send Invitation
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam activityBackgroundColor #FFFFFF
+skinparam activityBorderColor #333333
+skinparam activityDiamondBackgroundColor #FFFFCC
+skinparam activityDiamondBorderColor #333333
+skinparam noteBackgroundColor #FFFACD
+skinparam noteBorderColor #999999
+
+|#LightBlue|
+|System|
+start
+
+:HR fills invite form
+(email, role);
+
+:Validate email format;
+
+if (Email valid?) then (no)
+  |#LightRed|
+  :Show validation error
+  "Invalid email format";
+  stop
+else (yes)
+  |#LightBlue|
+endif
+
+:Validate role
+(HR / Candidate / Employer);
+
+if (Role valid?) then (no)
+  |#LightRed|
+  :Show validation error
+  "Invalid role";
+  stop
+else (yes)
+  |#LightBlue|
+endif
+
+:Check no pending invite
+for same email + employer;
+
+if (Invite exists?) then (yes)
+  |#LightRed|
+  :Return 409 Conflict
+  "Pending invite already exists";
+  stop
+else (no)
+  |#LightBlue|
+endif
+
+note right
+  **Security**: Token is never stored
+  in plaintext. Only SHA-256 hash
+  is persisted in the database.
+end note
+
+:Generate random token;
+
+:Compute SHA-256 hash of token;
+
+:INSERT invitation
+(token_hash, status=PENDING);
+
+:Emit "invitation.created" event
+to RabbitMQ;
+
+:EMAIL service sends email
+with invite link;
+
+|#LightGreen|
+:Return 201 Created;
+
+stop
+
+@enduml

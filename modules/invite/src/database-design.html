@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Design - Invitation Management</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Database Design Document</h1>
+  <div class="subtitle">Invitation Management Module</div>
+  <span class="module-badge">INVITE</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Invitation Management System</td></tr>
+    <tr><td>Module</td><td>INVITE - Invitation Management</td></tr>
+    <tr><td>Database</td><td>invite_db</td></tr>
+    <tr><td>ORM</td><td>Drizzle ORM</td></tr>
+    <tr><td>Date</td><td>2026-08-17</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">Invitation Management SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Schema Design</a></li>
+    <li><a href="#section-3">3. Indexes</a></li>
+    <li><a href="#section-4">4. Migrations</a></li>
+    <li><a href="#section-5">5. Data Dictionary</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>This document defines the database design for the <strong>Invitation Management</strong> module (database: <code>invite_db</code>).</p>
+
+<h2>1.2 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Database Solution</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Send Invitation</td><td>invitations table</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Generate Token</td><td>invitations.token_hash column</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Verify Token</td><td>invitations table (token_hash lookup)</td></tr>
+  <tr><td><span class="req-id">FR-005</span> Accept Invitation</td><td>invitations.status, invitations.accepted_at</td></tr>
+  <tr><td><span class="req-id">FR-006</span> Revoke Invitation</td><td>invitations.status update</td></tr>
+  <tr><td><span class="req-id">FR-007</span> List Invitations</td><td>invitations table with indexes</td></tr>
+  <tr><td><span class="req-id">FR-008</span> Resend Invitation</td><td>invitations.token_hash, invitations.expired_at update</td></tr>
+</table>
+
+<h2>1.3 ERD Diagram</h2>
+<div class="diagram">
+  <img src="../../images/erd/erd-invite.png" alt="ERD Diagram">
+  <div class="caption">Figure 1: Invitation Management ERD</div>
+</div>
+
+<!-- 2. SCHEMA DESIGN -->
+<h1 id="section-2">2. Schema Design</h1>
+
+<h2>2.1 Database Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Database</td><td><code>invite_db</code></td></tr>
+  <tr><td>Table naming</td><td><code>invitations</code> (single table for this module)</td></tr>
+  <tr><td>Primary keys</td><td>UUID (via gen_random_uuid())</td></tr>
+  <tr><td>Timestamps</td><td>created_at, updated_at with NOW() default</td></tr>
+  <tr><td>Token storage</td><td>SHA-256 hash (raw token never stored)</td></tr>
+</table>
+
+<h2>2.2 Table: <code>invitations</code></h2>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Default</th><th>Description</th></tr>
+  <tr><td>id</td><td>uuid</td><td>NO</td><td>gen_random_uuid()</td><td>Primary key</td></tr>
+  <tr><td>email</td><td>varchar(255)</td><td>NO</td><td>-</td><td>Invitee email address</td></tr>
+  <tr><td>token_hash</td><td>varchar(64)</td><td>NO</td><td>-</td><td>SHA-256 hash of raw invitation token</td></tr>
+  <tr><td>role</td><td>varchar(50)</td><td>NO</td><td>-</td><td>Organization role: HR, Candidate, Employer</td></tr>
+  <tr><td>inviter_id</td><td>uuid</td><td>NO</td><td>-</td><td>FK to auth_users(id) - user who sent invitation</td></tr>
+  <tr><td>employer_id</td><td>uuid</td><td>YES</td><td>NULL</td><td>FK to sys_employers(id) - nullable for system-level invites</td></tr>
+  <tr><td>status</td><td>varchar(20)</td><td>NO</td><td>'PENDING'</td><td>Invitation status</td></tr>
+  <tr><td>expired_at</td><td>timestamp</td><td>NO</td><td>-</td><td>Token expiry timestamp</td></tr>
+  <tr><td>accepted_at</td><td>timestamp</td><td>YES</td><td>NULL</td><td>Timestamp when invitation was accepted</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Creation time</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Last update time</td></tr>
+</table>
+
+<pre><code>CREATE TABLE invitations (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email           VARCHAR(255) NOT NULL,
+  token_hash      VARCHAR(64) NOT NULL,
+  role            VARCHAR(50) NOT NULL,
+  inviter_id      UUID NOT NULL REFERENCES auth_users(id),
+  employer_id     UUID REFERENCES sys_employers(id),
+  status          VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+  expired_at      TIMESTAMP NOT NULL,
+  accepted_at     TIMESTAMP,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT invitations_status_check CHECK (status IN ('PENDING', 'ACCEPTED', 'EXPIRED', 'REVOKED')),
+  CONSTRAINT invitations_token_hash_unique UNIQUE (token_hash)
+);</code></pre>
+
+<h2>2.3 Status Enum Values</h2>
+<table>
+  <tr><th>Status</th><th>Description</th><th>Transitions</th></tr>
+  <tr><td><code>PENDING</code></td><td>Invitation sent, awaiting acceptance</td><td>ACCEPTED, EXPIRED, REVOKED</td></tr>
+  <tr><td><code>ACCEPTED</code></td><td>Invitation accepted by invitee</td><td>Terminal state</td></tr>
+  <tr><td><code>EXPIRED</code></td><td>Token expired before acceptance</td><td>PENDING (via resend)</td></tr>
+  <tr><td><code>REVOKED</code></td><td>Cancelled by inviter or admin</td><td>PENDING (via resend)</td></tr>
+</table>
+
+<h2>2.4 Foreign Key Relationships</h2>
+<table>
+  <tr><th>Constraint</th><th>Column</th><th>References</th><th>On Delete</th></tr>
+  <tr><td>invitations_inviter_id_fk</td><td>inviter_id</td><td>auth_users(id)</td><td>CASCADE</td></tr>
+  <tr><td>invitations_employer_id_fk</td><td>employer_id</td><td>sys_employers(id)</td><td>SET NULL</td></tr>
+</table>
+
+<!-- 3. INDEXES -->
+<h1 id="section-3">3. Indexes</h1>
+
+<pre><code>-- invitations
+CREATE INDEX invitations_email_idx ON invitations(email);
+CREATE INDEX invitations_token_hash_idx ON invitations(token_hash);
+CREATE INDEX invitations_status_idx ON invitations(status);
+CREATE INDEX invitations_inviter_id_idx ON invitations(inviter_id);
+CREATE INDEX invitations_employer_id_idx ON invitations(employer_id);</code></pre>
+
+<h2>3.1 Index Descriptions</h2>
+<table>
+  <tr><th>Index Name</th><th>Column(s)</th><th>Purpose</th></tr>
+  <tr><td>invitations_email_idx</td><td>email</td><td>Lookup invitations by invitee email</td></tr>
+  <tr><td>invitations_token_hash_idx</td><td>token_hash</td><td>Token verification lookup (public endpoint)</td></tr>
+  <tr><td>invitations_status_idx</td><td>status</td><td>Filter invitations by status (PENDING, EXPIRED, etc.)</td></tr>
+  <tr><td>invitations_inviter_id_idx</td><td>inviter_id</td><td>List invitations sent by a specific user</td></tr>
+  <tr><td>invitations_employer_id_idx</td><td>employer_id</td><td>List invitations for a specific organization</td></tr>
+</table>
+
+<!-- 4. MIGRATIONS -->
+<h1 id="section-4">4. Migrations</h1>
+
+<h2>4.1 Migration Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Tool</td><td>Drizzle ORM (drizzle-kit)</td></tr>
+  <tr><td>Database</td><td>invite_db</td></tr>
+  <tr><td>Rollback</td><td>Required for every migration</td></tr>
+</table>
+
+<h2>4.2 Migration Order</h2>
+<table>
+  <tr><th>Order</th><th>Migration</th><th>Description</th><th>Dependencies</th></tr>
+  <tr><td>1</td><td>001_create_invitations</td><td>Create invitations table</td><td>auth_users, sys_employers (must exist first)</td></tr>
+  <tr><td>2</td><td>002_create_indexes</td><td>Create all indexes</td><td>001_create_invitations</td></tr>
+</table>
+
+<h2>4.3 Migration Dependencies</h2>
+<table>
+  <tr><th>Module</th><th>Table</th><th>Required For</th></tr>
+  <tr><td>AUTH</td><td>auth_users</td><td>invitations.inviter_id FK</td></tr>
+  <tr><td>SYS</td><td>sys_employers</td><td>invitations.employer_id FK</td></tr>
+</table>
+
+<!-- 5. DATA DICTIONARY -->
+<h1 id="section-5">5. Data Dictionary</h1>
+
+<table class="trace-table">
+  <tr><th>Table</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
+  <tr><td>invitations</td><td>Organization invitations with token-based verification</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-004</span>, <span class="req-id">FR-005</span>, <span class="req-id">FR-006</span>, <span class="req-id">FR-007</span></td><td>5,000</td></tr>
+</table>
+
+<h2>5.1 Estimated Data Volume</h2>
+<table>
+  <tr><th>Scenario</th><th>Estimated Volume (Y1)</th><th>Growth Rate</th></tr>
+  <tr><td>Total invitations sent</td><td>5,000</td><td>Monthly</td></tr>
+  <tr><td>PENDING invitations</td><td>500</td><td>Transient (7-day expiry)</td></tr>
+  <tr><td>ACCEPTED invitations</td><td>3,500</td><td>Cumulative</td></tr>
+  <tr><td>EXPIRED invitations</td><td>1,000</td><td>Cumulative</td></tr>
+  <tr><td>REVOKED invitations</td><td>500</td><td>Cumulative</td></tr>
+</table>
+
+<h2>5.2 Token Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Token format</td><td>Random 32-byte string (base64url encoded)</td></tr>
+  <tr><td>Storage</td><td>SHA-256 hash only (raw token never stored)</td></tr>
+  <tr><td>URL delivery</td><td>Raw token in query parameter: <code>?token={raw_token}</code></td></tr>
+  <tr><td>Expiry</td><td>7 days (configurable via environment variable)</td></tr>
+  <tr><td>Uniqueness</td><td>UNIQUE constraint on token_hash column</td></tr>
+</table>
+
+</body>
+</html>

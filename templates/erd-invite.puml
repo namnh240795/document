@@ -1,0 +1,49 @@
+@startuml
+' ============================================================
+' ERD: Invitation Database (invite_db)
+' Modules: INVITE
+' Tables: invitations
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+
+title Invitation Database (invite_db)
+
+entity "invitations" as invitations {
+  * id : uuid <<PK>>
+  --
+  * email : varchar(255)
+  * token_hash : varchar(64) <<UNIQUE>>
+  * role : varchar(50)
+  * inviter_id : uuid <<FK>>
+  employer_id : uuid <<FK>>
+  * status : varchar(20) DEFAULT 'PENDING'
+  * expired_at : timestamp
+  accepted_at : timestamp
+  * created_at : timestamp
+  * updated_at : timestamp
+}
+
+entity "auth_users" as users {
+  * id : uuid <<PK>>
+  --
+  * email : varchar(255)
+  * name : varchar(100)
+}
+
+entity "sys_employers" as employers {
+  * id : uuid <<PK>>
+  --
+  * name : varchar(255)
+}
+
+' --- Relationships ---
+users ||--o{ invitations : "sends"
+employers ||--o{ invitations : "belongs to"
+
+@enduml

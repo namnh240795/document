@@ -1,0 +1,85 @@
+@startuml Verify Invitation
+title Activity Diagram: Verify Invitation
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam activityBackgroundColor #FFFFFF
+skinparam activityBorderColor #333333
+skinparam activityDiamondBackgroundColor #FFFFCC
+skinparam activityDiamondBorderColor #333333
+skinparam noteBackgroundColor #FFFACD
+skinparam noteBorderColor #999999
+
+|#LightBlue|
+|System|
+start
+
+:Candidate clicks link in email;
+
+:Extract token from URL;
+
+:Compute SHA-256 hash of token;
+
+:Lookup invitation by token_hash;
+
+if (Invitation found?) then (no)
+  |#LightRed|
+  :Return 404
+  INVITE_NOT_FOUND;
+  stop
+else (yes)
+  |#LightBlue|
+endif
+
+:Check invitation status;
+
+switch (Status?)
+case (ACCEPTED)
+  |#LightRed|
+  :Return 400
+  INVITE_ALREADY_USED;
+  stop
+case (REVOKED)
+  |#LightRed|
+  :Return 400
+  INVITE_REVOKED;
+  stop
+case (EXPIRED)
+  |#LightRed|
+  :Return 400
+  INVITE_EXPIRED;
+  stop
+endswitch
+
+:Check expiry
+(expired_at < NOW());
+
+if (Expired?) then (yes)
+  :Update status to EXPIRED;
+  |#LightRed|
+  :Return 410
+  INVITE_EXPIRED;
+  stop
+else (no)
+  |#LightBlue|
+endif
+
+note right
+  **Security**: Only PENDING and
+  non-expired invitations are
+  considered valid for verification.
+end note
+
+if (Status is PENDING
+and not expired?) then (yes)
+  |#LightGreen|
+  :Return 200
+  {email, role, employerId};
+  stop
+else (no)
+  |#LightRed|
+  :Return 400
+  INVITE_INVALID_STATE;
+  stop
+endif
+
+@enduml

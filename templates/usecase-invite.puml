@@ -1,0 +1,47 @@
+@startuml
+' ============================================================
+' Use Case Diagram: INVITE Module
+' ============================================================
+
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+title INVITE Module - Use Case Diagram
+
+actor "HR / Employer" as HR
+actor "Candidate" as CAND
+
+rectangle "INVITE Module" {
+  usecase "UC-01: Send Invitation" as UC1
+  usecase "UC-02: Verify Invitation Link" as UC2
+  usecase "UC-03: Accept Invitation" as UC3
+  usecase "UC-04: Revoke Invitation" as UC4
+  usecase "UC-05: List Invitations" as UC5
+  usecase "UC-06: Resend Invitation" as UC6
+}
+
+rectangle "External Systems" {
+  usecase "Send Email" as EMAIL
+  usecase "Create User Account" as AUTH
+}
+
+' HR/Employer interactions
+HR --> UC1
+HR --> UC4
+HR --> UC5
+HR --> UC6
+
+' Candidate interactions
+CAND --> UC2
+CAND --> UC3
+
+' System interactions
+UC1 ..> EMAIL : <<triggers>>
+UC3 ..> AUTH : <<triggers>>
+
+' Include/Extend relationships
+UC1 ..> UC2 : <<include>>
+UC6 ..> UC1 : <<extend>>
+
+@enduml

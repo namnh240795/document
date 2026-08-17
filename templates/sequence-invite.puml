@@ -1,0 +1,182 @@
+@startuml sequence-invite
+
+!define THEME_COLOR #2E86AB
+
+title INVITE Module Flow\nSend Invitation → Email → Verify → Accept
+
+skinparam backgroundColor #FAFAFA
+skinparam sequenceArrowThickness 2
+skinparam sequenceParticipantPadding 20
+skinparam sequenceBoxBorderColor #CCCCCC
+
+skinparam sequence {
+    ActorBorderColor #2E86AB
+    ActorBackgroundColor #D6EAF8
+    ParticipantBorderColor #A23B72
+    ParticipantBackgroundColor #F5E6CC
+    DatabaseBorderColor #1B998B
+    DatabaseBackgroundColor #D4EDDA
+    QueueBorderColor #F18F01
+    QueueBackgroundColor #FFF3CD
+    ArrowColor #333333
+    LifeLineBorderColor #999999
+    ArrowFontSize 11
+    ParticipantFontSize 13
+    ParticipantFontSize 12
+}
+
+' ============================================================
+' Participants
+' ============================================================
+actor "HR / Employer" as HR #2E86AB
+participant "Frontend\n(Browser)" as FE #C84B31
+participant "RECR / INVITE\nService (NestJS)" as INVITE #A23B72
+database "Database\n(PostgreSQL)" as DB #1B998B
+queue "RabbitMQ" as MQ #F18F01
+participant "EMAIL\nService" as EMAIL #E8AA14
+actor "Candidate" as CAND #5B8C5A
+participant "AUTH\nService" as AUTH #6A4C93
+
+' ============================================================
+' Phase 1: Send Invitation
+' ============================================================
+== Phase 1: Send Invitation ==
+
+HR -> FE : Fill invite form\n(email, role)
+FE -> INVITE : POST /invitations/send\n{email, role, employerId}
+
+note right of INVITE
+  **Validation:**
+  - Check email format
+  - Check role is valid enum
+  - Check employer exists
+  - Check no duplicate pending invite
+end note
+
+INVITE -> DB : INSERT INTO invitations\n(token_hash, email, role,\nemployer_id, status = 'PENDING',\nexpires_at)
+note right of DB
+  Token is generated as a
+  random UUID / crypto token.
+  Only the SHA-256 **hash**
+  is stored in the database.
+end note
+
+INVITE -> MQ : Emit "invitation.created"\n{invitationId, email,\ntoken, employerId}
+
+MQ -> EMAIL : Consume event
+
+EMAIL -> CAND : Send email with\ninvite link:\n/invite?token={raw_token}
+
+note over CAND
+  Email contains a deep link
+  with the **raw token** in the
+  query string. The token is
+  never stored in plaintext.
+end note
+
+' ============================================================
+' Phase 2: Verify Token
+' ============================================================
+== Phase 2: Verify Token ==
+
+CAND -> FE : Click link in email\n/invite?token={raw_token}
+
+FE -> INVITE : GET /invitations/verify?token={raw_token}
+
+note right of INVITE
+  **Security:**
+  The service hashes the raw
+  token with SHA-256 and looks
+  up the invitation by
+  `token_hash` — never by
+  the raw token directly.
+end note
+
+INVITE -> INVITE : hash(token) → token_hash\nlookup by token_hash
+
+INVITE -> DB : SELECT * FROM invitations\nWHERE token_hash = ?\nAND status = 'PENDING'
+
+alt Invitation is valid and not expired
+    INVITE --> FE : 200 OK\n{email, role, employerId,\ninvitationId}
+else Invitation expired
+    INVITE --> FE : 410 Gone\n"Invitation has expired"
+else Invitation not found
+    INVITE --> FE : 404 Not Found\n"Invitation not found"
+else Invitation already accepted
+    INVITE --> FE : 400 Bad Request\n"Invitation already accepted"
+end
+
+' ============================================================
+' Phase 3: Accept Invitation
+' ============================================================
+== Phase 3: Accept Invitation ==
+
+CAND -> FE : Fill registration form\n(name, password, ...)
+
+FE -> INVITE : POST /invitations/accept\n{invitationId, name, password}
+
+note right of INVITE
+  **Pre-checks:**
+  1. Verify invitation status
+     is still PENDING
+  2. Re-verify token hasn't
+     expired
+  3. Validate password strength
+end note
+
+INVITE -> DB : UPDATE invitations\nSET status = 'ACCEPTED',\naccepted_at = NOW()\nWHERE id = ?\nAND status = 'PENDING'
+
+note right of DB
+  Uses a conditional UPDATE
+  (WHERE status = 'PENDING')
+  to prevent race conditions.
+  Returns 0 rows if already
+  accepted.
+end note
+
+INVITE -> MQ : Emit "invitation.accepted"\n{invitationId, email, name,\nemployerId, role}
+
+MQ -> AUTH : Consume event
+
+AUTH -> DB : INSERT/UPDATE users\nSET email = ?, name = ?,\nrole = ?, employer_id = ?,\nstatus = 'ACTIVE'
+
+note right of AUTH
+  AUTH service creates or
+  activates the user account.
+  If user already exists,
+  it may merge or reject
+  depending on business rules.
+end note
+
+AUTH --> MQ : Ack (success)
+
+INVITE --> FE : 200 OK\n{success: true,\nmessage: "Account created"}
+
+' ============================================================
+' Legend
+' ============================================================
+legend bottom left
+  |= Symbol |= Description |
+  | **PENDING** | Invitation created, awaiting candidate action |
+  | **ACCEPTED** | Candidate accepted; user account activated |
+  | **EXPIRED** | Token TTL exceeded (checked on verify/accept) |
+  | **REVOKED** | HR cancelled the invitation before acceptance |
+  ----
+  **Security Notes:**
+  - Raw token is never stored; only SHA-256 hash is persisted
+  - Verify endpoint checks status = PENDING and expiry
+  - Accept uses conditional UPDATE to prevent race conditions
+  - Events are idempotent; AUTH service deduplicates by invitationId
+  ----
+  **Color Legend:**
+  <back:#2E86AB>  </back> HR/Employer
+  <back:#C84B31>  </back> Frontend
+  <back:#A23B72>  </back> INVITE Service
+  <back:#1B998B>  </back> Database
+  <back:#F18F01>  </back> RabbitMQ
+  <back:#E8AA14>  </back> EMAIL Service
+  <back:#5B8C5A>  </back> Candidate
+  <back:#6A4C93>  </back> AUTH Service
+endlegend
+
+@enduml
