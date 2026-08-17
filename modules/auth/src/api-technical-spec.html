@@ -146,10 +146,18 @@
   <tr><td>image</td><td>string</td><td>No</td><td>Profile image URL</td></tr>
   <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Account creation timestamp</td></tr>
   <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
-  <tr><td>role</td><td>string</td><td>No</td><td>User role (default: "user")</td></tr>
+  <tr><td>role</td><td>string</td><td>Yes</td><td>User role: <code>"candidate"</code>, <code>"employer"</code>, <code>"hr"</code>, or <code>"admin"</code></td></tr>
   <tr><td>banned</td><td>boolean</td><td>No</td><td>Whether user is banned (default: false)</td></tr>
   <tr><td>banReason</td><td>string</td><td>No</td><td>Reason for ban</td></tr>
   <tr><td>banExpires</td><td>datetime</td><td>No</td><td>When ban expires</td></tr>
+</table>
+<p><strong>Role Descriptions:</strong></p>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Self-Registration</th></tr>
+  <tr><td><code>candidate</code></td><td>Job seekers who browse and apply for jobs</td><td>Yes</td></tr>
+  <tr><td><code>employer</code></td><td>Companies that post job listings</td><td>Yes</td></tr>
+  <tr><td><code>hr</code></td><td>Internal recruitment team members</td><td>No (admin-created only)</td></tr>
+  <tr><td><code>admin</code></td><td>System administrators with full access</td><td>No (admin-created only)</td></tr>
 </table>
 
 <h2>3.2 Session</h2>
@@ -238,13 +246,23 @@
 <h2 id="section-4-1">4.1 Registration</h2>
 
 <h3 id="fr-001">POST /sign-up/email <em>(Public)</em> <span class="req-id">FR-001</span></h3>
-<p>Register new user with email and password.</p>
+<p>Register new user with email and password. Supports <code>candidate</code> and <code>employer</code> roles for self-registration.</p>
+<p><strong>Note:</strong> HR accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "name": "John Doe",
   "email": "john@example.com",
-  "password": "securepassword123"
+  "password": "securepassword123",
+  "role": "candidate"
 }</code></pre>
+<p><strong>Request Fields:</strong></p>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+  <tr><td>name</td><td>string</td><td>Yes</td><td>User's display name (2-100 chars)</td></tr>
+  <tr><td>email</td><td>string</td><td>Yes</td><td>Unique email address</td></tr>
+  <tr><td>password</td><td>string</td><td>Yes</td><td>Min 8 chars, at least 1 uppercase, 1 lowercase, 1 number</td></tr>
+  <tr><td>role</td><td>string</td><td>Yes</td><td>Enum: <code>"candidate"</code>, <code>"employer"</code></td></tr>
+</table>
 <p><strong>Response 200:</strong></p>
 <pre><code>{
   "token": "eyJhbGciOiJSUzI1NiIs...",
@@ -253,10 +271,14 @@
     "name": "John Doe",
     "email": "john@example.com",
     "emailVerified": false,
-    "role": "user",
+    "role": "candidate",
     "createdAt": "2026-08-05T10:30:00Z",
     "updatedAt": "2026-08-05T10:30:00Z"
   }
+}</code></pre>
+<p><strong>Error 400 — Invalid role:</strong></p>
+<pre><code>{
+  "message": "Role must be 'candidate' or 'employer'. HR accounts are created by admin."
 }</code></pre>
 
 <h2 id="section-4-2">4.2 Sign In</h2>
@@ -276,7 +298,7 @@
     "name": "John Doe",
     "email": "john@example.com",
     "emailVerified": true,
-    "role": "user"
+    "role": "candidate"
   }
 }</code></pre>
 
@@ -499,14 +521,15 @@
 }</code></pre>
 
 <h3>POST /admin/create-user</h3>
-<p>Create a new user (admin).</p>
+<p>Create a new user (admin). This is the only way to create HR accounts.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "name": "Jane Doe",
   "email": "jane@example.com",
   "password": "tempPassword123",
-  "role": "user"
+  "role": "hr"
 }</code></pre>
+<p><strong>Role Options:</strong> <code>candidate</code>, <code>employer</code>, <code>hr</code>, <code>admin</code></p>
 
 <h3>POST /admin/update-user</h3>
 <p>Update user details (admin).</p>
@@ -529,8 +552,9 @@
 <p><strong>Request:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
-  "role": "admin"
+  "role": "hr"
 }</code></pre>
+<p><strong>Role Options:</strong> <code>candidate</code>, <code>employer</code>, <code>hr</code>, <code>admin</code></p>
 
 <h3 id="fr-014">POST /admin/ban-user <span class="req-id">FR-014</span></h3>
 <p>Ban a user.</p>
@@ -784,14 +808,59 @@
 
 <!-- 6.3 Organization Roles -->
 <h2>6.3 Organization Roles</h2>
+<p>Organization roles allow each organization to define custom roles with fine-grained permissions scoped to their organization. These roles are independent of system-level roles (candidate, employer, hr, admin).</p>
+
+<h3>Authorization Rules</h3>
+<table>
+  <tr><th>Action</th><th>Allowed For</th></tr>
+  <tr><td>Create role</td><td>Organization owner or admin</td></tr>
+  <tr><td>Update role</td><td>Organization owner or admin</td></tr>
+  <tr><td>Delete role</td><td>Organization owner or admin</td></tr>
+  <tr><td>List roles</td><td>All organization members</td></tr>
+  <tr><td>Get role</td><td>All organization members</td></tr>
+  <tr><td>Check permission</td><td>All authenticated users</td></tr>
+</table>
+
+<h3>Permission Catalog</h3>
+<p>Valid permissions follow the format <code>resource:action</code>. Multiple permissions are comma-separated.</p>
+<table>
+  <tr><th>Permission</th><th>Description</th></tr>
+  <tr><td><code>member:read</code></td><td>View organization members</td></tr>
+  <tr><td><code>member:update</code></td><td>Update member roles</td></tr>
+  <tr><td><code>member:delete</code></td><td>Remove members from organization</td></tr>
+  <tr><td><code>job:read</code></td><td>View job listings</td></tr>
+  <tr><td><code>job:create</code></td><td>Create new job listings</td></tr>
+  <tr><td><code>job:update</code></td><td>Update job listings</td></tr>
+  <tr><td><code>job:delete</code></td><td>Delete job listings</td></tr>
+  <tr><td><code>application:read</code></td><td>View job applications</td></tr>
+  <tr><td><code>application:update</code></td><td>Update application status</td></tr>
+  <tr><td><code>application:delete</code></td><td>Delete applications</td></tr>
+  <tr><td><code>interview:read</code></td><td>View interviews</td></tr>
+  <tr><td><code>interview:create</code></td><td>Schedule interviews</td></tr>
+  <tr><td><code>interview:update</code></td><td>Update interview details</td></tr>
+  <tr><td><code>interview:delete</code></td><td>Cancel interviews</td></tr>
+  <tr><td><code>report:read</code></td><td>View reports and analytics</td></tr>
+  <tr><td><code>report:create</code></td><td>Generate reports</td></tr>
+  <tr><td><code>settings:read</code></td><td>View organization settings</td></tr>
+  <tr><td><code>settings:update</code></td><td>Update organization settings</td></tr>
+</table>
+
+<h3>Validation Rules</h3>
+<ul>
+  <li>Role name: 2-50 chars, alphanumeric and underscores only, unique within organization</li>
+  <li>Permissions: comma-separated string, max 255 chars total</li>
+  <li>Each permission must match format <code>resource:action</code></li>
+  <li>Each permission must be from the allowed catalog above</li>
+</ul>
 
 <h3>POST /organization/create-role</h3>
 <p>Create a custom role in the organization.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
-  "role": "moderator",
-  "permission": "member:read,member:update"
+  "role": "recruiter",
+  "description": "Can manage jobs and applications",
+  "permission": "job:read,job:create,job:update,application:read,application:update"
 }</code></pre>
 
 <h3>POST /organization/update-role</h3>
@@ -800,11 +869,12 @@
 <pre><code>{
   "organizationId": "org-123",
   "roleId": "role-123",
-  "permission": "member:read,member:update,member:delete"
+  "description": "Updated description",
+  "permission": "job:read,job:create,job:update,job:delete,application:read,application:update"
 }</code></pre>
 
 <h3>POST /organization/delete-role</h3>
-<p>Delete a custom role from the organization.</p>
+<p>Delete a custom role from the organization. Cannot delete if any member is assigned this role.</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
@@ -814,6 +884,19 @@
 <h3>GET /organization/list-roles</h3>
 <p>List all roles in the organization.</p>
 <p><strong>Query:</strong> <code>?organizationId=org-123</code></p>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "roles": [
+    {
+      "id": "role-123",
+      "name": "recruiter",
+      "description": "Can manage jobs and applications",
+      "permissions": ["job:read", "job:create", "job:update", "application:read", "application:update"],
+      "memberCount": 5,
+      "createdAt": "2026-08-05T10:30:00Z"
+    }
+  ]
+}</code></pre>
 
 <h3>GET /organization/get-role</h3>
 <p>Get role details.</p>
@@ -824,7 +907,11 @@
 <p><strong>Request:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
-  "permission": "member:delete"
+  "permission": "job:create"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "hasPermission": true
 }</code></pre>
 
 <!-- 7. JWT ENDPOINTS -->

@@ -222,10 +222,16 @@
   <tr><td>GET</td><td>/list-sessions</td><td>List sessions</td><td><span class="req-id">FR-013</span></td></tr>
   <tr><td>POST</td><td>/revoke-session</td><td>Revoke session</td><td><span class="req-id">FR-013</span></td></tr>
   <tr><td>POST</td><td>/link-social</td><td>Link social account</td><td><span class="req-id">FR-012</span></td></tr>
-  <tr><td>POST</td><td>/admin/set-role</td><td>Set user role</td><td><span class="req-id">FR-011</span></td></tr>
+  <tr><td>POST</td><td>/admin/set-role</td><td>Set system-level user role</td><td><span class="req-id">FR-011</span></td></tr>
   <tr><td>POST</td><td>/admin/ban-user</td><td>Ban user</td><td><span class="req-id">FR-014</span></td></tr>
   <tr><td>POST</td><td>/admin/impersonate-user</td><td>Impersonate user</td><td><span class="req-id">FR-014</span></td></tr>
   <tr><td>POST</td><td>/organization/create</td><td>Create organization</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>POST</td><td>/organization/create-role</td><td>Create organization custom role</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>POST</td><td>/organization/update-role</td><td>Update organization role</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>POST</td><td>/organization/delete-role</td><td>Delete organization role</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>GET</td><td>/organization/list-roles</td><td>List organization roles</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>GET</td><td>/organization/get-role</td><td>Get organization role</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>POST</td><td>/organization/has-permission</td><td>Check organization permission</td><td><span class="req-id">FR-015</span></td></tr>
   <tr><td>POST</td><td>/organization/invite-member</td><td>Invite member</td><td><span class="req-id">FR-017</span></td></tr>
   <tr><td>POST</td><td>/organization/create-team</td><td>Create team</td><td><span class="req-id">FR-016</span></td></tr>
 </table>
@@ -260,6 +266,17 @@
   <img src="./images/sequence/registration-sequence.png" alt="Registration Sequence Diagram">
   <div class="caption">Figure 4: Registration Integration Flow</div>
 </div>
+
+<h3>Registration Details</h3>
+<p>The registration endpoint supports two roles for self-registration:</p>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Self-Registration</th></tr>
+  <tr><td><code>candidate</code></td><td>Job seekers who browse and apply for jobs</td><td>Yes</td></tr>
+  <tr><td><code>employer</code></td><td>Companies that post job listings</td><td>Yes</td></tr>
+  <tr><td><code>hr</code></td><td>Internal recruitment team members</td><td>No (admin-created only)</td></tr>
+  <tr><td><code>admin</code></td><td>System administrators with full access</td><td>No (admin-created only)</td></tr>
+</table>
+<p><strong>Note:</strong> HR accounts must be created by an admin via <code>POST /admin/create-user</code>. The registration endpoint only accepts <code>candidate</code> and <code>employer</code> roles.</p>
 
 <h2>6.3 Password Reset Flow</h2>
 

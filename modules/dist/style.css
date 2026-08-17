@@ -19,9 +19,12 @@ body {
   line-height: 1.6;
   color: var(--text);
   background: var(--bg);
-  max-width: 1400px;
+  max-width: 210mm;
   margin: 0 auto;
-  padding: 40px;
+  padding: 20mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* --- Logo Header --- */
@@ -169,8 +172,6 @@ table {
   border-collapse: collapse;
   margin: 12px 0;
   font-size: 13px;
-  display: block;
-  overflow-x: auto;
 }
 
 th, td {
@@ -245,6 +246,11 @@ li { margin: 4px 0; }
   margin-bottom: 20px;
 }
 
+/* --- Content Centering --- */
+h1, h2, h3, h4, p, ul, ol, blockquote, pre, table, .toc, .diagram, .cover, .logo-header, .back-link, .module-badge {
+  width: 100%;
+}
+
 /* --- Blockquotes --- */
 blockquote {
   border-left: 4px solid var(--accent);
@@ -286,22 +292,6 @@ hr {
   pre { white-space: pre-wrap; word-wrap: break-word; }
   .toc { page-break-inside: avoid; }
   .logo-header { page-break-inside: avoid; }
-}
-
-/* --- Responsive Table Container --- */
-.table-container {
-  overflow-x: auto;
-  margin: 12px 0;
-}
-
-/* --- Wide Tables --- */
-.trace-table {
-  min-width: 800px;
-}
-
-.trace-table td, .trace-table th {
-  white-space: normal;
-  word-wrap: break-word;
 }
 
 @page {

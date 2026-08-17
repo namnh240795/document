@@ -156,6 +156,16 @@
   created_at      TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
+<h3>Default Roles</h3>
+<table>
+  <tr><th>Role</th><th>Description</th><th>Self-Registration</th><th>Permissions</th></tr>
+  <tr><td><code>candidate</code></td><td>Job seekers who browse and apply for jobs</td><td>Yes</td><td>jobs:read, applications:write, profile:write</td></tr>
+  <tr><td><code>employer</code></td><td>Companies that post job listings</td><td>Yes</td><td>jobs:write, applications:read, profile:write</td></tr>
+  <tr><td><code>hr</code></td><td>Internal recruitment team members</td><td>No (admin-created only)</td><td>jobs:write, applications:read/write, candidates:read/write, interviews:write</td></tr>
+  <tr><td><code>admin</code></td><td>System administrators with full access</td><td>No (admin-created only)</td><td>Full system access</td></tr>
+</table>
+<p><strong>Note:</strong> HR accounts must be created by an admin via <code>POST /admin/create-user</code>. The registration endpoint (<code>POST /sign-up/email</code>) only accepts <code>candidate</code> and <code>employer</code> roles.</p>
+
 <h2>2.7 Table: <code>auth_user_roles</code></h2>
 <pre><code>CREATE TABLE auth_user_roles (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -224,11 +234,21 @@
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES auth_organizations(id) ON DELETE CASCADE,
   role            VARCHAR(50) NOT NULL,
+  description     VARCHAR(500),
   permission      VARCHAR(255) NOT NULL,
   created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
   CONSTRAINT auth_org_roles_unique UNIQUE (organization_id, role)
 );</code></pre>
+<p><strong>Column Descriptions:</strong></p>
+<table>
+  <tr><th>Column</th><th>Description</th></tr>
+  <tr><td>organization_id</td><td>FK to auth_organizations, CASCADE on delete</td></tr>
+  <tr><td>role</td><td>Role name, unique within organization (2-50 chars, alphanumeric + underscores)</td></tr>
+  <tr><td>description</td><td>Optional description of the role's purpose</td></tr>
+  <tr><td>permission</td><td>Comma-separated permissions in format <code>resource:action</code> (max 255 chars)</td></tr>
+</table>
+<p><strong>Permission Format:</strong> <code>resource:action</code> (e.g., <code>job:read</code>, <code>member:update</code>)</p>
 
 <!-- 3. INDEXES -->
 <h1 id="section-3">3. Indexes</h1>
