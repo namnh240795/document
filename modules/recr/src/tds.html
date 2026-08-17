@@ -65,9 +65,16 @@
     <li><a href="#section-5">5. Service Design</a></li>
     <li><a href="#section-6">6. Worker Design</a></li>
     <li><a href="#section-7">7. Event Processing</a></li>
-    <li><a href="#section-8">8. Data Architecture</a></li>
-    <li><a href="#section-9">9. Security Design</a></li>
-    <li><a href="#section-10">10. Traceability Summary</a></li>
+    <li><a href="#section-8">8. Cross-Module Integration</a>
+      <ul>
+        <li><a href="#section-8-1">8.1 FILE Module Integration</a></li>
+        <li><a href="#section-8-2">8.2 FileConsumer (Inbound Event Handler)</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-9">9. OpenSearch Integration</a></li>
+    <li><a href="#section-10">10. Data Architecture</a></li>
+    <li><a href="#section-11">11. Security Design</a></li>
+    <li><a href="#section-12">12. Traceability Summary</a></li>
   </ul>
 </div>
 
@@ -88,7 +95,7 @@
 <h2 id="section-1-3">1.3 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <tr><td>Candidate</td><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> - <a href="srs.html#fr-007"><span class="req-id">FR-007</span></a></td><td>Section 4, 5, 6</td></tr>
+  <tr><td>Candidate</td><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> - <a href="srs.html#fr-007"><span class="req-id">FR-007</span></a>, <a href="srs.html#fr-037"><span class="req-id">FR-037</span></a>, <a href="srs.html#fr-038"><span class="req-id">FR-038</span></a></td><td>Section 4, 5, 6</td></tr>
   <tr><td>HR</td><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a> - <a href="srs.html#fr-014"><span class="req-id">FR-014</span></a>, <a href="srs.html#fr-028"><span class="req-id">FR-028</span></a>, <a href="srs.html#fr-029"><span class="req-id">FR-029</span></a>, <a href="srs.html#fr-032"><span class="req-id">FR-032</span></a></td><td>Section 4, 5, 6</td></tr>
   <tr><td>Employer</td><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a> - <a href="srs.html#fr-020"><span class="req-id">FR-020</span></a>, <a href="srs.html#fr-033"><span class="req-id">FR-033</span></a></td><td>Section 4, 5, 6</td></tr>
   <tr><td>Subscription</td><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> - <a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></td><td>Section 4, 5, 6</td></tr>
@@ -250,10 +257,10 @@ libs/
   <tr><th>Controller</th><th>Base Path</th><th>Responsibility</th><th>Requirements</th></tr>
   <tr><td>AuthController</td><td><code>/recr/auth</code></td><td>Registration, login</td><td>FR-001, FR-002, FR-015</td></tr>
   <tr><td>JobController</td><td><code>/recr/jobs</code>, <code>/recr/employer/jobs</code>, <code>/recr/hr/jobs</code></td><td>Job CRUD, search, filtering</td><td>FR-003, FR-016, FR-017, FR-028, FR-029</td></tr>
-  <tr><td>ApplicationController</td><td><code>/recr/applications</code></td><td>Application submission, status tracking</td><td>FR-004, FR-005, FR-008, FR-009</td></tr>
+  <tr><td>ApplicationController</td><td><code>/recr/applications</code>, <code>/recr/candidate/applications/:id/resume</code></td><td>Application submission, status tracking, resume download (FILE module presigned URLs)</td><td>FR-004, FR-005, FR-008, FR-009, FR-038</td></tr>
   <tr><td>InterviewController</td><td><code>/recr/hr/interviews</code></td><td>Interview scheduling</td><td>FR-010</td></tr>
   <tr><td>EvaluationController</td><td><code>/recr/hr/evaluations</code></td><td>Candidate evaluation</td><td>FR-011</td></tr>
-  <tr><td>ProfileController</td><td><code>/recr/candidate/profile</code>, <code>/recr/hr/profile</code>, <code>/recr/employer/profile</code></td><td>Profile update (all roles)</td><td>FR-006, FR-032, FR-033</td></tr>
+  <tr><td>ProfileController</td><td><code>/recr/candidate/profile</code>, <code>/recr/candidate/resume</code>, <code>/recr/candidate/resumes</code>, <code>/recr/hr/profile</code>, <code>/recr/employer/profile</code></td><td>Profile update (all roles), resume management (FILE module integration)</td><td>FR-006, FR-007, FR-032, FR-033, FR-037</td></tr>
   <tr><td>SubscriptionController</td><td><code>/recr/subscription</code></td><td>Plan listing, purchase, renewal</td><td>FR-021 - FR-026</td></tr>
   <tr><td>ReviewController</td><td><code>/recr/candidate/reviews</code>, <code>/recr/hr/reviews</code></td><td>Job reviews, candidate reviews</td><td>FR-030, FR-031</td></tr>
 </table>
@@ -292,10 +299,10 @@ export class JobController {
 <table>
   <tr><th>Service</th><th>Responsibility</th><th>Dependencies</th></tr>
   <tr><td>JobService</td><td>Job CRUD, status management, search</td><td>JobRepository, EventEmitter</td></tr>
-  <tr><td>ApplicationService</td><td>Application submission, status workflow</td><td>ApplicationRepository, JobService, EventEmitter</td></tr>
+  <tr><td>ApplicationService</td><td>Application submission, status workflow, resume linking and frozen resume access</td><td>ApplicationRepository, JobService, EventEmitter, FileService (FILE)</td></tr>
   <tr><td>InterviewService</td><td>Interview scheduling, conflict detection</td><td>InterviewRepository, ApplicationService</td></tr>
   <tr><td>EvaluationService</td><td>Evaluation scoring, aggregation</td><td>EvaluationRepository, InterviewRepository</td></tr>
-  <tr><td>ProfileService</td><td>Profile update (all roles), file upload</td><td>UserRepository, CandidateRepository, HrProfileRepository, EmployerRepository</td></tr>
+  <tr><td>ProfileService</td><td>Profile update (all roles), resume management (upload, list, delete via FILE module)</td><td>UserRepository, CandidateRepository, HrProfileRepository, EmployerRepository, FileService (FILE)</td></tr>
   <tr><td>SubscriptionService</td><td>Plan management, purchase, renewal, validation</td><td>SubscriptionRepository, PaymentService</td></tr>
   <tr><td>ReviewService</td><td>Job reviews, candidate reviews, rating aggregation</td><td>ReviewRepository, JobRepository</td></tr>
 </table>
@@ -365,6 +372,7 @@ export class JobService {
   <tr><td>SubscriptionConsumer</td><td><code>recr.subscription.events</code></td><td>Subscription expiry checks</td><td>subscription.purchased, subscription.expiring</td></tr>
   <tr><td>ReviewConsumer</td><td><code>recr.review.events</code></td><td>Review aggregation, notifications</td><td>review.submitted</td></tr>
   <tr><td>NotificationConsumer</td><td><code>notification.events</code></td><td>Email, push notifications</td><td>notification.send</td></tr>
+  <tr><td>FileConsumer</td><td><code>file.events</code></td><td>FILE module event handling (inbound)</td><td>file.deleted</td></tr>
 </table>
 
 <h2>6.2 Worker Example</h2>
@@ -491,8 +499,106 @@ this.eventEmitter.emit('application.submitted', {
 })
 export class WorkerModule {}</code></pre>
 
-<!-- 8. OPENSEARCH INTEGRATION -->
-<h1 id="section-8">8. OpenSearch Integration</h1>
+<!-- 8. CROSS-MODULE INTEGRATION -->
+<h1 id="section-8">8. Cross-Module Integration</h1>
+
+<h2>8.1 FILE Module Integration</h2>
+<p>The RECR module depends on the FILE module for all file storage operations. RECR never directly uploads files to object storage; instead, it delegates to the FILE module via API calls.</p>
+
+<h3>Integration Points</h3>
+<table class="trace-table">
+  <tr><th>Operation</th><th>RECR Component</th><th>FILE Module API</th><th>Description</th></tr>
+  <tr><td>Upload Resume</td><td>ProfileService</td><td>FILE presigned upload URL</td><td>Candidate uploads resume via presigned URL; RECR stores file_id in recr_candidate_resumes</td></tr>
+  <tr><td>List Resumes</td><td>ProfileService</td><td>FILE metadata API</td><td>RECR retrieves file metadata (name, type, size) from FILE module</td></tr>
+  <tr><td>Delete Resume</td><td>ProfileService</td><td>FILE delete API</td><td>RECR calls FILE to delete file, then removes record from recr_candidate_resumes</td></tr>
+  <tr><td>Validate Resume</td><td>ApplicationService</td><td>FILE metadata API</td><td>RECR validates file_id exists and is RESUME category before linking to application</td></tr>
+  <tr><td>Download Resume</td><td>ApplicationService</td><td>FILE presigned download URL</td><td>RECR generates time-limited presigned URL for viewing/downloading candidate CV</td></tr>
+</table>
+
+<h3>Event Handling</h3>
+<table class="trace-table">
+  <tr><th>Event</th><th>Direction</th><th>Handler</th><th>Action</th></tr>
+  <tr><td><code>file.deleted</code></td><td>Inbound (from FILE)</td><td>FileConsumer (recr-worker)</td><td>Clean up references in recr_candidate_resumes and recr_applications when a file is deleted from FILE module</td></tr>
+</table>
+
+<h3>File Path Convention</h3>
+<pre><code>// FILE module storage path for candidate resumes
+{candidate_user_id}/resumes/{uuid}.{extension}
+
+// Example:
+101/resumes/550e8400-e29b-41d4-a716-446655440000.pdf</code></pre>
+
+<h3>Code Example</h3>
+<pre><code>// libs/recr-core/src/services/profile.service.ts
+@Injectable()
+export class ProfileService {
+  constructor(
+    private readonly candidateRepository: CandidateRepository,
+    private readonly fileService: FileService,  // FILE module client
+  ) {}
+
+  async uploadResume(userId: string, fileId: string): Promise&lt;Resume&gt; {
+    // 1. Validate file exists in FILE module
+    const fileMetadata = await this.fileService.getFile(fileId);
+    if (!fileMetadata || fileMetadata.category !== 'RESUME') {
+      throw new BadRequestException('Invalid file: must be a RESUME category file');
+    }
+
+    // 2. Store reference in recr_candidate_resumes
+    const resume = await this.candidateRepository.createResume({
+      candidateId: userId,
+      fileId: fileId,
+    });
+
+    return resume;
+  }
+
+  async getResumeDownloadUrl(applicationId: string, userId: string): Promise&lt;DownloadUrl&gt; {
+    // 1. Get application and verify ownership
+    const application = await this.applicationRepository.findById(applicationId);
+    if (application.candidateId !== userId) {
+      throw new ForbiddenException('Not authorized');
+    }
+
+    // 2. Get presigned download URL from FILE module
+    const downloadUrl = await this.fileService.getPresignedDownloadUrl(
+      application.resumeFileId,
+      { expiresIn: 3600 }  // 1 hour
+    );
+
+    return downloadUrl;
+  }
+}</code></pre>
+
+<h2>8.2 FileConsumer (Inbound Event Handler)</h2>
+<pre><code>// apps/recr-worker/src/consumers/file.consumer.ts
+@RabbitMQConsumer('file.events')
+export class FileConsumer {
+  constructor(
+    private readonly candidateRepository: CandidateRepository,
+    private readonly applicationRepository: ApplicationRepository,
+  ) {}
+
+  @RabbitMQHandler('file.deleted')
+  async handleFileDeleted(event: FileDeletedEvent) {
+    // 1. Clean up recr_candidate_resumes references
+    await this.candidateRepository.removeResumeByFileId(event.fileId);
+
+    // 2. Log warning for applications with deleted resume files
+    const affectedApplications = await this.applicationRepository
+      .findByResumeFileId(event.fileId);
+    for (const app of affectedApplications) {
+      // Log warning - application has orphaned resume reference
+      // The frozen resume_file_id remains for historical records
+      console.warn(
+        `Application ${app.id} has orphaned resume file: ${event.fileId}`
+      );
+    }
+  }
+}</code></pre>
+
+<!-- 9. OPENSEARCH INTEGRATION -->
+<h1 id="section-9">9. OpenSearch Integration</h1>
 
 <h2>8.1 Architecture Overview</h2>
 <p>The RECR module uses OpenSearch for analytics and <strong>OpenSearch Dashboards</strong> for visualization. Events are logged via RabbitMQ consumers and indexed in OpenSearch. Users access dashboards directly via OpenSearch Dashboards UI.</p>
@@ -630,10 +736,40 @@ Password: admin (or as configured)
 http://opensearch-dashboards:5601/app/dashboards#/view/recr-user-analytics
 http://opensearch-dashboards:5601/app/dashboards#/view/recr-login-analytics</code></pre>
 
-<!-- 9. DATA ARCHITECTURE -->
-<h1 id="section-9">9. Data Architecture</h1>
+<!-- 10. DATA ARCHITECTURE -->
+<h1 id="section-10">10. Data Architecture</h1>
 
-<h2>8.1 Drizzle Schema Structure</h2>
+<h2>10.1 Drizzle Schema Structure</h2>
+<pre><code>// libs/recr-core/src/entities/candidate-resume.schema.ts
+import { pgTable, bigserial, varchar, boolean, timestamp, uuid } from 'drizzle-orm/pg-core';
+
+export const recrCandidateResumes = pgTable('recr_candidate_resumes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  candidateId: bigint('candidate_id', { mode: 'number' }).notNull()
+    .references(() => recrCandidates.id, { onDelete: 'cascade' }),
+  fileId: uuid('file_id').notNull(),  // References sys_files.id in FILE module
+  isPrimary: boolean('is_primary').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});</code></pre>
+
+<pre><code>// libs/recr-core/src/entities/application.schema.ts
+import { pgTable, bigserial, varchar, text, timestamp, uuid, bigint } from 'drizzle-orm/pg-core';
+
+export const recrApplications = pgTable('recr_applications', {
+  id: bigserial('id', { mode: 'number' }),
+  jobId: bigint('job_id', { mode: 'number' }).notNull()
+    .references(() => recrJobs.id),
+  candidateId: bigint('candidate_id', { mode: 'number' }).notNull()
+    .references(() => recrCandidates.id),
+  resumeFileId: uuid('resume_file_id')  // Frozen resume at submission (FILE module)
+    .references(() => sysFiles.id),
+  coverLetter: text('cover_letter'),
+  status: varchar('status', { length: 20 }).notNull().default('submitted'),
+  appliedAt: timestamp('applied_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});</code></pre>
+
 <pre><code>// libs/recr-core/src/entities/job.schema.ts
 import { pgTable, bigserial, varchar, decimal, timestamp, jsonb, bigint } from 'drizzle-orm/pg-core';
 
@@ -653,7 +789,7 @@ export const recrJobs = pgTable('recr_jobs', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });</code></pre>
 
-<h2>8.2 Repository Pattern</h2>
+<h2>10.2 Repository Pattern</h2>
 <pre><code>// libs/recr-core/src/repositories/job.repository.ts
 @Injectable()
 export class JobRepository {
@@ -682,8 +818,8 @@ export class JobRepository {
   }
 }</code></pre>
 
-<!-- 9. SECURITY DESIGN -->
-<h1 id="section-9">9. Security Design</h1>
+<!-- 11. SECURITY DESIGN -->
+<h1 id="section-11">11. Security Design</h1>
 
 <table class="trace-table">
   <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
@@ -737,19 +873,19 @@ export class SubscriptionGuard implements CanActivate {
   }
 }</code></pre>
 
-<!-- 10. TRACEABILITY -->
-<h1 id="section-10">10. Traceability Summary</h1>
+<!-- 12. TRACEABILITY -->
+<h1 id="section-12">12. Traceability Summary</h1>
 
 <table class="trace-table">
   <tr><th>SRS Req ID</th><th>Requirement</th><th>Controller</th><th>Service</th><th>Worker</th></tr>
   <tr><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a></td><td>User Registration</td><td>AuthController</td><td>AuthService (AUTH)</td><td>-</td></tr>
   <tr><td><a href="srs.html#fr-002"><span class="req-id">FR-002</span></a></td><td>Login</td><td>AuthController</td><td>AuthService (AUTH)</td><td>-</td></tr>
   <tr><td><a href="srs.html#fr-003"><span class="req-id">FR-003</span></a></td><td>Browse Jobs</td><td>JobController</td><td>JobService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-004"><span class="req-id">FR-004</span></a></td><td>Submit Application</td><td>ApplicationController</td><td>ApplicationService</td><td>ApplicationConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-004"><span class="req-id">FR-004</span></a></td><td>Submit Application</td><td>ApplicationController</td><td>ApplicationService, FileService (FILE)</td><td>ApplicationConsumer</td></tr>
   <tr><td><a href="srs.html#fr-005"><span class="req-id">FR-005</span></a></td><td>View Application Status</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
   <tr><td><a href="srs.html#fr-006"><span class="req-id">FR-006</span></a></td><td>Update Profile</td><td>ProfileController</td><td>ProfileService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-007"><span class="req-id">FR-007</span></a></td><td>Upload Resume</td><td>ProfileController</td><td>ProfileService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a></td><td>Review Applications</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-007"><span class="req-id">FR-007</span></a></td><td>Upload Resume</td><td>ProfileController</td><td>ProfileService, FileService (FILE)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a></td><td>Review Applications</td><td>ApplicationController</td><td>ApplicationService, FileService (FILE)</td><td>-</td></tr>
   <tr><td><a href="srs.html#fr-009"><span class="req-id">FR-009</span></a></td><td>Screen Candidates</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
   <tr><td><a href="srs.html#fr-010"><span class="req-id">FR-010</span></a></td><td>Schedule Interview</td><td>InterviewController</td><td>InterviewService</td><td>InterviewConsumer</td></tr>
   <tr><td><a href="srs.html#fr-011"><span class="req-id">FR-011</span></a></td><td>Evaluate Candidate</td><td>EvaluationController</td><td>EvaluationService</td><td>-</td></tr>
@@ -777,12 +913,14 @@ export class SubscriptionGuard implements CanActivate {
   <tr><td><a href="srs.html#fr-034"><span class="req-id">FR-034</span></a></td><td>User Registration Analytics</td><td>AnalyticsController</td><td>AnalyticsService</td><td>AnalyticsConsumer</td></tr>
   <tr><td><a href="srs.html#fr-035"><span class="req-id">FR-035</span></a></td><td>User Login Analytics</td><td>AnalyticsController</td><td>AnalyticsService</td><td>AnalyticsConsumer</td></tr>
   <tr><td><a href="srs.html#fr-036"><span class="req-id">FR-036</span></a></td><td>Dashboard View</td><td>AnalyticsController</td><td>AnalyticsService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-037"><span class="req-id">FR-037</span></a></td><td>Manage Candidate Resumes</td><td>ProfileController</td><td>ProfileService, FileService (FILE)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-038"><span class="req-id">FR-038</span></a></td><td>Application Resume Linking</td><td>ApplicationController</td><td>ApplicationService, FileService (FILE)</td><td>-</td></tr>
   <tr><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a></td><td>API Response Time</td><td>-</td><td>-</td><td>-</td></tr>
   <tr><td><a href="srs.html#nfr-002"><span class="req-id">NFR-002</span></a></td><td>Application Processing</td><td>-</td><td>-</td><td>-</td></tr>
   <tr><td><a href="srs.html#nfr-003"><span class="req-id">NFR-003</span></a></td><td>Concurrent Users</td><td>-</td><td>-</td><td>-</td></tr>
   <tr><td><a href="srs.html#nfr-004"><span class="req-id">NFR-004</span></a></td><td>System Uptime</td><td>-</td><td>-</td><td>-</td></tr>
   <tr><td><a href="srs.html#nfr-005"><span class="req-id">NFR-005</span></a></td><td>RBAC</td><td>All Controllers</td><td>-</td><td>-</td></tr>
-  <tr><td><a href="srs.html#nfr-006"><span class="req-id">NFR-006</span></a></td><td>Resume Storage</td><td>-</td><td>FileService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-006"><span class="req-id">NFR-006</span></a></td><td>Resume Storage</td><td>-</td><td>FileService (FILE module)</td><td>-</td></tr>
   <tr><td><a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Job Search</td><td>JobController</td><td>JobService</td><td>-</td></tr>
 </table>
 

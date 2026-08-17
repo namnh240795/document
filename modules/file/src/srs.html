@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Software Requirements Specification - File Management (FILE)</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1 id="page-title">Software Requirements Specification</h1>
+  <div class="subtitle">File Management Module</div>
+  <span class="module-badge">FILE</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Job Portal System</td></tr>
+    <tr><td>Module</td><td>FILE - File Management</td></tr>
+    <tr><td>Database</td><td>file_db</td></tr>
+    <tr><td>Date</td><td>2026-08-17</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Introduction</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 Scope</a></li>
+        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
+        <li><a href="#section-1-4">1.4 Definitions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-2">2. Module Overview</a></li>
+    <li><a href="#section-3">3. Functional Requirements</a>
+      <ul>
+        <li><a href="#fr-001">FR-001: Upload File</a></li>
+        <li><a href="#fr-002">FR-002: Download File</a></li>
+        <li><a href="#fr-003">FR-003: List Files</a></li>
+        <li><a href="#fr-004">FR-004: Delete File</a></li>
+        <li><a href="#fr-005">FR-005: File Access Control</a></li>
+        <li><a href="#fr-006">FR-006: Temp File Cleanup</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Use Cases</a>
+      <ul>
+        <li><a href="#section-4-0">4.0 Use Case Diagram</a></li>
+        <li><a href="#uc-01">4.1 UC-01: Upload File</a></li>
+        <li><a href="#uc-02">4.2 UC-02: Download/View File</a></li>
+        <li><a href="#uc-03">4.3 UC-03: List User Files</a></li>
+        <li><a href="#uc-04">4.4 UC-04: Delete File</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Non-Functional Requirements</a>
+      <ul>
+        <li><a href="#nfr-001">NFR-001: Performance</a></li>
+        <li><a href="#nfr-002">NFR-002: Security</a></li>
+        <li><a href="#nfr-003">NFR-003: Availability</a></li>
+        <li><a href="#nfr-004">NFR-004: Scalability</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. Traceability Matrix</a>
+      <ul>
+        <li><a href="#trace-fr-001">FR-001: Upload File</a></li>
+        <li><a href="#trace-fr-002">FR-002: Download File</a></li>
+        <li><a href="#trace-fr-003">FR-003: List Files</a></li>
+        <li><a href="#trace-fr-004">FR-004: Delete File</a></li>
+        <li><a href="#trace-fr-005">FR-005: File Access Control</a></li>
+        <li><a href="#trace-fr-006">FR-006: Temp File Cleanup</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<!-- 1. INTRODUCTION -->
+<h1 id="section-1">1. Introduction</h1>
+
+<h2 id="section-1-1">1.1 Purpose</h2>
+<p>This document defines the software requirements for the <strong>File Management</strong> module of the Job Portal System.</p>
+
+<h2 id="section-1-2">1.2 Scope</h2>
+<p>The File Management module handles:</p>
+<ul>
+  <li>File upload via presigned URLs (client-side direct upload to S3)</li>
+  <li>File download via presigned URLs with expiration</li>
+  <li>File listing with filtering by user, employer, and category</li>
+  <li>Soft delete with event-driven S3 cleanup</li>
+  <li>File access control based on ownership and RBAC</li>
+  <li>Automatic cleanup of temporary/orphaned files</li>
+</ul>
+
+<h2 id="section-1-3">1.3 Module Dependencies</h2>
+<table>
+  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
+  <tr><td>AUTH</td><td>Sync (API call)</td><td>Validate user identity and RBAC permissions</td></tr>
+  <tr><td>RECR</td><td>Sync (API call)</td><td>Access employer context for organization-scoped files</td></tr>
+  <tr><td>LOG</td><td>Async (RabbitMQ)</td><td>Publish file lifecycle events (uploaded, deleted)</td></tr>
+</table>
+
+<h2 id="section-1-4">1.4 Definitions</h2>
+<table>
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td>FR</td><td>Functional Requirement</td></tr>
+  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
+  <tr><td>UC</td><td>Use Case</td></tr>
+  <tr><td>S3</td><td>Amazon Simple Storage Service</td></tr>
+  <tr><td>Presigned URL</td><td>A URL that grants temporary access to a private S3 object</td></tr>
+  <tr><td>MIME Type</td><td>Multipurpose Internet Mail Extensions - file type identifier</td></tr>
+  <tr><td>RBAC</td><td>Role-Based Access Control</td></tr>
+</table>
+
+<!-- 2. MODULE OVERVIEW -->
+<h1 id="section-2">2. Module Overview</h1>
+
+<table>
+  <tr><th>Aspect</th><th>Value</th></tr>
+  <tr><td>Module Code</td><td>FILE</td></tr>
+  <tr><td>Module Name</td><td>File Management</td></tr>
+  <tr><td>Description</td><td>File upload, download, listing, and lifecycle management with S3 backend</td></tr>
+  <tr><td>Database</td><td>file_db</td></tr>
+  <tr><td>Tables</td><td>sys_files</td></tr>
+  <tr><td>Tech Stack</td><td>NestJS, Drizzle ORM, PostgreSQL, AWS S3 SDK</td></tr>
+</table>
+
+<!-- 3. FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-3">3. Functional Requirements</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr id="fr-001">
+    <td><span class="req-id">FR-001</span></td>
+    <td>FILE</td>
+    <td>Upload File</td>
+    <td>UC-01</td>
+    <td>High</td>
+    <td>System shall generate presigned upload URL or support direct multipart upload. Client uploads directly to S3. System stores file metadata on confirmation.</td>
+  </tr>
+  <tr id="fr-002">
+    <td><span class="req-id">FR-002</span></td>
+    <td>FILE</td>
+    <td>Download File</td>
+    <td>UC-02</td>
+    <td>High</td>
+    <td>System shall generate presigned download URL with configurable expiration. Download URL is valid for 15 minutes by default.</td>
+  </tr>
+  <tr id="fr-003">
+    <td><span class="req-id">FR-003</span></td>
+    <td>FILE</td>
+    <td>List Files</td>
+    <td>UC-03</td>
+    <td>Medium</td>
+    <td>System shall query files by user, employer, and category with pagination support. Results are filtered by access control.</td>
+  </tr>
+  <tr id="fr-004">
+    <td><span class="req-id">FR-004</span></td>
+    <td>FILE</td>
+    <td>Delete File</td>
+    <td>UC-04</td>
+    <td>Medium</td>
+    <td>System shall soft-delete file metadata and emit an event for asynchronous S3 object cleanup. File status set to DELETED.</td>
+  </tr>
+  <tr id="fr-005">
+    <td><span class="req-id">FR-005</span></td>
+    <td>FILE</td>
+    <td>File Access Control</td>
+    <td>UC-02</td>
+    <td>High</td>
+    <td>System shall validate file ownership or RBAC permission before generating download URLs. Users can only access their own files unless they have admin/HR role in the organization.</td>
+  </tr>
+  <tr id="fr-006">
+    <td><span class="req-id">FR-006</span></td>
+    <td>FILE</td>
+    <td>Temp File Cleanup</td>
+    <td>-</td>
+    <td>Medium</td>
+    <td>System shall run a scheduled job (cron) to delete TEMP files older than 24 hours. Emits cleanup events for S3 physical deletion.</td>
+  </tr>
+</table>
+
+<!-- 4. USE CASES -->
+<h1 id="section-4">4. Use Cases</h1>
+
+<h2 id="section-4-0">4.0 Use Case Diagram</h2>
+<div class="diagram">
+  <img src="./images/usecase/usecase-diagram.png" alt="Use Case Diagram">
+  <div class="caption">Figure 1: File Management Use Case Diagram</div>
+</div>
+
+<h2 id="uc-01">4.1 UC-01: Upload File</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in; user has a valid session token</td></tr>
+  <tr><td>Main Flow</td><td>1. User selects a file to upload (e.g., resume, avatar)<br>2. Client sends upload request with original_name, mime_type, and category<br>3. System validates file type and size against category limits<br>4. System generates presigned S3 upload URL and creates file record with status TEMP<br>5. Client uploads file directly to S3 using presigned URL<br>6. Client confirms upload completion via POST /files/confirm<br>7. System updates file status to ACTIVE<br>8. System returns file record</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Invalid file type → System returns 400 Validation Error<br>3b. File too large → System returns 413 Payload Too Large<br>5a. S3 upload fails → Client can retry with same presigned URL<br>6a. Confirm not received within 24h → Temp file cleanup removes record</td></tr>
+  <tr><td>Postconditions</td><td>File uploaded to S3; file metadata stored in database with ACTIVE status; file accessible via download URL</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-001</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/upload-activity.png" alt="Upload Activity Diagram">
+  <div class="caption">Figure 2: File Upload Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/upload-sequence.png" alt="Upload Sequence Diagram">
+  <div class="caption">Figure 3: File Upload Sequence Diagram</div>
+</div>
+
+<h2 id="uc-02">4.2 UC-02: Download/View File</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in; file exists with ACTIVE status</td></tr>
+  <tr><td>Main Flow</td><td>1. Client requests file download by file ID<br>2. System validates user has access (owner or org admin/HR)<br>3. System generates presigned S3 download URL (15-minute expiry)<br>4. System returns download URL, expiration, and file name<br>5. Client downloads file from S3 via presigned URL</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. User not authorized → System returns 403 Forbidden<br>2b. File not found or DELETED → System returns 404 Not Found<br>4a. Download URL expired → Client requests new URL</td></tr>
+  <tr><td>Postconditions</td><td>File downloaded by authorized user; presigned URL expires after 15 minutes</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-002</span>, <span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/download-activity.png" alt="Download Activity Diagram">
+  <div class="caption">Figure 4: File Download Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/download-sequence.png" alt="Download Sequence Diagram">
+  <div class="caption">Figure 5: File Download Sequence Diagram</div>
+</div>
+
+<h2 id="uc-03">4.3 UC-03: List User Files</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. Client requests file list with optional filters (user_id, employer_id, category)<br>2. System applies access control filters<br>3. System queries sys_files with pagination<br>4. System returns file list with total count</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. No filters provided → System returns current user's files<br>2b. Employer filter → System returns all files for that employer (admin/HR only)</td></tr>
+  <tr><td>Postconditions</td><td>Paginated file list returned with metadata (no file content)</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-003</span>, <span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h2 id="uc-04">4.4 UC-04: Delete File</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user (file owner or admin)</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in; file exists with ACTIVE status</td></tr>
+  <tr><td>Main Flow</td><td>1. Client requests file deletion by file ID<br>2. System validates user is file owner or has admin role<br>3. System sets file status to DELETED and deleted_at timestamp<br>4. System emits file.deleted event to message queue<br>5. FileWorker picks up event and deletes S3 object<br>6. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. User not authorized → System returns 403 Forbidden<br>2b. File already DELETED → System returns 404 Not Found<br>5a. S3 deletion fails → Worker retries with exponential backoff</td></tr>
+  <tr><td>Postconditions</td><td>File metadata soft-deleted; S3 object queued for physical deletion; file no longer accessible</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/delete-activity.png" alt="Delete Activity Diagram">
+  <div class="caption">Figure 6: File Delete Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/delete-sequence.png" alt="Delete Sequence Diagram">
+  <div class="caption">Figure 7: File Delete Sequence Diagram</div>
+</div>
+
+<!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-5">5. Non-Functional Requirements</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Category</th>
+    <th>Requirement</th>
+    <th>Target</th>
+  </tr>
+  <tr id="nfr-001">
+    <td><span class="req-id">NFR-001</span></td>
+    <td>Performance</td>
+    <td>Presigned URL generation response time</td>
+    <td>&lt; 500ms (p95)</td>
+  </tr>
+  <tr id="nfr-002">
+    <td><span class="req-id">NFR-002</span></td>
+    <td>Security</td>
+    <td>Presigned URL expiration</td>
+    <td>Upload: 15 min, Download: 15 min</td>
+  </tr>
+  <tr id="nfr-003">
+    <td><span class="req-id">NFR-003</span></td>
+    <td>Availability</td>
+    <td>File service uptime</td>
+    <td>99.9%</td>
+  </tr>
+  <tr id="nfr-004">
+    <td><span class="req-id">NFR-004</span></td>
+    <td>Scalability</td>
+    <td>Concurrent uploads</td>
+    <td>100+ simultaneous uploads</td>
+  </tr>
+  <tr id="nfr-005">
+    <td><span class="req-id">NFR-005</span></td>
+    <td>Storage</td>
+    <td>Max file size per category</td>
+    <td>RESUME: 10MB, AVATAR: 5MB, OTHER: 10MB</td>
+  </tr>
+  <tr id="nfr-006">
+    <td><span class="req-id">NFR-006</span></td>
+    <td>Maintenance</td>
+    <td>Temp file cleanup frequency</td>
+    <td>Every 1 hour (files older than 24h)</td>
+  </tr>
+</table>
+
+<!-- 6. TRACEABILITY -->
+<h1 id="section-6">6. Requirements Traceability Matrix</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Requirement</th>
+    <th>DB Table</th>
+    <th>API Endpoint</th>
+  </tr>
+  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>Upload File</td><td>sys_files</td><td>POST /files/presigned-url, POST /files/confirm</td></tr>
+  <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>Download File</td><td>sys_files</td><td>GET /files/:id/download-url</td></tr>
+  <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>List Files</td><td>sys_files</td><td>GET /files</td></tr>
+  <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Delete File</td><td>sys_files</td><td>DELETE /files/:id</td></tr>
+  <tr id="trace-fr-005"><td><span class="req-id">FR-005</span></td><td>File Access Control</td><td>sys_files (join auth_users, auth_members)</td><td>All file endpoints (middleware)</td></tr>
+  <tr id="trace-fr-006"><td><span class="req-id">FR-006</span></td><td>Temp File Cleanup</td><td>sys_files</td><td>Cron job (internal)</td></tr>
+</table>
+
+</body>
+</html>

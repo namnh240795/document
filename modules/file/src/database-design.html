@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Design - File Management (FILE)</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Database Design Document</h1>
+  <div class="subtitle">File Management Module</div>
+  <span class="module-badge">FILE</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Job Portal System</td></tr>
+    <tr><td>Module</td><td>FILE - File Management</td></tr>
+    <tr><td>Database</td><td>file_db</td></tr>
+    <tr><td>ORM</td><td>Drizzle ORM</td></tr>
+    <tr><td>Date</td><td>2026-08-17</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">File Management SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Schema Design</a></li>
+    <li><a href="#section-3">3. Indexes</a></li>
+    <li><a href="#section-4">4. Migrations</a></li>
+    <li><a href="#section-5">5. Data Dictionary</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>This document defines the database design for the <strong>File Management</strong> module (database: <code>file_db</code>).</p>
+
+<h2>1.2 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Database Solution</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Upload File</td><td>sys_files table (metadata storage)</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Download File</td><td>sys_files table (storage_key lookup)</td></tr>
+  <tr><td><span class="req-id">FR-003</span> List Files</td><td>sys_files table (query with indexes)</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Delete File</td><td>sys_files table (soft delete via status/deleted_at)</td></tr>
+</table>
+
+<h2>1.3 ERD Diagram</h2>
+<div class="diagram">
+  <img src="../../images/erd/erd-file.png" alt="ERD Diagram">
+  <div class="caption">Figure 1: File Management ERD</div>
+</div>
+
+<!-- 2. SCHEMA DESIGN -->
+<h1 id="section-2">2. Schema Design</h1>
+
+<h2>2.1 Database Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Database</td><td><code>file_db</code></td></tr>
+  <tr><td>Table naming</td><td><code>sys_&lt;table_name&gt;</code></td></tr>
+  <tr><td>Primary keys</td><td>UUID (via gen_random_uuid())</td></tr>
+  <tr><td>Timestamps</td><td>created_at, updated_at with NOW() default</td></tr>
+  <tr><td>Soft delete</td><td>deleted_at column (NULL = active)</td></tr>
+  <tr><td>Storage backend</td><td>Amazon S3 (presigned URLs)</td></tr>
+</table>
+
+<h2>2.2 Table: <code>sys_files</code></h2>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Default</th><th>Description</th></tr>
+  <tr><td>id</td><td>uuid</td><td>NO</td><td>gen_random_uuid()</td><td>Primary key</td></tr>
+  <tr><td>employer_id</td><td>uuid</td><td>YES</td><td>NULL</td><td>FK to sys_employers(id), SET NULL on delete</td></tr>
+  <tr><td>user_id</td><td>uuid</td><td>NO</td><td>-</td><td>FK to auth_users(id), CASCADE on delete</td></tr>
+  <tr><td>original_name</td><td>varchar(500)</td><td>NO</td><td>-</td><td>Original filename as uploaded by user</td></tr>
+  <tr><td>storage_key</td><td>varchar(1000)</td><td>NO</td><td>-</td><td>S3 object key (unique path)</td></tr>
+  <tr><td>bucket_name</td><td>varchar(255)</td><td>NO</td><td>-</td><td>S3 bucket name</td></tr>
+  <tr><td>mime_type</td><td>varchar(100)</td><td>NO</td><td>-</td><td>MIME type (e.g., application/pdf)</td></tr>
+  <tr><td>file_size</td><td>bigint</td><td>NO</td><td>-</td><td>File size in bytes</td></tr>
+  <tr><td>category</td><td>varchar(50)</td><td>NO</td><td>'OTHER'</td><td>File category classification</td></tr>
+  <tr><td>is_public</td><td>boolean</td><td>NO</td><td>FALSE</td><td>Whether file is publicly accessible</td></tr>
+  <tr><td>status</td><td>varchar(20)</td><td>NO</td><td>'ACTIVE'</td><td>File status lifecycle</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Creation time</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Last update time</td></tr>
+  <tr><td>deleted_at</td><td>timestamp</td><td>YES</td><td>NULL</td><td>Soft delete timestamp (NULL = active)</td></tr>
+</table>
+
+<pre><code>CREATE TABLE sys_files (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  employer_id     UUID REFERENCES sys_employers(id) ON DELETE SET NULL,
+  user_id         UUID NOT NULL REFERENCES auth_users(id) ON DELETE CASCADE,
+  original_name   VARCHAR(500) NOT NULL,
+  storage_key     VARCHAR(1000) NOT NULL,
+  bucket_name     VARCHAR(255) NOT NULL,
+  mime_type       VARCHAR(100) NOT NULL,
+  file_size       BIGINT NOT NULL,
+  category        VARCHAR(50) NOT NULL DEFAULT 'OTHER',
+  is_public       BOOLEAN NOT NULL DEFAULT FALSE,
+  status          VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  deleted_at      TIMESTAMP,
+  CONSTRAINT sys_files_category_check CHECK (category IN ('RESUME', 'AVATAR', 'COMPANY_DOC', 'JOB_ATTACHMENT', 'OTHER')),
+  CONSTRAINT sys_files_status_check CHECK (status IN ('TEMP', 'ACTIVE', 'DELETED'))
+);</code></pre>
+
+<h2>2.3 Storage Key Strategy</h2>
+<p>Files are organized in S3 using a hierarchical key structure that supports multi-tenancy and access control:</p>
+
+<table>
+  <tr><th>Context</th><th>Pattern</th><th>Example</th></tr>
+  <tr><td>Organization-scoped</td><td><code>{employer_id}/{user_id}/{category}/{uuid_filename}</code></td><td><code>acme-corp/user-123/RESUME/a1b2c3d4-resume.pdf</code></td></tr>
+  <tr><td>Individual user</td><td><code>{user_id}/{category}/{uuid_filename}</code></td><td><code>user-456/AVATAR/e5f6g7h8-photo.jpg</code></td></tr>
+</table>
+
+<p><strong>Key Components:</strong></p>
+<ul>
+  <li><strong>UUID prefix:</strong> Generated filename to prevent collisions (e.g., <code>a1b2c3d4-resume.pdf</code>)</li>
+  <li><strong>Category folder:</strong> Groups files by purpose (RESUME, AVATAR, etc.)</li>
+  <li><strong>User/Employer folder:</strong> Isolates files per tenant for access control</li>
+</ul>
+
+<h2>2.4 Category Enum Values</h2>
+<table>
+  <tr><th>Category</th><th>Description</th><th>Typical MIME Types</th><th>Max Size</th></tr>
+  <tr><td><code>RESUME</code></td><td>User resume/CV files</td><td>application/pdf, application/msword</td><td>10 MB</td></tr>
+  <tr><td><code>AVATAR</code></td><td>User profile photos</td><td>image/jpeg, image/png, image/webp</td><td>5 MB</td></tr>
+  <tr><td><code>COMPANY_DOC</code></td><td>Company documents (logo, certificates)</td><td>image/*, application/pdf</td><td>10 MB</td></tr>
+  <tr><td><code>JOB_ATTACHMENT</code></td><td>Job posting attachments</td><td>application/pdf, application/msword, image/*</td><td>10 MB</td></tr>
+  <tr><td><code>OTHER</code></td><td>General/miscellaneous files</td><td>*</td><td>10 MB</td></tr>
+</table>
+
+<h2>2.5 Status Lifecycle</h2>
+<table>
+  <tr><th>Status</th><th>Description</th><th>Transition</th></tr>
+  <tr><td><code>TEMP</code></td><td>Presigned URL generated, upload in progress</td><td>TEMP → ACTIVE (on confirm), TEMP → DELETED (on timeout/cleanup)</td></tr>
+  <tr><td><code>ACTIVE</code></td><td>Upload confirmed, file available for use</td><td>ACTIVE → DELETED (on user/system delete)</td></tr>
+  <tr><td><code>DELETED</code></td><td>Soft-deleted, awaiting S3 cleanup</td><td>DELETED → (terminal state, physical cleanup by worker)</td></tr>
+</table>
+
+<!-- 3. INDEXES -->
+<h1 id="section-3">3. Indexes</h1>
+
+<pre><code>-- sys_files
+CREATE INDEX sys_files_user_id_idx ON sys_files(user_id);
+CREATE INDEX sys_files_employer_id_idx ON sys_files(employer_id);
+CREATE INDEX sys_files_category_idx ON sys_files(category);
+CREATE INDEX sys_files_status_idx ON sys_files(status);
+CREATE INDEX sys_files_created_at_idx ON sys_files(created_at);
+
+-- Composite index for common query pattern (list active files by user and category)
+CREATE INDEX sys_files_user_category_status_idx ON sys_files(user_id, category, status);
+
+-- Composite index for employer-scoped queries
+CREATE INDEX sys_files_employer_category_status_idx ON sys_files(employer_id, category, status);
+
+-- Unique constraint on storage_key to prevent duplicates
+CREATE UNIQUE INDEX sys_files_storage_key_unique ON sys_files(storage_key);</code></pre>
+
+<h3>Index Usage Patterns</h3>
+<table>
+  <tr><th>Query Pattern</th><th>Index Used</th><th>Est. Rows</th></tr>
+  <tr><td>List user's resumes</td><td>sys_files_user_category_status_idx</td><td>5-20</td></tr>
+  <tr><td>List employer documents</td><td>sys_files_employer_category_status_idx</td><td>10-50</td></tr>
+  <tr><td>Find file by ID</td><td>Primary key (id)</td><td>1</td></tr>
+  <tr><td>Cleanup old TEMP files</td><td>sys_files_status_idx + sys_files_created_at_idx</td><td>0-100</td></tr>
+  <tr><td>List recent uploads</td><td>sys_files_created_at_idx</td><td>varies</td></tr>
+</table>
+
+<!-- 4. MIGRATIONS -->
+<h1 id="section-4">4. Migrations</h1>
+
+<h2>4.1 Migration Strategy</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th></tr>
+  <tr><td>Tool</td><td>Drizzle ORM (drizzle-kit)</td></tr>
+  <tr><td>Database</td><td>file_db</td></tr>
+  <tr><td>Rollback</td><td>Required for every migration</td></tr>
+</table>
+
+<h2>4.2 Migration Order</h2>
+<table>
+  <tr><th>Order</th><th>Migration</th><th>Description</th></tr>
+  <tr><td>1</td><td>001_create_sys_files</td><td>Create sys_files table with constraints</td></tr>
+  <tr><td>2</td><td>002_create_indexes</td><td>Create all indexes</td></tr>
+</table>
+
+<!-- 5. DATA DICTIONARY -->
+<h1 id="section-5">5. Data Dictionary</h1>
+
+<table class="trace-table">
+  <tr><th>Table</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
+  <tr><td>sys_files</td><td>File metadata and storage references</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-003</span>, <span class="req-id">FR-004</span></td><td>100,000</td></tr>
+</table>
+
+<h3>Row Growth Estimates</h3>
+<table>
+  <tr><th>File Category</th><th>Avg Size (bytes)</th><th>Est. Records/Y1</th><th>Storage (GB)</th></tr>
+  <tr><td>RESUME</td><td>500 KB</td><td>20,000</td><td>10</td></tr>
+  <tr><td>AVATAR</td><td>200 KB</td><td>15,000</td><td>3</td></tr>
+  <tr><td>COMPANY_DOC</td><td>1 MB</td><td>5,000</td><td>5</td></tr>
+  <tr><td>JOB_ATTACHMENT</td><td>800 KB</td><td>10,000</td><td>8</td></tr>
+  <tr><td>OTHER</td><td>500 KB</td><td>5,000</td><td>2.5</td></tr>
+  <tr><td><strong>Total</strong></td><td>-</td><td><strong>55,000</strong></td><td><strong>28.5</strong></td></tr>
+</table>
+
+</body>
+</html>

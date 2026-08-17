@@ -1,0 +1,63 @@
+@startuml
+' ============================================================
+' ERD: File Management Database (file_db)
+' Modules: FILE
+' Tables: sys_files
+' ============================================================
+
+skinparam class {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  AttributeFontSize 12
+}
+
+title File Management Database (file_db)
+
+entity "sys_files" as files {
+  * id : uuid <<PK>>
+  --
+  employer_id : uuid <<FK>>
+  * user_id : uuid <<FK>>
+  * original_name : varchar(500)
+  * storage_key : varchar(1000)
+  * bucket_name : varchar(255)
+  * mime_type : varchar(100)
+  * file_size : bigint
+  * category : varchar(50)
+  * is_public : boolean DEFAULT false
+  * status : varchar(20) DEFAULT 'ACTIVE'
+  * created_at : timestamp
+  * updated_at : timestamp
+  deleted_at : timestamp
+}
+
+entity "auth_users" as users {
+  * id : uuid <<PK>>
+  --
+  * email : varchar(255)
+  * name : varchar(100)
+}
+
+entity "recr_candidate_resumes" as resumes {
+  * id : uuid <<PK>>
+  --
+  * candidate_id : uuid <<FK>>
+  * file_id : uuid <<FK>>
+  * is_primary : boolean
+  * created_at : timestamp
+}
+
+entity "recr_applications" as applications {
+  * id : uuid <<PK>>
+  --
+  * resume_file_id : uuid <<FK>>
+}
+
+' --- Relationships ---
+users ||--o{ files : "owns"
+users ||--o{ resumes : "has"
+files ||--o{ resumes : "referenced by"
+files ||--o{ applications : "frozen in"
+
+@enduml

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Technical Design Specification - File Management (FILE)</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Technical Design Specification</h1>
+  <div class="subtitle">File Management Module</div>
+  <span class="module-badge">FILE</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Job Portal System</td></tr>
+    <tr><td>Module</td><td>FILE - File Management</td></tr>
+    <tr><td>Date</td><td>2026-08-17</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Related SRS</td><td><a href="srs.html">File Management SRS</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Overview</a></li>
+    <li><a href="#section-2">2. Architecture</a>
+      <ul>
+        <li><a href="#section-2-1">2.1 Architecture Style</a></li>
+        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-3">3. Component Design</a>
+      <ul>
+        <li><a href="#section-3-1">3.1 Component Diagram</a></li>
+        <li><a href="#section-3-2">3.2 Module Structure</a></li>
+        <li><a href="#section-3-3">3.3 Component to Requirements Mapping</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Data Architecture</a>
+      <ul>
+        <li><a href="#section-4-1">4.1 Database</a></li>
+        <li><a href="#section-4-2">4.2 Data Requirements Resolution</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. API Design</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 Endpoint to Requirements Mapping</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. Integration Flows</a>
+      <ul>
+        <li><a href="#section-6-1">6.1 File Upload Flow</a></li>
+        <li><a href="#section-6-2">6.2 File Download Flow</a></li>
+        <li><a href="#section-6-3">6.3 File Delete Flow</a></li>
+        <li><a href="#section-6-4">6.4 Temp File Cleanup Flow</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-7">7. Security Design</a></li>
+    <li><a href="#section-8">8. Traceability Summary</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Overview</h1>
+
+<h2>1.1 Purpose</h2>
+<p>This document describes the technical design decisions for the <strong>File Management</strong> module.</p>
+
+<h2>1.2 Requirements Addressed</h2>
+<table class="trace-table">
+  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
+  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-006</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-006</span></td><td>Section 6, 7</td></tr>
+</table>
+
+<!-- 2. ARCHITECTURE -->
+<h1 id="section-2">2. Architecture</h1>
+
+<h2 id="section-2-1">2.1 Architecture Style</h2>
+<table>
+  <tr><th>Aspect</th><th>Decision</th><th>Resolves</th></tr>
+  <tr><td>Pattern</td><td>NestJS Module (within Monolith)</td><td><span class="req-id">NFR-003</span></td></tr>
+  <tr><td>Storage Backend</td><td>Amazon S3 (presigned URLs)</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
+  <tr><td>ORM</td><td>Drizzle ORM</td><td>All data requirements</td></tr>
+  <tr><td>Database</td><td>PostgreSQL (file_db)</td><td><span class="req-id">NFR-003</span></td></tr>
+  <tr><td>Message Queue</td><td>RabbitMQ (event-driven cleanup)</td><td><span class="req-id">FR-004</span>, <span class="req-id">FR-006</span></td></tr>
+  <tr><td>Job Scheduler</td><td>NestJS Scheduler (cron)</td><td><span class="req-id">FR-006</span></td></tr>
+</table>
+
+<h2 id="section-2-2">2.2 Key Design Decisions</h2>
+<table class="trace-table">
+  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
+  <tr>
+    <td>1</td><td>Presigned URL upload (client-side)</td>
+    <td>Reduces server load; no need to buffer file content in backend; supports large files</td>
+    <td><span class="req-id">FR-001</span>, <span class="req-id">NFR-004</span></td>
+  </tr>
+  <tr>
+    <td>2</td><td>Soft delete with event-driven S3 cleanup</td>
+    <td>Allows rollback; decouples metadata cleanup from physical storage cleanup; audit trail</td>
+    <td><span class="req-id">FR-004</span></td>
+  </tr>
+  <tr>
+    <td>3</td><td>Separate file_db database</td>
+    <td>Independent scaling; isolated failure domain; clean separation of concerns</td>
+    <td><span class="req-id">NFR-003</span></td>
+  </tr>
+  <tr>
+    <td>4</td><td>Hierarchical S3 key structure</td>
+    <td>Supports multi-tenancy; simplifies access control; efficient listing by prefix</td>
+    <td><span class="req-id">FR-005</span></td>
+  </tr>
+  <tr>
+    <td>5</td><td>TEMP status for in-progress uploads</td>
+    <td>Prevents phantom files; enables automatic cleanup of abandoned uploads</td>
+    <td><span class="req-id">FR-006</span></td>
+  </tr>
+  <tr>
+    <td>6</td><td>Category-based validation</td>
+    <td>Enforces file type/size rules per use case; prevents abuse</td>
+    <td><span class="req-id">FR-001</span>, <span class="req-id">NFR-005</span></td>
+  </tr>
+</table>
+
+<!-- 3. COMPONENT DESIGN -->
+<h1 id="section-3">3. Component Design</h1>
+
+<h2 id="section-3-1">3.1 Component Diagram</h2>
+<div class="diagram">
+  <img src="./images/component/component-diagram.png" alt="FILE Component Diagram">
+  <div class="caption">Figure 1: FILE Module Components</div>
+</div>
+
+<h2 id="section-3-2">3.2 Module Structure</h2>
+<pre><code>src/
+  file/
+    file.module.ts
+    file.controller.ts
+    file.service.ts
+    file.guard.ts
+    dto/
+      create-file.dto.ts
+      confirm-file.dto.ts
+      list-files.dto.ts
+    workers/
+      file.worker.ts          # S3 cleanup consumer
+    events/
+      file.events.ts          # Event definitions
+    utils/
+      s3.util.ts              # S3 client wrapper
+      presigned.util.ts       # Presigned URL generation
+      storage-key.util.ts     # Storage key generation</code></pre>
+
+<h2 id="section-3-3">3.3 Component to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
+  <tr><td>FileController</td><td>HTTP endpoints for upload, download, list, delete</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-004</span></td></tr>
+  <tr><td>FileService</td><td>Business logic: validation, metadata CRUD, S3 coordination</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-005</span></td></tr>
+  <tr><td>FileGuard</td><td>Access control: ownership and RBAC validation</td><td><span class="req-id">FR-005</span></td></tr>
+  <tr><td>FileWorker</td><td>Async S3 cleanup consumer (deletes physical objects)</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>S3Util</td><td>AWS S3 client wrapper (upload, delete, presigned URLs)</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
+  <tr><td>StorageKeyUtil</td><td>Generate hierarchical storage keys with UUID prefix</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>TempCleanupJob</td><td>Cron job to remove TEMP files older than 24h</td><td><span class="req-id">FR-006</span></td></tr>
+</table>
+
+<h3>3.4 Class Design</h3>
+
+<h4>FileController</h4>
+<table>
+  <tr><th>Method</th><th>Signature</th><th>Description</th></tr>
+  <tr><td>POST</td><td><code>generatePresignedUrl(dto: CreateFileDto)</code></td><td>Generate presigned upload URL</td></tr>
+  <tr><td>POST</td><td><code>confirmUpload(dto: ConfirmFileDto)</code></td><td>Confirm upload, set status ACTIVE</td></tr>
+  <tr><td>GET</td><td><code>getDownloadUrl(id: string)</code></td><td>Generate presigned download URL</td></tr>
+  <tr><td>GET</td><td><code>listFiles(query: ListFilesDto)</code></td><td>List files with filters and pagination</td></tr>
+  <tr><td>DELETE</td><td><code>deleteFile(id: string)</code></td><td>Soft delete file, emit cleanup event</td></tr>
+</table>
+
+<h4>FileService</h4>
+<table>
+  <tr><th>Method</th><th>Signature</th><th>Description</th></tr>
+  <tr><td>createFileMetadata</td><td><code>(dto, userId, employerId?)</code></td><td>Insert sys_files record with TEMP status</td></tr>
+  <tr><td>confirmUpload</td><td><code>(fileId, userId)</code></td><td>Verify ownership, update status to ACTIVE</td></tr>
+  <tr><td>generateDownloadUrl</td><td><code>(fileId, userId)</code></td><td>Validate access, generate presigned URL</td></tr>
+  <tr><td>listFiles</td><td><code>(filters, pagination)</code></td><td>Query files with access control</td></tr>
+  <tr><td>softDelete</td><td><code>(fileId, userId)</code></td><td>Set status DELETED, emit file.deleted event</td></tr>
+  <tr><td>cleanupTempFiles</td><td><code>()</code></td><td>Delete TEMP files older than 24h (cron)</td></tr>
+</table>
+
+<h4>FileWorker</h4>
+<table>
+  <tr><th>Method</th><th>Event</th><th>Description</th></tr>
+  <tr><td>handleFileDeleted</td><td><code>file.deleted</code></td><td>Delete S3 object using storage_key</td></tr>
+  <tr><td>handleTempCleanup</td><td><code>file.temp_cleanup</code></td><td>Delete S3 objects for cleaned-up TEMP files</td></tr>
+</table>
+
+<!-- 4. DATA ARCHITECTURE -->
+<h1 id="section-4">4. Data Architecture</h1>
+
+<h2 id="section-4-1">4.1 Database</h2>
+<p>Database: <code>file_db</code> (PostgreSQL)</p>
+<p>Refer to: <a href="database-design.html">Database Design</a></p>
+
+<h2 id="section-4-2">4.2 Data Requirements Resolution</h2>
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Upload File</td><td>Create metadata record (TEMP), generate presigned URL</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Download File</td><td>Lookup storage_key, generate presigned download URL</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-003</span> List Files</td><td>Query with filters (user, employer, category) + pagination</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Delete File</td><td>Soft delete (status=DELETED), emit event for S3 cleanup</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-005</span> Access Control</td><td>FileGuard middleware validates ownership or org membership</td><td>sys_files + auth_users + auth_members</td></tr>
+  <tr><td><span class="req-id">FR-006</span> Temp Cleanup</td><td>Cron job deletes TEMP records > 24h, emits cleanup events</td><td>sys_files</td></tr>
+</table>
+
+<!-- 5. API DESIGN -->
+<h1 id="section-5">5. API Design</h1>
+
+<h2 id="section-5-1">5.1 Endpoint to Requirements Mapping</h2>
+<table class="trace-table">
+  <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
+  <tr><td>POST</td><td>/files/presigned-url</td><td>Generate presigned upload URL</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>POST</td><td>/files/confirm</td><td>Confirm file upload</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>GET</td><td>/files/:id/download-url</td><td>Generate presigned download URL</td><td><span class="req-id">FR-002</span></td></tr>
+  <tr><td>GET</td><td>/files</td><td>List files with filters</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>DELETE</td><td>/files/:id</td><td>Soft delete file</td><td><span class="req-id">FR-004</span></td></tr>
+</table>
+
+<h3>5.2 Middleware Pipeline</h3>
+<pre><code>Request
+  → AuthGuard (JWT validation)
+    → FileGuard (ownership/RBAC check)
+      → FileController (handler)
+        → FileService (business logic)
+          → Response</code></pre>
+
+<!-- 6. INTEGRATION FLOWS -->
+<h1 id="section-6">6. Integration Flows</h1>
+
+<h2 id="section-6-1">6.1 File Upload Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/upload-activity.png" alt="Upload Activity Diagram">
+  <div class="caption">Figure 2: File Upload Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/upload-sequence.png" alt="Upload Sequence Diagram">
+  <div class="caption">Figure 3: File Upload Integration Flow</div>
+</div>
+
+<p><strong>Flow Description:</strong></p>
+<ol>
+  <li>Client sends POST /files/presigned-url with file metadata</li>
+  <li>FileService validates category MIME types and size limits</li>
+  <li>StorageKeyUtil generates unique S3 key: <code>{employer_id}/{user_id}/{category}/{uuid_filename}</code></li>
+  <li>S3Util generates presigned PUT URL (15 min expiry)</li>
+  <li>FileService inserts sys_files record with status TEMP</li>
+  <li>Response sent to client with presigned URL</li>
+  <li>Client uploads file directly to S3 via presigned URL (PUT)</li>
+  <li>Client calls POST /files/confirm with file_id</li>
+  <li>FileService updates status from TEMP to ACTIVE</li>
+  <li>File record returned to client</li>
+</ol>
+
+<h2 id="section-6-2">6.2 File Download Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/download-activity.png" alt="Download Activity Diagram">
+  <div class="caption">Figure 4: File Download Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/download-sequence.png" alt="Download Sequence Diagram">
+  <div class="caption">Figure 5: File Download Integration Flow</div>
+</div>
+
+<p><strong>Flow Description:</strong></p>
+<ol>
+  <li>Client sends GET /files/:id/download-url</li>
+  <li>AuthGuard validates JWT token</li>
+  <li>FileGuard checks access (owner or org admin/HR)</li>
+  <li>FileService looks up sys_files record</li>
+  <li>S3Util generates presigned GET URL (15 min expiry)</li>
+  <li>Response sent to client with download URL</li>
+  <li>Client downloads file from S3 via presigned URL (GET)</li>
+</ol>
+
+<h2 id="section-6-3">6.3 File Delete Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/delete-activity.png" alt="Delete Activity Diagram">
+  <div class="caption">Figure 6: File Delete Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/delete-sequence.png" alt="Delete Sequence Diagram">
+  <div class="caption">Figure 7: File Delete Integration Flow</div>
+</div>
+
+<p><strong>Flow Description:</strong></p>
+<ol>
+  <li>Client sends DELETE /files/:id</li>
+  <li>AuthGuard validates JWT token</li>
+  <li>FileGuard checks ownership or admin role</li>
+  <li>FileService sets status to DELETED and deleted_at timestamp</li>
+  <li>FileService emits <code>file.deleted</code> event to RabbitMQ</li>
+  <li>FileWorker consumes event</li>
+  <li>FileWorker calls S3Util to delete S3 object by storage_key</li>
+  <li>Success response sent to client</li>
+</ol>
+
+<h2 id="section-6-4">6.4 Temp File Cleanup Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/cleanup-activity.png" alt="Cleanup Activity Diagram">
+  <div class="caption">Figure 8: Temp File Cleanup Activity Flow</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/cleanup-sequence.png" alt="Cleanup Sequence Diagram">
+  <div class="caption">Figure 9: Temp File Cleanup Integration Flow</div>
+</div>
+
+<p><strong>Flow Description:</strong></p>
+<ol>
+  <li>NestJS Scheduler triggers cron job every 1 hour</li>
+  <li>TempCleanupJob queries sys_files where status=TEMP AND created_at &lt; NOW() - 24h</li>
+  <li>For each expired TEMP file:
+    <ul>
+      <li>Delete sys_files record</li>
+      <li>Emit <code>file.temp_cleanup</code> event with storage_key</li>
+    </ul>
+  </li>
+  <li>FileWorker consumes events and deletes S3 objects</li>
+</ol>
+
+<!-- 7. SECURITY -->
+<h1 id="section-7">7. Security Design</h1>
+
+<table class="trace-table">
+  <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
+  <tr>
+    <td><span class="req-id">FR-005</span> File Access Control</td>
+    <td>FileGuard middleware with ownership + RBAC check</td>
+    <td>Check user_id match or org membership with admin/HR role</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-002</span> URL Expiration</td>
+    <td>Short-lived presigned URLs</td>
+    <td>Upload URL: 15 min, Download URL: 15 min</td>
+  </tr>
+  <tr>
+    <td><span class="req-id">NFR-005</span> File Size Limits</td>
+    <td>Category-based validation</td>
+    <td>RESUME/COMPANY_DOC/JOB_ATTACHMENT: 10MB, AVATAR: 5MB</td>
+  </tr>
+</table>
+
+<h3>7.1 Access Control Rules</h3>
+<table>
+  <tr><th>Operation</th><th>Owner</th><th>Org Admin/HR</th><th>Other Users</th></tr>
+  <tr><td>Upload</td><td>Yes</td><td>Yes (org-scoped)</td><td>Yes (personal only)</td></tr>
+  <tr><td>Download</td><td>Yes</td><td>Yes (org-scoped)</td><td>No</td></tr>
+  <tr><td>List</td><td>Own files only</td><td>Org files</td><td>Own files only</td></tr>
+  <tr><td>Delete</td><td>Yes</td><td>Yes (org-scoped)</td><td>No</td></tr>
+</table>
+
+<h3>7.2 Presigned URL Security</h3>
+<ul>
+  <li>Presigned URLs use SigV4 signing with short expiration (15 minutes)</li>
+  <li>URLs are single-use in practice (though technically reusable within expiry window)</li>
+  <li>No file content passes through the application server (direct S3 transfer)</li>
+  <li>S3 bucket policy enforces HTTPS-only access</li>
+  <li>CORS configuration allows only the application domain</li>
+</ul>
+
+<!-- 8. TRACEABILITY -->
+<h1 id="section-8">8. Traceability Summary</h1>
+
+<table class="trace-table">
+  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
+  <tr><td><span class="req-id">FR-001</span></td><td>Upload File</td><td>3.2, 5.1, 6.1</td><td>FileController + POST /files/presigned-url + presigned URL upload</td></tr>
+  <tr><td><span class="req-id">FR-002</span></td><td>Download File</td><td>3.2, 5.1, 6.2</td><td>FileController + GET /files/:id/download-url + presigned URL download</td></tr>
+  <tr><td><span class="req-id">FR-003</span></td><td>List Files</td><td>3.2, 5.1</td><td>FileController + GET /files with filters and pagination</td></tr>
+  <tr><td><span class="req-id">FR-004</span></td><td>Delete File</td><td>3.2, 5.1, 6.3</td><td>FileController + DELETE /files/:id + file.deleted event + FileWorker</td></tr>
+  <tr><td><span class="req-id">FR-005</span></td><td>File Access Control</td><td>3.2, 7</td><td>FileGuard middleware with ownership + RBAC validation</td></tr>
+  <tr><td><span class="req-id">FR-006</span></td><td>Temp File Cleanup</td><td>3.2, 6.4</td><td>TempCleanupJob (cron) + file.temp_cleanup event + FileWorker</td></tr>
+  <tr><td><span class="req-id">NFR-001</span></td><td>Performance</td><td>2.1</td><td>Presigned URLs eliminate server as data proxy</td></tr>
+  <tr><td><span class="req-id">NFR-002</span></td><td>Security - URL Expiry</td><td>7.2</td><td>15 min presigned URL expiration</td></tr>
+  <tr><td><span class="req-id">NFR-003</span></td><td>Availability</td><td>2.1</td><td>Independent file_db; S3 99.999999999% durability</td></tr>
+  <tr><td><span class="req-id">NFR-004</span></td><td>Scalability</td><td>2.2</td><td>Client-side upload; no server file buffering</td></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>File Size Limits</td><td>3.2, 7</td><td>Category-based validation in FileService</td></tr>
+  <tr><td><span class="req-id">NFR-006</span></td><td>Temp Cleanup</td><td>6.4</td><td>Hourly cron job via NestJS Scheduler</td></tr>
+</table>
+
+</body>
+</html>

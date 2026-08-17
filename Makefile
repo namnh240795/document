@@ -1,4 +1,4 @@
-.PHONY: help pull generate generate-erd-auth generate-erd-log generate-erd-all generate-module generate-all-modules generate-feature-map build-docs build-all clean open watch
+.PHONY: help pull generate generate-erd-auth generate-erd-log generate-erd-file generate-erd-all generate-module generate-all-modules generate-feature-map build-docs build-all clean open watch
 
 PLANTUML_FORMAT ?= png
 
@@ -19,8 +19,11 @@ generate-erd-auth: ## Generate auth_db ERD only
 generate-erd-log: ## Generate log_db ERD only
 	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-log.puml
 
+generate-erd-file: ## Generate file_db ERD only
+	@docker run --rm -v "$(PWD)/templates:/input" -v "$(PWD)/modules/images/erd:/output" plantuml/plantuml:latest -t$(PLANTUML_FORMAT) -o /output /input/erd-file.puml
+
 generate-erd-all: ## Generate all ERD diagrams (all databases)
-	@make generate-erd-auth && make generate-erd-log
+	@make generate-erd-auth && make generate-erd-log && make generate-erd-file
 
 # ============================================================
 # Feature Map generation
