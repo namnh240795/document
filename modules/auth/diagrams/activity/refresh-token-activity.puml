@@ -1,0 +1,34 @@
+@startuml
+' ============================================================
+' Activity Diagram - Refresh Token Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Refresh Token Flow
+
+start
+
+:Client detects access token expired;
+
+:Send refresh token to /auth/refresh;
+
+:Validate refresh token + session;
+
+if (Token valid?) then (yes)
+  :Generate new access token;
+  :Return new token;
+else (no)
+  :Return 401 Unauthorized;
+  :User must re-login;
+endif
+
+stop
+
+@enduml

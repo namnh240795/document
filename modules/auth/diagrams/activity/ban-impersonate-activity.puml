@@ -1,0 +1,35 @@
+@startuml
+' ============================================================
+' Activity Diagram - User Ban & Impersonation Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title User Ban & Impersonation Flow
+
+start
+
+:Admin selects user;
+
+if (Action?) then (ban)
+  :Provide ban reason + optional expiry;
+  :Ban user;
+  :Invalidate all user sessions;
+elseif (unban) then
+  :Remove ban;
+elseif (impersonate) then
+  :Create admin session as target user;
+  :Redirect to target user dashboard;
+endif
+
+:Return success response;
+
+stop
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+' ============================================================
+' Activity Diagram - Resend Invitation Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Resend Invitation Flow
+
+start
+
+:Admin selects invitation to resend;
+
+if (Invitation already accepted?) then (yes)
+  :Return 409 Conflict;
+  stop
+endif
+
+:Generate new token\n(old token invalidated);
+
+:Reset status to PENDING;
+
+:Extend expiry by 72 hours;
+
+:Send new invitation email\nvia EMAIL module;
+
+:Return success response;
+
+stop
+
+@enduml

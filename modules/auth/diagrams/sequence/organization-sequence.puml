@@ -1,0 +1,93 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Organization Management Flow
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Organization Management Flow
+
+actor User
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+
+== Step 1: Create Organization ==
+
+User -> FE : Fill organization details
+activate FE
+
+FE -> API : POST /organization/create\n{ name, slug, logo }
+activate API
+
+API -> DB : SELECT slug FROM auth_organizations\nWHERE slug = ?
+activate DB
+DB --> API : Slug check
+deactivate DB
+
+alt Slug already taken
+  API --> FE : 409 CONFLICT
+  FE --> User : Show "Slug already taken"
+end
+
+API -> DB : INSERT INTO auth_organizations\n(name, slug, logo)
+activate DB
+DB --> API : Organization created (id)
+deactivate DB
+
+API -> DB : INSERT INTO auth_members\n(organization_id, user_id, role: 'Employer')
+activate DB
+DB --> API : Member created (owner)
+deactivate DB
+
+API --> FE : 200 { organization }
+deactivate API
+
+FE --> User : "Organization created"
+deactivate FE
+
+== Step 2: List Organizations ==
+
+User -> FE : View organizations
+activate FE
+
+FE -> API : GET /organization/list
+activate API
+
+API -> DB : SELECT o.* FROM auth_organizations o\nJOIN auth_members m ON o.id = m.organization_id\nWHERE m.user_id = ?
+activate DB
+DB --> API : Organization list
+deactivate DB
+
+API --> FE : 200 { organizations: [...] }
+deactivate API
+
+FE --> User : Display organizations
+deactivate FE
+
+== Step 3: Manage Members ==
+
+User -> FE : View members
+activate FE
+
+FE -> API : GET /organization/list-members\n?organizationId=org-123
+activate API
+
+API -> DB : SELECT m.*, u.name, u.email\nFROM auth_members m\nJOIN auth_users u ON m.user_id = u.id\nWHERE m.organization_id = ?
+activate DB
+DB --> API : Member list
+deactivate DB
+
+API --> FE : 200 { members: [...] }
+deactivate API
+
+FE --> User : Display members
+deactivate FE
+
+@enduml

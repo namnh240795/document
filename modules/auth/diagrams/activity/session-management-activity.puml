@@ -1,0 +1,33 @@
+@startuml
+' ============================================================
+' Activity Diagram - Session Management Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Session Management Flow
+
+start
+
+:Navigate to session settings;
+
+:Display active sessions\n(device, IP, last active);
+
+if (Action selected?) then (revoke one)
+  :Select specific session;
+  :Invalidate session;
+elseif (revoke all others) then
+  :Invalidate all except current;
+endif
+
+:Return updated session list;
+
+stop
+
+@enduml

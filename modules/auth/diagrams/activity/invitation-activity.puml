@@ -1,0 +1,53 @@
+@startuml
+' ============================================================
+' Activity Diagram - Invitation Management Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Invitation Management Flow
+
+start
+
+:Admin enters invitee email + role;
+
+:Generate random token\n(SHA-256 hash stored);
+
+if (Duplicate pending invitation?) then (yes)
+  :Return 409 Conflict;
+  stop
+endif
+
+:Store token hash in auth_invitations;
+
+:Send invitation email via EMAIL module\n(raw token in URL);
+
+:Invitee receives email;
+
+:Invitee clicks invitation link;
+
+:Frontend calls verify endpoint\n(public, no auth);
+
+:System validates token;
+
+if (Token valid?) then (yes)
+  :Display invitation details;
+  :Invitee accepts or rejects;
+  if (Accepted?) then (yes)
+    :Add user to organization\nwith specified role;
+  else (no)
+    :Update status to rejected;
+  endif
+else (no)
+  :Show error\n(expired/revoked/invalid);
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,78 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Session Management Flow
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Session Management Flow
+
+actor User
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+
+== Step 1: List Sessions ==
+
+User -> FE : Navigate to session settings
+activate FE
+
+FE -> API : GET /list-sessions
+activate API
+
+API -> DB : SELECT * FROM auth_sessions\nWHERE user_id = ?\nORDER BY created_at DESC
+activate DB
+DB --> API : Session list
+deactivate DB
+
+API --> FE : 200 { sessions: [...] }
+deactivate API
+
+FE --> User : Display sessions\n(device, IP, last active)
+deactivate FE
+
+== Step 2: Revoke Session ==
+
+User -> FE : Select session to revoke
+activate FE
+
+FE -> API : POST /revoke-session\n{ sessionId }
+activate API
+
+API -> DB : DELETE FROM auth_sessions\nWHERE id = ? AND user_id = ?
+activate DB
+DB --> API : Deleted
+deactivate DB
+
+API --> FE : 200 { success: true }
+deactivate API
+
+FE --> User : "Session revoked"
+deactivate FE
+
+== Step 3: Revoke All Other Sessions ==
+
+User -> FE : Click "Revoke all other sessions"
+activate FE
+
+FE -> API : POST /revoke-other-sessions
+activate API
+
+API -> DB : DELETE FROM auth_sessions\nWHERE user_id = ?\nAND id != current_session_id
+activate DB
+DB --> API : Deleted
+deactivate DB
+
+API --> FE : 200 { success: true }
+deactivate API
+
+FE --> User : "All other sessions revoked"
+deactivate FE
+
+@enduml

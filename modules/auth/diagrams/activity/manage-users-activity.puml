@@ -1,0 +1,38 @@
+@startuml
+' ============================================================
+' Activity Diagram - Manage Users Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Manage Users Flow
+
+start
+
+:Admin navigates to user management;
+
+:System displays user list\n(pagination, search);
+
+if (Action selected?) then (view)
+  :Display user details;
+elseif (update) then
+  :Edit user fields;
+  :Validate changes;
+  :Update user record;
+elseif (delete) then
+  :Confirm deletion;
+  :Delete user record;
+  :Revoke all sessions;
+endif
+
+:Return success response;
+
+stop
+
+@enduml

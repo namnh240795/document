@@ -1,0 +1,71 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Resend Invitation Flow
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Resend Invitation Flow
+
+actor Admin
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+queue "RabbitMQ" as MQ
+participant "EMAIL\nService" as Email
+
+== Step 1: Resend Invitation ==
+
+Admin -> FE : Select invitation to resend
+activate FE
+
+FE -> API : POST /organization/resend-invitation\n{ invitationId }
+activate API
+
+API -> DB : SELECT * FROM auth_invitations\nWHERE id = ?
+activate DB
+DB --> API : Invitation
+deactivate DB
+
+alt Already accepted
+  API --> FE : 409 Cannot resend accepted
+end
+
+== Step 2: Generate New Token ==
+
+API -> API : Generate new token\n(old token invalidated)
+
+API -> DB : UPDATE auth_invitations\nSET token_hash = ?,\nstatus = 'pending',\nexpires_at = NOW() + 72h\nWHERE id = ?
+activate DB
+DB --> API : Updated
+deactivate DB
+
+== Step 3: Send Email ==
+
+API -> MQ : PUBLISH invitation.resent\n{ invitationId, email, inviteUrl }
+activate MQ
+MQ --> API : Queued
+deactivate MQ
+
+API --> FE : 200 { invitation, message: "Resent" }
+deactivate API
+
+FE --> Admin : "Invitation resent"
+deactivate FE
+
+== Step 4: Email Delivery (async) ==
+
+MQ -> Email : CONSUME invitation.resent
+activate Email
+
+Email -> Email : Send new invitation email\n(new raw token in URL)
+
+deactivate Email
+
+@enduml

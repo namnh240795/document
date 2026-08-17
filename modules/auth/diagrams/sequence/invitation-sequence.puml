@@ -1,0 +1,122 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Invitation Management Flow
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Invitation Management Flow
+
+actor Admin
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+queue "RabbitMQ" as MQ
+participant "EMAIL\nService" as Email
+actor "Invitee" as Inv
+
+== Step 1: Send Invitation ==
+
+Admin -> FE : Enter invitee email + role
+activate FE
+
+FE -> API : POST /organization/invite-member\n{ organizationId, email, role }
+activate API
+
+API -> API : Generate token\n(crypto.randomBytes(32))
+
+API -> API : SHA-256 hash token
+
+API -> DB : INSERT INTO auth_invitations\n(organization_id, email, token_hash,\nrole, inviter_id, expires_at)
+activate DB
+DB --> API : Invitation created
+deactivate DB
+
+API -> MQ : PUBLISH invitation.created\n{ invitationId, email, role, inviteUrl }
+activate MQ
+MQ --> API : Queued
+deactivate MQ
+
+API --> FE : 200 { invitation }
+deactivate API
+
+FE --> Admin : "Invitation sent"
+deactivate FE
+
+== Step 2: Email Delivery (async) ==
+
+MQ -> Email : CONSUME invitation.created
+activate Email
+
+Email -> Inv : Send invitation email\n(invite URL with raw token)
+activate Inv
+Inv --> Email : Received
+deactivate Inv
+
+deactivate Email
+
+== Step 3: Verify Token (public) ==
+
+Inv -> FE : Click invitation link
+activate FE
+
+FE -> API : GET /organization/verify-invitation\n?token={raw_token}
+activate API
+
+API -> API : Hash token\n(SHA-256)
+
+API -> DB : SELECT * FROM auth_invitations\nWHERE token_hash = ?
+activate DB
+DB --> API : Invitation
+deactivate DB
+
+alt Token valid + not expired
+  API --> FE : 200 { valid: true, invitation }
+else Expired
+  API -> DB : UPDATE auth_invitations\nSET status = 'expired'\nWHERE id = ?
+  API --> FE : 200 { valid: false, reason: "expired" }
+else Already accepted
+  API --> FE : 200 { valid: false, reason: "accepted" }
+end
+
+deactivate API
+
+FE --> Inv : Display invitation details
+deactivate FE
+
+== Step 4: Accept Invitation ==
+
+Inv -> FE : Click "Accept"
+activate FE
+
+FE -> API : POST /organization/accept-invitation\n{ invitationId }
+activate API
+
+API -> DB : UPDATE auth_invitations\nSET status = 'accepted',\naccepted_at = NOW()\nWHERE id = ?
+activate DB
+DB --> API : Updated
+deactivate DB
+
+API -> DB : INSERT INTO auth_members\n(organization_id, user_id, role)
+activate DB
+DB --> API : Member added
+deactivate DB
+
+API -> MQ : PUBLISH invitation.accepted\n{ invitationId, userId, role }
+activate MQ
+MQ --> API : Queued
+deactivate MQ
+
+API --> FE : 200 { success: true }
+deactivate API
+
+FE --> Inv : "Welcome! You joined the organization"
+deactivate FE
+
+@enduml

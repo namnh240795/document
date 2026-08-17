@@ -1,0 +1,36 @@
+@startuml
+' ============================================================
+' Activity Diagram - Revoke Invitation Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Revoke Invitation Flow
+
+start
+
+:Admin selects invitation to revoke;
+
+if (Owner check passed?) then (yes)
+  if (Status?) then (pending)
+    :Update status to REVOKED;
+    :Emit invitation.revoked event;
+    :Return success;
+  elseif (accepted) then
+    :Return 409\nCannot revoke accepted;
+  elseif (revoked) then
+    :Return 409\nAlready revoked;
+  endif
+else (no)
+  :Return 403 Forbidden;
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,84 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Social Authentication Flow
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Social Authentication Flow
+
+actor User
+participant "Frontend" as FE
+participant "Auth API" as API
+participant "OAuth Provider\n(Google/GitHub)" as OAuth
+database "PostgreSQL\n(auth_db)" as DB
+
+== Step 1: Initiate Social Sign-In ==
+
+User -> FE : Click "Sign in with Google"
+activate FE
+
+FE -> API : POST /sign-in/social\n{ provider: "google", callbackURL }
+activate API
+
+API --> FE : 200 { url: "https://accounts.google.com/...", redirect: true }
+deactivate API
+
+FE -> OAuth : Redirect to OAuth provider
+activate OAuth
+
+== Step 2: User Authenticates ==
+
+User -> OAuth : Login + authorize
+OAuth --> FE : Redirect with auth code
+deactivate OAuth
+
+== Step 3: Exchange Code ==
+
+FE -> API : POST /callback/google\n{ code, state }
+activate API
+
+API -> OAuth : Exchange code for tokens
+activate OAuth
+OAuth --> API : Access token + user info
+deactivate OAuth
+
+== Step 4: Create/Link Account ==
+
+API -> DB : SELECT * FROM auth_accounts\nWHERE provider = ? AND provider_id = ?
+activate DB
+DB --> API : Existing account (if any)
+deactivate DB
+
+alt Account not found
+  API -> DB : INSERT INTO auth_users (name, email)
+  activate DB
+  DB --> API : User created
+  deactivate DB
+
+  API -> DB : INSERT INTO auth_accounts\n(user_id, provider, provider_id)
+  activate DB
+  DB --> API : Account linked
+  deactivate DB
+end
+
+== Step 5: Issue Token ==
+
+API -> DB : INSERT INTO auth_sessions (user_id, token)
+activate DB
+DB --> API : Session created
+deactivate DB
+
+API --> FE : 200 { token, user }
+deactivate API
+
+FE --> User : Redirect to dashboard
+deactivate FE
+
+@enduml

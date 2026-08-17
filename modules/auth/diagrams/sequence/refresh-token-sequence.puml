@@ -1,0 +1,55 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Refresh Token Flow
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Refresh Token Flow
+
+actor User
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+
+== Step 1: Token Expired ==
+
+User -> FE : Access token expired
+activate FE
+
+== Step 2: Refresh Request ==
+
+FE -> API : POST /auth/refresh\n{ refreshToken }
+activate API
+
+== Step 3: Validate Refresh Token ==
+
+API -> DB : SELECT * FROM auth_sessions\nWHERE refresh_token = ? AND expires_at > NOW()
+activate DB
+DB --> API : Session result
+deactivate DB
+
+alt Session not found or expired
+  API --> FE : 401 TOKEN_EXPIRED
+  FE --> User : Must re-login
+end
+
+== Step 4: Generate New Access Token ==
+
+API -> API : Generate new JWT access token
+
+== Step 5: Return New Token ==
+
+API --> FE : 200 { token: "new-jwt...", session }
+deactivate API
+
+FE --> User : Updated access token
+deactivate FE
+
+@enduml

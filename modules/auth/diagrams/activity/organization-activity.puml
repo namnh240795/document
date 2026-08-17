@@ -1,0 +1,34 @@
+@startuml
+' ============================================================
+' Activity Diagram - Organization Management Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Organization Management Flow
+
+start
+
+:User creates organization\n(name, slug);
+
+:Validate slug uniqueness;
+
+if (Slug available?) then (yes)
+  :Create organization record;
+  :Assign user as owner\nwith Employer role;
+else (no)
+  :Return 409 Conflict;
+  stop
+endif
+
+:Owner can manage organization\n(update, members, roles);
+
+stop
+
+@enduml

@@ -1,0 +1,39 @@
+@startuml
+' ============================================================
+' Activity Diagram - Team Management Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Team Management Flow
+
+start
+
+:Admin creates team\nwithin organization;
+
+if (Action?) then (create)
+  :Enter team name;
+  :Validate (unique within org);
+  :Create team record;
+elseif (add member) then
+  :Select member from org;
+  :Add to team;
+elseif (remove member) then
+  :Select team member;
+  :Remove from team;
+elseif (delete team) then
+  :Confirm deletion;
+  :Delete team record;
+endif
+
+:Return success response;
+
+stop
+
+@enduml

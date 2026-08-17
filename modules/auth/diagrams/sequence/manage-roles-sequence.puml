@@ -1,0 +1,78 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Manage Roles Flow
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Manage Roles Flow
+
+actor Admin
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+
+== Step 1: List Roles ==
+
+Admin -> FE : Navigate to role management
+activate FE
+
+FE -> API : GET /organization/list-roles\n?organizationId=org-123
+activate API
+
+API -> DB : SELECT * FROM auth_organization_roles\nWHERE organization_id = ?
+activate DB
+DB --> API : Role list
+deactivate DB
+
+API --> FE : 200 { roles: [...] }
+deactivate API
+
+FE --> Admin : Display role list
+deactivate FE
+
+== Step 2: Create Role ==
+
+Admin -> FE : Create new role
+activate FE
+
+FE -> API : POST /organization/create-role\n{ organizationId, role, description, permission }
+activate API
+
+API -> DB : INSERT INTO auth_organization_roles\n(organization_id, role, description, permission)
+activate DB
+DB --> API : Role created
+deactivate DB
+
+API --> FE : 200 { success: true }
+deactivate API
+
+FE --> Admin : "Role created"
+deactivate FE
+
+== Step 3: Assign Role ==
+
+Admin -> FE : Assign role to member
+activate FE
+
+FE -> API : POST /organization/update-member-role\n{ organizationId, userId, role }
+activate API
+
+API -> DB : UPDATE auth_members\nSET role = ?\nWHERE organization_id = ? AND user_id = ?
+activate DB
+DB --> API : Updated
+deactivate DB
+
+API --> FE : 200 { success: true }
+deactivate API
+
+FE --> Admin : "Role assigned"
+deactivate FE
+
+@enduml

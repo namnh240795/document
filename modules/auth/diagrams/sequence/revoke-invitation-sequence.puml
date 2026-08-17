@@ -1,0 +1,67 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Revoke Invitation Flow
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Revoke Invitation Flow
+
+actor Admin
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+queue "RabbitMQ" as MQ
+
+== Step 1: Revoke Invitation ==
+
+Admin -> FE : Select invitation to revoke
+activate FE
+
+FE -> API : DELETE /organization/cancel-invitation\n{ invitationId }
+activate API
+
+API -> DB : SELECT * FROM auth_invitations\nWHERE id = ?
+activate DB
+DB --> API : Invitation
+deactivate DB
+
+== Step 2: Ownership Check ==
+
+API -> API : Verify inviter_id == current user id
+
+alt Not owner
+  API --> FE : 403 Forbidden
+end
+
+alt Already accepted or revoked
+  API --> FE : 409 Cannot revoke
+end
+
+== Step 3: Update Status ==
+
+API -> DB : UPDATE auth_invitations\nSET status = 'revoked'\nWHERE id = ?
+activate DB
+DB --> API : Updated
+deactivate DB
+
+== Step 4: Emit Event ==
+
+API -> MQ : PUBLISH invitation.revoked\n{ invitationId, email, role, revokedBy }
+activate MQ
+MQ --> API : Queued
+deactivate MQ
+
+API --> FE : 200 { message: "Revoked" }
+deactivate API
+
+FE --> Admin : "Invitation revoked"
+deactivate FE
+
+@enduml

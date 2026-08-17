@@ -1,0 +1,45 @@
+@startuml
+' ============================================================
+' Activity Diagram - Verify Invitation Token Flow
+' ============================================================
+
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title Verify Invitation Token Flow
+
+start
+
+:User clicks invitation link\nin email;
+
+:Frontend calls GET\n/organization/verify-invitation?token={raw_token};
+
+:System computes SHA-256 hash;
+
+:System looks up invitation\nby token_hash;
+
+if (Token found?) then (yes)
+  if (Status?) then (pending)
+    if (Expired?) then (yes)
+      :Auto-update status to EXPIRED;
+      :Return { valid: false, reason: "expired" };
+    else (no)
+      :Return { valid: true, invitation };
+    endif
+  elseif (accepted) then
+    :Return { valid: false, reason: "accepted" };
+  elseif (revoked) then
+    :Return { valid: false, reason: "revoked" };
+  endif
+else (no)
+  :Return 404 Invalid token;
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,74 @@
+@startuml
+' ============================================================
+' Sequence Diagram - Verify Invitation Token Flow
+' ============================================================
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title Sequence Diagram: Verify Invitation Token Flow
+
+actor "Invitee" as Inv
+participant "Frontend" as FE
+participant "Auth API" as API
+database "PostgreSQL\n(auth_db)" as DB
+
+== Step 1: Click Invitation Link ==
+
+Inv -> FE : Click link in email\n(contains raw token in URL)
+activate FE
+
+== Step 2: Verify Token (public, no auth) ==
+
+FE -> API : GET /organization/verify-invitation\n?token={raw_token}
+activate API
+
+== Step 3: Hash Token ==
+
+API -> API : SHA-256 hash\n(consistency with stored hash)
+
+== Step 4: Look Up Invitation ==
+
+API -> DB : SELECT * FROM auth_invitations\nWHERE token_hash = ?
+activate DB
+DB --> API : Invitation record
+deactivate DB
+
+== Step 5: Validate ==
+
+API -> API : Check status + expiry
+
+alt Token not found
+  API --> FE : 404 "Invalid invitation token"
+else Pending + not expired
+  API --> FE : 200 { valid: true, invitation }
+else Pending + expired
+  API -> DB : UPDATE auth_invitations\nSET status = 'expired'\nWHERE id = ?
+  activate DB
+  DB --> API : Updated
+  deactivate DB
+  API --> FE : 200 { valid: false, reason: "expired" }
+else Already accepted
+  API --> FE : 200 { valid: false, reason: "accepted" }
+else Revoked
+  API --> FE : 200 { valid: false, reason: "revoked" }
+end
+
+deactivate API
+
+== Step 6: Display Result ==
+
+alt Valid
+  FE --> Inv : Show invitation details\n+ Accept/Reject buttons
+else Invalid
+  FE --> Inv : Show error message
+end
+
+deactivate FE
+
+@enduml
