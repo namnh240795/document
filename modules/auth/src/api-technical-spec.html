@@ -92,6 +92,9 @@
   <tr><td><span class="req-id">FR-015</span> Organization Management</td><td>POST /organization/create, POST /organization/update, POST /organization/delete, GET /organization/list</td></tr>
   <tr><td><span class="req-id">FR-016</span> Team Management</td><td>POST /organization/create-team, POST /organization/update-team, POST /organization/remove-team</td></tr>
   <tr><td><span class="req-id">FR-017</span> Invitation Management</td><td>POST /organization/invite-member, POST /organization/accept-invitation, POST /organization/reject-invitation</td></tr>
+  <tr><td><span class="req-id">FR-018</span> Resend Invitation</td><td>POST /organization/resend-invitation</td></tr>
+  <tr><td><span class="req-id">FR-019</span> Revoke Invitation</td><td>DELETE /organization/cancel-invitation</td></tr>
+  <tr><td><span class="req-id">FR-020</span> Verify Invitation Token</td><td>GET /organization/verify-invitation</td></tr>
 </table>
 
 <h2 id="section-1-2">1.2 Authentication</h2>
@@ -231,12 +234,16 @@
   <tr><td>id</td><td>string</td><td>Yes</td><td>Invitation identifier</td></tr>
   <tr><td>organizationId</td><td>string</td><td>Yes</td><td>Target organization ID</td></tr>
   <tr><td>email</td><td>string</td><td>Yes</td><td>Invitee email</td></tr>
+  <tr><td>tokenHash</td><td>string</td><td>No</td><td>SHA-256 hash of invitation token (never exposed in responses)</td></tr>
   <tr><td>role</td><td>string</td><td>No</td><td>Assigned role</td></tr>
   <tr><td>teamId</td><td>string</td><td>No</td><td>Target team ID</td></tr>
-  <tr><td>status</td><td>string</td><td>Yes</td><td>Status: pending, accepted, rejected, canceled</td></tr>
+  <tr><td>employerId</td><td>string</td><td>No</td><td>Employer ID (required for HR role)</td></tr>
+  <tr><td>status</td><td>string</td><td>Yes</td><td>Status: pending, accepted, rejected, canceled, expired, revoked</td></tr>
   <tr><td>expiresAt</td><td>datetime</td><td>Yes</td><td>Invitation expiry</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Creation timestamp</td></tr>
+  <tr><td>acceptedAt</td><td>datetime</td><td>No</td><td>When invitation was accepted</td></tr>
   <tr><td>inviterId</td><td>string</td><td>Yes</td><td>User who sent invitation</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Creation timestamp</td></tr>
+  <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
 </table>
 
 <!-- 4. CORE AUTH ENDPOINTS -->
@@ -706,13 +713,35 @@
 <h2>6.1 Invitations</h2>
 
 <h3 id="fr-017">POST /organization/invite-member <span class="req-id">FR-017</span></h3>
-<p>Invite a member to the organization.</p>
+<p>Invite a member to the organization. Generates a secure token (SHA-256 hash stored, raw token sent via email).</p>
 <p><strong>Request:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "email": "jane@example.com",
   "role": "HR",
-  "teamId": "team-789"
+  "teamId": "team-789",
+  "employerId": "emp-456"
+}</code></pre>
+<p><strong>Request Fields:</strong></p>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+  <tr><td>organizationId</td><td>string</td><td>Yes</td><td>Target organization ID</td></tr>
+  <tr><td>email</td><td>string</td><td>Yes</td><td>Invitee email address</td></tr>
+  <tr><td>role</td><td>string</td><td>Yes</td><td>Organization role: HR, Candidate, Employer</td></tr>
+  <tr><td>teamId</td><td>string</td><td>No</td><td>Target team ID</td></tr>
+  <tr><td>employerId</td><td>string</td><td>No</td><td>Employer ID (required for HR role)</td></tr>
+</table>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "id": "inv-123",
+  "email": "jane@example.com",
+  "role": "HR",
+  "status": "pending",
+  "expiresAt": "2026-08-12T10:30:00Z"
+}</code></pre>
+<p><strong>Error 409 — Duplicate:</strong></p>
+<pre><code>{
+  "message": "A pending invitation already exists for this email with the same role"
 }</code></pre>
 
 <h3>GET /organization/get-invitation</h3>
@@ -742,6 +771,82 @@
 <p><strong>Request:</strong></p>
 <pre><code>{
   "invitationId": "inv-123"
+}</code></pre>
+
+<h3 id="fr-020">GET /organization/verify-invitation <em>(Public)</em> <span class="req-id">FR-020</span></h3>
+<p>Verify invitation token validity. No authentication required. Used by frontend when user clicks invitation link from email.</p>
+<p><strong>Query:</strong> <code>?token={raw_token}</code></p>
+<p><strong>Response 200 — Valid:</strong></p>
+<pre><code>{
+  "valid": true,
+  "invitation": {
+    "id": "inv-123",
+    "email": "jane@example.com",
+    "role": "HR",
+    "organizationId": "org-123",
+    "expiresAt": "2026-08-12T10:30:00Z"
+  }
+}</code></pre>
+<p><strong>Response 200 — Invalid (expired):</strong></p>
+<pre><code>{
+  "valid": false,
+  "reason": "expired"
+}</code></pre>
+<p><strong>Response 200 — Invalid (already accepted):</strong></p>
+<pre><code>{
+  "valid": false,
+  "reason": "accepted"
+}</code></pre>
+<p><strong>Response 200 — Invalid (revoked):</strong></p>
+<pre><code>{
+  "valid": false,
+  "reason": "revoked"
+}</code></pre>
+<p><strong>Error 404 — Token not found:</strong></p>
+<pre><code>{
+  "message": "Invalid invitation token"
+}</code></pre>
+
+<h3 id="fr-018">POST /organization/resend-invitation <span class="req-id">FR-018</span></h3>
+<p>Resend an invitation with a new token. The previous token is invalidated. Requires authentication and ownership.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "invitationId": "inv-123"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "id": "inv-123",
+  "email": "jane@example.com",
+  "status": "pending",
+  "expiresAt": "2026-08-12T10:30:00Z",
+  "message": "Invitation resent successfully"
+}</code></pre>
+<p><strong>Error 403 — Not owner:</strong></p>
+<pre><code>{
+  "message": "Only the original inviter can resend this invitation"
+}</code></pre>
+<p><strong>Error 409 — Already accepted:</strong></p>
+<pre><code>{
+  "message": "Cannot resend an accepted invitation"
+}</code></pre>
+
+<h3 id="fr-019">DELETE /organization/cancel-invitation <span class="req-id">FR-019</span></h3>
+<p>Revoke a pending invitation. Only the original inviter can revoke. Already accepted or revoked invitations cannot be revoked.</p>
+<p><strong>Request:</strong></p>
+<pre><code>{
+  "invitationId": "inv-123"
+}</code></pre>
+<p><strong>Response 200:</strong></p>
+<pre><code>{
+  "message": "Invitation revoked successfully"
+}</code></pre>
+<p><strong>Error 403 — Not owner:</strong></p>
+<pre><code>{
+  "message": "Only the original inviter can revoke this invitation"
+}</code></pre>
+<p><strong>Error 409 — Already accepted/revoked:</strong></p>
+<pre><code>{
+  "message": "Cannot revoke an already accepted or revoked invitation"
 }</code></pre>
 
 <!-- 6.2 Teams -->
@@ -952,7 +1057,8 @@
   <tr><td>401</td><td>TOKEN_EXPIRED</td><td>JWT token expired</td></tr>
   <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions</td></tr>
   <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
-  <tr><td>409</td><td>CONFLICT</td><td>Email or phone already registered</td></tr>
+  <tr><td>409</td><td>CONFLICT</td><td>Email or phone already registered; duplicate invitation</td></tr>
+  <tr><td>410</td><td>INVITATION_EXPIRED</td><td>Invitation token has expired</td></tr>
   <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
   <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
 </table>

@@ -218,14 +218,36 @@
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   organization_id UUID NOT NULL REFERENCES auth_organizations(id) ON DELETE CASCADE,
   email           VARCHAR(255) NOT NULL,
+  token_hash      VARCHAR(64) UNIQUE,
   role            VARCHAR(50) DEFAULT 'member',
   team_id         UUID REFERENCES auth_teams(id) ON DELETE SET NULL,
+  employer_id     UUID,
   status          VARCHAR(20) NOT NULL DEFAULT 'pending'
-                  CHECK (status IN ('pending', 'accepted', 'rejected', 'canceled')),
+                  CHECK (status IN ('pending', 'accepted', 'rejected', 'canceled', 'expired', 'revoked')),
   expires_at      TIMESTAMP NOT NULL,
+  accepted_at     TIMESTAMP,
   inviter_id      UUID NOT NULL REFERENCES auth_users(id),
-  created_at      TIMESTAMP NOT NULL DEFAULT NOW()
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
+<p><strong>Column Descriptions (new columns):</strong></p>
+<table>
+  <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+  <tr><td>token_hash</td><td>varchar(64)</td><td>SHA-256 hash of the raw invitation token. Only the hash is stored; the raw token is delivered via email URL. UNIQUE constraint ensures no duplicate tokens.</td></tr>
+  <tr><td>employer_id</td><td>uuid</td><td>Optional reference to the employer organization. Used for role-specific invitations (e.g., HR role requires employer context).</td></tr>
+  <tr><td>accepted_at</td><td>timestamp</td><td>Timestamp when the invitation was accepted. NULL until accepted.</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>Last modification timestamp. Updated on resend, revoke, or status change.</td></tr>
+</table>
+<p><strong>Status Values:</strong></p>
+<table>
+  <tr><th>Status</th><th>Description</th></tr>
+  <tr><td><code>pending</code></td><td>Invitation sent, awaiting response</td></tr>
+  <tr><td><code>accepted</code></td><td>Invitation accepted (terminal)</td></tr>
+  <tr><td><code>rejected</code></td><td>Invitation rejected by invitee</td></tr>
+  <tr><td><code>canceled</code></td><td>Cancelled by inviter (legacy)</td></tr>
+  <tr><td><code>expired</code></td><td>Token expired (auto-set on verify)</td></tr>
+  <tr><td><code>revoked</code></td><td>Revoked by inviter (owner-only)</td></tr>
+</table>
 
 <h2>2.13 Table: <code>auth_organization_roles</code></h2>
 <pre><code>CREATE TABLE auth_organization_roles (
@@ -295,9 +317,12 @@ CREATE INDEX idx_auth_team_members_team_id ON auth_team_members(team_id);
 CREATE INDEX idx_auth_team_members_user_id ON auth_team_members(user_id);
 
 -- auth_invitations
+CREATE UNIQUE INDEX idx_auth_invitations_token_hash ON auth_invitations(token_hash);
 CREATE INDEX idx_auth_invitations_org_id ON auth_invitations(organization_id);
 CREATE INDEX idx_auth_invitations_email ON auth_invitations(email);
 CREATE INDEX idx_auth_invitations_status ON auth_invitations(status);
+CREATE INDEX idx_auth_invitations_inviter_id ON auth_invitations(inviter_id);
+CREATE INDEX idx_auth_invitations_employer_id ON auth_invitations(employer_id);
 
 -- auth_organization_roles
 CREATE INDEX idx_auth_org_roles_org_id ON auth_organization_roles(organization_id);</code></pre>
@@ -346,7 +371,7 @@ CREATE INDEX idx_auth_org_roles_org_id ON auth_organization_roles(organization_i
   <tr><td>auth_members</td><td>Organization membership</td><td><span class="req-id">FR-015</span></td><td>500</td></tr>
   <tr><td>auth_teams</td><td>Teams within organizations</td><td><span class="req-id">FR-016</span></td><td>300</td></tr>
   <tr><td>auth_team_members</td><td>Team membership</td><td><span class="req-id">FR-016</span></td><td>1,000</td></tr>
-  <tr><td>auth_invitations</td><td>Organization invitations</td><td><span class="req-id">FR-017</span></td><td>2,000</td></tr>
+  <tr><td>auth_invitations</td><td>Organization invitations with token-based verification</td><td><span class="req-id">FR-017</span>, <span class="req-id">FR-018</span>, <span class="req-id">FR-019</span>, <span class="req-id">FR-020</span></td><td>5,000</td></tr>
   <tr><td>auth_organization_roles</td><td>Custom organization roles</td><td><span class="req-id">FR-015</span></td><td>50</td></tr>
 </table>
 

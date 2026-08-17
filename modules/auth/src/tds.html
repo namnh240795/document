@@ -89,7 +89,7 @@
 <h2>1.2 Requirements Addressed</h2>
 <table class="trace-table">
   <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-017</span></td><td>Section 3, 5</td></tr>
+  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-020</span></td><td>Section 3, 5</td></tr>
   <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-007</span></td><td>Section 6</td></tr>
 </table>
 
@@ -185,7 +185,7 @@
   <tr><td>SessionController</td><td>Session listing, revocation, impersonation</td><td><span class="req-id">FR-013</span>, <span class="req-id">FR-014</span></td></tr>
   <tr><td>OrganizationsController</td><td>Organization CRUD, membership, roles</td><td><span class="req-id">FR-015</span></td></tr>
   <tr><td>TeamsController</td><td>Team CRUD, membership management</td><td><span class="req-id">FR-016</span></td></tr>
-  <tr><td>InvitationsController</td><td>Invite, accept, reject, cancel invitations</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>InvitationsController</td><td>Invite, accept, reject, revoke, resend, verify invitations</td><td><span class="req-id">FR-017</span>, <span class="req-id">FR-018</span>, <span class="req-id">FR-019</span>, <span class="req-id">FR-020</span></td></tr>
   <tr><td>AuthGuard</td><td>JWT validation, route protection</td><td><span class="req-id">NFR-004</span></td></tr>
 </table>
 
@@ -232,7 +232,12 @@
   <tr><td>GET</td><td>/organization/list-roles</td><td>List organization roles</td><td><span class="req-id">FR-015</span></td></tr>
   <tr><td>GET</td><td>/organization/get-role</td><td>Get organization role</td><td><span class="req-id">FR-015</span></td></tr>
   <tr><td>POST</td><td>/organization/has-permission</td><td>Check organization permission</td><td><span class="req-id">FR-015</span></td></tr>
-  <tr><td>POST</td><td>/organization/invite-member</td><td>Invite member</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>POST</td><td>/organization/invite-member</td><td>Invite member (generates token, sends email)</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>GET</td><td>/organization/verify-invitation</td><td>Verify invitation token (public, no auth)</td><td><span class="req-id">FR-020</span></td></tr>
+  <tr><td>POST</td><td>/organization/accept-invitation</td><td>Accept invitation via token</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>POST</td><td>/organization/reject-invitation</td><td>Reject invitation</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>POST</td><td>/organization/resend-invitation</td><td>Resend invitation (new token)</td><td><span class="req-id">FR-018</span></td></tr>
+  <tr><td>DELETE</td><td>/organization/cancel-invitation</td><td>Revoke/cancel invitation (owner only)</td><td><span class="req-id">FR-019</span></td></tr>
   <tr><td>POST</td><td>/organization/create-team</td><td>Create team</td><td><span class="req-id">FR-016</span></td></tr>
 </table>
 
@@ -318,6 +323,42 @@
   <div class="caption">Figure 10: Account Verification Integration Flow</div>
 </div>
 
+<!-- 6.6 Invitation Flow -->
+<h2>6.6 Invitation Flow</h2>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <p><em>See SRS Section 4.17 UC-17: Invitation Management for the invitation activity flow.</em></p>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <p><em>Invitation flow involves AUTH → EMAIL (async via RabbitMQ) → Frontend → AUTH (verify/accept).</em></p>
+  <ol>
+    <li>Admin calls POST /organization/invite-member → AUTH generates token, stores hash, emits event</li>
+    <li>EMAIL module consumes event, sends invitation email with raw token in URL</li>
+    <li>Invitee clicks link → Frontend calls GET /organization/verify-invitation?token=... (public)</li>
+    <li>AUTH hashes token, validates, returns status</li>
+    <li>Invitee accepts → POST /organization/accept-invitation → AUTH updates status, emits event</li>
+  </ol>
+</div>
+
+<h3>Token Security Design</h3>
+<table>
+  <tr><th>Aspect</th><th>Implementation</th></tr>
+  <tr><td>Token Generation</td><td><code>crypto.randomBytes(32).toString('hex')</code> — 64-char hex string</td></tr>
+  <tr><td>Storage</td><td>Only SHA-256 hash stored in <code>token_hash</code> column (UNIQUE constraint)</td></tr>
+  <tr><td>Delivery</td><td>Raw token in URL: <code>{FRONTEND_DOMAIN}/invitations/verify?token={rawToken}</code></td></tr>
+  <tr><td>Expiry</td><td>72 hours (configurable via <code>INVITATION_EXPIRY_HOURS</code>)</td></tr>
+  <tr><td>Resend</td><td>Generates new token, invalidates old one, resets expiry</td></tr>
+  <tr><td>Revocation</td><td>Owner-only; status set to REVOKED; token no longer valid</td></tr>
+</table>
+
+<h3>Invitation Status Lifecycle</h3>
+<pre><code>PENDING → ACCEPTED (terminal)
+PENDING → EXPIRED → PENDING (via resend)
+PENDING → REVOKED → PENDING (via resend)</code></pre>
+
 <!-- 7. SECURITY -->
 <h1 id="section-7">7. Security Design</h1>
 
@@ -362,6 +403,9 @@
   <tr><td><span class="req-id">FR-015</span></td><td>Organization Management</td><td>3.2, 5.1</td><td>OrganizationsController + POST /organization/create</td></tr>
   <tr><td><span class="req-id">FR-016</span></td><td>Team Management</td><td>3.2, 5.1</td><td>TeamsController + POST /organization/create-team</td></tr>
   <tr><td><span class="req-id">FR-017</span></td><td>Invitation Management</td><td>3.2, 5.1</td><td>InvitationsController + POST /organization/invite-member</td></tr>
+  <tr><td><span class="req-id">FR-018</span></td><td>Resend Invitation</td><td>3.2, 5.1</td><td>InvitationsController + POST /organization/resend-invitation</td></tr>
+  <tr><td><span class="req-id">FR-019</span></td><td>Revoke Invitation</td><td>3.2, 5.1</td><td>InvitationsController + DELETE /organization/cancel-invitation</td></tr>
+  <tr><td><span class="req-id">FR-020</span></td><td>Verify Invitation Token</td><td>3.2, 5.1</td><td>InvitationsController + GET /organization/verify-invitation</td></tr>
   <tr><td><span class="req-id">NFR-001</span></td><td>Login &lt; 500ms</td><td>2.1</td><td>Redis cache, DB indexing</td></tr>
   <tr><td><span class="req-id">NFR-003</span></td><td>bcrypt 12 rounds</td><td>6</td><td>bcrypt.hash(password, 12)</td></tr>
   <tr><td><span class="req-id">NFR-004</span></td><td>JWT expiry</td><td>6</td><td>Access: 15min, Refresh: 7 days</td></tr>
