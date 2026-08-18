@@ -1,12 +1,11 @@
 @startuml
 ' ============================================================
 ' System Architecture - Authentication System
-' Minimal: yellow + black/white
+' Top-down, straight arrows, yellow+black/white
 ' ============================================================
 
 top to bottom direction
 
-skinparam linetype ortho
 skinparam defaultFontName "Arial"
 skinparam defaultFontSize 12
 
@@ -47,18 +46,23 @@ skinparam arrow {
 title System Architecture
 
 ' ============================================================
-' LAYOUT
+' LAYER 1 - Clients
 ' ============================================================
-
 rectangle "  Clients  " as clients #FFFFFF {
   component "Web App" as web
   component "Mobile App" as mobile
 }
 
+' ============================================================
+' LAYER 2 - Gateway
+' ============================================================
 rectangle "  API Gateway  " as gw #FFD54F {
   component "NestJS Gateway" as gateway
 }
 
+' ============================================================
+' LAYER 3 - Core Services
+' ============================================================
 rectangle "  Core Services  " as services #FFFFFF {
   component "AUTH" as auth
   component "SMS" as sms
@@ -68,15 +72,24 @@ rectangle "  Core Services  " as services #FFFFFF {
   component "LOG" as log
 }
 
+' ============================================================
+' LAYER 4 - Message Broker (right side)
+' ============================================================
 rectangle "  Message Broker  " as broker #FFD54F {
   queue "RabbitMQ" as mq
 }
 
+' ============================================================
+' LAYER 5 - Data Storage
+' ============================================================
 rectangle "  Data Storage  " as storage #FFFFFF {
   database "PostgreSQL" as pg
   database "OpenSearch" as os
 }
 
+' ============================================================
+' LAYER 6 - External Services
+' ============================================================
 rectangle "  External Services  " as external #FFFFFF {
   component "Twilio" as twilio
   component "SendGrid" as sendgrid
@@ -88,19 +101,20 @@ rectangle "  External Services  " as external #FFFFFF {
 clients -[hidden]down-> gw
 gw -[hidden]down-> services
 services -[hidden]down-> storage
-services -[hidden]down-> external
+storage -[hidden]down-> external
+
+' Broker to the right of services
 services -[hidden]right-> broker
-storage -[hidden]right-> external
 
 ' ============================================================
 ' CONNECTIONS
 ' ============================================================
-clients -down-> gw
-gw -down-> services
-services -down-> storage
-services -right-> broker
-broker -left-> services
-storage -right-> external
-external -left-> storage
+clients -down-> gw : HTTPS
+gw -down-> services : REST API
+services -down-> storage : SQL
+services -right-> broker : Pub/Sub
+broker -left-> services : Pub/Sub
+storage -down-> external : API
+external -up-> storage : Webhooks
 
 @enduml
