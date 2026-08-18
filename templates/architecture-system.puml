@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
 ' System Architecture - Authentication System
-' Straight arrows, Message Broker at bottom
+' Straight arrows, 3 bottom boxes on same row
 ' ============================================================
 
 top to bottom direction
@@ -74,24 +74,18 @@ rectangle "  Core Services  " as services #FFFFFF {
 }
 
 ' ============================================================
-' LAYER 4 - Data Storage
+' LAYER 4 - Data Storage | External | Message Broker (same row)
 ' ============================================================
 rectangle "  Data Storage  " as storage #FFFFFF {
   database "PostgreSQL" as pg
   database "OpenSearch" as os
 }
 
-' ============================================================
-' LAYER 5 - External Services
-' ============================================================
 rectangle "  External Services  " as external #FFFFFF {
   component "Twilio" as twilio
   component "SendGrid" as sendgrid
 }
 
-' ============================================================
-' LAYER 6 - Message Broker (bottom)
-' ============================================================
 rectangle "  Message Broker  " as broker #FFD54F {
   queue "RabbitMQ" as mq
 }
@@ -99,11 +93,14 @@ rectangle "  Message Broker  " as broker #FFD54F {
 ' ============================================================
 ' LAYOUT FORCING
 ' ============================================================
+' Vertical flow
 clients -[hidden]down-> gw
 gw -[hidden]down-> services
 services -[hidden]down-> storage
-storage -[hidden]down-> external
-external -[hidden]down-> broker
+
+' Force 3 boxes on same row
+storage -[hidden]right-> external
+external -[hidden]right-> broker
 
 ' ============================================================
 ' CONNECTIONS
@@ -112,6 +109,6 @@ clients -down-> gw
 gw -down-> services
 services -down-> storage
 services -down-> broker
-storage -down-> external
+services -down-> external
 
 @enduml
