@@ -1,11 +1,12 @@
 @startuml
 ' ============================================================
 ' System Architecture - Authentication System
-' Top-down, straight arrows, yellow+black/white
+' Straight arrows, Message Broker at bottom
 ' ============================================================
 
 top to bottom direction
 
+skinparam linetype ortho
 skinparam defaultFontName "Arial"
 skinparam defaultFontSize 12
 
@@ -73,14 +74,7 @@ rectangle "  Core Services  " as services #FFFFFF {
 }
 
 ' ============================================================
-' LAYER 4 - Message Broker (right side)
-' ============================================================
-rectangle "  Message Broker  " as broker #FFD54F {
-  queue "RabbitMQ" as mq
-}
-
-' ============================================================
-' LAYER 5 - Data Storage
+' LAYER 4 - Data Storage
 ' ============================================================
 rectangle "  Data Storage  " as storage #FFFFFF {
   database "PostgreSQL" as pg
@@ -88,11 +82,18 @@ rectangle "  Data Storage  " as storage #FFFFFF {
 }
 
 ' ============================================================
-' LAYER 6 - External Services
+' LAYER 5 - External Services
 ' ============================================================
 rectangle "  External Services  " as external #FFFFFF {
   component "Twilio" as twilio
   component "SendGrid" as sendgrid
+}
+
+' ============================================================
+' LAYER 6 - Message Broker (bottom)
+' ============================================================
+rectangle "  Message Broker  " as broker #FFD54F {
+  queue "RabbitMQ" as mq
 }
 
 ' ============================================================
@@ -102,9 +103,7 @@ clients -[hidden]down-> gw
 gw -[hidden]down-> services
 services -[hidden]down-> storage
 storage -[hidden]down-> external
-
-' Broker to the right of services
-services -[hidden]right-> broker
+external -[hidden]down-> broker
 
 ' ============================================================
 ' CONNECTIONS
@@ -112,9 +111,7 @@ services -[hidden]right-> broker
 clients -down-> gw : HTTPS
 gw -down-> services : REST API
 services -down-> storage : SQL
-services -right-> broker : Pub/Sub
-broker -left-> services : Pub/Sub
 storage -down-> external : API
-external -up-> storage : Webhooks
+external -down-> broker : Pub/Sub
 
 @enduml
