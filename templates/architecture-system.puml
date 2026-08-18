@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
 ' System Architecture - Authentication System
-' Clean layout with good contrast
+' Grid layout: no arrow overlap
 ' ============================================================
 
 skinparam defaultFontName "Arial"
@@ -45,18 +45,23 @@ skinparam arrow {
 title System Architecture
 
 ' ============================================================
-' LAYOUT
+' ROW 1 - Clients
 ' ============================================================
-
 rectangle "  Clients  " as clients #E3F2FD {
   component "Web App" as web #BBDEFB
   component "Mobile App" as mobile #BBDEFB
 }
 
+' ============================================================
+' ROW 2 - Gateway
+' ============================================================
 rectangle "  API Gateway  " as gw #90CAF9 {
   component "NestJS Gateway" as gateway #42A5F5
 }
 
+' ============================================================
+' ROW 3 - Core Services (center) | Message Broker (right)
+' ============================================================
 rectangle "  Core Services  " as services #ECEFF1 {
   component "AUTH" as auth #42A5F5
   component "SMS" as sms #66BB6A
@@ -70,31 +75,43 @@ rectangle "  Message Broker  " as broker #FFE0B2 {
   queue "RabbitMQ" as mq #FF9800
 }
 
+' ============================================================
+' ROW 4 - Data Storage (left) | External (right)
+' ============================================================
 rectangle "  Data Storage  " as storage #C8E6C9 {
   database "PostgreSQL" as pg #4CAF50
   database "OpenSearch" as os #9C27B0
 }
 
-rectangle "  External  " as external #F3E5F5 {
+rectangle "  External Services  " as external #F3E5F5 {
   component "Twilio" as twilio #26A69A
   component "SendGrid" as sendgrid #42A5F5
 }
 
 ' ============================================================
-' CONNECTIONS - Separate paths to avoid overlap
+' LAYOUT FORCING (hidden arrows)
 ' ============================================================
+' Force grid: row by row
+clients -[hidden]down-> gw
+gw -[hidden]down-> services
+services -[hidden]down-> storage
+services -[hidden]down-> external
 
-' Left side: Clients -> Gateway -> Services -> Storage (vertical)
-clients -down-> gw
-gw -down-> services
-services -down-> storage
+' Force services and broker on same row
+services -[hidden]right-> broker
 
-' Right side: Services <-> Broker (horizontal)
-services -right-> broker
-broker -left-> services
+' Force storage and external on same row
+storage -[hidden]right-> external
 
-' Bottom: Services <-> External (vertical, offset right)
-services -down-> external
-external -up-> services
+' ============================================================
+' REAL CONNECTIONS
+' ============================================================
+clients -down-> gw : HTTPS
+gw -down-> services : REST API
+services -down-> storage : SQL
+services -right-> broker : Pub/Sub
+broker -left-> services : Pub/Sub
+storage -right-> external : API
+external -left-> storage : Webhooks
 
 @enduml
