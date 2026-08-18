@@ -27,7 +27,7 @@
   <div class="subtitle">Recruitment API</div>
   <span class="module-badge">RECR</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.3</td></tr>
+    <tr><td>Version</td><td>1.4</td></tr>
     <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
     <tr><td>System</td><td>HR Management System</td></tr>
     <tr><td>Module</td><td>RECR - Recruitment</td></tr>
@@ -56,6 +56,16 @@
         <li><a href="#section-5-2">5.2 Candidate Endpoints</a></li>
         <li><a href="#section-5-3">5.3 HR Endpoints</a></li>
         <li><a href="#section-5-4">5.4 Employer Endpoints</a></li>
+        <li><a href="#section-5-5">5.5 Invitation Endpoints</a>
+          <ul>
+            <li><a href="#invite-send">POST /recr/invitations/send</a></li>
+            <li><a href="#invite-verify">GET /recr/invitations/verify</a></li>
+            <li><a href="#invite-accept">POST /recr/invitations/accept</a></li>
+            <li><a href="#invite-list">GET /recr/invitations</a></li>
+            <li><a href="#invite-revoke">DELETE /recr/invitations/:id</a></li>
+            <li><a href="#invite-resend">POST /recr/invitations/:id/resend</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
     <li><a href="#section-6">6. Pagination</a></li>
@@ -79,6 +89,13 @@
   <tr><td><span class="req-id">FR-017</span> Post Job</td><td>POST /recr/employer/jobs</td></tr>
   <tr><td><span class="req-id">FR-037</span> Manage Candidate Resumes</td><td>GET /recr/candidate/resumes, POST /recr/candidate/resume, DELETE /recr/candidate/resumes/:id</td></tr>
   <tr><td><span class="req-id">FR-038</span> Application Resume Linking</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
+  <tr><td><span class="req-id">FR-039</span> Send Invitation</td><td>POST /recr/invitations/send</td></tr>
+  <tr><td><span class="req-id">FR-040</span> Generate Token</td><td>POST /recr/invitations/send</td></tr>
+  <tr><td><span class="req-id">FR-042</span> Verify Token</td><td>GET /recr/invitations/verify</td></tr>
+  <tr><td><span class="req-id">FR-043</span> Accept Invitation</td><td>POST /recr/invitations/accept</td></tr>
+  <tr><td><span class="req-id">FR-044</span> Revoke Invitation</td><td>DELETE /recr/invitations/:id</td></tr>
+  <tr><td><span class="req-id">FR-045</span> List Invitations</td><td>GET /recr/invitations</td></tr>
+  <tr><td><span class="req-id">FR-046</span> Resend Invitation</td><td>POST /recr/invitations/:id/resend</td></tr>
 </table>
 
 <h2>1.2 API Principles</h2>
@@ -156,6 +173,14 @@
   <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
   <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
   <tr><td>503</td><td>SERVICE_UNAVAILABLE</td><td>AUTH module or downstream service unreachable</td></tr>
+  <tr><td>409</td><td>INVITE_EXISTS</td><td>Pending invitation already exists for email+employer</td></tr>
+  <tr><td>400</td><td>INVITE_EXPIRED</td><td>Invitation token has expired</td></tr>
+  <tr><td>400</td><td>INVITE_ALREADY_USED</td><td>Invitation already accepted</td></tr>
+  <tr><td>400</td><td>INVITE_REVOKED</td><td>Invitation has been revoked</td></tr>
+  <tr><td>400</td><td>CANNOT_INVITE_SELF</td><td>Cannot send invitation to yourself</td></tr>
+  <tr><td>400</td><td>INVITE_NOT_PENDING</td><td>Only PENDING invitations can be revoked</td></tr>
+  <tr><td>400</td><td>INVITE_NOT_RESENDABLE</td><td>Only EXPIRED or REVOKED invitations can be resent</td></tr>
+  <tr><td>400</td><td>EMAIL_MISMATCH</td><td>Logged-in user email does not match invitation</td></tr>
 </table>
 
 <!-- 4. RATE LIMITING -->
@@ -691,6 +716,349 @@
 <h3>GET /recr/employer/analytics <span class="req-id">FR-021</span></h3>
 <p>View analytics. Requires <strong>employer</strong> role.</p>
 
+<h2 id="section-5-5">5.5 Invitation Endpoints</h2>
+<p><strong>Note:</strong> These endpoints require authentication unless marked as Public.</p>
+
+<h3 id="invite-send">POST /recr/invitations/send <span class="req-id">FR-039, FR-040, FR-041</span></h3>
+<p>Send invitation to email. Requires HR/Employer role.</p>
+
+<h4>Request Body</h4>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
+  <tr><td><code>email</code></td><td>string</td><td>Yes</td><td>Valid email format</td><td>Invitee email address</td></tr>
+  <tr><td><code>role</code></td><td>string</td><td>Yes</td><td>Enum: <code>HR</code>, <code>Candidate</code>, <code>Employer</code></td><td>Role to assign to the invitee</td></tr>
+  <tr><td><code>employer_id</code></td><td>string</td><td>No</td><td>Valid UUID</td><td>Associated employer ID</td></tr>
+  <tr><td><code>message</code></td><td>string</td><td>No</td><td>Max 500 chars</td><td>Optional personal message</td></tr>
+</table>
+
+<h4>Response 201</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": "inv-001",
+    "email": "candidate@example.com",
+    "role": "Candidate",
+    "status": "PENDING",
+    "expiredAt": "2026-08-24T10:00:00Z",
+    "message": "You are invited to join our recruitment platform."
+  }
+}</code></pre>
+
+<h4>Error Responses</h4>
+<p><strong>400 Bad Request — Invalid email:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVALID_EMAIL",
+    "message": "Invalid email format"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — Invalid role:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVALID_ROLE",
+    "message": "Invalid role. Must be HR, Candidate, or Employer"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — Cannot invite self:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "CANNOT_INVITE_SELF",
+    "message": "Cannot send invitation to yourself"
+  }
+}</code></pre>
+
+<p><strong>409 Conflict — Invite already exists:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_EXISTS",
+    "message": "Pending invitation already exists for this email"
+  }
+}</code></pre>
+
+<p><strong>429 Too Many Requests — Rate limited:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "RATE_LIMITED",
+    "message": "Too many invitation requests. Please try again later."
+  }
+}</code></pre>
+
+<h3 id="invite-verify">GET /recr/invitations/verify?token={raw_token} <span class="req-id">FR-042</span></h3>
+<p>Verify invitation token validity. Public endpoint (no auth required).</p>
+
+<h4>Query Params</h4>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+  <tr><td><code>token</code></td><td>string</td><td>Yes</td><td>Raw invitation token</td></tr>
+</table>
+
+<h4>Response 200</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "valid": true,
+    "invitation": {
+      "id": "inv-001",
+      "email": "candidate@example.com",
+      "role": "Candidate",
+      "status": "PENDING",
+      "expiredAt": "2026-08-24T10:00:00Z"
+    },
+    "reason": null
+  }
+}</code></pre>
+
+<h4>Error Responses</h4>
+<p><strong>404 Not Found:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_NOT_FOUND",
+    "message": "Invitation not found"
+  }
+}</code></pre>
+
+<p><strong>410 Gone — Expired:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_EXPIRED",
+    "message": "Invitation token has expired"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — Already used:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_ALREADY_USED",
+    "message": "Invitation already accepted"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — Revoked:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_REVOKED",
+    "message": "Invitation has been revoked"
+  }
+}</code></pre>
+
+<h3 id="invite-accept">POST /recr/invitations/accept <span class="req-id">FR-043</span></h3>
+<p>Accept invitation. Requires authentication.</p>
+
+<h4>Request Body</h4>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
+  <tr><td><code>token</code></td><td>string</td><td>Yes</td><td>Non-empty</td><td>Raw invitation token</td></tr>
+  <tr><td><code>full_name</code></td><td>string</td><td>Yes</td><td>2-100 chars</td><td>Full name of the invitee</td></tr>
+  <tr><td><code>password</code></td><td>string</td><td>No</td><td>Min 8 chars, at least 1 uppercase, 1 lowercase, 1 number</td><td>Password (optional if account exists)</td></tr>
+</table>
+
+<h4>Response 200</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "invitation": {
+      "id": "inv-001",
+      "email": "candidate@example.com",
+      "role": "Candidate",
+      "status": "ACCEPTED"
+    },
+    "message": "Invitation accepted successfully"
+  }
+}</code></pre>
+
+<h4>Error Responses</h4>
+<p><strong>400 Bad Request — Email mismatch:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "EMAIL_MISMATCH",
+    "message": "Logged-in user email does not match invitation"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — Expired:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_EXPIRED",
+    "message": "Invitation token has expired"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — Already used:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_ALREADY_USED",
+    "message": "Invitation already accepted"
+  }
+}</code></pre>
+
+<p><strong>400 Bad Request — Revoked:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_REVOKED",
+    "message": "Invitation has been revoked"
+  }
+}</code></pre>
+
+<p><strong>404 Not Found:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_NOT_FOUND",
+    "message": "Invitation not found"
+  }
+}</code></pre>
+
+<h3 id="invite-list">GET /recr/invitations <span class="req-id">FR-045</span></h3>
+<p>List invitations with filters. Requires authentication.</p>
+
+<h4>Query Params</h4>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+  <tr><td><code>employer_id</code></td><td>string</td><td>No</td><td>Filter by employer ID</td></tr>
+  <tr><td><code>status</code></td><td>string</td><td>No</td><td>Filter by status (PENDING, ACCEPTED, EXPIRED, REVOKED)</td></tr>
+  <tr><td><code>page</code></td><td>integer</td><td>No</td><td>Page number (default: 1)</td></tr>
+  <tr><td><code>limit</code></td><td>integer</td><td>No</td><td>Items per page (default: 10)</td></tr>
+</table>
+
+<h4>Response 200</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "invitations": [
+      {
+        "id": "inv-001",
+        "email": "candidate@example.com",
+        "role": "Candidate",
+        "status": "PENDING",
+        "expiredAt": "2026-08-24T10:00:00Z",
+        "created_at": "2026-08-17T10:00:00Z"
+      }
+    ],
+    "total": 1,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 1
+  }
+}</code></pre>
+
+<h3 id="invite-revoke">DELETE /recr/invitations/:id <span class="req-id">FR-044</span></h3>
+<p>Revoke invitation. Requires authentication (inviter or admin).</p>
+
+<h4>Path Params</h4>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>id</code></td><td>UUID</td><td>Invitation ID</td></tr>
+</table>
+
+<h4>Response 200</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "invitation": {
+      "id": "inv-001",
+      "email": "candidate@example.com",
+      "role": "Candidate",
+      "status": "REVOKED"
+    },
+    "message": "Invitation revoked successfully"
+  }
+}</code></pre>
+
+<h4>Error Responses</h4>
+<p><strong>400 Bad Request — Not pending:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_NOT_PENDING",
+    "message": "Only PENDING invitations can be revoked"
+  }
+}</code></pre>
+
+<p><strong>403 Forbidden:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "You do not have permission to revoke this invitation"
+  }
+}</code></pre>
+
+<p><strong>404 Not Found:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_NOT_FOUND",
+    "message": "Invitation not found"
+  }
+}</code></pre>
+
+<h3 id="invite-resend">POST /recr/invitations/:id/resend <span class="req-id">FR-046</span></h3>
+<p>Resend invitation with new token. Requires authentication (inviter or admin).</p>
+
+<h4>Path Params</h4>
+<table class="trace-table">
+  <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+  <tr><td><code>id</code></td><td>UUID</td><td>Invitation ID</td></tr>
+</table>
+
+<h4>Response 200</h4>
+<pre><code>{
+  "success": true,
+  "data": {
+    "invitation": {
+      "id": "inv-001",
+      "email": "candidate@example.com",
+      "role": "Candidate",
+      "status": "PENDING",
+      "expiredAt": "2026-08-31T10:00:00Z"
+    },
+    "message": "Invitation resent successfully"
+  }
+}</code></pre>
+
+<h4>Error Responses</h4>
+<p><strong>400 Bad Request — Not resendable:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_NOT_RESENDABLE",
+    "message": "Only EXPIRED or REVOKED invitations can be resent"
+  }
+}</code></pre>
+
+<p><strong>403 Forbidden:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "You do not have permission to resend this invitation"
+  }
+}</code></pre>
+
+<p><strong>404 Not Found:</strong></p>
+<pre><code>{
+  "success": false,
+  "error": {
+    "code": "INVITE_NOT_FOUND",
+    "message": "Invitation not found"
+  }
+}</code></pre>
+
 <!-- 6. PAGINATION -->
 <h1 id="section-6">6. Pagination</h1>
 <p>All list endpoints support offset pagination.</p>
@@ -708,6 +1076,8 @@
   <tr><td>candidate.hired</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate accepts offer</td></tr>
   <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Employer submits job for approval</td></tr>
   <tr><td>file.deleted</td><td>Inbound</td><td>RabbitMQ</td><td>FILE module notifies RECR when a file is deleted; RECR cleans up references in recr_candidate_resumes and recr_applications</td></tr>
+  <tr><td>invitation.created</td><td>Outbound</td><td>RabbitMQ</td><td>Invitation created, send email notification</td></tr>
+  <tr><td>invitation.accepted</td><td>Outbound</td><td>RabbitMQ</td><td>Invitation accepted, trigger AUTH module</td></tr>
 </table>
 
 <!-- 8. CHANGELOG -->
@@ -718,6 +1088,7 @@
   <tr><td>2026-08-12</td><td>1.1.0</td><td>Detailed register API: separate request/response for Candidate &amp; Employer, validation rules, error responses, business rules, cross-module flow</td></tr>
   <tr><td>2026-08-17</td><td>1.2.0</td><td>New two-level role system: system roles (user, super_admin) and org roles (HR, Candidate, Employer). Registration creates user with <code>user</code> role. JWT contains system role. Org roles managed within organizations.</td></tr>
   <tr><td>2026-08-17</td><td>1.3.0</td><td>FILE module integration: Resume uploads via FILE module with file_id references. New endpoints: GET /recr/candidate/resumes, DELETE /recr/candidate/resumes/:id, GET /recr/candidate/applications/:id/resume. POST /recr/applications now requires resume_file_id. Added business rules BR-RECR-07, BR-RECR-08, BR-03-RECR-09. Inbound file.deleted event handling.</td></tr>
+  <tr><td>2026-08-17</td><td>1.4.0</td><td>INVITE feature integrated as RECR module feature. New endpoints: POST /recr/invitations/send, GET /recr/invitations/verify, POST /recr/invitations/accept, GET /recr/invitations, DELETE /recr/invitations/:id, POST /recr/invitations/:id/resend. Table: recr_invitations. Events: invitation.created, invitation.accepted.</td></tr>
 </table>
 
 </body>

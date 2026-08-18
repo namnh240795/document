@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Organization Management Flow
+' Sơ đồ Hoạt động - Quản lý Tổ chức
 ' ============================================================
 
 skinparam activity {
@@ -11,23 +11,23 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Organization Management Flow
+title Quản lý Tổ chức
 
 start
 
-:User creates organization\n(name, slug);
+:Người dùng tạo tổ chức\n(tên, slug);
 
-:Validate slug uniqueness;
+:Kiểm tra tính duy nhất của slug;
 
-if (Slug available?) then (yes)
-  :Create organization record;
-  :Assign user as owner\nwith Employer role;
+if (Slug khả dụng?) then (yes)
+  :Tạo bản ghi tổ chức;
+  :Gán người dùng là chủ sở hữu\nvới vai trò Employer;
 else (no)
-  :Return 409 Conflict;
+  :Trả về 409 Conflict;
   stop
 endif
 
-:Owner can manage organization\n(update, members, roles);
+:Chủ sở hữu có thể quản lý tổ chức\n(cập nhật, thành viên, vai trò);
 
 stop
 

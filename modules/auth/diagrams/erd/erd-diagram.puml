@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
-' ERD - Authentication System
-' Project short name: auth
+' ERD - Hệ thống Xác thực
+' Tên viết tắt dự án: auth
 ' NestJS + Better Auth + PostgreSQL + Drizzle ORM
 ' ============================================================
 
@@ -16,14 +16,14 @@ skinparam package {
   BorderColor #666666
 }
 
-title Authentication System - Entity Relationship Diagram
+title Hệ thống Xác thực - Sơ đồ Quan hệ Thực thể
 
 ' ============================================================
-' MODULE: Authentication (Database: auth_db)
-' Handles: user accounts, sessions, accounts (Better Auth), verification, roles
-' Resolves: FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-012, FR-013
+' MODULE: Xác thực (Cơ sở dữ liệu: auth_db)
+' Xử lý: tài khoản người dùng, phiên, tài khoản (Better Auth), xác minh, vai trò
+' Giải quyết: FR-001, FR-002, FR-003, FR-004, FR-005, FR-006, FR-012, FR-013
 ' ============================================================
-package "Authentication Module" #E8F4E8 {
+package "Module Xác thực" #E8F4E8 {
   entity "auth_users" as users {
     * id : uuid <<PK>>
     --
@@ -88,11 +88,11 @@ package "Authentication Module" #E8F4E8 {
 }
 
 ' ============================================================
-' MODULE: SMS (Database: sms_db)
-' Handles: SMS delivery logs, tracking, audit trail
-' Resolves: FR-012, FR-013, DR-006
+' MODULE: SMS (Cơ sở dữ liệu: sms_db)
+' Xử lý: nhật ký gửi SMS, theo dõi, kiểm toán
+' Giải quyết: FR-012, FR-013, DR-006
 ' ============================================================
-package "SMS Module" #E0F7FA {
+package "Module SMS" #E0F7FA {
   entity "sms_logs" as sms_logs {
     * id : uuid <<PK>>
     --
@@ -113,16 +113,16 @@ package "SMS Module" #E0F7FA {
 }
 
 ' ============================================================
-' RELATIONSHIPS
+' MỐI QUAN HỆ
 ' ============================================================
 
-' --- Authentication ---
-users ||--o{ sessions : "has"
-users ||--o{ accounts : "has"
-users ||--o{ user_roles : "assigned"
-roles ||--o{ user_roles : "granted to"
+' --- Xác thực ---
+users ||--o{ sessions : "có"
+users ||--o{ accounts : "có"
+users ||--o{ user_roles : "được gán"
+roles ||--o{ user_roles : "được cấp cho"
 
-' --- SMS (cross-database, application-level reference) ---
-users ||--o{ sms_logs : "receives SMS"
+' --- SMS (tham chiếu cấp ứng dụng, liên cơ sở dữ liệu) ---
+users ||--o{ sms_logs : "nhận SMS"
 
 @enduml

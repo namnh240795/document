@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Resend Invitation Flow
+' Sơ đồ Hoạt động - Gửi lại Lời mời
 ' ============================================================
 
 skinparam activity {
@@ -11,26 +11,26 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Resend Invitation Flow
+title Gửi lại Lời mời
 
 start
 
-:Admin selects invitation to resend;
+:Admin chọn lời mời để gửi lại;
 
-if (Invitation already accepted?) then (yes)
-  :Return 409 Conflict;
+if (Lời mời đã chấp nhận?) then (yes)
+  :Trả về 409 Conflict;
   stop
 endif
 
-:Generate new token\n(old token invalidated);
+:Tạo token mới\n(token cũ bị hủy);
 
-:Reset status to PENDING;
+:Đặt lại trạng thái thành PENDING;
 
-:Extend expiry by 72 hours;
+:Gia hạn thời hạn thêm 72 giờ;
 
-:Send new invitation email\nvia EMAIL module;
+:Gửi email lời mời mới\nqua EMAIL module;
 
-:Return success response;
+:Trả về phản hồi thành công;
 
 stop
 

@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - User Ban & Impersonation Flow
+' Sơ đồ Hoạt động - Khóa Tài khoản & Đăng nhập với tư cách người dùng khác
 ' ============================================================
 
 skinparam activity {
@@ -11,24 +11,24 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title User Ban & Impersonation Flow
+title Khóa Tài khoản & Đăng nhập với tư cách người dùng khác
 
 start
 
-:Admin selects user;
+:Admin chọn người dùng;
 
-if (Action?) then (ban)
-  :Provide ban reason + optional expiry;
-  :Ban user;
-  :Invalidate all user sessions;
+if (Hành động?) then (ban)
+  :Nhập lý do khóa + thời hạn tùy chọn;
+  :Khóa tài khoản;
+  :Hủy tất cả phiên làm việc của người dùng;
 elseif (unban) then
-  :Remove ban;
+  :Mở khóa tài khoản;
 elseif (impersonate) then
-  :Create admin session as target user;
-  :Redirect to target user dashboard;
+  :Tạo phiên admin với tư cách người dùng mục tiêu;
+  :Điều hướng đến trang quản trị của người dùng mục tiêu;
 endif
 
-:Return success response;
+:Trả về phản hồi thành công;
 
 stop
 

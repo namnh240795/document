@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>API Technical Specification - Email Notification</title>
+  <title>Đặc tả Kỹ thuật API - Thông báo Email</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,68 +18,68 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>API Technical Specification</h1>
-  <div class="subtitle">Email Notification API</div>
+  <h1>Đặc tả Kỹ thuật API</h1>
+  <div class="subtitle">API Thông báo Email</div>
   <span class="module-badge">EMAIL</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
     <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
-    <tr><td>System</td><td>Authentication System</td></tr>
-    <tr><td>Module</td><td>EMAIL - Email Notification</td></tr>
-    <tr><td>Date</td><td>2026-08-05</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">Email Notification SRS</a></td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
+    <tr><td>Module</td><td>EMAIL - Thông báo Email</td></tr>
+    <tr><td>Ngày tạo</td><td>2026-08-05</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Thông báo Email</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a></li>
-    <li><a href="#section-2">2. Response Format</a></li>
-    <li><a href="#section-3">3. Error Codes</a></li>
-    <li><a href="#section-4">4. Rate Limiting</a></li>
+    <li><a href="#section-1">1. Tổng quan</a></li>
+    <li><a href="#section-2">2. Định dạng Phản hồi</a></li>
+    <li><a href="#section-3">3. Mã lỗi</a></li>
+    <li><a href="#section-4">4. Giới hạn Tốc độ</a></li>
     <li><a href="#section-5">5. Endpoints</a></li>
-    <li><a href="#section-6">6. Pagination</a></li>
-    <li><a href="#section-7">7. Webhook Events</a></li>
-    <li><a href="#section-8">8. Changelog</a></li>
+    <li><a href="#section-6">6. Phân trang</a></li>
+    <li><a href="#section-7">7. Sự kiện Webhook</a></li>
+    <li><a href="#section-8">8. Nhật ký Thay đổi</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2>1.1 Requirements Addressed</h2>
+<h2>1.1 Yêu cầu được giải quyết</h2>
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Send Verification Email</td><td>RabbitMQ: verification.email</td></tr>
-  <tr><td><span class="req-id">FR-002</span> Resend Verification Email</td><td>RabbitMQ: verification.email</td></tr>
-  <tr><td><span class="req-id">FR-003</span> Track Email Delivery</td><td>POST /api/webhooks/email/delivered</td></tr>
-  <tr><td><span class="req-id">FR-004</span> Log Email Events</td><td>RabbitMQ: log.events</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Endpoint API</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Gửi Email Xác minh</td><td>RabbitMQ: verification.email</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Gửi lại Email Xác minh</td><td>RabbitMQ: verification.email</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Theo dõi Giao Email</td><td>POST /api/webhooks/email/delivered</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Ghi log Sự kiện Email</td><td>RabbitMQ: log.events</td></tr>
 </table>
 
-<h2>1.2 API Principles</h2>
+<h2>1.2 Nguyên tắc API</h2>
 <ul>
-  <li>Event-driven via RabbitMQ for async processing</li>
-  <li>Webhook callbacks for delivery tracking</li>
+  <li>Driving bởi sự kiện qua RabbitMQ để xử lý bất đồng bộ</li>
+  <li>Callback webhook để theo dõi giao dịch</li>
   <li>JSON request/response</li>
-  <li>Stateless (JWT authentication via Better Auth)</li>
+  <li>Không trạng thái (Xác thực JWT qua Better Auth)</li>
 </ul>
 
-<h2>1.3 Authentication</h2>
-<p>Webhook endpoints require signature verification.</p>
-<pre><code>X-Webhook-Signature: HMAC-SHA256 of request body</code></pre>
+<h2>1.3 Xác thực</h2>
+<p>Các endpoint webhook yêu cầu xác thực chữ ký.</p>
+<pre><code>X-Webhook-Signature: HMAC-SHA256 của request body</code></pre>
 
 <!-- 2. RESPONSE FORMAT -->
-<h1 id="section-2">2. Response Format</h1>
+<h1 id="section-2">2. Định dạng Phản hồi</h1>
 
-<h2>2.1 Success Response</h2>
+<h2>2.1 Phản hồi Thành công</h2>
 <pre><code>{
   "success": true,
   "data": { ... },
@@ -89,83 +89,83 @@
   }
 }</code></pre>
 
-<h2>2.2 Error Response</h2>
+<h2>2.2 Phản hồi Lỗi</h2>
 <pre><code>{
   "success": false,
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "Invalid input data",
+    "message": "Dữ liệu đầu vào không hợp lệ",
     "details": [
-      { "field": "email", "message": "Invalid email format" }
+      { "field": "email", "message": "Định dạng email không hợp lệ" }
     ]
   }
 }</code></pre>
 
 <!-- 3. ERROR CODES -->
-<h1 id="section-3">3. Error Codes</h1>
+<h1 id="section-3">3. Mã lỗi</h1>
 
 <table>
-  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
-  <tr><td>400</td><td>EMAIL_001</td><td>Invalid email address</td></tr>
-  <tr><td>400</td><td>EMAIL_002</td><td>Email template not found</td></tr>
-  <tr><td>502</td><td>EMAIL_003</td><td>Provider error - delivery failed</td></tr>
-  <tr><td>429</td><td>EMAIL_004</td><td>Rate limit exceeded</td></tr>
-  <tr><td>401</td><td>EMAIL_005</td><td>Invalid webhook signature</td></tr>
+  <tr><th>HTTP Status</th><th>Mã lỗi</th><th>Mô tả</th></tr>
+  <tr><td>400</td><td>EMAIL_001</td><td>Địa chỉ email không hợp lệ</td></tr>
+  <tr><td>400</td><td>EMAIL_002</td><td>Không tìm thấy mẫu email</td></tr>
+  <tr><td>502</td><td>EMAIL_003</td><td>Lỗi nhà cung cấp - giao email thất bại</td></tr>
+  <tr><td>429</td><td>EMAIL_004</td><td>Vượt quá giới hạn tốc độ</td></tr>
+  <tr><td>401</td><td>EMAIL_005</td><td>Chữ ký webhook không hợp lệ</td></tr>
 </table>
 
 <!-- 4. RATE LIMITING -->
-<h1 id="section-4">4. Rate Limiting</h1>
+<h1 id="section-4">4. Giới hạn Tốc độ</h1>
 
 <table>
-  <tr><th>Endpoint Category</th><th>Requests/min</th><th>Burst</th></tr>
-  <tr><td>Webhook endpoints</td><td>100</td><td>50</td></tr>
-  <tr><td>Email sending (per user)</td><td>5</td><td>2</td></tr>
+  <tr><th>Loại Endpoint</th><th>Yêu cầu/phút</th><th>Burst</th></tr>
+  <tr><td>Endpoint webhook</td><td>100</td><td>50</td></tr>
+  <tr><td>Gửi email (mỗi người dùng)</td><td>5</td><td>2</td></tr>
 </table>
 
 <!-- 5. ENDPOINTS -->
 <h1 id="section-5">5. Endpoints</h1>
 
-<h2>5.1 Webhook Endpoints</h2>
+<h2>5.1 Endpoint Webhook</h2>
 
 <h3>POST /api/webhooks/email/delivered <span class="req-id">FR-003</span></h3>
-<p>Receives email delivery status callback from email provider.</p>
-<p><strong>Request:</strong></p>
+<p>Nhận callback trạng thái giao email từ nhà cung cấp email.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
-  "verification_id": "string (required)",
-  "status": "delivered | failed (required)",
-  "provider_message_id": "string (required)",
-  "error_message": "string | null (optional)"
+  "verification_id": "string (bắt buộc)",
+  "status": "delivered | failed (bắt buộc)",
+  "provider_message_id": "string (bắt buộc)",
+  "error_message": "string | null (tùy chọn)"
 }</code></pre>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "success": true,
-  "message": "Webhook processed"
+  "message": "Webhook đã được xử lý"
 }</code></pre>
-<p><strong>Response 400:</strong></p>
+<p><strong>Phản hồi 400:</strong></p>
 <pre><code>{
   "success": false,
-  "error": "Invalid webhook payload"
+  "error": "Payload webhook không hợp lệ"
 }</code></pre>
 
 <!-- 6. PAGINATION -->
-<h1 id="section-6">6. Pagination</h1>
-<p>All list endpoints support offset pagination.</p>
+<h1 id="section-6">6. Phân trang</h1>
+<p>Tất cả endpoint danh sách hỗ trợ phân trang offset.</p>
 <pre><code>GET /email/logs?page=2&amp;limit=20</code></pre>
 
 <!-- 7. WEBHOOK EVENTS -->
-<h1 id="section-7">7. Webhook Events</h1>
+<h1 id="section-7">7. Sự kiện Webhook</h1>
 
-<h2>7.1 RabbitMQ Queues</h2>
+<h2>7.1 Hàng đợi RabbitMQ</h2>
 
 <h3>verification.email</h3>
-<p>Queue for email verification requests from AUTH module.</p>
+<p>Hàng đợi cho yêu cầu xác minh email từ module AUTH.</p>
 <table>
-  <tr><th>Event</th><th>Producer</th><th>Description</th></tr>
-  <tr><td>verification.email.requested</td><td>AUTH</td><td>User requests email verification</td></tr>
-  <tr><td>verification.email.resent</td><td>AUTH</td><td>User resends email verification</td></tr>
+  <tr><th>Sự kiện</th><th>Người gửi</th><th>Mô tả</th></tr>
+  <tr><td>verification.email.requested</td><td>AUTH</td><td>Người dùng yêu cầu xác minh email</td></tr>
+  <tr><td>verification.email.resent</td><td>AUTH</td><td>Người dùng gửi lại xác minh email</td></tr>
 </table>
 
-<h3>Message Format</h3>
+<h3>Định dạng Tin nhắn</h3>
 <pre><code>{
   "user_id": "uuid",
   "email": "string",
@@ -175,17 +175,17 @@
 }</code></pre>
 
 <h3>log.events</h3>
-<p>Queue for publishing email delivery events to Logger module.</p>
+<p>Hàng đợi để gửi sự kiện giao email đến module Logger.</p>
 <table>
-  <tr><th>Event</th><th>Producer</th><th>Description</th></tr>
-  <tr><td>email.event.logged</td><td>EMAIL</td><td>Email delivery event (sent, delivered, failed)</td></tr>
+  <tr><th>Sự kiện</th><th>Người gửi</th><th>Mô tả</th></tr>
+  <tr><td>email.event.logged</td><td>EMAIL</td><td>Sự kiện giao email (đã gửi, đã giao, thất bại)</td></tr>
 </table>
 
 <!-- 8. CHANGELOG -->
-<h1 id="section-8">8. Changelog</h1>
+<h1 id="section-8">8. Nhật ký Thay đổi</h1>
 <table>
-  <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
-  <tr><td>2026-07-24</td><td>1.0.0</td><td>Initial release</td></tr>
+  <tr><th>Ngày</th><th>Phiên bản</th><th>Thay đổi</th></tr>
+  <tr><td>2026-07-24</td><td>1.0.0</td><td>Phát hành ban đầu</td></tr>
 </table>
 
 </body>

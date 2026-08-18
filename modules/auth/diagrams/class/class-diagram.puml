@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Class Diagram - Authentication System
+' Sơ đồ Lớp - Hệ thống Xác thực
 ' NestJS + Better Auth + Drizzle ORM
 ' ============================================================
 
@@ -11,9 +11,9 @@ skinparam class {
   AttributeFontSize 12
 }
 
-title Authentication System - Domain Model
+title Hệ thống Xác thực - Mô hình Domain
 
-' --- Classes ---
+' --- Các lớp ---
 class User {
   - id: UUID
   - name: string
@@ -79,20 +79,20 @@ class UserRole {
   - createdAt: DateTime
 }
 
-' --- Enums ---
+' --- Enum ---
 enum Provider {
   CREDENTIAL
   GOOGLE
   GITHUB
 }
 
-' --- Relationships ---
-User "1" -- "*" Session : has >
-User "1" -- "*" Account : has >
-User "1" -- "*" UserRole : assigned >
-Role "1" -- "*" UserRole : granted to >
-User --> Verification : verified via >
-Session --> User : belongs to >
-Account --> User : belongs to >
+' --- Mối quan hệ ---
+User "1" -- "*" Session : có >
+User "1" -- "*" Account : có >
+User "1" -- "*" UserRole : được gán >
+Role "1" -- "*" UserRole : được cấp cho >
+User --> Verification : xác minh qua >
+Session --> User : thuộc về >
+Account --> User : thuộc về >
 
 @enduml

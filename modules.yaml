@@ -228,8 +228,8 @@ webhooks:
   - from: AUTH
     to: SMS
     event: verification.requested
-    description: "AUTH publishes when user requests account verification"
     protocol: RabbitMQ
+    description: "AUTH publishes when user requests account verification"
     queue: verification.sms
     payload:
       user_id: uuid
@@ -241,8 +241,8 @@ webhooks:
   - from: AUTH
     to: SMS
     event: verification.resent
-    description: "AUTH publishes when user resends verification (rate-limited)"
     protocol: RabbitMQ
+    description: "AUTH publishes when user resends verification (rate-limited)"
     queue: verification.sms
     payload:
       user_id: uuid
@@ -254,8 +254,8 @@ webhooks:
   - from: SMS
     to: AUTH
     event: verification.delivered
-    description: "SMS confirms delivery status back to AUTH"
     protocol: Webhook
+    description: "SMS confirms delivery status back to AUTH"
     url: /api/webhooks/sms/delivered
     payload:
       verification_id: string
@@ -270,8 +270,8 @@ webhooks:
   - from: AUTH
     to: LOG
     event: auth.event.logged
-    description: "AUTH publishes any auth event (login, logout, register, password change) to Logger"
     protocol: RabbitMQ
+    description: "AUTH publishes any auth event (login, logout, register, password change) to Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -286,8 +286,8 @@ webhooks:
   - from: SMS
     to: LOG
     event: sms.event.logged
-    description: "SMS publishes delivery events (sent, delivered, failed) to Logger"
     protocol: RabbitMQ
+    description: "SMS publishes delivery events (sent, delivered, failed) to Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -306,8 +306,8 @@ webhooks:
   - from: AUTH
     to: EMAIL
     event: verification.email.requested
-    description: "AUTH publishes when user requests email verification"
     protocol: RabbitMQ
+    description: "AUTH publishes when user requests email verification"
     queue: verification.email
     payload:
       user_id: uuid
@@ -319,8 +319,8 @@ webhooks:
   - from: AUTH
     to: EMAIL
     event: verification.email.resent
-    description: "AUTH publishes when user resends email verification (rate-limited)"
     protocol: RabbitMQ
+    description: "AUTH publishes when user resends email verification (rate-limited)"
     queue: verification.email
     payload:
       user_id: uuid
@@ -332,8 +332,8 @@ webhooks:
   - from: EMAIL
     to: AUTH
     event: verification.email.delivered
-    description: "EMAIL confirms delivery status back to AUTH"
     protocol: Webhook
+    description: "EMAIL confirms delivery status back to AUTH"
     url: /api/webhooks/email/delivered
     payload:
       verification_id: string
@@ -348,8 +348,8 @@ webhooks:
   - from: EMAIL
     to: LOG
     event: email.event.logged
-    description: "EMAIL publishes email delivery events (sent, delivered, failed) to Logger"
     protocol: RabbitMQ
+    description: "EMAIL publishes email delivery events (sent, delivered, failed) to Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -368,8 +368,8 @@ webhooks:
   - from: RECR
     to: EMAIL
     event: application.submitted
-    description: "RECR publishes when candidate submits application"
     protocol: RabbitMQ
+    description: "RECR publishes when candidate submits application"
     queue: recruitment.email
     payload:
       event_id: uuid
@@ -381,8 +381,8 @@ webhooks:
   - from: RECR
     to: EMAIL
     event: interview.scheduled
-    description: "RECR publishes when interview is scheduled"
     protocol: RabbitMQ
+    description: "RECR publishes when interview is scheduled"
     queue: recruitment.email
     payload:
       event_id: uuid
@@ -397,8 +397,8 @@ webhooks:
   - from: RECR
     to: EMAIL
     event: offer.sent
-    description: "RECR publishes when offer letter is sent"
     protocol: RabbitMQ
+    description: "RECR publishes when offer letter is sent"
     queue: recruitment.email
     payload:
       event_id: uuid
@@ -412,8 +412,8 @@ webhooks:
   - from: RECR
     to: LOG
     event: recruitment.event.logged
-    description: "RECR publishes recruitment events (application, interview, offer) to Logger"
     protocol: RabbitMQ
+    description: "RECR publishes recruitment events (application, interview, offer) to Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -430,8 +430,8 @@ webhooks:
   - from: WALLET
     to: RECR
     event: wallet.payment.completed
-    description: "WALLET publishes when payment for job posting or featured job is completed"
     protocol: RabbitMQ
+    description: "WALLET publishes when payment for job posting or featured job is completed"
     queue: wallet.events
     payload:
       event_id: uuid
@@ -446,8 +446,8 @@ webhooks:
   - from: WALLET
     to: LOG
     event: wallet.event.logged
-    description: "WALLET publishes wallet events (deposit, withdrawal, transfer, payment) to Logger"
     protocol: RabbitMQ
+    description: "WALLET publishes wallet events (deposit, withdrawal, transfer, payment) to Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -466,8 +466,8 @@ webhooks:
   - from: AUTH
     to: WALLET
     event: user.registered
-    description: "AUTH publishes when new user registers, WALLET creates wallet"
     protocol: RabbitMQ
+    description: "AUTH publishes when new user registers, WALLET creates wallet"
     queue: wallet.user
     payload:
       user_id: uuid

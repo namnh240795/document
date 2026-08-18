@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Invitation Management Flow
+' Sơ đồ Hoạt động - Quản lý Lời mời
 ' ============================================================
 
 skinparam activity {
@@ -11,41 +11,41 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Invitation Management Flow
+title Quản lý Lời mời
 
 start
 
-:Admin enters invitee email + role;
+:Admin nhập email người được mời + vai trò;
 
-:Generate random token\n(SHA-256 hash stored);
+:Tạo token ngẫu nhiên\n(hash SHA-256 được lưu);
 
-if (Duplicate pending invitation?) then (yes)
-  :Return 409 Conflict;
+if (Lời mời đang chờ trùng lặp?) then (yes)
+  :Trả về 409 Conflict;
   stop
 endif
 
-:Store token hash in auth_invitations;
+:Lưu hash token vào auth_invitations;
 
-:Send invitation email via EMAIL module\n(raw token in URL);
+:Gửi email lời mời qua EMAIL module\n(token thô trong URL);
 
-:Invitee receives email;
+:Người được mời nhận email;
 
-:Invitee clicks invitation link;
+:Người được mời nhấp vào liên kết lời mời;
 
-:Frontend calls verify endpoint\n(public, no auth);
+:Frontend gọi endpoint xác minh\n(công khai, không cần xác thực);
 
-:System validates token;
+:System kiểm tra token;
 
-if (Token valid?) then (yes)
-  :Display invitation details;
-  :Invitee accepts or rejects;
-  if (Accepted?) then (yes)
-    :Add user to organization\nwith specified role;
+if (Token hợp lệ?) then (yes)
+  :Hiển thị chi tiết lời mời;
+  :Người được mời chấp nhận hoặc từ chối;
+  if (Chấp nhận?) then (yes)
+    :Thêm người dùng vào tổ chức\nvới vai trò đã chỉ định;
   else (no)
-    :Update status to rejected;
+    :Cập nhật trạng thái thành đã từ chối;
   endif
 else (no)
-  :Show error\n(expired/revoked/invalid);
+  :Hiển thị lỗi\n(hết hạn/đã thu hồi/không hợp lệ);
 endif
 
 stop

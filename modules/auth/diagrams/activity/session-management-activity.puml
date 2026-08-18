@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Session Management Flow
+' Sơ đồ Hoạt động - Quản lý Phiên làm việc
 ' ============================================================
 
 skinparam activity {
@@ -11,22 +11,22 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Session Management Flow
+title Quản lý Phiên làm việc
 
 start
 
-:Navigate to session settings;
+:Điều hướng đến cài đặt phiên làm việc;
 
-:Display active sessions\n(device, IP, last active);
+:Hiển thị các phiên làm việc đang hoạt động\n(thiết bị, IP, lần hoạt động cuối);
 
-if (Action selected?) then (revoke one)
-  :Select specific session;
-  :Invalidate session;
+if (Chọn hành động?) then (revoke one)
+  :Chọn phiên làm việc cụ thể;
+  :Hủy phiên làm việc;
 elseif (revoke all others) then
-  :Invalidate all except current;
+  :Hủy tất cả ngoại trừ phiên hiện tại;
 endif
 
-:Return updated session list;
+:Trả về danh sách phiên làm việc đã cập nhật;
 
 stop
 

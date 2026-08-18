@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - User Ban & Impersonation Flow
+' Sơ đồ Tuần tự - Luồng Khóa tài khoản & Đăng nhập giả danh
 ' ============================================================
 
 skinparam sequence {
@@ -11,16 +11,16 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: User Ban & Impersonation Flow
+title Sơ đồ Tuần tự: Luồng Khóa tài khoản & Đăng nhập giả danh
 
 actor Admin
 participant "Frontend" as FE
 participant "Auth API" as API
 database "PostgreSQL\n(auth_db)" as DB
 
-== Step 1: Ban User ==
+== Bước 1: Khóa tài khoản ==
 
-Admin -> FE : Select user to ban
+Admin -> FE : Chọn người dùng cần khóa
 activate FE
 
 FE -> API : POST /admin/ban-user\n{ userId, banReason, expiresIn }
@@ -28,23 +28,23 @@ activate API
 
 API -> DB : UPDATE auth_users\nSET banned = true, ban_reason = ?,\nban_expires = ?\nWHERE id = ?
 activate DB
-DB --> API : Updated
+DB --> API : Đã cập nhật
 deactivate DB
 
 API -> DB : DELETE FROM auth_sessions\nWHERE user_id = ?
 activate DB
-DB --> API : Sessions revoked
+DB --> API : Đã thu hồi phiên làm việc
 deactivate DB
 
 API --> FE : 200 { success: true }
 deactivate API
 
-FE --> Admin : "User banned"
+FE --> Admin : "Đã khóa tài khoản"
 deactivate FE
 
-== Step 2: Impersonate User ==
+== Bước 2: Đăng nhập giả danh ==
 
-Admin -> FE : Select user to impersonate
+Admin -> FE : Chọn người dùng để đăng nhập giả danh
 activate FE
 
 FE -> API : POST /admin/impersonate-user\n{ userId }
@@ -52,18 +52,18 @@ activate API
 
 API -> DB : INSERT INTO auth_sessions\n(user_id, impersonated_by)
 activate DB
-DB --> API : Session created
+DB --> API : Đã tạo phiên làm việc
 deactivate DB
 
 API --> FE : 200 { token, impersonated: true }
 deactivate API
 
-FE --> Admin : Redirected as target user
+FE --> Admin : Đã chuyển hướng với tư cách người dùng mục tiêu
 deactivate FE
 
-== Step 3: Stop Impersonation ==
+== Bước 3: Dừng đăng nhập giả danh ==
 
-Admin -> FE : Click "Stop impersonating"
+Admin -> FE : Nhấp "Dừng đăng nhập giả danh"
 activate FE
 
 FE -> API : POST /admin/stop-impersonating
@@ -71,13 +71,13 @@ activate API
 
 API -> DB : DELETE FROM auth_sessions\nWHERE impersonated_by = ?
 activate DB
-DB --> API : Session deleted
+DB --> API : Đã xóa phiên làm việc
 deactivate DB
 
 API --> FE : 200 { token, impersonated: false }
 deactivate API
 
-FE --> Admin : Back to admin session
+FE --> Admin : Quay lại phiên quản trị
 deactivate FE
 
 @enduml

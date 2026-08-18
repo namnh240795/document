@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Login Flow (Compact for A4)
+' Sơ đồ Hoạt động - Quy trình Đăng nhập (Compact for A4)
 ' ============================================================
 
 skinparam activity {
@@ -11,36 +11,36 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Login Flow
+title Quy trình Đăng nhập
 
 start
 
-:Enter email/phone + password;
+:Nhập email/số điện thoại + mật khẩu;
 
-:Find user by email/phone;
+:Tìm người dùng theo email/số điện thoại;
 
-if (User found?) then (no)
-  :Return INVALID_CREDENTIALS;
+if (Tìm thấy người dùng?) then (no)
+  :Trả về INVALID_CREDENTIALS;
   stop
 endif
 
-:Verify password;
+:Xác minh mật khẩu;
 
-if (Password correct?) then (no)
-  :Return INVALID_CREDENTIALS;
+if (Mật khẩu đúng?) then (no)
+  :Trả về INVALID_CREDENTIALS;
   stop
 endif
 
-if (Account verified?) then (no)
-  :Return ACCOUNT_NOT_VERIFIED;
+if (Tài khoản đã xác minh?) then (no)
+  :Trả về ACCOUNT_NOT_VERIFIED;
   stop
 endif
 
-:Create session + Generate JWT tokens;
+:Tạo phiên làm việc + Tạo JWT tokens;
 
-:Return tokens to client;
+:Trả về tokens cho client;
 
-:Store tokens + Redirect to Dashboard;
+:Lưu tokens + Điều hướng đến trang quản trị;
 
 stop
 

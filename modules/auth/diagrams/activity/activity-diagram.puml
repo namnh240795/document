@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Account Verification (Compact for A4)
+' Sơ đồ Hoạt động - Quy trình Xác minh Tài khoản (Compact for A4)
 ' ============================================================
 
 skinparam activity {
@@ -11,30 +11,30 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Account Verification Flow
+title Quy trình Xác minh Tài khoản
 
 start
 
-:Request verification;
+:Yêu cầu xác minh;
 
-if (Already sent within 5 min?) then (yes)
-  :Show "Already sent";
+if (Đã gửi trong 5 phút trước?) then (yes)
+  :Hiển thị "Đã gửi";
   stop
 endif
 
-:Generate OTP + Store verification;
+:Tạo mã OTP + Lưu thông tin xác minh;
 
-:Publish event to RabbitMQ;
+:Publish sự kiện đến RabbitMQ;
 
-:Worker sends SMS via Twilio;
+:Worker gửi SMS qua Twilio;
 
-if (SMS sent?) then (yes)
-  :Log as sent;
+if (SMS đã gửi?) then (yes)
+  :Ghi log đã gửi;
 else (no)
-  :Log as failed + Retry;
+  :Ghi log thất bại + Thử lại;
 endif
 
-:Update verification status;
+:Cập nhật trạng thái xác minh;
 
 stop
 

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Software Requirements Specification - Email Notification</title>
+  <title>Yêu cầu Phần mềm - Thông báo Email</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,360 +18,360 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>Software Requirements Specification</h1>
-  <div class="subtitle">Email Notification Module</div>
+  <h1>Yêu cầu Phần mềm</h1>
+  <div class="subtitle">Module Thông báo Email</div>
   <span class="module-badge">EMAIL</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>Authentication System</td></tr>
-    <tr><td>Module</td><td>EMAIL - Email Notification</td></tr>
-    <tr><td>Database</td><td>email_db</td></tr>
-    <tr><td>Date</td><td>2026-08-05</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
+    <tr><td>Module</td><td>EMAIL - Thông báo Email</td></tr>
+    <tr><td>Cơ sở dữ liệu</td><td>email_db</td></tr>
+    <tr><td>Ngày tạo</td><td>2026-08-05</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>Trạng thái</td><td>Nháp</td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Introduction</a>
+    <li><a href="#section-1">1. Giới thiệu</a>
       <ul>
-        <li><a href="#section-1-1">1.1 Purpose</a></li>
-        <li><a href="#section-1-2">1.2 Scope</a></li>
-        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
-        <li><a href="#section-1-4">1.4 Definitions</a></li>
+        <li><a href="#section-1-1">1.1 Mục đích</a></li>
+        <li><a href="#section-1-2">1.2 Phạm vi</a></li>
+        <li><a href="#section-1-3">1.3 Phụ thuộc Module</a></li>
+        <li><a href="#section-1-4">1.4 Định nghĩa</a></li>
       </ul>
     </li>
-    <li><a href="#section-2">2. Module Overview</a>
+    <li><a href="#section-2">2. Tổng quan Module</a>
       <ul>
-        <li><a href="#section-2-1">2.1 Module Description</a></li>
-        <li><a href="#section-2-2">2.2 Use Case Diagram</a></li>
+        <li><a href="#section-2-1">2.1 Mô tả Module</a></li>
+        <li><a href="#section-2-2">2.2 Sơ đồ Use Case</a></li>
       </ul>
     </li>
-    <li><a href="#section-3">3. Functional Requirements</a></li>
-    <li><a href="#section-4">4. Data Model</a></li>
-    <li><a href="#section-5">5. API Specification</a></li>
-    <li><a href="#section-6">6. Integration</a></li>
-    <li><a href="#section-7">7. Non-Functional Requirements</a></li>
-    <li><a href="#section-8">8. Requirements Traceability Matrix</a></li>
+    <li><a href="#section-3">3. Yêu cầu Chức năng</a></li>
+    <li><a href="#section-4">4. Mô hình Dữ liệu</a></li>
+    <li><a href="#section-5">5. Đặc tả API</a></li>
+    <li><a href="#section-6">6. Tích hợp</a></li>
+    <li><a href="#section-7">7. Yêu cầu Phi chức năng</a></li>
+    <li><a href="#section-8">8. Ma trận Truy suất Yêu cầu</a></li>
   </ul>
 </div>
 
 <!-- 1. INTRODUCTION -->
-<h1 id="section-1">1. Introduction</h1>
+<h1 id="section-1">1. Giới thiệu</h1>
 
-<h2 id="section-1-1">1.1 Purpose</h2>
-<p>This document defines the software requirements for the <strong>Email Notification</strong> module of the Authentication System.</p>
+<h2 id="section-1-1">1.1 Mục đích</h2>
+<p>Tài liệu này định nghĩa các yêu cầu phần mềm cho module <strong>Thông báo Email</strong> của Hệ thống Xác thực.</p>
 
-<h2 id="section-1-2">1.2 Scope</h2>
-<p>Email notification delivery, templating, and audit trail</p>
+<h2 id="section-1-2">1.2 Phạm vi</h2>
+<p>Gửi thông báo email, mẫu email và lưu vết kiểm toán</p>
 
-<h2 id="section-1-3">1.3 Module Dependencies</h2>
+<h2 id="section-1-3">1.3 Phụ thuộc Module</h2>
 <table>
-  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
-  <tr><td>AUTH</td><td>Async (RabbitMQ)</td><td>Receives verification email requests from AUTH module</td></tr>
-  <tr><td>RECR</td><td>Async (RabbitMQ)</td><td>Receives application, interview, and offer email requests from RECR module</td></tr>
-  <tr><td>LOG</td><td>Async (RabbitMQ)</td><td>Publishes email delivery events to Logger module</td></tr>
+  <tr><th>Module</th><th>Loại Phụ thuộc</th><th>Mô tả</th></tr>
+  <tr><td>AUTH</td><td>Bất đồng bộ (RabbitMQ)</td><td>Nhận yêu cầu email xác minh từ module AUTH</td></tr>
+  <tr><td>RECR</td><td>Bất đồng bộ (RabbitMQ)</td><td>Nhận yêu cầu email hồ sơ, phỏng vấn và đề nghị từ module RECR</td></tr>
+  <tr><td>LOG</td><td>Bất đồng bộ (RabbitMQ)</td><td>Gửi sự kiện giao email đến module Logger</td></tr>
 </table>
 
-<h2 id="section-1-4">1.4 Definitions</h2>
+<h2 id="section-1-4">1.4 Định nghĩa</h2>
 <table>
-  <tr><th>Term</th><th>Definition</th></tr>
-  <tr><td>SRS</td><td>Software Requirements Specification</td></tr>
-  <tr><td>FR</td><td>Functional Requirement</td></tr>
-  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
-  <tr><td>UC</td><td>Use Case</td></tr>
-  <tr><td>DR</td><td>Data Requirement</td></tr>
-  <tr><td>IR</td><td>Integration Requirement</td></tr>
+  <tr><th>Thuật ngữ</th><th>Định nghĩa</th></tr>
+  <tr><td>SRS</td><td>Yêu cầu Phần mềm</td></tr>
+  <tr><td>FR</td><td>Yêu cầu Chức năng</td></tr>
+  <tr><td>NFR</td><td>Yêu cầu Phi chức năng</td></tr>
+  <tr><td>UC</td><td>Trường hợp Sử dụng</td></tr>
+  <tr><td>DR</td><td>Yêu cầu Dữ liệu</td></tr>
+  <tr><td>IR</td><td>Yêu cầu Tích hợp</td></tr>
 </table>
 
 <!-- 2. MODULE OVERVIEW -->
-<h1 id="section-2">2. Module Overview</h1>
+<h1 id="section-2">2. Tổng quan Module</h1>
 
-<h2 id="section-2-1">2.1 Module Description</h2>
+<h2 id="section-2-1">2.1 Mô tả Module</h2>
 <table>
-  <tr><th>Aspect</th><th>Value</th></tr>
-  <tr><td>Module Code</td><td>EMAIL</td></tr>
-  <tr><td>Module Name</td><td>Email Notification</td></tr>
-  <tr><td>Description</td><td>Email notification delivery, templating, and audit trail</td></tr>
-  <tr><td>Database</td><td>email_db</td></tr>
-  <tr><td>Tables</td><td>email_logs</td></tr>
-  <tr><td>Tech Stack</td><td>NestJS, Drizzle ORM, PostgreSQL, RabbitMQ, SendGrid/SMTP</td></tr>
+  <tr><th>Khía cạnh</th><th>Giá trị</th></tr>
+  <tr><td>Mã Module</td><td>EMAIL</td></tr>
+  <tr><td>Tên Module</td><td>Thông báo Email</td></tr>
+  <tr><td>Mô tả</td><td>Gửi thông báo email, mẫu email và lưu vết kiểm toán</td></tr>
+  <tr><td>Cơ sở dữ liệu</td><td>email_db</td></tr>
+  <tr><td>Bảng</td><td>email_logs</td></tr>
+  <tr><td>Công nghệ</td><td>NestJS, Drizzle ORM, PostgreSQL, RabbitMQ, SendGrid/SMTP</td></tr>
 </table>
 
-<h2 id="section-2-2">2.2 Use Case Diagram</h2>
+<h2 id="section-2-2">2.2 Sơ đồ Use Case</h2>
 <div class="diagram">
-  <img src="./images/usecase/usecase-diagram.png" alt="Use Case Diagram">
-  <div class="caption">Figure 1: Email Notification Use Case Diagram</div>
+  <img src="./images/usecase/usecase-diagram.png" alt="Sơ đồ Use Case">
+  <div class="caption">Hình 1: Sơ đồ Use Case Thông báo Email</div>
 </div>
 
 <!-- 3. FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-3">3. Functional Requirements</h1>
+<h1 id="section-3">3. Yêu cầu Chức năng</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã YC</th>
     <th>Module</th>
-    <th>Requirement</th>
+    <th>Yêu cầu</th>
     <th>Use Case</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr id="fr-001">
     <td><span class="req-id">FR-001</span></td>
     <td>EMAIL</td>
-    <td>Send Verification Email</td>
+    <td>Gửi Email Xác minh</td>
     <td>UC-01</td>
-    <td>High</td>
-    <td>System shall send verification emails with OTP codes to users</td>
+    <td>Cao</td>
+    <td>Hệ thống phải gửi email xác minh chứa mã OTP cho người dùng</td>
   </tr>
   <tr id="fr-002">
     <td><span class="req-id">FR-002</span></td>
     <td>EMAIL</td>
-    <td>Resend Verification Email</td>
+    <td>Gửi lại Email Xác minh</td>
     <td>UC-01</td>
-    <td>High</td>
-    <td>System shall allow resending verification emails with rate limiting</td>
+    <td>Cao</td>
+    <td>Hệ thống phải cho phép gửi lại email xác minh với giới hạn tốc độ</td>
   </tr>
   <tr id="fr-003">
     <td><span class="req-id">FR-003</span></td>
     <td>EMAIL</td>
-    <td>Track Email Delivery</td>
+    <td>Theo dõi Giao Email</td>
     <td>UC-02</td>
-    <td>Medium</td>
-    <td>System shall track email delivery status (sent, delivered, failed)</td>
+    <td>Trung bình</td>
+    <td>Hệ thống phải theo dõi trạng thái giao email (đã gửi, đã giao, thất bại)</td>
   </tr>
   <tr id="fr-004">
     <td><span class="req-id">FR-004</span></td>
     <td>EMAIL</td>
-    <td>Log Email Events</td>
+    <td>Ghi log Sự kiện Email</td>
     <td>UC-02</td>
-    <td>Medium</td>
-    <td>System shall log all email events for audit trail</td>
+    <td>Trung bình</td>
+    <td>Hệ thống phải ghi log tất cả sự kiện email để lưu vết kiểm toán</td>
   </tr>
   <tr id="fr-005">
     <td><span class="req-id">FR-005</span></td>
     <td>EMAIL</td>
-    <td>Retry Failed Emails</td>
+    <td>Thử lại Email Thất bại</td>
     <td>UC-03</td>
-    <td>Medium</td>
-    <td>System shall retry failed email deliveries with exponential backoff</td>
+    <td>Trung bình</td>
+    <td>Hệ thống phải thử lại gửi email thất bại với exponential backoff</td>
   </tr>
   <tr id="fr-006">
     <td><span class="req-id">FR-006</span></td>
     <td>EMAIL</td>
-    <td>Send Application Confirmation</td>
+    <td>Gửi Xác nhận Hồ sơ</td>
     <td>UC-04</td>
-    <td>High</td>
-    <td>System shall send confirmation email when candidate submits job application</td>
+    <td>Cao</td>
+    <td>Hệ thống phải gửi email xác nhận khi ứng viên gửi hồ sơ ứng tuyển</td>
   </tr>
   <tr id="fr-007">
     <td><span class="req-id">FR-007</span></td>
     <td>EMAIL</td>
-    <td>Send Interview Invitation</td>
+    <td>Gửi Lời mời Phỏng vấn</td>
     <td>UC-05</td>
-    <td>High</td>
-    <td>System shall send interview invitation email with calendar details</td>
+    <td>Cao</td>
+    <td>Hệ thống phải gửi email lời mời phỏng vấn kèm chi tiết lịch</td>
   </tr>
   <tr id="fr-008">
     <td><span class="req-id">FR-008</span></td>
     <td>EMAIL</td>
-    <td>Send Offer Letter</td>
+    <td>Gửi Thư Đề nghị</td>
     <td>UC-06</td>
-    <td>High</td>
-    <td>System shall send offer letter email with position and salary details</td>
+    <td>Cao</td>
+    <td>Hệ thống phải gửi email thư đề nghị kèm chi tiết vị trí và lương</td>
   </tr>
 </table>
 
 <!-- 4. DATA MODEL -->
-<h1 id="section-4">4. Data Model</h1>
+<h1 id="section-4">4. Mô hình Dữ liệu</h1>
 
-<h2>4.1 Entity Relationship Diagram</h2>
+<h2>4.1 Sơ đồ Quan hệ Thực thể</h2>
 <div class="diagram">
-  <img src="./images/erd/erd-diagram.png" alt="ERD Diagram">
-  <div class="caption">Figure 2: Email Notification ERD</div>
+  <img src="./images/erd/erd-diagram.png" alt="Sơ đồ ERD">
+  <div class="caption">Hình 2: ERD Thông báo Email</div>
 </div>
 
-<h2>4.2 Data Requirements</h2>
+<h2>4.2 Yêu cầu Dữ liệu</h2>
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
-    <th>Entity</th>
-    <th>Description</th>
-    <th>Related FR</th>
+    <th>Mã YC</th>
+    <th>Thực thể</th>
+    <th>Mô tả</th>
+    <th>FR liên quan</th>
   </tr>
   <tr id="dr-001">
     <td><span class="req-id">DR-001</span></td>
     <td>email_logs</td>
-    <td>Stores email delivery logs including recipient, subject, status, and provider details</td>
+    <td>Lưu log giao email bao gồm người nhận, chủ đề, trạng thái và chi tiết nhà cung cấp</td>
     <td>FR-001, FR-003, FR-004</td>
   </tr>
 </table>
 
 <!-- 5. API SPECIFICATION -->
-<h1 id="section-5">5. API Specification</h1>
+<h1 id="section-5">5. Đặc tả API</h1>
 
-<h2>5.1 Endpoint Summary</h2>
+<h2>5.1 Tổng quan Endpoint</h2>
 <table class="trace-table">
   <tr>
-    <th>Method</th>
-    <th>Path</th>
-    <th>Description</th>
-    <th>Requirement IDs</th>
+    <th>Phương thức</th>
+    <th>Đường dẫn</th>
+    <th>Mô tả</th>
+    <th>Mã YC</th>
   </tr>
   <tr>
     <td>POST</td>
     <td>/api/webhooks/email/delivered</td>
-    <td>Receive email delivery status callback</td>
+    <td>Nhận callback trạng thái giao email</td>
     <td>FR-003</td>
   </tr>
 </table>
 
 <!-- 6. INTEGRATION -->
-<h1 id="section-6">6. Integration</h1>
+<h1 id="section-6">6. Tích hợp</h1>
 
-<h2>6.1 Sequence Diagram</h2>
+<h2>6.1 Sơ đồ Sequence</h2>
 <div class="diagram">
-  <img src="./images/sequence/sequence-diagram.png" alt="Sequence Diagram">
-  <div class="caption">Figure 3: Email Notification Integration Flow</div>
+  <img src="./images/sequence/sequence-diagram.png" alt="Sơ đồ Sequence">
+  <div class="caption">Hình 3: Luồng Tích hợp Thông báo Email</div>
 </div>
 
-<h2>6.2 Webhook Events</h2>
+<h2>6.2 Sự kiện Webhook</h2>
 <table>
-  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
+  <tr><th>Sự kiện</th><th>Hướng</th><th>Giao thức</th><th>Mô tả</th></tr>
   <tr>
     <td>verification.email.requested</td>
     <td>AUTH → EMAIL</td>
     <td>RabbitMQ</td>
-    <td>Triggered when user requests email verification</td>
+    <td>Kích hoạt khi người dùng yêu cầu xác minh email</td>
   </tr>
   <tr>
     <td>verification.email.resent</td>
     <td>AUTH → EMAIL</td>
     <td>RabbitMQ</td>
-    <td>Triggered when user resends email verification</td>
+    <td>Kích hoạt khi người dùng gửi lại xác minh email</td>
   </tr>
   <tr>
     <td>verification.email.delivered</td>
     <td>EMAIL → AUTH</td>
     <td>Webhook</td>
-    <td>Confirms email delivery status back to AUTH</td>
+    <td>Xác nhận trạng thái giao email cho AUTH</td>
   </tr>
   <tr>
     <td>email.event.logged</td>
     <td>EMAIL → LOG</td>
     <td>RabbitMQ</td>
-    <td>Logs email delivery events to Logger</td>
+    <td>Ghi log sự kiện giao email vào Logger</td>
   </tr>
 </table>
 
 <!-- 7. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-7">7. Non-Functional Requirements</h1>
+<h1 id="section-7">7. Yêu cầu Phi chức năng</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
-    <th>Category</th>
-    <th>Requirement</th>
-    <th>Target</th>
+    <th>Mã YC</th>
+    <th>Danh mục</th>
+    <th>Yêu cầu</th>
+    <th>Mục tiêu</th>
   </tr>
   <tr id="nfr-001">
     <td><span class="req-id">NFR-001</span></td>
-    <td>Performance</td>
-    <td>Email delivery latency</td>
-    <td>&lt; 3 seconds for 95th percentile</td>
+    <td>Hiệu suất</td>
+    <td>Độ trễ giao email</td>
+    <td>&lt; 3 giây ở percentil thứ 95</td>
   </tr>
   <tr id="nfr-002">
     <td><span class="req-id">NFR-002</span></td>
-    <td>Availability</td>
-    <td>Email service uptime</td>
-    <td>99.9% availability</td>
+    <td>Khả dụng</td>
+    <td>Uptime dịch vụ email</td>
+    <td>99.9% khả dụng</td>
   </tr>
   <tr id="nfr-003">
     <td><span class="req-id">NFR-003</span></td>
-    <td>Scalability</td>
-    <td>Email throughput</td>
-    <td>1000+ emails per minute</td>
+    <td>Khả năng mở rộng</td>
+    <td>Throughput email</td>
+    <td>1000+ email mỗi phút</td>
   </tr>
   <tr id="nfr-004">
     <td><span class="req-id">NFR-004</span></td>
-    <td>Reliability</td>
-    <td>Email delivery rate</td>
-    <td>99%+ delivery success rate</td>
+    <td>Độ tin cậy</td>
+    <td>Tỷ lệ giao email thành công</td>
+    <td>99%+ tỷ lệ giao thành công</td>
   </tr>
 </table>
 
 <!-- 8. TRACEABILITY -->
-<h1 id="section-8">8. Requirements Traceability Matrix</h1>
+<h1 id="section-8">8. Ma trận Truy suất Yêu cầu</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
-    <th>Requirement</th>
-    <th>TDS Section</th>
-    <th>DB Table</th>
-    <th>API Endpoint</th>
+    <th>Mã YC</th>
+    <th>Yêu cầu</th>
+    <th>Phần TDS</th>
+    <th>Bảng CSDL</th>
+    <th>Endpoint API</th>
   </tr>
   <tr>
     <td><span class="req-id">FR-001</span></td>
-    <td>Send Verification Email</td>
-    <td>3.1 Email Sending</td>
+    <td>Gửi Email Xác minh</td>
+    <td>3.1 Gửi Email</td>
     <td>email_logs</td>
     <td>RabbitMQ consumer</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-002</span></td>
-    <td>Resend Verification Email</td>
-    <td>3.1 Email Sending</td>
+    <td>Gửi lại Email Xác minh</td>
+    <td>3.1 Gửi Email</td>
     <td>email_logs</td>
     <td>RabbitMQ consumer</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-003</span></td>
-    <td>Track Email Delivery</td>
-    <td>3.2 Delivery Tracking</td>
+    <td>Theo dõi Giao Email</td>
+    <td>3.2 Theo dõi Giao dịch</td>
     <td>email_logs</td>
     <td>POST /api/webhooks/email/delivered</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-004</span></td>
-    <td>Log Email Events</td>
-    <td>3.3 Event Logging</td>
+    <td>Ghi log Sự kiện Email</td>
+    <td>3.3 Ghi log Sự kiện</td>
     <td>email_logs</td>
     <td>RabbitMQ producer</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-005</span></td>
-    <td>Retry Failed Emails</td>
-    <td>3.4 Retry Mechanism</td>
+    <td>Thử lại Email Thất bại</td>
+    <td>3.4 Cơ chế Thử lại</td>
     <td>email_logs</td>
-    <td>Internal scheduler</td>
+    <td>Lịch trình nội bộ</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-006</span></td>
-    <td>Send Application Confirmation</td>
-    <td>3.1 Email Sending</td>
+    <td>Gửi Xác nhận Hồ sơ</td>
+    <td>3.1 Gửi Email</td>
     <td>email_logs</td>
     <td>RabbitMQ consumer (recruitment.email)</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-007</span></td>
-    <td>Send Interview Invitation</td>
-    <td>3.1 Email Sending</td>
+    <td>Gửi Lời mời Phỏng vấn</td>
+    <td>3.1 Gửi Email</td>
     <td>email_logs</td>
     <td>RabbitMQ consumer (recruitment.email)</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-008</span></td>
-    <td>Send Offer Letter</td>
-    <td>3.1 Email Sending</td>
+    <td>Gửi Thư Đề nghị</td>
+    <td>3.1 Gửi Email</td>
     <td>email_logs</td>
     <td>RabbitMQ consumer (recruitment.email)</td>
   </tr>

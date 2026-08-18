@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Organization Management Flow
+' Sơ đồ Tuần tự - Luồng Quản lý Tổ chức
 ' ============================================================
 
 skinparam sequence {
@@ -11,16 +11,16 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: Organization Management Flow
+title Sơ đồ Tuần tự: Luồng Quản lý Tổ chức
 
 actor User
 participant "Frontend" as FE
 participant "Auth API" as API
 database "PostgreSQL\n(auth_db)" as DB
 
-== Step 1: Create Organization ==
+== Bước 1: Tạo tổ chức ==
 
-User -> FE : Fill organization details
+User -> FE : Điền thông tin tổ chức
 activate FE
 
 FE -> API : POST /organization/create\n{ name, slug, logo }
@@ -28,33 +28,33 @@ activate API
 
 API -> DB : SELECT slug FROM auth_organizations\nWHERE slug = ?
 activate DB
-DB --> API : Slug check
+DB --> API : Kiểm tra slug
 deactivate DB
 
-alt Slug already taken
+alt Slug đã tồn tại
   API --> FE : 409 CONFLICT
-  FE --> User : Show "Slug already taken"
+  FE --> User : Hiển thị "Slug đã tồn tại"
 end
 
 API -> DB : INSERT INTO auth_organizations\n(name, slug, logo)
 activate DB
-DB --> API : Organization created (id)
+DB --> API : Đã tạo tổ chức (id)
 deactivate DB
 
 API -> DB : INSERT INTO auth_members\n(organization_id, user_id, role: 'Employer')
 activate DB
-DB --> API : Member created (owner)
+DB --> API : Đã tạo thành viên (chủ sở hữu)
 deactivate DB
 
 API --> FE : 200 { organization }
 deactivate API
 
-FE --> User : "Organization created"
+FE --> User : "Đã tạo tổ chức"
 deactivate FE
 
-== Step 2: List Organizations ==
+== Bước 2: Liệt kê tổ chức ==
 
-User -> FE : View organizations
+User -> FE : Xem tổ chức
 activate FE
 
 FE -> API : GET /organization/list
@@ -62,18 +62,18 @@ activate API
 
 API -> DB : SELECT o.* FROM auth_organizations o\nJOIN auth_members m ON o.id = m.organization_id\nWHERE m.user_id = ?
 activate DB
-DB --> API : Organization list
+DB --> API : Danh sách tổ chức
 deactivate DB
 
 API --> FE : 200 { organizations: [...] }
 deactivate API
 
-FE --> User : Display organizations
+FE --> User : Hiển thị tổ chức
 deactivate FE
 
-== Step 3: Manage Members ==
+== Bước 3: Quản lý thành viên ==
 
-User -> FE : View members
+User -> FE : Xem thành viên
 activate FE
 
 FE -> API : GET /organization/list-members\n?organizationId=org-123
@@ -81,13 +81,13 @@ activate API
 
 API -> DB : SELECT m.*, u.name, u.email\nFROM auth_members m\nJOIN auth_users u ON m.user_id = u.id\nWHERE m.organization_id = ?
 activate DB
-DB --> API : Member list
+DB --> API : Danh sách thành viên
 deactivate DB
 
 API --> FE : 200 { members: [...] }
 deactivate API
 
-FE --> User : Display members
+FE --> User : Hiển thị thành viên
 deactivate FE
 
 @enduml

@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Verify Invitation Token Flow
+' Sơ đồ Tuần tự - Luồng Xác minh Token Lời mời
 ' ============================================================
 
 skinparam sequence {
@@ -11,62 +11,62 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: Verify Invitation Token Flow
+title Sơ đồ Tuần tự: Luồng Xác minh Token Lời mời
 
 actor "Invitee" as Inv
 participant "Frontend" as FE
 participant "Auth API" as API
 database "PostgreSQL\n(auth_db)" as DB
 
-== Step 1: Click Invitation Link ==
+== Bước 1: Nhấp liên kết lời mời ==
 
-Inv -> FE : Click link in email\n(contains raw token in URL)
+Inv -> FE : Nhấp liên kết trong email\n(chứa raw token trong URL)
 activate FE
 
-== Step 2: Verify Token (public, no auth) ==
+== Bước 2: Xác minh token (công khai, không cần xác thực) ==
 
 FE -> API : GET /organization/verify-invitation\n?token={raw_token}
 activate API
 
-== Step 3: Hash Token ==
+== Bước 3: Hash token ==
 
-API -> API : SHA-256 hash\n(consistency with stored hash)
+API -> API : SHA-256 hash\n(đồng nhất với hash đã lưu)
 
-== Step 4: Look Up Invitation ==
+== Bước 4: Tra cứu lời mời ==
 
 API -> DB : SELECT * FROM auth_invitations\nWHERE token_hash = ?
 activate DB
-DB --> API : Invitation record
+DB --> API : Bản ghi lời mời
 deactivate DB
 
-== Step 5: Validate ==
+== Bước 5: Kiểm tra ==
 
-API -> API : Check status + expiry
+API -> API : Kiểm tra trạng thái + thời hạn
 
-alt Token not found
-  API --> FE : 404 "Invalid invitation token"
-else Pending + not expired
+alt Token không tìm thấy
+  API --> FE : 404 "Token lời mời không hợp lệ"
+else Đang chờ + chưa hết hạn
   API --> FE : 200 { valid: true, invitation }
-else Pending + expired
+else Đang chờ + đã hết hạn
   API -> DB : UPDATE auth_invitations\nSET status = 'expired'\nWHERE id = ?
   activate DB
-  DB --> API : Updated
+  DB --> API : Đã cập nhật
   deactivate DB
   API --> FE : 200 { valid: false, reason: "expired" }
-else Already accepted
+else Đã chấp nhận
   API --> FE : 200 { valid: false, reason: "accepted" }
-else Revoked
+else Đã thu hồi
   API --> FE : 200 { valid: false, reason: "revoked" }
 end
 
 deactivate API
 
-== Step 6: Display Result ==
+== Bước 6: Hiển thị kết quả ==
 
-alt Valid
-  FE --> Inv : Show invitation details\n+ Accept/Reject buttons
-else Invalid
-  FE --> Inv : Show error message
+alt Hợp lệ
+  FE --> Inv : Hiển thị chi tiết lời mời\n+ nút Chấp nhận/Từ chối
+else Không hợp lệ
+  FE --> Inv : Hiển thị thông báo lỗi
 end
 
 deactivate FE

@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Social Authentication Flow
+' Sơ đồ Hoạt động - Đăng nhập Xã hội
 ' ============================================================
 
 skinparam activity {
@@ -11,28 +11,28 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Social Authentication Flow
+title Đăng nhập Xã hội
 
 start
 
-:Click "Sign in with Provider";
+:Nhấp "Đăng nhập với Provider";
 
-:Redirect to OAuth provider;
+:Điều hướng đến OAuth provider;
 
-:User authenticates with provider;
+:Người dùng xác thực với provider;
 
-:Provider redirects with auth code;
+:Provider chuyển hướng với mã xác thực;
 
-:Exchange code for tokens;
+:Đổi mã lấy tokens;
 
-if (User exists?) then (yes)
-  :Link social account to existing user;
+if (Người dùng tồn tại?) then (yes)
+  :Liên kết tài khoản xã hội với người dùng hiện tại;
 else (no)
-  :Create new user account;
-  :Link social account;
+  :Tạo tài khoản người dùng mới;
+  :Liên kết tài khoản xã hội;
 endif
 
-:Create session + Issue JWT;
+:Tạo phiên làm việc + Cấp JWT;
 
 stop
 

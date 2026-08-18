@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Registration Flow
-' User Registration + Email/Phone Verification
+' Sơ đồ Tuần tự - Luồng Đăng ký
+' Đăng ký Người dùng + Xác minh Email/Phone
 ' ============================================================
 
 skinparam sequence {
@@ -12,7 +12,7 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: User Registration Flow
+title Sơ đồ Tuần tự: Luồng Đăng ký Người dùng
 
 actor User
 participant "Frontend" as FE
@@ -22,97 +22,97 @@ queue "RabbitMQ" as MQ
 participant "Notification\nWorker" as Worker
 participant "Email/SMS\nService" as Notif
 
-== Step 1: Registration Request ==
+== Bước 1: Yêu cầu đăng ký ==
 
-User -> FE : Fill registration form\n(name, email/phone, password)
+User -> FE : Điền form đăng ký\n(tên, email/số điện thoại, mật khẩu)
 activate FE
 
 FE -> API : POST /auth/register\n{ name, email, phone, password }
 activate API
 
-== Step 2: Validate Input ==
+== Bước 2: Kiểm tra dữ liệu ==
 
-API -> API : Validate input format\n(email format, password strength)
+API -> API : Kiểm tra định dạng dữ liệu\n(định dạng email, độ mạnh mật khẩu)
 
-alt Validation failed
+alt Kiểm tra dữ liệu thất bại
   API --> FE : 400 VALIDATION_ERROR
-  FE --> User : Show validation errors
+  FE --> User : Hiển thị lỗi kiểm tra
 end
 
-== Step 3: Check Duplicate ==
+== Bước 3: Kiểm tra trùng lặp ==
 
 API -> DB : SELECT * FROM auth_users\nWHERE email = ? OR phone = ?
 activate DB
-DB --> API : Result
+DB --> API : Kết quả
 deactivate DB
 
-alt Email/phone already exists
+alt Email/số điện thoại đã tồn tại
   API --> FE : 409 CONFLICT
-  FE --> User : Show "Already registered"
+  FE --> User : Hiển thị "Đã đăng ký"
 end
 
-== Step 4: Hash Password ==
+== Bước 4: Mã hóa mật khẩu ==
 
 API -> API : bcrypt.hash(password, 12)
 
-== Step 5: Create User ==
+== Bước 5: Tạo người dùng ==
 
 API -> DB : INSERT INTO auth_users\n(name, email, phone, password_hash)
 activate DB
-DB --> API : User created (id: uuid)
+DB --> API : Đã tạo người dùng (id: uuid)
 deactivate DB
 
-== Step 6: Create Account Record ==
+== Bước 6: Tạo bản ghi tài khoản ==
 
 API -> DB : INSERT INTO auth_accounts\n(user_id, provider: 'credential')
 activate DB
-DB --> API : Account created
+DB --> API : Đã tạo tài khoản
 deactivate DB
 
-== Step 7: Create Default Role ==
+== Bước 7: Tạo vai trò mặc định ==
 
 API -> DB : INSERT INTO auth_user_roles\n(user_id, role_id: 'customer')
 activate DB
-DB --> API : Role assigned
+DB --> API : Đã gán vai trò
 deactivate DB
 
-== Step 8: Generate Verification ==
+== Bước 8: Tạo mã xác minh ==
 
-API -> API : Generate verification code\n(6-digit OTP)
+API -> API : Tạo mã xác minh\n(OTP 6 chữ số)
 
 API -> DB : INSERT INTO auth_verification\n(user_id, code, type, expires_at)
 activate DB
-DB --> API : Verification record
+DB --> API : Bản ghi xác minh
 deactivate DB
 
-== Step 9: Send Verification ==
+== Bước 9: Gửi xác minh ==
 
 API -> MQ : PUBLISH verification.requested\n{ userId, phone, channel, otp }
 activate MQ
-MQ --> API : Queued
+MQ --> API : Đã xếp hàng
 deactivate MQ
 
-== Step 10: Response ==
+== Bước 10: Phản hồi ==
 
 API --> FE : 201 { user: { id, name, email, emailVerified: false } }
 deactivate API
 
-FE --> User : Show "Registration successful"\n+ "Please verify your account"
+FE --> User : Hiển thị "Đăng ký thành công"\n+ "Vui lòng xác minh tài khoản"
 deactivate FE
 
-== Step 11: Async - Send Verification ==
+== Bước 11: Bất đồng bộ - Gửi xác minh ==
 
 MQ -> Worker : CONSUME verification.requested
 activate Worker
 
-Worker -> Notif : Send OTP to phone\nor verification email
+Worker -> Notif : Gửi OTP qua số điện thoại\nhoặc email xác minh
 activate Notif
-Notif --> Worker : Sent
+Notif --> Worker : Đã gửi
 deactivate Notif
 
 Worker -> DB : UPDATE auth_verification\nSET status = 'sent'
 activate DB
-DB --> Worker : Updated
+DB --> Worker : Đã cập nhật
 deactivate DB
 
 Worker -> MQ : ACK

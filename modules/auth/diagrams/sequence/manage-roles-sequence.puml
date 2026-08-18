@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Manage Roles Flow
+' Sơ đồ Tuần tự - Luồng Quản lý Vai trò
 ' ============================================================
 
 skinparam sequence {
@@ -11,16 +11,16 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: Manage Roles Flow
+title Sơ đồ Tuần tự: Luồng Quản lý Vai trò
 
 actor Admin
 participant "Frontend" as FE
 participant "Auth API" as API
 database "PostgreSQL\n(auth_db)" as DB
 
-== Step 1: List Roles ==
+== Bước 1: Liệt kê vai trò ==
 
-Admin -> FE : Navigate to role management
+Admin -> FE : Điều hướng đến quản lý vai trò
 activate FE
 
 FE -> API : GET /organization/list-roles\n?organizationId=org-123
@@ -28,18 +28,18 @@ activate API
 
 API -> DB : SELECT * FROM auth_organization_roles\nWHERE organization_id = ?
 activate DB
-DB --> API : Role list
+DB --> API : Danh sách vai trò
 deactivate DB
 
 API --> FE : 200 { roles: [...] }
 deactivate API
 
-FE --> Admin : Display role list
+FE --> Admin : Hiển thị danh sách vai trò
 deactivate FE
 
-== Step 2: Create Role ==
+== Bước 2: Tạo vai trò ==
 
-Admin -> FE : Create new role
+Admin -> FE : Tạo vai trò mới
 activate FE
 
 FE -> API : POST /organization/create-role\n{ organizationId, role, description, permission }
@@ -47,18 +47,18 @@ activate API
 
 API -> DB : INSERT INTO auth_organization_roles\n(organization_id, role, description, permission)
 activate DB
-DB --> API : Role created
+DB --> API : Đã tạo vai trò
 deactivate DB
 
 API --> FE : 200 { success: true }
 deactivate API
 
-FE --> Admin : "Role created"
+FE --> Admin : "Đã tạo vai trò"
 deactivate FE
 
-== Step 3: Assign Role ==
+== Bước 3: Gán vai trò ==
 
-Admin -> FE : Assign role to member
+Admin -> FE : Gán vai trò cho thành viên
 activate FE
 
 FE -> API : POST /organization/update-member-role\n{ organizationId, userId, role }
@@ -66,13 +66,13 @@ activate API
 
 API -> DB : UPDATE auth_members\nSET role = ?\nWHERE organization_id = ? AND user_id = ?
 activate DB
-DB --> API : Updated
+DB --> API : Đã cập nhật
 deactivate DB
 
 API --> FE : 200 { success: true }
 deactivate API
 
-FE --> Admin : "Role assigned"
+FE --> Admin : "Đã gán vai trò"
 deactivate FE
 
 @enduml

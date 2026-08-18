@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Login Flow
-' JWT Token Generation + Session Management
+' Sơ đồ Tuần tự - Luồng Đăng nhập
+' Tạo JWT Token + Quản lý Phiên làm việc
 ' ============================================================
 
 skinparam sequence {
@@ -12,7 +12,7 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: User Login Flow
+title Sơ đồ Tuần tự: Luồng Đăng nhập
 
 actor User
 participant "Frontend" as FE
@@ -20,74 +20,74 @@ participant "Auth API" as API
 database "PostgreSQL\n(auth_db)" as DB
 database "Redis\n(Cache)" as Redis
 
-== Step 1: Login Request ==
+== Bước 1: Yêu cầu đăng nhập ==
 
-User -> FE : Enter email/phone + password
+User -> FE : Nhập email/số điện thoại + mật khẩu
 activate FE
 
 FE -> API : POST /auth/login\n{ identifier, password }
 activate API
 
-== Step 2: Parse Identifier ==
+== Bước 2: Phân tích định danh ==
 
-API -> API : Detect identifier type\n(email or phone)
+API -> API : Phát hiện loại định danh\n(email hoặc số điện thoại)
 
-== Step 3: Find User ==
+== Bước 3: Tìm người dùng ==
 
 API -> DB : SELECT * FROM auth_users\nWHERE email = ? OR phone = ?
 activate DB
-DB --> API : User record
+DB --> API : Bản ghi người dùng
 deactivate DB
 
-alt User not found
+alt Không tìm thấy người dùng
   API --> FE : 401 INVALID_CREDENTIALS
-  FE --> User : Show "Invalid credentials"
+  FE --> User : Hiển thị "Thông tin đăng nhập không hợp lệ"
 end
 
-== Step 4: Verify Password ==
+== Bước 4: Xác minh mật khẩu ==
 
 API -> API : bcrypt.compare(password, user.password_hash)
 
-alt Wrong password
+alt Sai mật khẩu
   API --> FE : 401 INVALID_CREDENTIALS
-  FE --> User : Show "Invalid credentials"
+  FE --> User : Hiển thị "Thông tin đăng nhập không hợp lệ"
 end
 
-== Step 5: Check Verification ==
+== Bước 5: Kiểm tra xác minh ==
 
-API -> API : Check email_verified / phone_verified
+API -> API : Kiểm tra email_verified / phone_verified
 
-alt Not verified
+alt Chưa xác minh
   API --> FE : 403 ACCOUNT_NOT_VERIFIED
-  FE --> User : Show "Please verify your account"
+  FE --> User : Hiển thị "Vui lòng xác minh tài khoản"
 end
 
-== Step 6: Create Session ==
+== Bước 6: Tạo phiên làm việc ==
 
 API -> DB : INSERT INTO auth_sessions\n(user_id, token, refresh_token, expires_at)
 activate DB
-DB --> API : Session created
+DB --> API : Đã tạo phiên làm việc
 deactivate DB
 
-== Step 7: Generate Tokens ==
+== Bước 7: Tạo token ==
 
-API -> API : Generate JWT access token\n(expiry: 15 min)
-API -> API : Generate refresh token\n(expiry: 7 days)
+API -> API : Tạo JWT access token\n(thời hạn: 15 phút)
+API -> API : Tạo refresh token\n(thời hạn: 7 ngày)
 
-== Step 8: Cache Session ==
+== Bước 8: Lưu phiên vào bộ nhớ đệm ==
 
-API -> Redis : SET session:{userId}:{tokenId}\nEX 900 (15 min)
+API -> Redis : SET session:{userId}:{tokenId}\nEX 900 (15 phút)
 activate Redis
-Redis --> API : Cached
+Redis --> API : Đã lưu vào bộ nhớ đệm
 deactivate Redis
 
-== Step 9: Response ==
+== Bước 9: Phản hồi ==
 
 API --> FE : 200 { accessToken, refreshToken, user }
 deactivate API
 
-FE --> FE : Store tokens in memory/httpOnly cookie
-FE --> User : Redirect to Dashboard
+FE --> FE : Lưu token vào bộ nhớ/cookie httpOnly
+FE --> User : Chuyển hướng đến Trang tổng quan
 deactivate FE
 
 @enduml

@@ -33,7 +33,7 @@ parse_module_field() {
     local module_code="$1"
     local field="$2"
     # Find the module block and extract the field
-    awk "/code: $module_code/{found=1} found && /$field:/{print; exit}" "$MODULES_YAML" | sed "s/.*$field:\s*//" | tr -d '"' | tr -d "'" | tr -d '[]' | sed 's/,/ /g'
+    awk "/code: $module_code/{found=1} found && /$field:/{print; exit}" "$MODULES_YAML" | sed "s/.*$field:\s*//" | tr -d '"' | tr -d "'" | tr -d '[]' | tr -d '\r' | sed 's/,/ /g'
 }
 
 parse_module_tables() {
@@ -222,13 +222,14 @@ INDEX_FILE="$DIST_DIR/index.html"
 # Write the header part
 cat > "$INDEX_FILE" <<EOF
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>System Documentation</title>
+  <title>Tài liệu Hệ thống</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .module-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; background: #fafafa; }
+    .modules-container { max-width: 800px; margin: 0 auto; }
+    .module-card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 10px 0; background: #fafafa; width: 100%; box-sizing: border-box; }
     .module-card h3 { margin-top: 0; }
     .module-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; color: white; font-weight: 600; font-size: 12px; margin-right: 8px; }
     .doc-links a { display: inline-block; margin-right: 12px; color: #1a5276; text-decoration: none; font-weight: 500; }
@@ -249,14 +250,15 @@ cat > "$INDEX_FILE" <<EOF
 </div>
 
 <div class="cover">
-  <h1>System Documentation</h1>
+  <h1>Tài liệu Hệ thống</h1>
   <div class="subtitle">$PROJECT_NAME</div>
   <table class="meta-table">
-    <tr><td>Generated</td><td>$TODAY</td></tr>
+    <tr><td>Ngày tạo</td><td>$TODAY</td></tr>
   </table>
 </div>
 
 <h1>Modules</h1>
+<div class="modules-container">
 EOF
 
 # Generate module cards
@@ -276,6 +278,7 @@ for module in $MODULES; do
   <p>Database: <strong>$MODULE_DB</strong> | Tech: $MODULE_TECH</p>
 EOF
 
+    DEPS=$(echo "$DEPS" | tr -d ' ')
     if [ -n "$DEPS" ] && [ "$DEPS" != "[]" ]; then
         echo "  <p>Dependencies: <span class=\"dep-tag\">$DEPS</span></p>" >> "$INDEX_FILE"
     fi
@@ -284,25 +287,29 @@ EOF
   <div class="doc-links">
     <a href="$MODULE_LOWER/srs.html">SRS</a>
     <a href="$MODULE_LOWER/tds.html">TDS</a>
-    <a href="$MODULE_LOWER/database-design.html">Database Design</a>
-    <a href="$MODULE_LOWER/api-technical-spec.html">API Spec</a>
+    <a href="$MODULE_LOWER/database-design.html">Thiết kế Database</a>
+    <a href="$MODULE_LOWER/api-technical-spec.html">Spec API</a>
   </div>
 </div>
 EOF
 done
 
+cat >> "$INDEX_FILE" <<'EOF'
+</div>
+EOF
+
 # Add architecture diagram section
 cat >> "$INDEX_FILE" <<'EOF'
 
-<h1>System Architecture</h1>
+<h1>Kiến trúc Hệ thống</h1>
 <div class="diagram">
-  <img src="images/architecture/architecture-system.png" alt="System Architecture">
-  <div class="caption">Figure 1: System Architecture — Module interactions and data flow</div>
+  <img src="images/architecture/architecture-system.png" alt="Kiến trúc Hệ thống">
+  <div class="caption">Hình 1: Kiến trúc Hệ thống — Tương tác giữa các module và luồng dữ liệu</div>
 </div>
 
-<h1>Inter-Module Communication</h1>
+<h1>Giao tiếp giữa các Module</h1>
 <table class="trace-table">
-  <tr><th>From</th><th>To</th><th>Event</th><th>Protocol</th><th>Description</th></tr>
+  <tr><th>Từ</th><th>Đến</th><th>Sự kiện</th><th>Giao thức</th><th>Mô tả</th></tr>
 EOF
 
 # Parse webhooks from modules.yaml

@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Logout Flow (Compact for A4)
+' Sơ đồ Hoạt động - Quy trình Đăng xuất (Compact for A4)
 ' ============================================================
 
 skinparam activity {
@@ -11,17 +11,17 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Logout Flow
+title Quy trình Đăng xuất
 
 start
 
-:Click Logout;
+:Nhấp Đăng xuất;
 
-:Delete session + Clear cache;
+:Xóa phiên làm việc + Xóa cache;
 
-:Clear tokens from client;
+:Xóa tokens trên client;
 
-:Redirect to Login page;
+:Điều hướng đến trang Đăng nhập;
 
 stop
 

@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Registration Flow (Compact for A4)
+' Sơ đồ Hoạt động - Quy trình Đăng ký (Compact for A4)
 ' ============================================================
 
 skinparam activity {
@@ -11,35 +11,35 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Registration Flow
+title Quy trình Đăng ký
 
 start
 
-:Fill registration form;
+:Điền form đăng ký;
 
-:Validate input;
+:Kiểm tra dữ liệu đầu vào;
 
-if (Input valid?) then (no)
-  :Show errors;
+if (Dữ liệu hợp lệ?) then (no)
+  :Hiển thị lỗi;
   stop
 endif
 
-:Check if email/phone exists;
+:Kiểm tra email/số điện thoại đã tồn tại;
 
-if (Already registered?) then (yes)
-  :Show "Already registered";
+if (Đã đăng ký?) then (yes)
+  :Hiển thị "Đã đăng ký";
   stop
 endif
 
-:Hash password + Create user record;
+:Mã hóa mật khẩu + Tạo bản ghi người dùng;
 
-:Assign default role + Generate OTP;
+:Gán vai trò mặc định + Tạo mã OTP;
 
-:Send verification via RabbitMQ;
+:Gửi xác minh qua RabbitMQ;
 
-:Return "Registration successful";
+:Trả về "Đăng ký thành công";
 
-:Send OTP to phone/email;
+:Gửi OTP đến email/số điện thoại;
 
 stop
 

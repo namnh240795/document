@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Refresh Token Flow
+' Sơ đồ Hoạt động - Làm mới Token
 ' ============================================================
 
 skinparam activity {
@@ -11,22 +11,22 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Refresh Token Flow
+title Làm mới Token
 
 start
 
-:Client detects access token expired;
+:Client phát hiện access token hết hạn;
 
-:Send refresh token to /auth/refresh;
+:Gửi refresh token đến /auth/refresh;
 
-:Validate refresh token + session;
+:Kiểm tra refresh token + phiên làm việc;
 
-if (Token valid?) then (yes)
-  :Generate new access token;
-  :Return new token;
+if (Token hợp lệ?) then (yes)
+  :Tạo access token mới;
+  :Trả về token mới;
 else (no)
-  :Return 401 Unauthorized;
-  :User must re-login;
+  :Trả về 401 Unauthorized;
+  :Người dùng phải đăng nhập lại;
 endif
 
 stop

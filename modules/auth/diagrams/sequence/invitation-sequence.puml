@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Invitation Management Flow
+' Sơ đồ Tuần tự - Luồng Quản lý Lời mời
 ' ============================================================
 
 skinparam sequence {
@@ -11,7 +11,7 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: Invitation Management Flow
+title Sơ đồ Tuần tự: Luồng Quản lý Lời mời
 
 actor Admin
 participant "Frontend" as FE
@@ -21,49 +21,49 @@ queue "RabbitMQ" as MQ
 participant "EMAIL\nService" as Email
 actor "Invitee" as Inv
 
-== Step 1: Send Invitation ==
+== Bước 1: Gửi lời mời ==
 
-Admin -> FE : Enter invitee email + role
+Admin -> FE : Nhập email người được mời + vai trò
 activate FE
 
 FE -> API : POST /organization/invite-member\n{ organizationId, email, role }
 activate API
 
-API -> API : Generate token\n(crypto.randomBytes(32))
+API -> API : Tạo token\n(crypto.randomBytes(32))
 
 API -> API : SHA-256 hash token
 
 API -> DB : INSERT INTO auth_invitations\n(organization_id, email, token_hash,\nrole, inviter_id, expires_at)
 activate DB
-DB --> API : Invitation created
+DB --> API : Đã tạo lời mời
 deactivate DB
 
 API -> MQ : PUBLISH invitation.created\n{ invitationId, email, role, inviteUrl }
 activate MQ
-MQ --> API : Queued
+MQ --> API : Đã xếp hàng
 deactivate MQ
 
 API --> FE : 200 { invitation }
 deactivate API
 
-FE --> Admin : "Invitation sent"
+FE --> Admin : "Đã gửi lời mời"
 deactivate FE
 
-== Step 2: Email Delivery (async) ==
+== Bước 2: Gửi email (bất đồng bộ) ==
 
 MQ -> Email : CONSUME invitation.created
 activate Email
 
-Email -> Inv : Send invitation email\n(invite URL with raw token)
+Email -> Inv : Gửi email lời mời\n(URL lời mời chứa raw token)
 activate Inv
-Inv --> Email : Received
+Inv --> Email : Đã nhận
 deactivate Inv
 
 deactivate Email
 
-== Step 3: Verify Token (public) ==
+== Bước 3: Xác minh token (công khai) ==
 
-Inv -> FE : Click invitation link
+Inv -> FE : Nhấp liên kết lời mời
 activate FE
 
 FE -> API : GET /organization/verify-invitation\n?token={raw_token}
@@ -73,26 +73,26 @@ API -> API : Hash token\n(SHA-256)
 
 API -> DB : SELECT * FROM auth_invitations\nWHERE token_hash = ?
 activate DB
-DB --> API : Invitation
+DB --> API : Lời mời
 deactivate DB
 
-alt Token valid + not expired
+alt Token hợp lệ + chưa hết hạn
   API --> FE : 200 { valid: true, invitation }
-else Expired
+else Đã hết hạn
   API -> DB : UPDATE auth_invitations\nSET status = 'expired'\nWHERE id = ?
   API --> FE : 200 { valid: false, reason: "expired" }
-else Already accepted
+else Đã chấp nhận
   API --> FE : 200 { valid: false, reason: "accepted" }
 end
 
 deactivate API
 
-FE --> Inv : Display invitation details
+FE --> Inv : Hiển thị chi tiết lời mời
 deactivate FE
 
-== Step 4: Accept Invitation ==
+== Bước 4: Chấp nhận lời mời ==
 
-Inv -> FE : Click "Accept"
+Inv -> FE : Nhấp "Chấp nhận"
 activate FE
 
 FE -> API : POST /organization/accept-invitation\n{ invitationId }
@@ -100,23 +100,23 @@ activate API
 
 API -> DB : UPDATE auth_invitations\nSET status = 'accepted',\naccepted_at = NOW()\nWHERE id = ?
 activate DB
-DB --> API : Updated
+DB --> API : Đã cập nhật
 deactivate DB
 
 API -> DB : INSERT INTO auth_members\n(organization_id, user_id, role)
 activate DB
-DB --> API : Member added
+DB --> API : Đã thêm thành viên
 deactivate DB
 
 API -> MQ : PUBLISH invitation.accepted\n{ invitationId, userId, role }
 activate MQ
-MQ --> API : Queued
+MQ --> API : Đã xếp hàng
 deactivate MQ
 
 API --> FE : 200 { success: true }
 deactivate API
 
-FE --> Inv : "Welcome! You joined the organization"
+FE --> Inv : "Chào mừng! Bạn đã tham gia tổ chức"
 deactivate FE
 
 @enduml

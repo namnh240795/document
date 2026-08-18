@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Database Design - SMS Service</title>
+  <title>Thiết kế Cơ sở dữ liệu - Dịch vụ SMS</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,87 +18,87 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>Database Design Document</h1>
-  <div class="subtitle">SMS Service Module</div>
+  <h1>Tài liệu Thiết kế Cơ sở dữ liệu</h1>
+  <div class="subtitle">Module Dịch vụ SMS</div>
   <span class="module-badge">SMS</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>Authentication System</td></tr>
-    <tr><td>Module</td><td>SMS - SMS Service</td></tr>
-    <tr><td>Database</td><td>sms_db</td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
+    <tr><td>Module</td><td>SMS - Dịch vụ SMS</td></tr>
+    <tr><td>Cơ sở dữ liệu</td><td>sms_db</td></tr>
     <tr><td>ORM</td><td>Drizzle ORM</td></tr>
-    <tr><td>Date</td><td>2026-08-05</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">SMS Service SRS</a></td></tr>
+    <tr><td>Ngày tạo</td><td>2026-08-05</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Dịch vụ SMS</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a></li>
-    <li><a href="#section-2">2. Schema Design</a></li>
-    <li><a href="#section-3">3. Indexes</a></li>
-    <li><a href="#section-4">4. Migrations</a></li>
-    <li><a href="#section-5">5. Data Dictionary</a></li>
+    <li><a href="#section-1">1. Tổng quan</a></li>
+    <li><a href="#section-2">2. Thiết kế Schema</a></li>
+    <li><a href="#section-3">3. Chỉ mục</a></li>
+    <li><a href="#section-4">4. Di chuyển dữ liệu</a></li>
+    <li><a href="#section-5">5. Từ điển Dữ liệu</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2>1.1 Purpose</h2>
-<p>This document defines the database design for the <strong>SMS Service</strong> module (database: <code>sms_db</code>).</p>
+<h2>1.1 Mục đích</h2>
+<p>Tài liệu này định nghĩa thiết kế cơ sở dữ liệu cho module <strong>Dịch vụ SMS</strong> (cơ sở dữ liệu: <code>sms_db</code>).</p>
 
-<h2>1.2 Requirements Addressed</h2>
+<h2>1.2 Yêu cầu được giải quyết</h2>
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>Database Solution</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Send SMS OTP</td><td>sms_logs table</td></tr>
-  <tr><td><span class="req-id">FR-003</span> Log Delivery</td><td>sms_logs table (status updates)</td></tr>
-  <tr><td><span class="req-id">NFR-004</span> 90 day retention</td><td>Archival policy</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Giải pháp Cơ sở dữ liệu</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Gửi SMS OTP</td><td>Bảng sms_logs</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Ghi log Giao dịch</td><td>Bảng sms_logs (cập nhật trạng thái)</td></tr>
+  <tr><td><span class="req-id">NFR-004</span> Lưu trữ 90 ngày</td><td>Chính sách lưu trữ</td></tr>
 </table>
 
-<h2>1.3 ERD Diagram</h2>
+<h2>1.3 Sơ đồ ERD</h2>
 <div class="diagram">
-  <img src="./images/erd/erd-sms.png" alt="ERD Diagram">
-  <div class="caption">Figure 1: SMS Service ERD</div>
+  <img src="./images/erd/erd-sms.png" alt="Sơ đồ ERD">
+  <div class="caption">Hình 1: ERD Dịch vụ SMS</div>
 </div>
 
 <!-- 2. SCHEMA DESIGN -->
-<h1 id="section-2">2. Schema Design</h1>
+<h1 id="section-2">2. Thiết kế Schema</h1>
 
-<h2>2.1 Database Strategy</h2>
+<h2>2.1 Chiến lược Cơ sở dữ liệu</h2>
 <table>
-  <tr><th>Aspect</th><th>Decision</th></tr>
-  <tr><td>Database</td><td><code>sms_db</code></td></tr>
-  <tr><td>Table naming</td><td><code>sms_&lt;table_name&gt;</code></td></tr>
-  <tr><td>Primary keys</td><td>UUID (via gen_random_uuid())</td></tr>
-  <tr><td>Timestamps</td><td>created_at, updated_at with NOW() default</td></tr>
+  <tr><th>Khía cạnh</th><th>Quyết định</th></tr>
+  <tr><td>Cơ sở dữ liệu</td><td><code>sms_db</code></td></tr>
+  <tr><td>Đặt tên bảng</td><td><code>sms_&lt;table_name&gt;</code></td></tr>
+  <tr><td>Khóa chính</td><td>UUID (qua gen_random_uuid())</td></tr>
+  <tr><td>Thời gian</td><td>created_at, updated_at với mặc định NOW()</td></tr>
 </table>
 
-<h2>2.2 Table: <code>sms_logs</code></h2>
+<h2>2.2 Bảng: <code>sms_logs</code></h2>
 <table>
-  <tr><th>Column</th><th>Type</th><th>Nullable</th><th>Default</th><th>Description</th></tr>
-  <tr><td>id</td><td>uuid</td><td>NO</td><td>gen_random_uuid()</td><td>Primary key</td></tr>
-  <tr><td>user_id</td><td>uuid</td><td>YES</td><td>NULL</td><td>Associated user (from AUTH)</td></tr>
-  <tr><td>phone</td><td>varchar(20)</td><td>NO</td><td>-</td><td>Recipient phone number</td></tr>
-  <tr><td>message</td><td>text</td><td>NO</td><td>-</td><td>SMS message content</td></tr>
-  <tr><td>otp_code</td><td>varchar(10)</td><td>YES</td><td>NULL</td><td>OTP code (if applicable)</td></tr>
-  <tr><td>status</td><td>varchar(20)</td><td>NO</td><td>pending</td><td>pending, sent, delivered, failed</td></tr>
-  <tr><td>provider</td><td>varchar(50)</td><td>NO</td><td>twilio</td><td>SMS provider name</td></tr>
-  <tr><td>provider_message_id</td><td>varchar(100)</td><td>YES</td><td>NULL</td><td>Provider's message ID</td></tr>
-  <tr><td>error_message</td><td>text</td><td>YES</td><td>NULL</td><td>Error message if failed</td></tr>
-  <tr><td>retry_count</td><td>integer</td><td>NO</td><td>0</td><td>Number of retry attempts</td></tr>
-  <tr><td>expires_at</td><td>timestamp</td><td>YES</td><td>NULL</td><td>OTP expiry time</td></tr>
-  <tr><td>sent_at</td><td>timestamp</td><td>YES</td><td>NULL</td><td>Time SMS was sent</td></tr>
-  <tr><td>delivered_at</td><td>timestamp</td><td>YES</td><td>NULL</td><td>Time SMS was delivered</td></tr>
-  <tr><td>created_at</td><td>timestamp</td><td>NO</td><td>NOW()</td><td>Record creation time</td></tr>
+  <tr><th>Cột</th><th>Loại</th><th>Cho phép NULL</th><th>Mặc định</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>uuid</td><td>KHÔNG</td><td>gen_random_uuid()</td><td>Khóa chính</td></tr>
+  <tr><td>user_id</td><td>uuid</td><td>CO</td><td>NULL</td><td>Người dùng liên kết (từ AUTH)</td></tr>
+  <tr><td>phone</td><td>varchar(20)</td><td>KHÔNG</td><td>-</td><td>Số điện thoại người nhận</td></tr>
+  <tr><td>message</td><td>text</td><td>KHÔNG</td><td>-</td><td>Nội dung tin nhắn SMS</td></tr>
+  <tr><td>otp_code</td><td>varchar(10)</td><td>CO</td><td>NULL</td><td>Mã OTP (nếu có)</td></tr>
+  <tr><td>status</td><td>varchar(20)</td><td>KHÔNG</td><td>pending</td><td>pending, sent, delivered, failed</td></tr>
+  <tr><td>provider</td><td>varchar(50)</td><td>KHÔNG</td><td>twilio</td><td>Tên nhà cung cấp SMS</td></tr>
+  <tr><td>provider_message_id</td><td>varchar(100)</td><td>CO</td><td>NULL</td><td>Mã tin nhắn của nhà cung cấp</td></tr>
+  <tr><td>error_message</td><td>text</td><td>CO</td><td>NULL</td><td>Thông báo lỗi nếu thất bại</td></tr>
+  <tr><td>retry_count</td><td>integer</td><td>KHÔNG</td><td>0</td><td>Số lần thử lại</td></tr>
+  <tr><td>expires_at</td><td>timestamp</td><td>CO</td><td>NULL</td><td>Thời gian hết hạn OTP</td></tr>
+  <tr><td>sent_at</td><td>timestamp</td><td>CO</td><td>NULL</td><td>Thời gian gửi SMS</td></tr>
+  <tr><td>delivered_at</td><td>timestamp</td><td>CO</td><td>NULL</td><td>Thời gian SMS được giao</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian tạo bản ghi</td></tr>
 </table>
 
 <pre><code>CREATE TABLE sms_logs (
@@ -120,7 +120,7 @@
 );</code></pre>
 
 <!-- 3. INDEXES -->
-<h1 id="section-3">3. Indexes</h1>
+<h1 id="section-3">3. Chỉ mục</h1>
 
 <pre><code>-- sms_logs
 CREATE INDEX idx_sms_logs_user_id ON sms_logs(user_id);
@@ -130,29 +130,29 @@ CREATE INDEX idx_sms_logs_created_at ON sms_logs(created_at DESC);
 CREATE INDEX idx_sms_logs_provider_message_id ON sms_logs(provider_message_id);</code></pre>
 
 <!-- 4. MIGRATIONS -->
-<h1 id="section-4">4. Migrations</h1>
+<h1 id="section-4">4. Di chuyển dữ liệu</h1>
 
-<h2>4.1 Migration Strategy</h2>
+<h2>4.1 Chiến lược Di chuyển</h2>
 <table>
-  <tr><th>Aspect</th><th>Decision</th></tr>
-  <tr><td>Tool</td><td>Drizzle ORM (drizzle-kit)</td></tr>
-  <tr><td>Database</td><td>sms_db</td></tr>
-  <tr><td>Rollback</td><td>Required for every migration</td></tr>
+  <tr><th>Khía cạnh</th><th>Quyết định</th></tr>
+  <tr><td>Công cụ</td><td>Drizzle ORM (drizzle-kit)</td></tr>
+  <tr><td>Cơ sở dữ liệu</td><td>sms_db</td></tr>
+  <tr><td>Hoàn tác</td><td>Bắt buộc cho mỗi lần di chuyển</td></tr>
 </table>
 
-<h2>4.2 Migration Order</h2>
+<h2>4.2 Thứ tự Di chuyển</h2>
 <table>
-  <tr><th>Order</th><th>Migration</th><th>Description</th></tr>
-  <tr><td>1</td><td>001_create_sms_logs</td><td>Create sms_logs table</td></tr>
-  <tr><td>2</td><td>002_create_indexes</td><td>Create all indexes</td></tr>
+  <tr><th>Thứ tự</th><th>Di chuyển</th><th>Mô tả</th></tr>
+  <tr><td>1</td><td>001_create_sms_logs</td><td>Tạo bảng sms_logs</td></tr>
+  <tr><td>2</td><td>002_create_indexes</td><td>Tạo tất cả chỉ mục</td></tr>
 </table>
 
 <!-- 5. DATA DICTIONARY -->
-<h1 id="section-5">5. Data Dictionary</h1>
+<h1 id="section-5">5. Từ điển Dữ liệu</h1>
 
 <table class="trace-table">
-  <tr><th>Table</th><th>Description</th><th>Resolves</th><th>Est. Rows (Y1)</th></tr>
-  <tr><td>sms_logs</td><td>SMS delivery logs and audit trail</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-003</span></td><td>500,000</td></tr>
+  <tr><th>Bảng</th><th>Mô tả</th><th>Giải quyết</th><th>Ước tính Dòng (Năm 1)</th></tr>
+  <tr><td>sms_logs</td><td>Log giao dịch SMS và lưu vết kiểm toán</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-003</span></td><td>500.000</td></tr>
 </table>
 
 </body>

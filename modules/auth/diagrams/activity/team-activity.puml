@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Team Management Flow
+' Sơ đồ Hoạt động - Quản lý Nhóm
 ' ============================================================
 
 skinparam activity {
@@ -11,28 +11,28 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Team Management Flow
+title Quản lý Nhóm
 
 start
 
-:Admin creates team\nwithin organization;
+:Admin tạo nhóm\ntrong tổ chức;
 
-if (Action?) then (create)
-  :Enter team name;
-  :Validate (unique within org);
-  :Create team record;
+if (Hành động?) then (create)
+  :Nhập tên nhóm;
+  :Kiểm tra (duy nhất trong tổ chức);
+  :Tạo bản ghi nhóm;
 elseif (add member) then
-  :Select member from org;
-  :Add to team;
+  :Chọn thành viên từ tổ chức;
+  :Thêm vào nhóm;
 elseif (remove member) then
-  :Select team member;
-  :Remove from team;
+  :Chọn thành viên nhóm;
+  :Xóa khỏi nhóm;
 elseif (delete team) then
-  :Confirm deletion;
-  :Delete team record;
+  :Xác nhận xóa;
+  :Xóa bản ghi nhóm;
 endif
 
-:Return success response;
+:Trả về phản hồi thành công;
 
 stop
 

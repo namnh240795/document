@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Revoke Invitation Flow
+' Sơ đồ Hoạt động - Thu hồi Lời mời
 ' ============================================================
 
 skinparam activity {
@@ -11,24 +11,24 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Revoke Invitation Flow
+title Thu hồi Lời mời
 
 start
 
-:Admin selects invitation to revoke;
+:Admin chọn lời mời để thu hồi;
 
-if (Owner check passed?) then (yes)
-  if (Status?) then (pending)
-    :Update status to REVOKED;
-    :Emit invitation.revoked event;
-    :Return success;
+if (Kiểm tra chủ sở hữu?) then (yes)
+  if (Trạng thái?) then (pending)
+    :Cập nhật trạng thái thành REVOKED;
+    :Phát sự kiện invitation.revoked;
+    :Trả về thành công;
   elseif (accepted) then
-    :Return 409\nCannot revoke accepted;
+    :Trả về 409\nKhông thể thu hồi lời mời đã chấp nhận;
   elseif (revoked) then
-    :Return 409\nAlready revoked;
+    :Trả về 409\nĐã thu hồi;
   endif
 else (no)
-  :Return 403 Forbidden;
+  :Trả về 403 Forbidden;
 endif
 
 stop

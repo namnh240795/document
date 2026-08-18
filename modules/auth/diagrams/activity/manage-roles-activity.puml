@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Manage Roles Flow
+' Sơ đồ Hoạt động - Quản lý Vai trò
 ' ============================================================
 
 skinparam activity {
@@ -11,27 +11,27 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Manage Roles Flow
+title Quản lý Vai trò
 
 start
 
-:Admin navigates to role management;
+:Admin điều hướng đến quản lý vai trò;
 
-:System displays role list;
+:System hiển thị danh sách vai trò;
 
-if (Action selected?) then (create)
-  :Enter role name + permissions;
-  :Validate (unique name, valid permissions);
-  :Create role record;
+if (Chọn hành động?) then (create)
+  :Nhập tên vai trò + quyền hạn;
+  :Kiểm tra (tên duy nhất, quyền hạn hợp lệ);
+  :Tạo bản ghi vai trò;
 elseif (assign) then
-  :Select user + role;
-  :Assign role to user;
+  :Chọn người dùng + vai trò;
+  :Gán vai trò cho người dùng;
 elseif (remove) then
-  :Select user + role;
-  :Remove role from user;
+  :Chọn người dùng + vai trò;
+  :Gỡ bỏ vai trò khỏi người dùng;
 endif
 
-:Return success response;
+:Trả về phản hồi thành công;
 
 stop
 

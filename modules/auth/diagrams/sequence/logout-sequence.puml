@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Logout Flow
-' Session Invalidation + Token Cleanup
+' Sơ đồ Tuần tự - Luồng Đăng xuất
+' Hủy phiên làm việc + Dọn dẹp token
 ' ============================================================
 
 skinparam sequence {
@@ -12,7 +12,7 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: User Logout Flow
+title Sơ đồ Tuần tự: Luồng Đăng xuất
 
 actor User
 participant "Frontend" as FE
@@ -20,40 +20,40 @@ participant "Auth API" as API
 database "PostgreSQL\n(auth_db)" as DB
 database "Redis\n(Cache)" as Redis
 
-== Step 1: Logout Request ==
+== Bước 1: Yêu cầu đăng xuất ==
 
-User -> FE : Click "Logout"
+User -> FE : Nhấp "Đăng xuất"
 activate FE
 
 FE -> API : POST /auth/logout\nAuthorization: Bearer {accessToken}
 activate API
 
-== Step 2: Validate Token ==
+== Bước 2: Xác minh token ==
 
-API -> API : Decode JWT\nextract session/user ID
+API -> API : Giải mã JWT\ntrích xuất session/user ID
 
-== Step 3: Delete Session ==
+== Bước 3: Xóa phiên làm việc ==
 
 API -> DB : DELETE FROM auth_sessions\nWHERE id = ? AND user_id = ?
 activate DB
-DB --> API : Session deleted
+DB --> API : Đã xóa phiên làm việc
 deactivate DB
 
-== Step 4: Clear Cache ==
+== Bước 4: Xóa bộ nhớ đệm ==
 
 API -> Redis : DEL session:{userId}:{tokenId}
 activate Redis
-Redis --> API : Cache cleared
+Redis --> API : Đã xóa bộ nhớ đệm
 deactivate Redis
 
-== Step 5: Response ==
+== Bước 5: Phản hồi ==
 
-API --> FE : 200 "Logged out successfully"
+API --> FE : 200 "Đăng xuất thành công"
 deactivate API
 
-FE -> FE : Clear tokens\nfrom memory/cookie
+FE -> FE : Xóa token\nkhỏi bộ nhớ/cookie
 
-FE --> User : Redirect to Login page
+FE --> User : Chuyển hướng đến trang Đăng nhập
 deactivate FE
 
 @enduml

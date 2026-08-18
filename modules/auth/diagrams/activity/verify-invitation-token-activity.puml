@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Verify Invitation Token Flow
+' Sơ đồ Hoạt động - Xác minh Token Lời mời
 ' ============================================================
 
 skinparam activity {
@@ -11,33 +11,33 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Verify Invitation Token Flow
+title Xác minh Token Lời mời
 
 start
 
-:User clicks invitation link\nin email;
+:Người dùng nhấp liên kết lời mời\ntrong email;
 
-:Frontend calls GET\n/organization/verify-invitation?token={raw_token};
+:Frontend gọi GET\n/organization/verify-invitation?token={raw_token};
 
-:System computes SHA-256 hash;
+:System tính toán hash SHA-256;
 
-:System looks up invitation\nby token_hash;
+:System tìm kiếm lời mời\ntheo token_hash;
 
-if (Token found?) then (yes)
-  if (Status?) then (pending)
-    if (Expired?) then (yes)
-      :Auto-update status to EXPIRED;
-      :Return { valid: false, reason: "expired" };
+if (Tìm thấy token?) then (yes)
+  if (Trạng thái?) then (pending)
+    if (Đã hết hạn?) then (yes)
+      :Tự động cập nhật trạng thái thành EXPIRED;
+      :Trả về { valid: false, reason: "expired" };
     else (no)
-      :Return { valid: true, invitation };
+      :Trả về { valid: true, invitation };
     endif
   elseif (accepted) then
-    :Return { valid: false, reason: "accepted" };
+    :Trả về { valid: false, reason: "accepted" };
   elseif (revoked) then
-    :Return { valid: false, reason: "revoked" };
+    :Trả về { valid: false, reason: "revoked" };
   endif
 else (no)
-  :Return 404 Invalid token;
+  :Trả về 404 Token không hợp lệ;
 endif
 
 stop

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Technical Design Specification - Email Notification</title>
+  <title>Thiết kế Kỹ thuật - Thông báo Email</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,268 +18,268 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>Technical Design Specification</h1>
-  <div class="subtitle">Email Notification Module</div>
+  <h1>Thiết kế Kỹ thuật</h1>
+  <div class="subtitle">Module Thông báo Email</div>
   <span class="module-badge">EMAIL</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>Authentication System</td></tr>
-    <tr><td>Module</td><td>EMAIL - Email Notification</td></tr>
-    <tr><td>Database</td><td>email_db</td></tr>
-    <tr><td>Date</td><td>2026-08-05</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Status</td><td>Draft</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">Email Notification SRS</a></td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
+    <tr><td>Module</td><td>EMAIL - Thông báo Email</td></tr>
+    <tr><td>Cơ sở dữ liệu</td><td>email_db</td></tr>
+    <tr><td>Ngày tạo</td><td>2026-08-05</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>Trạng thái</td><td>Nháp</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Thông báo Email</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a>
+    <li><a href="#section-1">1. Tổng quan</a>
       <ul>
-        <li><a href="#section-1-1">1.1 Purpose</a></li>
-        <li><a href="#section-1-2">1.2 SRS Reference</a></li>
-        <li><a href="#section-1-3">1.3 Requirements Addressed</a></li>
+        <li><a href="#section-1-1">1.1 Mục đích</a></li>
+        <li><a href="#section-1-2">1.2 Tham chiếu SRS</a></li>
+        <li><a href="#section-1-3">1.3 Yêu cầu được giải quyết</a></li>
       </ul>
     </li>
-    <li><a href="#section-2">2. Architecture</a>
+    <li><a href="#section-2">2. Kiến trúc</a>
       <ul>
-        <li><a href="#section-2-1">2.1 Architecture Overview</a></li>
-        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+        <li><a href="#section-2-1">2.1 Tổng quan Kiến trúc</a></li>
+        <li><a href="#section-2-2">2.2 Quyết định Thiết kế Chính</a></li>
       </ul>
     </li>
-    <li><a href="#section-3">3. Component Design</a></li>
-    <li><a href="#section-4">4. Data Architecture</a></li>
-    <li><a href="#section-5">5. API Design</a></li>
-    <li><a href="#section-6">6. Security Design</a></li>
-    <li><a href="#section-7">7. Integration</a></li>
-    <li><a href="#section-8">8. Error Handling</a></li>
-    <li><a href="#section-9">9. Traceability Summary</a></li>
+    <li><a href="#section-3">3. Thiết kế Thành phần</a></li>
+    <li><a href="#section-4">4. Kiến trúc Dữ liệu</a></li>
+    <li><a href="#section-5">5. Thiết kế API</a></li>
+    <li><a href="#section-6">6. Thiết kế Bảo mật</a></li>
+    <li><a href="#section-7">7. Tích hợp</a></li>
+    <li><a href="#section-8">8. Xử lý Lỗi</a></li>
+    <li><a href="#section-9">9. Tóm tắt Truy suất</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2 id="section-1-1">1.1 Purpose</h2>
-<p>This document describes the technical design decisions for the <strong>Email Notification</strong> module.</p>
+<h2 id="section-1-1">1.1 Mục đích</h2>
+<p>Tài liệu này mô tả các quyết định thiết kế kỹ thuật cho module <strong>Thông báo Email</strong>.</p>
 
-<h2 id="section-1-2">1.2 SRS Reference</h2>
+<h2 id="section-1-2">1.2 Tham chiếu SRS</h2>
 <table>
-  <tr><th>Document</th><th>Version</th><th>Description</th></tr>
-  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html">Email Notification SRS</a></td></tr>
-  <tr><td>API Spec</td><td>1.0</td><td><a href="api-technical-spec.html">Email Notification API Spec</a></td></tr>
-  <tr><td>Database Design</td><td>1.0</td><td><a href="database-design.html">Email Notification Database Design</a></td></tr>
+  <tr><th>Tài liệu</th><th>Phiên bản</th><th>Mô tả</th></tr>
+  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html">SRS Thông báo Email</a></td></tr>
+  <tr><td>Đặc tả API</td><td>1.0</td><td><a href="api-technical-spec.html">Đặc tả API Thông báo Email</a></td></tr>
+  <tr><td>Thiết kế CSDL</td><td>1.0</td><td><a href="database-design.html">Thiết kế CSDL Thông báo Email</a></td></tr>
 </table>
 
-<h2 id="section-1-3">1.3 Requirements Addressed</h2>
+<h2 id="section-1-3">1.3 Yêu cầu được giải quyết</h2>
 <table class="trace-table">
-  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-005</span></td><td>Section 3, 5</td></tr>
-  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-004</span></td><td>Section 6, 8</td></tr>
+  <tr><th>Danh mục</th><th>Mã Yêu cầu</th><th>Phần Thiết kế</th></tr>
+  <tr><td>Chức năng</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-005</span></td><td>Phần 3, 5</td></tr>
+  <tr><td>Phi chức năng</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-004</span></td><td>Phần 6, 8</td></tr>
 </table>
 
 <!-- 2. ARCHITECTURE -->
-<h1 id="section-2">2. Architecture</h1>
+<h1 id="section-2">2. Kiến trúc</h1>
 
-<h2 id="section-2-1">2.1 Architecture Overview</h2>
+<h2 id="section-2-1">2.1 Tổng quan Kiến trúc</h2>
 <div class="diagram">
-  <img src="./images/component/component-diagram.png" alt="Architecture Overview">
-  <div class="caption">Figure 1: Email Notification Component Diagram</div>
+  <img src="./images/component/component-diagram.png" alt="Tổng quan Kiến trúc">
+  <div class="caption">Hình 1: Sơ đồ Thành phần Thông báo Email</div>
 </div>
 
-<h2 id="section-2-2">2.2 Key Design Decisions</h2>
+<h2 id="section-2-2">2.2 Quyết định Thiết kế Chính</h2>
 <table class="trace-table">
-  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
+  <tr><th>#</th><th>Quyết định</th><th>Lý do</th><th>Giải quyết</th></tr>
   <tr>
-    <td>1</td><td>Use RabbitMQ for async email processing</td>
-    <td>Decouples email sending from request handling, improves reliability</td>
+    <td>1</td><td>Sử dụng RabbitMQ cho xử lý email bất đồng bộ</td>
+    <td>Tách việc gửi email khỏi xử lý yêu cầu, cải thiện độ tin cậy</td>
     <td><span class="req-id">NFR-001</span>, <span class="req-id">NFR-002</span></td>
   </tr>
   <tr>
-    <td>2</td><td>Use SendGrid/SMTP as email provider</td>
-    <td>Reliable email delivery with tracking capabilities</td>
+    <td>2</td><td>Sử dụng SendGrid/SMTP làm nhà cung cấp email</td>
+    <td>Giao email đáng tin cậy với khả năng theo dõi</td>
     <td><span class="req-id">NFR-004</span></td>
   </tr>
   <tr>
-    <td>3</td><td>PostgreSQL for email_logs</td>
-    <td>ACID compliance for audit trail, consistent with other modules</td>
+    <td>3</td><td>PostgreSQL cho email_logs</td>
+    <td>Đảm bảo ACID cho lưu vết kiểm toán, nhất quán với các module khác</td>
     <td><span class="req-id">DR-001</span></td>
   </tr>
 </table>
 
 <!-- 3. COMPONENT DESIGN -->
-<h1 id="section-3">3. Component Design</h1>
+<h1 id="section-3">3. Thiết kế Thành phần</h1>
 
-<h2>3.1 Component Diagram</h2>
+<h2>3.1 Sơ đồ Thành phần</h2>
 <div class="diagram">
-  <img src="./images/component/component-diagram.png" alt="Component Diagram">
-  <div class="caption">Figure 2: Email Notification Components</div>
+  <img src="./images/component/component-diagram.png" alt="Sơ đồ Thành phần">
+  <div class="caption">Hình 2: Các Thành phần Thông báo Email</div>
 </div>
 
-<h2>3.2 Component to Requirements Mapping</h2>
+<h2>3.2 Ánh xạ Thành phần đến Yêu cầu</h2>
 <table class="trace-table">
-  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
-  <tr><td>Email Consumer</td><td>Consumes from RabbitMQ, triggers email sending</td><td>FR-001, FR-002</td></tr>
-  <tr><td>Email Service</td><td>Business logic for email processing</td><td>FR-001, FR-005</td></tr>
-  <tr><td>Email Controller</td><td>Receives delivery callbacks from provider</td><td>FR-003</td></tr>
-  <tr><td>Log Producer</td><td>Publishes email events to LOG module</td><td>FR-004</td></tr>
+  <tr><th>Thành phần</th><th>Trách nhiệm</th><th>Giải quyết</th></tr>
+  <tr><td>Email Consumer</td><td>Tiêu thụ từ RabbitMQ, kích hoạt gửi email</td><td>FR-001, FR-002</td></tr>
+  <tr><td>Email Service</td><td>Business logic xử lý email</td><td>FR-001, FR-005</td></tr>
+  <tr><td>Email Controller</td><td>Nhận callback giao dịch từ nhà cung cấp</td><td>FR-003</td></tr>
+  <tr><td>Log Producer</td><td>Gửi sự kiện email đến module LOG</td><td>FR-004</td></tr>
 </table>
 
 <!-- 4. DATA ARCHITECTURE -->
-<h1 id="section-4">4. Data Architecture</h1>
+<h1 id="section-4">4. Kiến trúc Dữ liệu</h1>
 
-<h2>4.1 Database Design</h2>
-<p>Refer to: <a href="database-design.html">Email Notification Database Design</a></p>
+<h2>4.1 Thiết kế CSDL</h2>
+<p>Xem thêm: <a href="database-design.html">Thiết kế CSDL Thông báo Email</a></p>
 
-<h2>4.2 Data Requirements Resolution</h2>
+<h2>4.2 Giải quyết Yêu cầu Dữ liệu</h2>
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
-  <tr><td>FR-001: Send Verification Email</td><td>Insert log record on send</td><td>email_logs</td></tr>
-  <tr><td>FR-003: Track Email Delivery</td><td>Update status on callback</td><td>email_logs</td></tr>
-  <tr><td>FR-004: Log Email Events</td><td>Full audit trail in email_logs</td><td>email_logs</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Giải pháp Thiết kế</th><th>Bảng CSDL</th></tr>
+  <tr><td>FR-001: Gửi Email Xác minh</td><td>Chèn bản ghi log khi gửi</td><td>email_logs</td></tr>
+  <tr><td>FR-003: Theo dõi Giao Email</td><td>Cập nhật trạng thái khi nhận callback</td><td>email_logs</td></tr>
+  <tr><td>FR-004: Ghi log Sự kiện Email</td><td>Lưu vết kiểm toán đầy đủ trong email_logs</td><td>email_logs</td></tr>
 </table>
 
 <!-- 5. API DESIGN -->
-<h1 id="section-5">5. API Design</h1>
+<h1 id="section-5">5. Thiết kế API</h1>
 
-<h2>5.1 Endpoint to Requirements Mapping</h2>
+<h2>5.1 Ánh xạ Endpoint đến Yêu cầu</h2>
 <table class="trace-table">
-  <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
-  <tr><td>POST</td><td>/api/webhooks/email/delivered</td><td>Receive delivery callback</td><td>FR-003</td></tr>
+  <tr><th>Phương thức</th><th>Đường dẫn</th><th>Mô tả</th><th>Giải quyết</th></tr>
+  <tr><td>POST</td><td>/api/webhooks/email/delivered</td><td>Nhận callback giao dịch</td><td>FR-003</td></tr>
 </table>
 
 <!-- 6. SECURITY -->
-<h1 id="section-6">6. Security Design</h1>
+<h1 id="section-6">6. Thiết kế Bảo mật</h1>
 
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
-  <tr><td>NFR-002</td><td>Webhook signature verification</td><td>HMAC-SHA256 signature validation</td></tr>
-  <tr><td>NFR-004</td><td>Retry with exponential backoff</td><td>Max 3 retries with 1min, 5min, 15min delays</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Giải pháp Thiết kế</th><th>Triển khai</th></tr>
+  <tr><td>NFR-002</td><td>Xác thực chữ ký webhook</td><td>Validate chữ ký HMAC-SHA256</td></tr>
+  <tr><td>NFR-004</td><td>Thử lại với exponential backoff</td><td>Tối đa 3 lần thử với độ trễ 1 phút, 5 phút, 15 phút</td></tr>
 </table>
 
 <!-- 7. INTEGRATION -->
-<h1 id="section-7">7. Integration</h1>
+<h1 id="section-7">7. Tích hợp</h1>
 
-<h2>7.1 Sequence Diagram</h2>
+<h2>7.1 Sơ đồ Sequence</h2>
 <div class="diagram">
-  <img src="./images/sequence/sequence-diagram.png" alt="Sequence Diagram">
-  <div class="caption">Figure 3: Email Delivery Integration Flow</div>
+  <img src="./images/sequence/sequence-diagram.png" alt="Sơ đồ Sequence">
+  <div class="caption">Hình 3: Luồng Tích hợp Giao Email</div>
 </div>
 
-<h2>7.2 Webhook Events</h2>
+<h2>7.2 Sự kiện Webhook</h2>
 <table>
-  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Queue</th><th>Description</th></tr>
+  <tr><th>Sự kiện</th><th>Hướng</th><th>Giao thức</th><th>Hàng đợi</th><th>Mô tả</th></tr>
   <tr>
     <td>verification.email.requested</td>
     <td>AUTH → EMAIL</td>
     <td>RabbitMQ</td>
     <td>verification.email</td>
-    <td>Triggered when user requests email verification</td>
+    <td>Kích hoạt khi người dùng yêu cầu xác minh email</td>
   </tr>
   <tr>
     <td>verification.email.resent</td>
     <td>AUTH → EMAIL</td>
     <td>RabbitMQ</td>
     <td>verification.email</td>
-    <td>Triggered when user resends email verification</td>
+    <td>Kích hoạt khi người dùng gửi lại xác minh email</td>
   </tr>
   <tr>
     <td>application.submitted</td>
     <td>RECR → EMAIL</td>
     <td>RabbitMQ</td>
     <td>recruitment.email</td>
-    <td>Send confirmation email when candidate submits application</td>
+    <td>Gửi email xác nhận khi ứng viên gửi hồ sơ</td>
   </tr>
   <tr>
     <td>interview.scheduled</td>
     <td>RECR → EMAIL</td>
     <td>RabbitMQ</td>
     <td>recruitment.email</td>
-    <td>Send interview invitation with calendar details</td>
+    <td>Gửi lời mời phỏng vấn kèm chi tiết lịch</td>
   </tr>
   <tr>
     <td>offer.sent</td>
     <td>RECR → EMAIL</td>
     <td>RabbitMQ</td>
     <td>recruitment.email</td>
-    <td>Send offer letter with position and salary</td>
+    <td>Gửi thư đề nghị kèm vị trí và lương</td>
   </tr>
   <tr>
     <td>verification.email.delivered</td>
     <td>EMAIL → AUTH</td>
     <td>Webhook</td>
     <td>-</td>
-    <td>Confirms email delivery status back to AUTH</td>
+    <td>Xác nhận trạng thái giao email cho AUTH</td>
   </tr>
   <tr>
     <td>email.event.logged</td>
     <td>EMAIL → LOG</td>
     <td>RabbitMQ</td>
     <td>log.events</td>
-    <td>Logs email delivery events to Logger</td>
+    <td>Ghi log sự kiện giao email vào Logger</td>
   </tr>
 </table>
 
-<h2>7.3 External Services</h2>
+<h2>7.3 Dịch vụ Bên ngoài</h2>
 <table>
-  <tr><th>Service</th><th>Protocol</th><th>Purpose</th></tr>
-  <tr><td>SendGrid/SMTP</td><td>HTTPS/SMTP</td><td>Email delivery provider</td></tr>
+  <tr><th>Dịch vụ</th><th>Giao thức</th><th>Mục đích</th></tr>
+  <tr><td>SendGrid/SMTP</td><td>HTTPS/SMTP</td><td>Nhà cung cấp giao email</td></tr>
 </table>
 
 <!-- 8. ERROR HANDLING -->
-<h1 id="section-8">8. Error Handling</h1>
+<h1 id="section-8">8. Xử lý Lỗi</h1>
 
 <table>
-  <tr><th>HTTP Status</th><th>Code</th><th>Description</th></tr>
-  <tr><td>400</td><td>EMAIL_001</td><td>Invalid email address</td></tr>
-  <tr><td>400</td><td>EMAIL_002</td><td>Email template not found</td></tr>
-  <tr><td>502</td><td>EMAIL_003</td><td>Provider error - delivery failed</td></tr>
-  <tr><td>429</td><td>EMAIL_004</td><td>Rate limit exceeded</td></tr>
-  <tr><td>401</td><td>EMAIL_005</td><td>Invalid webhook signature</td></tr>
+  <tr><th>HTTP Status</th><th>Mã</th><th>Mô tả</th></tr>
+  <tr><td>400</td><td>EMAIL_001</td><td>Địa chỉ email không hợp lệ</td></tr>
+  <tr><td>400</td><td>EMAIL_002</td><td>Không tìm thấy mẫu email</td></tr>
+  <tr><td>502</td><td>EMAIL_003</td><td>Lỗi nhà cung cấp - giao email thất bại</td></tr>
+  <tr><td>429</td><td>EMAIL_004</td><td>Vượt quá giới hạn tốc độ</td></tr>
+  <tr><td>401</td><td>EMAIL_005</td><td>Chữ ký webhook không hợp lệ</td></tr>
 </table>
 
 <!-- 9. TRACEABILITY -->
-<h1 id="section-9">9. Traceability Summary</h1>
+<h1 id="section-9">9. Tóm tắt Truy suất</h1>
 
 <table class="trace-table">
-  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
+  <tr><th>Mã YC SRS</th><th>Yêu cầu</th><th>Phần TDS</th><th>Quyết định Thiết kế</th></tr>
   <tr>
     <td><span class="req-id">FR-001</span></td>
-    <td>Send Verification Email</td>
-    <td>3.2 Component Mapping</td>
-    <td>RabbitMQ consumer processes email queue</td>
+    <td>Gửi Email Xác minh</td>
+    <td>3.2 Ánh xạ Thành phần</td>
+    <td>RabbitMQ consumer xử lý hàng đợi email</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-002</span></td>
-    <td>Resend Verification Email</td>
-    <td>3.2 Component Mapping</td>
-    <td>Same queue, rate-limited by AUTH</td>
+    <td>Gửi lại Email Xác minh</td>
+    <td>3.2 Ánh xạ Thành phần</td>
+    <td>Cùng hàng đợi, giới hạn tốc độ bởi AUTH</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-003</span></td>
-    <td>Track Email Delivery</td>
-    <td>5.1 Endpoint Mapping</td>
-    <td>HTTP callback from email provider</td>
+    <td>Theo dõi Giao Email</td>
+    <td>5.1 Ánh xạ Endpoint</td>
+    <td>Callback HTTP từ nhà cung cấp email</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-004</span></td>
-    <td>Log Email Events</td>
-    <td>3.2 Component Mapping</td>
-    <td>Log Producer publishes to LOG module</td>
+    <td>Ghi log Sự kiện Email</td>
+    <td>3.2 Ánh xạ Thành phần</td>
+    <td>Log Producer gửi đến module LOG</td>
   </tr>
   <tr>
     <td><span class="req-id">FR-005</span></td>
-    <td>Retry Failed Emails</td>
-    <td>8. Error Handling</td>
-    <td>retry_count field tracks attempts, exponential backoff</td>
+    <td>Thử lại Email Thất bại</td>
+    <td>8. Xử lý Lỗi</td>
+    <td>Trường retry_count theo dõi số lần thử, exponential backoff</td>
   </tr>
 </table>
 

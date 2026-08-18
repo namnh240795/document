@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>API Technical Specification - Logger</title>
+  <title>Đặc tả Kỹ thuật API - Logger</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,55 +18,55 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>API Technical Specification</h1>
-  <div class="subtitle">Logger API</div>
+  <h1>Đặc tả Kỹ thuật API</h1>
+  <div class="subtitle">API Logger</div>
   <span class="module-badge">LOG</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
     <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
-    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
     <tr><td>Module</td><td>LOG - Logger</td></tr>
-    <tr><td>Date</td><td>2026-08-05</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">Logger SRS</a></td></tr>
+    <tr><td>Ngày tạo</td><td>2026-08-05</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Logger</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a></li>
-    <li><a href="#section-2">2. Response Format</a></li>
+    <li><a href="#section-1">1. Tổng quan</a></li>
+    <li><a href="#section-2">2. Định dạng Phản hồi</a></li>
     <li><a href="#section-3">3. Endpoints</a></li>
-    <li><a href="#section-4">4. Error Codes</a></li>
+    <li><a href="#section-4">4. Mã lỗi</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2>1.1 Requirements Addressed</h2>
+<h2>1.1 Yêu cầu được giải quyết</h2>
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Ingest Log Events</td><td>RabbitMQ consumer (internal)</td></tr>
-  <tr><td><span class="req-id">FR-002</span> Query Logs</td><td>GET /logs, GET /logs/:id</td></tr>
-  <tr><td><span class="req-id">FR-003</span> Log Analytics</td><td>GET /logs/analytics</td></tr>
-  <tr><td><span class="req-id">FR-004</span> Real-time Monitoring</td><td>WebSocket /ws/logs</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Endpoint API</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Thu thập Sự kiện Log</td><td>RabbitMQ consumer (nội bộ)</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Truy vấn Log</td><td>GET /logs, GET /logs/:id</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Phân tích Log</td><td>GET /logs/analytics</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Giám sát Thời gian thực</td><td>WebSocket /ws/logs</td></tr>
 </table>
 
-<h2>1.2 Authentication</h2>
-<p>All endpoints require admin-level JWT authentication.</p>
+<h2>1.2 Xác thực</h2>
+<p>Tất cả endpoint yêu cầu xác thực JWT cấp admin.</p>
 
 <!-- 2. RESPONSE FORMAT -->
-<h1 id="section-2">2. Response Format</h1>
+<h1 id="section-2">2. Định dạng Phản hồi</h1>
 
-<h2>2.1 Success Response</h2>
+<h2>2.1 Phản hồi Thành công</h2>
 <pre><code>{
   "success": true,
   "data": { ... },
@@ -76,37 +76,37 @@
   }
 }</code></pre>
 
-<h2>2.2 Error Response</h2>
+<h2>2.2 Phản hồi Lỗi</h2>
 <pre><code>{
   "success": false,
   "error": {
     "code": "QUERY_FAILED",
-    "message": "Failed to query logs from OpenSearch"
+    "message": "Không thể truy vấn log từ OpenSearch"
   }
 }</code></pre>
 
 <!-- 3. ENDPOINTS -->
 <h1 id="section-3">3. Endpoints</h1>
 
-<h2>3.1 Log Queries</h2>
+<h2>3.1 Truy vấn Log</h2>
 
 <h3 id="fr-002">GET /logs <span class="req-id">FR-002</span></h3>
-<p>Query logs with filters.</p>
-<p><strong>Query Parameters:</strong></p>
+<p>Truy vấn log với bộ lọc.</p>
+<p><strong>Tham số Query:</strong></p>
 <table>
-  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-  <tr><td>level</td><td>string</td><td>Filter by level: debug, info, warn, error</td></tr>
-  <tr><td>source</td><td>string</td><td>Filter by source service (auth, sms, etc.)</td></tr>
-  <tr><td>action</td><td>string</td><td>Filter by action (login, register, etc.)</td></tr>
-  <tr><td>userId</td><td>string</td><td>Filter by user ID</td></tr>
-  <tr><td>traceId</td><td>string</td><td>Filter by trace ID</td></tr>
-  <tr><td>from</td><td>datetime</td><td>Start time (ISO 8601)</td></tr>
-  <tr><td>to</td><td>datetime</td><td>End time (ISO 8601)</td></tr>
-  <tr><td>search</td><td>string</td><td>Full-text search in message</td></tr>
-  <tr><td>page</td><td>int</td><td>Page number (default: 1)</td></tr>
-  <tr><td>limit</td><td>int</td><td>Results per page (default: 20, max: 100)</td></tr>
+  <tr><th>Tham số</th><th>Loại</th><th>Mô tả</th></tr>
+  <tr><td>level</td><td>string</td><td>Lọc theo mức độ: debug, info, warn, error</td></tr>
+  <tr><td>source</td><td>string</td><td>Lọc theo dịch vụ nguồn (auth, sms, v.v.)</td></tr>
+  <tr><td>action</td><td>string</td><td>Lọc theo hành động (login, register, v.v.)</td></tr>
+  <tr><td>userId</td><td>string</td><td>Lọc theo mã người dùng</td></tr>
+  <tr><td>traceId</td><td>string</td><td>Lọc theo mã truy vết</td></tr>
+  <tr><td>from</td><td>datetime</td><td>Thời gian bắt đầu (ISO 8601)</td></tr>
+  <tr><td>to</td><td>datetime</td><td>Thời gian kết thúc (ISO 8601)</td></tr>
+  <tr><td>search</td><td>string</td><td>Tìm kiếm toàn văn trong message</td></tr>
+  <tr><td>page</td><td>int</td><td>Số trang (mặc định: 1)</td></tr>
+  <tr><td>limit</td><td>int</td><td>Số kết quả mỗi trang (mặc định: 20, tối đa: 100)</td></tr>
 </table>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "success": true,
   "data": [
@@ -115,7 +115,7 @@
       "source": "auth",
       "level": "info",
       "action": "login",
-      "message": "User logged in successfully",
+      "message": "Người dùng đã đăng nhập thành công",
       "userId": "user-uuid-456",
       "traceId": "trace-uuid-789",
       "timestamp": "2026-07-24T10:30:00Z"
@@ -130,8 +130,8 @@
 }</code></pre>
 
 <h3>GET /logs/:eventId</h3>
-<p>Get log event by ID.</p>
-<p><strong>Response 200:</strong></p>
+<p>Lấy sự kiện log theo mã.</p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "success": true,
   "data": {
@@ -139,7 +139,7 @@
     "source": "auth",
     "level": "info",
     "action": "login",
-    "message": "User logged in successfully",
+    "message": "Người dùng đã đăng nhập thành công",
     "input": "{\"email\":\"user@example.com\"}",
     "output": "{\"userId\":\"123\",\"token\":\"...\"}",
     "userId": "user-uuid-456",
@@ -148,18 +148,18 @@
   }
 }</code></pre>
 
-<h2>3.2 Analytics</h2>
+<h2>3.2 Phân tích</h2>
 
 <h3 id="fr-003">GET /logs/analytics <span class="req-id">FR-003</span></h3>
-<p>Get log analytics aggregations.</p>
-<p><strong>Query Parameters:</strong></p>
+<p>Lấy tổng hợp phân tích log.</p>
+<p><strong>Tham số Query:</strong></p>
 <table>
-  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-  <tr><td>from</td><td>datetime</td><td>Start time</td></tr>
-  <tr><td>to</td><td>datetime</td><td>End time</td></tr>
-  <tr><td>interval</td><td>string</td><td>Aggregation interval: minute, hour, day</td></tr>
+  <tr><th>Tham số</th><th>Loại</th><th>Mô tả</th></tr>
+  <tr><td>from</td><td>datetime</td><td>Thời gian bắt đầu</td></tr>
+  <tr><td>to</td><td>datetime</td><td>Thời gian kết thúc</td></tr>
+  <tr><td>interval</td><td>string</td><td>Khoảng tổng hợp: minute, hour, day</td></tr>
 </table>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "success": true,
   "data": {
@@ -180,34 +180,34 @@
   }
 }</code></pre>
 
-<h2>3.3 Real-time Streaming</h2>
+<h2>3.3 Phát trực tuyến Thời gian thực</h2>
 
 <h3 id="fr-004">WebSocket /ws/logs <span class="req-id">FR-004</span></h3>
-<p>Real-time log streaming via WebSocket.</p>
-<p><strong>Connection:</strong></p>
+<p>Phát trực tuyến log thời gian thực qua WebSocket.</p>
+<p><strong>Kết nối:</strong></p>
 <pre><code>ws://api.example.com/ws/logs?token=jwt_token&level=error&source=auth</code></pre>
-<p><strong>Message Format:</strong></p>
+<p><strong>Định dạng Tin nhắn:</strong></p>
 <pre><code>{
   "type": "log",
   "data": {
     "eventId": "evt-uuid-123",
     "source": "auth",
     "level": "error",
-    "message": "Login failed",
+    "message": "Đăng nhập thất bại",
     "timestamp": "2026-07-24T10:30:00Z"
   }
 }</code></pre>
 
 <!-- 4. ERROR CODES -->
-<h1 id="section-4">4. Error Codes</h1>
+<h1 id="section-4">4. Mã lỗi</h1>
 
 <table>
-  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
-  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Invalid query parameters</td></tr>
-  <tr><td>401</td><td>UNAUTHORIZED</td><td>Admin authentication required</td></tr>
-  <tr><td>404</td><td>LOG_NOT_FOUND</td><td>Log event not found</td></tr>
-  <tr><td>500</td><td>QUERY_FAILED</td><td>Failed to query OpenSearch</td></tr>
-  <tr><td>503</td><td>OPENSEARCH_UNAVAILABLE</td><td>OpenSearch is down</td></tr>
+  <tr><th>HTTP Status</th><th>Mã lỗi</th><th>Mô tả</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Tham số query không hợp lệ</td></tr>
+  <tr><td>401</td><td>UNAUTHORIZED</td><td>Yêu cầu xác thực admin</td></tr>
+  <tr><td>404</td><td>LOG_NOT_FOUND</td><td>Không tìm thấy sự kiện log</td></tr>
+  <tr><td>500</td><td>QUERY_FAILED</td><td>Không thể truy vấn OpenSearch</td></tr>
+  <tr><td>503</td><td>OPENSEARCH_UNAVAILABLE</td><td>OpenSearch bị tắt</td></tr>
 </table>
 
 </body>

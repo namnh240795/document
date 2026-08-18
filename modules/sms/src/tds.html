@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Technical Design Specification - SMS Service</title>
+  <title>Thiết kế Kỹ thuật - Dịch vụ SMS</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,119 +18,119 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>Technical Design Specification</h1>
-  <div class="subtitle">SMS Service Module</div>
+  <h1>Thiết kế Kỹ thuật</h1>
+  <div class="subtitle">Module Dịch vụ SMS</div>
   <span class="module-badge">SMS</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>Authentication System</td></tr>
-    <tr><td>Module</td><td>SMS - SMS Service</td></tr>
-    <tr><td>Date</td><td>2026-08-05</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Status</td><td>Draft</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">SMS Service SRS</a></td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
+    <tr><td>Module</td><td>SMS - Dịch vụ SMS</td></tr>
+    <tr><td>Ngày tạo</td><td>2026-08-05</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>Trạng thái</td><td>Nháp</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Dịch vụ SMS</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a></li>
-    <li><a href="#section-2">2. Architecture</a>
+    <li><a href="#section-1">1. Tổng quan</a></li>
+    <li><a href="#section-2">2. Kiến trúc</a>
       <ul>
-        <li><a href="#section-2-1">2.1 Architecture Style</a></li>
-        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+        <li><a href="#section-2-1">2.1 Kiểu Kiến trúc</a></li>
+        <li><a href="#section-2-2">2.2 Quyết định Thiết kế Chính</a></li>
       </ul>
     </li>
-    <li><a href="#section-3">3. Component Design</a>
+    <li><a href="#section-3">3. Thiết kế Thành phần</a>
       <ul>
-        <li><a href="#section-3-1">3.1 Component Diagram</a></li>
-        <li><a href="#section-3-2">3.2 Module Structure</a></li>
-        <li><a href="#section-3-3">3.3 Component to Requirements Mapping</a></li>
+        <li><a href="#section-3-1">3.1 Sơ đồ Thành phần</a></li>
+        <li><a href="#section-3-2">3.2 Cấu trúc Module</a></li>
+        <li><a href="#section-3-3">3.3 Ánh xạ Thành phần đến Yêu cầu</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. Data Architecture</a>
+    <li><a href="#section-4">4. Kiến trúc Dữ liệu</a>
       <ul>
-        <li><a href="#section-4-1">4.1 Database</a></li>
-        <li><a href="#section-4-2">4.2 Data Requirements Resolution</a></li>
+        <li><a href="#section-4-1">4.1 Cơ sở dữ liệu</a></li>
+        <li><a href="#section-4-2">4.2 Giải quyết Yêu cầu Dữ liệu</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">5. Integration Flows</a>
+    <li><a href="#section-5">5. Luồng Tích hợp</a>
       <ul>
-        <li><a href="#section-5-1">5.1 SMS Delivery Flow</a></li>
-        <li><a href="#section-5-2">5.2 Webhook Events</a></li>
-        <li><a href="#section-5-3">5.3 External Services</a></li>
+        <li><a href="#section-5-1">5.1 Luồng Giao SMS</a></li>
+        <li><a href="#section-5-2">5.2 Sự kiện Webhook</a></li>
+        <li><a href="#section-5-3">5.3 Dịch vụ Bên ngoài</a></li>
       </ul>
     </li>
-    <li><a href="#section-6">6. Traceability Summary</a></li>
+    <li><a href="#section-6">6. Tóm tắt Truy suất</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2>1.1 Purpose</h2>
-<p>This document describes the technical design decisions for the <strong>SMS Service</strong> module.</p>
+<h2>1.1 Mục đích</h2>
+<p>Tài liệu này mô tả các quyết định thiết kế kỹ thuật cho module <strong>Dịch vụ SMS</strong>.</p>
 
-<h2>1.2 Requirements Addressed</h2>
+<h2>1.2 Yêu cầu được giải quyết</h2>
 <table class="trace-table">
-  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-004</span></td><td>Section 3, 5</td></tr>
-  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-004</span></td><td>Section 5</td></tr>
+  <tr><th>Danh mục</th><th>Mã Yêu cầu</th><th>Phần Thiết kế</th></tr>
+  <tr><td>Chức năng</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-004</span></td><td>Phần 3, 5</td></tr>
+  <tr><td>Phi chức năng</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-004</span></td><td>Phần 5</td></tr>
 </table>
 
 <!-- 2. ARCHITECTURE -->
-<h1 id="section-2">2. Architecture</h1>
+<h1 id="section-2">2. Kiến trúc</h1>
 
-<h2>2.1 Architecture Style</h2>
+<h2>2.1 Kiểu Kiến trúc</h2>
 <table>
-  <tr><th>Aspect</th><th>Decision</th><th>Resolves</th></tr>
-  <tr><td>Pattern</td><td>NestJS Worker (Event-driven)</td><td><span class="req-id">NFR-001</span></td></tr>
-  <tr><td>SMS Provider</td><td>Twilio</td><td><span class="req-id">FR-001</span></td></tr>
-  <tr><td>Message Queue</td><td>RabbitMQ</td><td><span class="req-id">NFR-002</span></td></tr>
-  <tr><td>Database</td><td>PostgreSQL (sms_db)</td><td><span class="req-id">NFR-004</span></td></tr>
+  <tr><th>Khía cạnh</th><th>Quyết định</th><th>Giải quyết</th></tr>
+  <tr><td>Mẫu</td><td>NestJS Worker (Driving bởi Sự kiện)</td><td><span class="req-id">NFR-001</span></td></tr>
+  <tr><td>Nhà cung cấp SMS</td><td>Twilio</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>Hàng đợi Tin nhắn</td><td>RabbitMQ</td><td><span class="req-id">NFR-002</span></td></tr>
+  <tr><td>Cơ sở dữ liệu</td><td>PostgreSQL (sms_db)</td><td><span class="req-id">NFR-004</span></td></tr>
 </table>
 
-<h2>2.2 Key Design Decisions</h2>
+<h2>2.2 Quyết định Thiết kế Chính</h2>
 <table class="trace-table">
-  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
+  <tr><th>#</th><th>Quyết định</th><th>Lý do</th><th>Giải quyết</th></tr>
   <tr>
-    <td>1</td><td>Twilio for SMS</td>
-    <td>Reliable provider, good API, supports Vietnam numbers</td>
+    <td>1</td><td>Twilio cho SMS</td>
+    <td>Nhà cung cấp đáng tin cậy, API tốt, hỗ trợ số Việt Nam</td>
     <td><span class="req-id">FR-001</span>, <span class="req-id">NFR-002</span></td>
   </tr>
   <tr>
-    <td>2</td><td>RabbitMQ for async</td>
-    <td>Decouple SMS sending from API, retry on failure</td>
+    <td>2</td><td>RabbitMQ cho bất đồng bộ</td>
+    <td>Tách việc gửi SMS khỏi API, thử lại khi thất bại</td>
     <td><span class="req-id">NFR-001</span>, <span class="req-id">NFR-002</span></td>
   </tr>
   <tr>
-    <td>3</td><td>Dedicated sms_db</td>
-    <td>Separate audit logs from auth data</td>
+    <td>3</td><td>Cơ sở dữ liệu riêng sms_db</td>
+    <td>Tách log kiểm toán khỏi dữ liệu xác thực</td>
     <td><span class="req-id">NFR-004</span></td>
   </tr>
 </table>
 
 <!-- 3. COMPONENT DESIGN -->
-<h1 id="section-3">3. Component Design</h1>
+<h1 id="section-3">3. Thiết kế Thành phần</h1>
 
-<h2>3.1 Component Diagram</h2>
+<h2>3.1 Sơ đồ Thành phần</h2>
 <div class="diagram">
-  <img src="./images/component/component-diagram.png" alt="SMS Component Diagram">
-  <div class="caption">Figure 1: SMS Module Components</div>
+  <img src="./images/component/component-diagram.png" alt="Sơ đồ Thành phần SMS">
+  <div class="caption">Hình 1: Các Thành phần Module SMS</div>
 </div>
 
-<h2>3.2 Module Structure</h2>
+<h2>3.2 Cấu trúc Module</h2>
 <pre><code>src/
   sms/
     sms.module.ts
-    sms.controller.ts      # Webhook receiver from Twilio
+    sms.controller.ts      # Webhook receiver từ Twilio
     sms.service.ts         # Business logic
     sms.consumer.ts        # RabbitMQ consumer
     sms-producer.ts        # RabbitMQ producer
@@ -138,65 +138,65 @@
   external/
     twilio.service.ts      # Twilio API wrapper</code></pre>
 
-<h2>3.2 Component to Requirements Mapping</h2>
+<h2>3.3 Ánh xạ Thành phần đến Yêu cầu</h2>
 <table class="trace-table">
-  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
-  <tr><td>SmsService</td><td>Send SMS, verify OTP, log delivery</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-003</span></td></tr>
-  <tr><td>SmsController</td><td>Receive Twilio delivery webhooks</td><td><span class="req-id">FR-003</span></td></tr>
-  <tr><td>SmsConsumer</td><td>Process messages from RabbitMQ queue</td><td><span class="req-id">NFR-001</span></td></tr>
-  <tr><td>TwilioService</td><td>Twilio API integration</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><th>Thành phần</th><th>Trách nhiệm</th><th>Giải quyết</th></tr>
+  <tr><td>SmsService</td><td>Gửi SMS, xác minh OTP, ghi log giao dịch</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-003</span></td></tr>
+  <tr><td>SmsController</td><td>Nhận webhook giao dịch từ Twilio</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>SmsConsumer</td><td>Xử lý tin nhắn từ hàng đợi RabbitMQ</td><td><span class="req-id">NFR-001</span></td></tr>
+  <tr><td>TwilioService</td><td>Tích hợp API Twilio</td><td><span class="req-id">FR-001</span></td></tr>
 </table>
 
 <!-- 4. DATA ARCHITECTURE -->
-<h1 id="section-4">4. Data Architecture</h1>
+<h1 id="section-4">4. Kiến trúc Dữ liệu</h1>
 
-<h2>4.1 Database</h2>
-<p>Database: <code>sms_db</code> (PostgreSQL)</p>
-<p>Refer to: <a href="database-design.html">Database Design</a></p>
+<h2>4.1 Cơ sở dữ liệu</h2>
+<p>Cơ sở dữ liệu: <code>sms_db</code> (PostgreSQL)</p>
+<p>Xem thêm: <a href="database-design.html">Thiết kế Cơ sở dữ liệu</a></p>
 
-<h2>4.2 Data Requirements Resolution</h2>
+<h2>4.2 Giải quyết Yêu cầu Dữ liệu</h2>
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Send SMS OTP</td><td>Insert SMS log, publish to RabbitMQ</td><td>sms_logs</td></tr>
-  <tr><td><span class="req-id">FR-003</span> Log Delivery</td><td>Update SMS log with delivery status</td><td>sms_logs</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Giải pháp Thiết kế</th><th>Bảng CSDL</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Gửi SMS OTP</td><td>Chèn log SMS, gửi đến RabbitMQ</td><td>sms_logs</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Ghi log Giao dịch</td><td>Cập nhật log SMS với trạng thái giao</td><td>sms_logs</td></tr>
 </table>
 
 <!-- 5. INTEGRATION FLOWS -->
-<h1 id="section-5">5. Integration Flows</h1>
+<h1 id="section-5">5. Luồng Tích hợp</h1>
 
-<h2>5.1 SMS Delivery Flow</h2>
+<h2>5.1 Luồng Giao SMS</h2>
 <div class="diagram">
-  <img src="./images/sequence/sequence-diagram.png" alt="SMS Delivery Sequence Diagram">
-  <div class="caption">Figure 1: SMS Delivery Sequence Diagram</div>
+  <img src="./images/sequence/sequence-diagram.png" alt="Sơ đồ Sequence Giao SMS">
+  <div class="caption">Hình 1: Sơ đồ Sequence Giao SMS</div>
 </div>
 
-<h2>5.2 Webhook Events</h2>
+<h2>5.2 Sự kiện Webhook</h2>
 <table>
-  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
-  <tr><td>verification.requested</td><td>Inbound (from AUTH)</td><td>RabbitMQ</td><td>Receive SMS send request from AUTH module</td></tr>
-  <tr><td>verification.delivered</td><td>Outbound (to AUTH)</td><td>Webhook HTTP</td><td>Notify AUTH of SMS delivery status</td></tr>
+  <tr><th>Sự kiện</th><th>Hướng</th><th>Giao thức</th><th>Mô tả</th></tr>
+  <tr><td>verification.requested</td><td>Đầu vào (từ AUTH)</td><td>RabbitMQ</td><td>Nhận yêu cầu gửi SMS từ module AUTH</td></tr>
+  <tr><td>verification.delivered</td><td>Đầu ra (đến AUTH)</td><td>Webhook HTTP</td><td>Thông báo trạng thái giao SMS cho AUTH</td></tr>
 </table>
 
-<h2>5.2 External Services</h2>
+<h2>5.3 Dịch vụ Bên ngoài</h2>
 <table>
-  <tr><th>Service</th><th>Protocol</th><th>Purpose</th></tr>
-  <tr><td>Twilio</td><td>REST API</td><td>Send SMS messages</td></tr>
-  <tr><td>Twilio</td><td>Webhook</td><td>Receive delivery status callbacks</td></tr>
+  <tr><th>Dịch vụ</th><th>Giao thức</th><th>Mục đích</th></tr>
+  <tr><td>Twilio</td><td>REST API</td><td>Gửi tin nhắn SMS</td></tr>
+  <tr><td>Twilio</td><td>Webhook</td><td>Nhận callback trạng thái giao dịch</td></tr>
 </table>
 
 <!-- 6. TRACEABILITY -->
-<h1 id="section-6">6. Traceability Summary</h1>
+<h1 id="section-6">6. Tóm tắt Truy suất</h1>
 
 <table class="trace-table">
-  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
-  <tr><td><span class="req-id">FR-001</span></td><td>Send SMS OTP</td><td>2.2, 3.2</td><td>Twilio + RabbitMQ async</td></tr>
-  <tr><td><span class="req-id">FR-002</span></td><td>Verify OTP</td><td>3.2</td><td>SmsService.verifyOtp()</td></tr>
-  <tr><td><span class="req-id">FR-003</span></td><td>Log SMS Delivery</td><td>3.2, 5.1</td><td>sms_logs table + Twilio webhook</td></tr>
-  <tr><td><span class="req-id">FR-004</span></td><td>Get SMS Status</td><td>3.2</td><td>SmsService.getStatus()</td></tr>
-  <tr><td><span class="req-id">NFR-001</span></td><td>SMS &lt; 3s</td><td>2.1</td><td>Async via RabbitMQ</td></tr>
-  <tr><td><span class="req-id">NFR-002</span></td><td>99% delivery</td><td>2.2</td><td>Twilio + retry mechanism</td></tr>
-  <tr><td><span class="req-id">NFR-003</span></td><td>OTP 5min expiry</td><td>3.2</td><td>expires_at field in sms_logs</td></tr>
-  <tr><td><span class="req-id">NFR-004</span></td><td>90 day retention</td><td>4.1</td><td>Archival policy in sms_db</td></tr>
+  <tr><th>Mã YC SRS</th><th>Yêu cầu</th><th>Phần TDS</th><th>Quyết định Thiết kế</th></tr>
+  <tr><td><span class="req-id">FR-001</span></td><td>Gửi SMS OTP</td><td>2.2, 3.2</td><td>Twilio + RabbitMQ bất đồng bộ</td></tr>
+  <tr><td><span class="req-id">FR-002</span></td><td>Xác minh OTP</td><td>3.2</td><td>SmsService.verifyOtp()</td></tr>
+  <tr><td><span class="req-id">FR-003</span></td><td>Ghi log Giao dịch SMS</td><td>3.2, 5.1</td><td>Bảng sms_logs + Twilio webhook</td></tr>
+  <tr><td><span class="req-id">FR-004</span></td><td>Truy vấn Trạng thái SMS</td><td>3.2</td><td>SmsService.getStatus()</td></tr>
+  <tr><td><span class="req-id">NFR-001</span></td><td>SMS &lt; 3s</td><td>2.1</td><td>Bất đồng bộ qua RabbitMQ</td></tr>
+  <tr><td><span class="req-id">NFR-002</span></td><td>99% giao thành công</td><td>2.2</td><td>Twilio + cơ chế thử lại</td></tr>
+  <tr><td><span class="req-id">NFR-003</span></td><td>OTP hết hạn 5 phút</td><td>3.2</td><td>Trường expires_at trong sms_logs</td></tr>
+  <tr><td><span class="req-id">NFR-004</span></td><td>Lưu trữ 90 ngày</td><td>4.1</td><td>Chính sách lưu trữ trong sms_db</td></tr>
 </table>
 
 </body>

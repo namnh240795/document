@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Software Requirements Specification - Authentication (Better Auth)</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overview</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1 id="page-title">Software Requirements Specification</h1>
+  <div class="subtitle">Authentication Module</div>
+  <span class="module-badge">AUTH</span>
+  <table class="meta-table">
+    <tr><td>Version</td><td>1.0</td></tr>
+    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Module</td><td>AUTH - Authentication</td></tr>
+    <tr><td>Database</td><td>auth_db</td></tr>
+    <tr><td>Date</td><td>2026-08-05</td></tr>
+    <tr><td>Author</td><td>Nam Nguyen</td></tr>
+    <tr><td>Status</td><td>Draft</td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#section-1">1. Introduction</a>
+      <ul>
+        <li><a href="#section-1-1">1.1 Purpose</a></li>
+        <li><a href="#section-1-2">1.2 Scope</a></li>
+        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
+        <li><a href="#section-1-4">1.4 Definitions</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-2">2. Module Overview</a></li>
+    <li><a href="#section-3">3. Functional Requirements</a>
+      <ul>
+        <li><a href="#fr-001">FR-001: User Registration</a></li>
+        <li><a href="#fr-002">FR-002: User Login</a></li>
+        <li><a href="#fr-003">FR-003: Logout</a></li>
+        <li><a href="#fr-004">FR-004: Refresh Token</a></li>
+        <li><a href="#fr-005">FR-005: Reset Password (Email)</a></li>
+        <li><a href="#fr-006">FR-006: Reset Password (Phone)</a></li>
+        <li><a href="#fr-007">FR-007: Change Password</a></li>
+        <li><a href="#fr-008">FR-008: Verify Email</a></li>
+        <li><a href="#fr-009">FR-009: Verify Phone</a></li>
+        <li><a href="#fr-010">FR-010: Manage Users</a></li>
+        <li><a href="#fr-011">FR-011: Manage Roles</a></li>
+        <li><a href="#fr-012">FR-012: Social Authentication</a></li>
+        <li><a href="#fr-013">FR-013: Session Management</a></li>
+        <li><a href="#fr-014">FR-014: User Ban & Impersonation</a></li>
+        <li><a href="#fr-015">FR-015: Organization Management</a></li>
+        <li><a href="#fr-016">FR-016: Team Management</a></li>
+        <li><a href="#fr-017">FR-017: Invitation Management</a></li>
+        <li><a href="#fr-018">FR-018: Resend Invitation</a></li>
+        <li><a href="#fr-019">FR-019: Revoke Invitation</a></li>
+        <li><a href="#fr-020">FR-020: Verify Invitation Token</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-4">4. Use Cases</a>
+      <ul>
+        <li><a href="#section-4-0">4.0 Use Case Diagram</a></li>
+        <li><a href="#uc-01">4.1 UC-01: User Registration</a></li>
+        <li><a href="#uc-02">4.2 UC-02: User Login</a></li>
+        <li><a href="#uc-03">4.3 UC-03: User Logout</a></li>
+        <li><a href="#uc-04">4.4 UC-04: Refresh Token</a></li>
+        <li><a href="#uc-05">4.5 UC-05: Reset Password via Email</a></li>
+        <li><a href="#uc-06">4.6 UC-06: Reset Password via Phone</a></li>
+        <li><a href="#uc-07">4.7 UC-07: Change Password</a></li>
+        <li><a href="#uc-08">4.8 UC-08: Verify Email</a></li>
+        <li><a href="#uc-09">4.9 UC-09: Verify Phone</a></li>
+        <li><a href="#uc-10">4.10 UC-10: Manage Users</a></li>
+        <li><a href="#uc-11">4.11 UC-11: Manage Roles</a></li>
+        <li><a href="#uc-12">4.12 UC-12: Social Authentication</a></li>
+        <li><a href="#uc-13">4.13 UC-13: Session Management</a></li>
+        <li><a href="#uc-14">4.14 UC-14: User Ban & Impersonation</a></li>
+        <li><a href="#uc-15">4.15 UC-15: Organization Management</a></li>
+        <li><a href="#uc-16">4.16 UC-16: Team Management</a></li>
+        <li><a href="#uc-17">4.17 UC-17: Invitation Management</a></li>
+        <li><a href="#uc-18">4.18 UC-18: Resend Invitation</a></li>
+        <li><a href="#uc-19">4.19 UC-19: Revoke Invitation</a></li>
+        <li><a href="#uc-20">4.20 UC-20: Verify Invitation Token</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-5">5. Non-Functional Requirements</a>
+      <ul>
+        <li><a href="#nfr-001">NFR-001: Performance</a></li>
+        <li><a href="#nfr-002">NFR-002: Security</a></li>
+        <li><a href="#nfr-003">NFR-003: Availability</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. Traceability Matrix</a>
+      <ul>
+        <li><a href="#trace-fr-001">FR-001: User Registration</a></li>
+        <li><a href="#trace-fr-002">FR-002: User Login</a></li>
+        <li><a href="#trace-fr-003">FR-003: Logout</a></li>
+        <li><a href="#trace-fr-004">FR-004: Refresh Token</a></li>
+        <li><a href="#trace-fr-005">FR-005: Reset Password (Email)</a></li>
+        <li><a href="#trace-fr-006">FR-006: Reset Password (Phone)</a></li>
+        <li><a href="#trace-fr-007">FR-007: Change Password</a></li>
+        <li><a href="#trace-fr-008">FR-008: Verify Email</a></li>
+        <li><a href="#trace-fr-009">FR-009: Verify Phone</a></li>
+        <li><a href="#trace-fr-010">FR-010: Manage Users</a></li>
+        <li><a href="#trace-fr-011">FR-011: Manage Roles</a></li>
+        <li><a href="#trace-fr-012">FR-012: Social Authentication</a></li>
+        <li><a href="#trace-fr-013">FR-013: Session Management</a></li>
+        <li><a href="#trace-fr-014">FR-014: User Ban & Impersonation</a></li>
+        <li><a href="#trace-fr-015">FR-015: Organization Management</a></li>
+        <li><a href="#trace-fr-016">FR-016: Team Management</a></li>
+        <li><a href="#trace-fr-017">FR-017: Invitation Management</a></li>
+        <li><a href="#trace-fr-018">FR-018: Resend Invitation</a></li>
+        <li><a href="#trace-fr-019">FR-019: Revoke Invitation</a></li>
+        <li><a href="#trace-fr-020">FR-020: Verify Invitation Token</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<!-- 1. INTRODUCTION -->
+<h1 id="section-1">1. Introduction</h1>
+
+<h2 id="section-1-1">1.1 Purpose</h2>
+<p>This document defines the software requirements for the <strong>Authentication</strong> module of the Authentication System.</p>
+
+<h2 id="section-1-2">1.2 Scope</h2>
+<p>The Authentication module handles:</p>
+<ul>
+  <li>User registration with email or phone + password</li>
+  <li>User login with email or phone + password</li>
+  <li>Session and token management (access + refresh tokens)</li>
+  <li>Account verification via email and SMS</li>
+  <li>Password reset via email or phone/OTP</li>
+  <li>Role-based access control (RBAC)</li>
+  <li>User management (admin CRUD)</li>
+</ul>
+
+<h2 id="section-1-3">1.3 Module Dependencies</h2>
+<table>
+  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
+  <tr><td>SMS</td><td>Async (RabbitMQ)</td><td>Send verification SMS via SMS module</td></tr>
+  <tr><td>EMAIL</td><td>Async (RabbitMQ)</td><td>Send verification/reset emails via EMAIL module</td></tr>
+  <tr><td>LOG</td><td>Async (RabbitMQ)</td><td>Publish auth events to Logger module</td></tr>
+</table>
+
+<h2 id="section-1-4">1.4 Definitions</h2>
+<table>
+  <tr><th>Term</th><th>Definition</th></tr>
+  <tr><td>FR</td><td>Functional Requirement</td></tr>
+  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
+  <tr><td>UC</td><td>Use Case</td></tr>
+  <tr><td>JWT</td><td>JSON Web Token</td></tr>
+  <tr><td>OTP</td><td>One-Time Password</td></tr>
+  <tr><td>RBAC</td><td>Role-Based Access Control</td></tr>
+</table>
+
+<!-- 2. MODULE OVERVIEW -->
+<h1 id="section-2">2. Module Overview</h1>
+
+<table>
+  <tr><th>Aspect</th><th>Value</th></tr>
+  <tr><td>Module Code</td><td>AUTH</td></tr>
+  <tr><td>Module Name</td><td>Authentication</td></tr>
+  <tr><td>Description</td><td>User accounts, login, roles, sessions, verification</td></tr>
+  <tr><td>Database</td><td>auth_db</td></tr>
+  <tr><td>Tables</td><td>auth_users, auth_sessions, auth_accounts, auth_verification, auth_roles, auth_user_roles, auth_organizations, auth_members, auth_teams, auth_team_members, auth_invitations</td></tr>
+  <tr><td>Tech Stack</td><td>NestJS, Better Auth, Drizzle ORM, PostgreSQL</td></tr>
+</table>
+
+<!-- 3. FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-3">3. Functional Requirements</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr id="fr-001">
+    <td><span class="req-id">FR-001</span></td>
+    <td>AUTH</td>
+    <td>User Registration</td>
+    <td>UC-01</td>
+    <td>High</td>
+    <td>System shall allow users to register with email or phone + password + name. Registered users receive the <code>user</code> system role by default.</td>
+  </tr>
+  <tr id="fr-002">
+    <td><span class="req-id">FR-002</span></td>
+    <td>AUTH</td>
+    <td>User Login</td>
+    <td>UC-02</td>
+    <td>High</td>
+    <td>System shall authenticate users via email or phone + password and return JWT tokens</td>
+  </tr>
+  <tr id="fr-003">
+    <td><span class="req-id">FR-003</span></td>
+    <td>AUTH</td>
+    <td>Logout</td>
+    <td>UC-03</td>
+    <td>High</td>
+    <td>System shall invalidate user session on logout</td>
+  </tr>
+  <tr id="fr-004">
+    <td><span class="req-id">FR-004</span></td>
+    <td>AUTH</td>
+    <td>Refresh Token</td>
+    <td>UC-04</td>
+    <td>High</td>
+    <td>System shall issue new access token using refresh token</td>
+  </tr>
+  <tr id="fr-005">
+    <td><span class="req-id">FR-005</span></td>
+    <td>AUTH</td>
+    <td>Reset Password (Email)</td>
+    <td>UC-05</td>
+    <td>Medium</td>
+    <td>System shall send password reset link to user's email via EMAIL module</td>
+  </tr>
+  <tr id="fr-006">
+    <td><span class="req-id">FR-006</span></td>
+    <td>AUTH</td>
+    <td>Reset Password (Phone)</td>
+    <td>UC-06</td>
+    <td>Medium</td>
+    <td>System shall send OTP to user's phone for password reset</td>
+  </tr>
+  <tr id="fr-007">
+    <td><span class="req-id">FR-007</span></td>
+    <td>AUTH</td>
+    <td>Change Password</td>
+    <td>UC-07</td>
+    <td>Medium</td>
+    <td>System shall allow authenticated users to change password</td>
+  </tr>
+  <tr id="fr-008">
+    <td><span class="req-id">FR-008</span></td>
+    <td>AUTH</td>
+    <td>Verify Email</td>
+    <td>UC-08</td>
+    <td>High</td>
+    <td>System shall send verification email via EMAIL module and verify via link</td>
+  </tr>
+  <tr id="fr-009">
+    <td><span class="req-id">FR-009</span></td>
+    <td>AUTH</td>
+    <td>Verify Phone</td>
+    <td>UC-09</td>
+    <td>High</td>
+    <td>System shall verify phone via OTP code</td>
+  </tr>
+  <tr id="fr-010">
+    <td><span class="req-id">FR-010</span></td>
+    <td>AUTH</td>
+    <td>Manage Users</td>
+    <td>UC-10</td>
+    <td>Medium</td>
+    <td>Admin shall be able to list, view, update, and delete users</td>
+  </tr>
+  <tr id="fr-011">
+    <td><span class="req-id">FR-011</span></td>
+    <td>AUTH</td>
+    <td>Manage System Roles</td>
+    <td>UC-11</td>
+    <td>Medium</td>
+    <td>Admin shall be able to manage system-level roles (<code>user</code>, <code>super_admin</code>) and assign them to users</td>
+  </tr>
+  <tr id="fr-012">
+    <td><span class="req-id">FR-012</span></td>
+    <td>AUTH</td>
+    <td>Social Authentication</td>
+    <td>UC-12</td>
+    <td>High</td>
+    <td>System shall allow users to sign in via social providers (Google, GitHub, etc.) and link/unlink social accounts</td>
+  </tr>
+  <tr id="fr-013">
+    <td><span class="req-id">FR-013</span></td>
+    <td>AUTH</td>
+    <td>Session Management</td>
+    <td>UC-13</td>
+    <td>High</td>
+    <td>System shall allow users to view, revoke, and manage active sessions across devices</td>
+  </tr>
+  <tr id="fr-014">
+    <td><span class="req-id">FR-014</span></td>
+    <td>AUTH</td>
+    <td>User Ban & Impersonation</td>
+    <td>UC-14</td>
+    <td>Medium</td>
+    <td>Admin shall be able to ban/unban users and impersonate users for support</td>
+  </tr>
+  <tr id="fr-015">
+    <td><span class="req-id">FR-015</span></td>
+    <td>AUTH</td>
+    <td>Organization Management</td>
+    <td>UC-15</td>
+    <td>High</td>
+    <td>System shall allow users to create, update, delete organizations, manage membership, and create/manage organization-level roles (HR, Candidate, Employer) with fine-grained permissions</td>
+  </tr>
+  <tr id="fr-016">
+    <td><span class="req-id">FR-016</span></td>
+    <td>AUTH</td>
+    <td>Team Management</td>
+    <td>UC-16</td>
+    <td>Medium</td>
+    <td>System shall allow creating teams within organizations and managing team membership</td>
+  </tr>
+  <tr id="fr-017">
+    <td><span class="req-id">FR-017</span></td>
+    <td>AUTH</td>
+    <td>Invitation Management</td>
+    <td>UC-17</td>
+    <td>High</td>
+    <td>System shall allow inviting members to organizations via email with token-based verification. Invitations include: SHA-256 hashed tokens (only hash stored in DB), configurable expiry (default 72 hours), duplicate detection (same email + role), and email delivery via EMAIL module</td>
+  </tr>
+  <tr id="fr-018">
+    <td><span class="req-id">FR-018</span></td>
+    <td>AUTH</td>
+    <td>Resend Invitation</td>
+    <td>UC-18</td>
+    <td>Medium</td>
+    <td>System shall allow the inviter to resend an invitation, generating a new token and invalidating the previous one. Expiry is reset to 72 hours from resend time</td>
+  </tr>
+  <tr id="fr-019">
+    <td><span class="req-id">FR-019</span></td>
+    <td>AUTH</td>
+    <td>Revoke Invitation</td>
+    <td>UC-19</td>
+    <td>Medium</td>
+    <td>System shall allow the inviter (owner) to revoke a pending invitation. Only the original inviter can revoke. Already accepted or revoked invitations cannot be revoked again</td>
+  </tr>
+  <tr id="fr-020">
+    <td><span class="req-id">FR-020</span></td>
+    <td>AUTH</td>
+    <td>Verify Invitation Token</td>
+    <td>UC-20</td>
+    <td>High</td>
+    <td>System shall provide a public endpoint (no auth required) to verify invitation token validity. Returns status: valid, expired, already accepted, or revoked. Expired invitations are auto-updated to expired status</td>
+  </tr>
+</table>
+
+<!-- 4. USE CASES -->
+<h1 id="section-4">4. Use Cases</h1>
+
+<h2 id="section-4-0">4.0 Use Case Diagram</h2>
+<div class="diagram">
+  <img src="./images/usecase/usecase-diagram.png" alt="Use Case Diagram">
+  <div class="caption">Figure 1: Use Case Diagram</div>
+</div>
+
+<h2 id="uc-01">4.1 UC-01: User Registration</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Guest (unauthenticated user)</td></tr>
+  <tr><td>Preconditions</td><td>User is not logged in; user does not have an existing account</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to registration page<br>2. User enters name, email, and password<br>3. System validates input (email format, password strength)<br>4. System creates user account with hashed password and assigns <code>user</code> system role<br>5. System sends verification email via EMAIL module<br>6. System returns success response with user ID and JWT token</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Email already exists → System returns 409 Conflict<br>3b. Password too weak → System returns 400 Validation Error<br>5a. Verification service unavailable → Account created, verification queued</td></tr>
+  <tr><td>Postconditions</td><td>User account created with <code>user</code> role (unverified); verification email sent; JWT token issued</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-001</span></td></tr>
+</table>
+<p><strong>Available Roles for Self-Registration:</strong></p>
+<table>
+  <tr><th>Role</th><th>Description</th></tr>
+  <tr><td><code>user</code></td><td>Standard user account (default). Users can create organizations and receive organization-level roles (HR, Candidate, Employer).</td></tr>
+</table>
+<p><strong>Note:</strong> <code>super_admin</code> accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/registration-activity.png" alt="Registration Activity Diagram">
+  <div class="caption">Figure 2: User Registration Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/registration-sequence.png" alt="Registration Sequence Diagram">
+  <div class="caption">Figure 3: User Registration Sequence Diagram</div>
+</div>
+
+<h2 id="uc-02">4.2 UC-02: User Login</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user</td></tr>
+  <tr><td>Preconditions</td><td>User has a registered account; account is active</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to login page<br>2. User enters email/phone and password<br>3. System validates credentials against database<br>4. System generates JWT access token (15min) and refresh token (7 days)<br>5. System creates session record<br>6. System returns tokens and user profile</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Invalid credentials → System returns 401 Unauthorized<br>3b. Account banned → System returns 403 Forbidden<br>3c. Account inactive → System returns 403 Forbidden</td></tr>
+  <tr><td>Postconditions</td><td>User is authenticated; session created; tokens issued</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-002</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/login-activity.png" alt="Login Activity Diagram">
+  <div class="caption">Figure 4: User Login Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/login-sequence.png" alt="Login Sequence Diagram">
+  <div class="caption">Figure 5: User Login Sequence Diagram</div>
+</div>
+
+<h2 id="uc-03">4.3 UC-03: User Logout</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in with valid session</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks logout button<br>2. System receives logout request with access token<br>3. System invalidates current session (deletes session record)<br>4. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Token expired → Session already invalid, return success</td></tr>
+  <tr><td>Postconditions</td><td>Session invalidated; tokens no longer valid</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-003</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/logout-activity.png" alt="Logout Activity Diagram">
+  <div class="caption">Figure 6: User Logout Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/logout-sequence.png" alt="Logout Sequence Diagram">
+  <div class="caption">Figure 7: User Logout Sequence Diagram</div>
+</div>
+
+<h2 id="uc-04">4.4 UC-04: Refresh Token</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user (token expired)</td></tr>
+  <tr><td>Preconditions</td><td>User has a valid refresh token; access token expired</td></tr>
+  <tr><td>Main Flow</td><td>1. Client detects access token expired<br>2. Client sends refresh token to /auth/refresh<br>3. System validates refresh token and session<br>4. System generates new access token<br>5. System returns new access token</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Refresh token expired → System returns 401, user must re-login<br>3b. Session not found → System returns 401</td></tr>
+  <tr><td>Postconditions</td><td>New access token issued; session remains valid</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-004</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/refresh-token-activity.png" alt="Refresh Token Activity Diagram">
+  <div class="caption">Figure 8: Refresh Token Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/refresh-token-sequence.png" alt="Refresh Token Sequence Diagram">
+  <div class="caption">Figure 9: Refresh Token Sequence Diagram</div>
+</div>
+
+<h2 id="uc-05">4.5 UC-05: Reset Password via Email</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user (forgot password)</td></tr>
+  <tr><td>Preconditions</td><td>User has a registered email; user is not logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks "Forgot Password"<br>2. User enters email address<br>3. System generates password reset token<br>4. System sends reset link via EMAIL module<br>5. User clicks link in email<br>6. User enters new password<br>7. System updates password hash<br>8. System invalidates all existing sessions</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Email not found → System returns success (don't reveal if email exists)<br>4a. Email delivery failed → System logs error, user can retry</td></tr>
+  <tr><td>Postconditions</td><td>Password updated; all sessions invalidated</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/password-reset-activity.png" alt="Password Reset Activity Diagram">
+  <div class="caption">Figure 8: Password Reset Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
+  <div class="caption">Figure 9: Password Reset Sequence Diagram</div>
+</div>
+
+<h2 id="uc-06">4.6 UC-06: Reset Password via Phone</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user (forgot password)</td></tr>
+  <tr><td>Preconditions</td><td>User has a registered phone; user is not logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks "Forgot Password"<br>2. User selects phone option and enters phone number<br>3. System generates OTP code<br>4. System sends OTP via SMS module<br>5. User enters OTP and new password<br>6. System verifies OTP<br>7. System updates password hash<br>8. System invalidates all existing sessions</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Phone not found → System returns success (don't reveal if phone exists)<br>6a. OTP expired → System returns 422, user can request new OTP<br>6b. OTP invalid → System returns 422</td></tr>
+  <tr><td>Postconditions</td><td>Password updated; all sessions invalidated</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-006</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/password-reset-activity.png" alt="Password Reset Activity Diagram">
+  <div class="caption">Figure 10: Password Reset via Phone Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
+  <div class="caption">Figure 11: Password Reset via Phone Sequence Diagram</div>
+</div>
+
+<h2 id="uc-07">4.7 UC-07: Change Password</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to change password page<br>2. User enters current password and new password<br>3. System verifies current password<br>4. System updates password hash<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Current password incorrect → System returns 401<br>4a. New password same as current → System returns 400</td></tr>
+  <tr><td>Postconditions</td><td>Password updated; existing sessions remain valid</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-007</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/change-password-activity.png" alt="Change Password Activity Diagram">
+  <div class="caption">Figure: Change Password Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/change-password-sequence.png" alt="Change Password Sequence Diagram">
+  <div class="caption">Figure: Change Password Sequence Diagram</div>
+</div>
+
+<h2 id="uc-08">4.8 UC-08: Verify Email</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user</td></tr>
+  <tr><td>Preconditions</td><td>User has registered email; email not yet verified</td></tr>
+  <tr><td>Main Flow</td><td>1. User registers or requests verification<br>2. System sends verification email with link/token via EMAIL module<br>3. User clicks verification link<br>4. System validates token<br>5. System marks email_verified = true<br>6. System returns success</td></tr>
+  <tr><td>Alternative Flows</td><td>4a. Token expired → System returns 400, user can request new verification<br>4b. Token invalid → System returns 400</td></tr>
+  <tr><td>Postconditions</td><td>Email verified; user can access email-based features</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-008</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/activity-diagram.png" alt="Verification Activity Diagram">
+  <div class="caption">Figure 12: Account Verification Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/sequence-diagram.png" alt="Verification Sequence Diagram">
+  <div class="caption">Figure 13: Account Verification Sequence Diagram</div>
+</div>
+
+<h2 id="uc-09">4.9 UC-09: Verify Phone</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Registered user</td></tr>
+  <tr><td>Preconditions</td><td>User has registered phone; phone not yet verified</td></tr>
+  <tr><td>Main Flow</td><td>1. User requests phone verification<br>2. System sends OTP via SMS module<br>3. User enters OTP code<br>4. System verifies OTP<br>5. System marks phone_verified = true<br>6. System returns success</td></tr>
+  <tr><td>Alternative Flows</td><td>4a. OTP expired → System returns 422, user can request new OTP<br>4b. OTP invalid → System returns 422</td></tr>
+  <tr><td>Postconditions</td><td>Phone verified; user can access phone-based features</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-009</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/activity-diagram.png" alt="Verification Activity Diagram">
+  <div class="caption">Figure 14: Phone Verification Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/sequence-diagram.png" alt="Verification Sequence Diagram">
+  <div class="caption">Figure 15: Phone Verification Sequence Diagram</div>
+</div>
+
+<h2 id="uc-10">4.10 UC-10: Manage Users</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Admin user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in with admin role</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin navigates to user management<br>2. System displays list of users (with pagination, search)<br>3. Admin can view user details, update user, or delete user<br>4. System performs requested operation<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. User not found → System returns 404<br>3b. Unauthorized → System returns 403</td></tr>
+  <tr><td>Postconditions</td><td>User record updated or deleted</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-010</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/manage-users-activity.png" alt="Manage Users Activity Diagram">
+  <div class="caption">Figure: Manage Users Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/manage-users-sequence.png" alt="Manage Users Sequence Diagram">
+  <div class="caption">Figure: Manage Users Sequence Diagram</div>
+</div>
+
+<h2 id="uc-11">4.11 UC-11: Manage Roles</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Admin user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in with admin role</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin navigates to role management<br>2. System displays list of roles<br>3. Admin can create new role, assign role to user, or remove role<br>4. System performs requested operation<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Role name already exists → System returns 409<br>3b. User not found → System returns 404</td></tr>
+  <tr><td>Postconditions</td><td>Role created/assigned/removed; permissions updated</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-011</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/manage-roles-activity.png" alt="Manage Roles Activity Diagram">
+  <div class="caption">Figure: Manage Roles Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/manage-roles-sequence.png" alt="Manage Roles Sequence Diagram">
+  <div class="caption">Figure: Manage Roles Sequence Diagram</div>
+</div>
+
+<h2 id="uc-12">4.12 UC-12: Social Authentication</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Guest or authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>Social provider configured (Google, GitHub, etc.)</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks "Sign in with Google" (or other provider)<br>2. System redirects to provider OAuth page<br>3. User authenticates with provider<br>4. Provider redirects back with authorization code<br>5. System exchanges code for tokens<br>6. System creates/links user account<br>7. System returns session tokens</td></tr>
+  <tr><td>Alternative Flows</td><td>6a. Email already exists → System links social account to existing user<br>6b. Provider unavailable → System returns 503</td></tr>
+  <tr><td>Postconditions</td><td>User authenticated via social provider; session created</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-012</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/social-auth-activity.png" alt="Social Auth Activity Diagram">
+  <div class="caption">Figure: Social Authentication Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/social-auth-sequence.png" alt="Social Auth Sequence Diagram">
+  <div class="caption">Figure: Social Authentication Sequence Diagram</div>
+</div>
+
+<h2 id="uc-13">4.13 UC-13: Session Management</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User navigates to session settings<br>2. System displays list of active sessions (device, IP, last active)<br>3. User can revoke specific session or all other sessions<br>4. System invalidates selected sessions<br>5. System returns success</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. Session already expired → System removes from list</td></tr>
+  <tr><td>Postconditions</td><td>Selected sessions invalidated; user remains logged in on current device</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-013</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/session-management-activity.png" alt="Session Management Activity Diagram">
+  <div class="caption">Figure: Session Management Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/session-management-sequence.png" alt="Session Management Sequence Diagram">
+  <div class="caption">Figure: Session Management Sequence Diagram</div>
+</div>
+
+<h2 id="uc-14">4.14 UC-14: User Ban & Impersonation</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Admin user</td></tr>
+  <tr><td>Preconditions</td><td>Admin is logged in with admin role</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin navigates to user management<br>2. Admin selects user to ban/impersonate<br>3. For ban: Admin provides reason and optional expiry → System bans user, invalidates all sessions<br>4. For impersonate: System creates admin session as target user<br>5. Admin can stop impersonation to return to admin session</td></tr>
+  <tr><td>Alternative Flows</td><td>3a. User already banned → System returns 409<br>4a. Target user not found → System returns 404</td></tr>
+  <tr><td>Postconditions</td><td>User banned (sessions revoked) or admin impersonating user</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-014</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/ban-impersonate-activity.png" alt="Ban & Impersonate Activity Diagram">
+  <div class="caption">Figure: User Ban & Impersonation Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/ban-impersonate-sequence.png" alt="Ban & Impersonate Sequence Diagram">
+  <div class="caption">Figure: User Ban & Impersonation Sequence Diagram</div>
+</div>
+
+<h2 id="uc-15">4.15 UC-15: Organization Management</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Authenticated user (owner/admin for role management)</td></tr>
+  <tr><td>Preconditions</td><td>User is logged in</td></tr>
+  <tr><td>Main Flow</td><td>1. User creates organization with name and slug<br>2. System validates slug uniqueness<br>3. System creates organization, user becomes owner with <code>Employer</code> role<br>4. Owner can update org details, manage members<br>5. Owner/admin can assign organization roles (HR, Candidate, Employer) to members<br>6. Owner/admin can create additional custom organization roles with permissions<br>7. Owner can delete organization</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Slug already taken → System returns 409<br>5a. Invalid permission → System returns 400<br>5b. Role name already exists → System returns 409<br>6a. Unauthorized → System returns 403</td></tr>
+  <tr><td>Postconditions</td><td>Organization created/updated/deleted; membership managed; organization roles (HR, Candidate, Employer) assigned</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-015</span></td></tr>
+</table>
+<p><strong>Organization Roles:</strong></p>
+<p>Each organization can define roles with fine-grained permissions. Standard organization roles include <code>Employer</code>, <code>HR</code>, and <code>Candidate</code>. Additional custom roles can be created by the organization owner or admin.</p>
+<table>
+  <tr><th>Standard Role</th><th>Description</th></tr>
+  <tr><td><code>Employer</code></td><td>Organization owner/admin. Manages company profile and job postings. Assigned automatically when creating an organization.</td></tr>
+  <tr><td><code>HR</code></td><td>Internal recruitment team. Manages hiring workflows, applications, and interviews.</td></tr>
+  <tr><td><code>Candidate</code></td><td>Job seekers. Browse jobs and submit applications within the organization.</td></tr>
+</table>
+<p><strong>Available Permissions:</strong></p>
+<table>
+  <tr><th>Permission</th><th>Description</th></tr>
+  <tr><td><code>member:read/update/delete</code></td><td>Manage organization members</td></tr>
+  <tr><td><code>job:read/create/update/delete</code></td><td>Manage job listings</td></tr>
+  <tr><td><code>application:read/update/delete</code></td><td>Manage applications</td></tr>
+  <tr><td><code>interview:read/create/update/delete</code></td><td>Manage interviews</td></tr>
+  <tr><td><code>report:read/create</code></td><td>View and generate reports</td></tr>
+  <tr><td><code>settings:read/update</code></td><td>Manage organization settings</td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/organization-activity.png" alt="Organization Activity Diagram">
+  <div class="caption">Figure: Organization Management Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/organization-sequence.png" alt="Organization Sequence Diagram">
+  <div class="caption">Figure: Organization Management Sequence Diagram</div>
+</div>
+
+<h2 id="uc-16">4.16 UC-16: Team Management</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Organization admin</td></tr>
+  <tr><td>Preconditions</td><td>User is admin/owner of an organization</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin creates team within organization<br>2. Admin adds/removes members from team<br>3. Admin can update team name or delete team<br>4. System manages team membership and active team selection</td></tr>
+  <tr><td>Alternative Flows</td><td>1a. Team name already exists → System returns 409<br>2a. User not in organization → System returns 400</td></tr>
+  <tr><td>Postconditions</td><td>Team created/updated/deleted; membership managed</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-016</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/team-activity.png" alt="Team Management Activity Diagram">
+  <div class="caption">Figure: Team Management Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/team-sequence.png" alt="Team Management Sequence Diagram">
+  <div class="caption">Figure: Team Management Sequence Diagram</div>
+</div>
+
+<h2 id="uc-17">4.17 UC-17: Invitation Management</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Organization admin / Invited user</td></tr>
+  <tr><td>Preconditions</td><td>Admin is logged in; invitee has email address</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin invites user by email with role and optional team<br>2. System generates random token (crypto.randomBytes(32)), computes SHA-256 hash<br>3. System stores only the hash in auth_invitations (token_hash column)<br>4. System constructs invite URL: {FRONTEND_DOMAIN}/invitations/verify?token={raw_token}<br>5. System sends invitation email via EMAIL module with the invite URL<br>6. Invitee receives email, clicks invitation link<br>7. Invitee's browser calls GET /organization/verify-invitation?token={raw_token} (public)<br>8. System hashes token, looks up by hash, returns validity status<br>9. Invitee accepts or rejects invitation</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Duplicate pending invitation (same email + role) → System returns 409 Conflict<br>8a. Token expired → System auto-updates status to EXPIRED, returns 410<br>8b. Invitation already accepted → System returns status "accepted"<br>8c. Invitation revoked → System returns status "revoked"</td></tr>
+  <tr><td>Postconditions</td><td>Invitation sent with secure token; user added to organization (if accepted)</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-017</span>, <span class="req-id">FR-020</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/invitation-activity.png" alt="Invitation Activity Diagram">
+  <div class="caption">Figure: Invitation Management Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/invitation-sequence.png" alt="Invitation Sequence Diagram">
+  <div class="caption">Figure: Invitation Management Sequence Diagram</div>
+</div>
+
+<h2 id="uc-18">4.18 UC-18: Resend Invitation</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Organization admin (original inviter)</td></tr>
+  <tr><td>Preconditions</td><td>Admin is logged in; invitation exists and is pending</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin selects invitation to resend<br>2. System generates new token (old token invalidated)<br>3. System resets status to PENDING, extends expiry by 72 hours<br>4. System sends new invitation email via EMAIL module<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>1a. Invitation already accepted → System returns 409<br>1b. Invitation not found → System returns 404<br>1c. Requester is not the original inviter → System returns 403</td></tr>
+  <tr><td>Postconditions</td><td>New token generated; old token invalidated; email sent</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-018</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/resend-invitation-activity.png" alt="Resend Invitation Activity Diagram">
+  <div class="caption">Figure: Resend Invitation Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/resend-invitation-sequence.png" alt="Resend Invitation Sequence Diagram">
+  <div class="caption">Figure: Resend Invitation Sequence Diagram</div>
+</div>
+
+<h2 id="uc-19">4.19 UC-19: Revoke Invitation</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Organization admin (original inviter)</td></tr>
+  <tr><td>Preconditions</td><td>Admin is logged in; invitation exists and is pending</td></tr>
+  <tr><td>Main Flow</td><td>1. Admin selects invitation to revoke<br>2. System verifies ownership (only original inviter can revoke)<br>3. System updates status to REVOKED<br>4. System emits invitation.revoked event<br>5. System returns success response</td></tr>
+  <tr><td>Alternative Flows</td><td>2a. Invitation already accepted → System returns 409<br>2b. Invitation already revoked → System returns 409<br>2c. Requester is not the original inviter → System returns 403</td></tr>
+  <tr><td>Postconditions</td><td>Invitation revoked; token no longer valid</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-019</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/revoke-invitation-activity.png" alt="Revoke Invitation Activity Diagram">
+  <div class="caption">Figure: Revoke Invitation Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/revoke-invitation-sequence.png" alt="Revoke Invitation Sequence Diagram">
+  <div class="caption">Figure: Revoke Invitation Sequence Diagram</div>
+</div>
+
+<h2 id="uc-20">4.20 UC-20: Verify Invitation Token</h2>
+<table>
+  <tr><th>Aspect</th><th>Description</th></tr>
+  <tr><td>Actor</td><td>Invited user (unauthenticated)</td></tr>
+  <tr><td>Preconditions</td><td>User received invitation email with token URL</td></tr>
+  <tr><td>Main Flow</td><td>1. User clicks invitation link in email<br>2. Frontend calls GET /organization/verify-invitation?token={raw_token}<br>3. System computes SHA-256 hash of token<br>4. System looks up invitation by token_hash<br>5. System checks status and expiry<br>6. If expired: auto-updates status to EXPIRED<br>7. System returns validity status with invitation details</td></tr>
+  <tr><td>Alternative Flows</td><td>4a. Token not found → System returns 404<br>4b. Already accepted → System returns { valid: false, reason: "accepted" }<br>4c. Expired → System returns { valid: false, reason: "expired" }<br>4d. Revoked → System returns { valid: false, reason: "revoked" }</td></tr>
+  <tr><td>Postconditions</td><td>Token validity confirmed; user can proceed to accept/reject</td></tr>
+  <tr><td>Related FR</td><td><span class="req-id">FR-020</span></td></tr>
+</table>
+
+<h3>Activity Diagram</h3>
+<div class="diagram">
+  <img src="./images/activity/verify-invitation-token-activity.png" alt="Verify Invitation Token Activity Diagram">
+  <div class="caption">Figure: Verify Invitation Token Activity Diagram</div>
+</div>
+
+<h3>Sequence Diagram</h3>
+<div class="diagram">
+  <img src="./images/sequence/verify-invitation-token-sequence.png" alt="Verify Invitation Token Sequence Diagram">
+  <div class="caption">Figure: Verify Invitation Token Sequence Diagram</div>
+</div>
+
+<!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-5">5. Non-Functional Requirements</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Category</th>
+    <th>Requirement</th>
+    <th>Target</th>
+  </tr>
+  <tr id="nfr-001">
+    <td><span class="req-id">NFR-001</span></td>
+    <td>Performance</td>
+    <td>Login response time</td>
+    <td>&lt; 500ms (p95)</td>
+  </tr>
+  <tr id="nfr-002">
+    <td><span class="req-id">NFR-002</span></td>
+    <td>Performance</td>
+    <td>Registration response time</td>
+    <td>&lt; 1s (p95)</td>
+  </tr>
+  <tr id="nfr-003">
+    <td><span class="req-id">NFR-003</span></td>
+    <td>Security</td>
+    <td>Password hashing</td>
+    <td>bcrypt with 12 rounds</td>
+  </tr>
+  <tr id="nfr-004">
+    <td><span class="req-id">NFR-004</span></td>
+    <td>Security</td>
+    <td>Token expiry</td>
+    <td>Access: 15min, Refresh: 7 days</td>
+  </tr>
+  <tr id="nfr-005">
+    <td><span class="req-id">NFR-005</span></td>
+    <td>Security</td>
+    <td>Rate limiting</td>
+    <td>10 req/min for auth endpoints</td>
+  </tr>
+  <tr id="nfr-006">
+    <td><span class="req-id">NFR-006</span></td>
+    <td>Availability</td>
+    <td>Service uptime</td>
+    <td>99.9%</td>
+  </tr>
+  <tr id="nfr-007">
+    <td><span class="req-id">NFR-007</span></td>
+    <td>Scalability</td>
+    <td>Concurrent users</td>
+    <td>1000+ simultaneous logins</td>
+  </tr>
+</table>
+
+<!-- 6. TRACEABILITY -->
+<h1 id="section-6">6. Requirements Traceability Matrix</h1>
+
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Requirement</th>
+    <th>DB Table</th>
+    <th>API Endpoint</th>
+  </tr>
+  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>User Registration</td><td>auth_users, auth_accounts</td><td>POST /auth/register</td></tr>
+  <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>User Login</td><td>auth_users, auth_sessions</td><td>POST /auth/login</td></tr>
+  <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>Logout</td><td>auth_sessions</td><td>POST /auth/logout</td></tr>
+  <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Refresh Token</td><td>auth_sessions</td><td>POST /auth/refresh</td></tr>
+  <tr id="trace-fr-005"><td><span class="req-id">FR-005</span></td><td>Reset Password (Email)</td><td>auth_verification</td><td>POST /auth/forgot-password</td></tr>
+  <tr id="trace-fr-006"><td><span class="req-id">FR-006</span></td><td>Reset Password (Phone)</td><td>auth_verification</td><td>POST /auth/forgot-password-phone</td></tr>
+  <tr id="trace-fr-007"><td><span class="req-id">FR-007</span></td><td>Change Password</td><td>auth_users</td><td>POST /auth/change-password</td></tr>
+  <tr id="trace-fr-008"><td><span class="req-id">FR-008</span></td><td>Verify Email</td><td>auth_verification, auth_users</td><td>GET /auth/verify-email</td></tr>
+  <tr id="trace-fr-009"><td><span class="req-id">FR-009</span></td><td>Verify Phone</td><td>auth_verification, auth_users</td><td>POST /auth/verify-phone</td></tr>
+  <tr id="trace-fr-010"><td><span class="req-id">FR-010</span></td><td>Manage Users</td><td>auth_users</td><td>GET/PUT/DELETE /users/:id</td></tr>
+  <tr id="trace-fr-011"><td><span class="req-id">FR-011</span></td><td>Manage Roles</td><td>auth_roles, auth_user_roles</td><td>POST /admin/set-role, POST /organization/create-role</td></tr>
+  <tr id="trace-fr-012"><td><span class="req-id">FR-012</span></td><td>Social Authentication</td><td>auth_accounts</td><td>POST /sign-in/social, POST /link-social, POST /unlink-account</td></tr>
+  <tr id="trace-fr-013"><td><span class="req-id">FR-013</span></td><td>Session Management</td><td>auth_sessions</td><td>GET /list-sessions, POST /revoke-session, POST /revoke-sessions</td></tr>
+  <tr id="trace-fr-014"><td><span class="req-id">FR-014</span></td><td>User Ban & Impersonation</td><td>auth_users, auth_sessions</td><td>POST /admin/ban-user, POST /admin/impersonate-user</td></tr>
+  <tr id="trace-fr-015"><td><span class="req-id">FR-015</span></td><td>Organization Management</td><td>auth_organizations, auth_members</td><td>POST /organization/create, GET /organization/list</td></tr>
+  <tr id="trace-fr-016"><td><span class="req-id">FR-016</span></td><td>Team Management</td><td>auth_teams, auth_team_members</td><td>POST /organization/create-team, POST /organization/add-team-member</td></tr>
+  <tr id="trace-fr-017"><td><span class="req-id">FR-017</span></td><td>Invitation Management</td><td>auth_invitations</td><td>POST /organization/invite-member, POST /organization/accept-invitation</td></tr>
+  <tr id="trace-fr-018"><td><span class="req-id">FR-018</span></td><td>Resend Invitation</td><td>auth_invitations</td><td>POST /organization/resend-invitation</td></tr>
+  <tr id="trace-fr-019"><td><span class="req-id">FR-019</span></td><td>Revoke Invitation</td><td>auth_invitations</td><td>DELETE /organization/cancel-invitation</td></tr>
+  <tr id="trace-fr-020"><td><span class="req-id">FR-020</span></td><td>Verify Invitation Token</td><td>auth_invitations</td><td>GET /organization/verify-invitation</td></tr>
+</table>
+
+</body>
+</html>

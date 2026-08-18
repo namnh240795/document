@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Refresh Token Flow
+' Sơ đồ Tuần tự - Luồng Làm mới Token
 ' ============================================================
 
 skinparam sequence {
@@ -11,45 +11,45 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: Refresh Token Flow
+title Sơ đồ Tuần tự: Luồng Làm mới Token
 
 actor User
 participant "Frontend" as FE
 participant "Auth API" as API
 database "PostgreSQL\n(auth_db)" as DB
 
-== Step 1: Token Expired ==
+== Bước 1: Token hết hạn ==
 
-User -> FE : Access token expired
+User -> FE : Access token đã hết hạn
 activate FE
 
-== Step 2: Refresh Request ==
+== Bước 2: Yêu cầu làm mới ==
 
 FE -> API : POST /auth/refresh\n{ refreshToken }
 activate API
 
-== Step 3: Validate Refresh Token ==
+== Bước 3: Kiểm tra refresh token ==
 
 API -> DB : SELECT * FROM auth_sessions\nWHERE refresh_token = ? AND expires_at > NOW()
 activate DB
-DB --> API : Session result
+DB --> API : Kết quả phiên làm việc
 deactivate DB
 
-alt Session not found or expired
+alt Phiên làm việc không tìm thấy hoặc đã hết hạn
   API --> FE : 401 TOKEN_EXPIRED
-  FE --> User : Must re-login
+  FE --> User : Phải đăng nhập lại
 end
 
-== Step 4: Generate New Access Token ==
+== Bước 4: Tạo access token mới ==
 
-API -> API : Generate new JWT access token
+API -> API : Tạo JWT access token mới
 
-== Step 5: Return New Token ==
+== Bước 5: Trả về token mới ==
 
 API --> FE : 200 { token: "new-jwt...", session }
 deactivate API
 
-FE --> User : Updated access token
+FE --> User : Access token đã được cập nhật
 deactivate FE
 
 @enduml

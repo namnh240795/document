@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>API Technical Specification - Authentication</title>
+  <title>Đặc tả Kỹ thuật API - Xác thực</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,106 +18,106 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>API Technical Specification</h1>
-  <div class="subtitle">Authentication API (Better Auth)</div>
+  <h1>Đặc tả Kỹ thuật API</h1>
+  <div class="subtitle">API Xác thực (Better Auth)</div>
   <span class="module-badge">AUTH</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.1.0</td></tr>
-    <tr><td>Base URL</td><td>http://localhost:3001/api/auth</td></tr>
-    <tr><td>System</td><td>Authentication System</td></tr>
-    <tr><td>Module</td><td>AUTH - Authentication (Better Auth)</td></tr>
-    <tr><td>Date</td><td>2026-08-05</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">Authentication SRS</a></td></tr>
+    <tr><td>Phiên bản</td><td>1.1.0</td></tr>
+    <tr><td>URL Cơ sở</td><td>http://localhost:3001/api/auth</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
+    <tr><td>Module</td><td>AUTH - Xác thực (Better Auth)</td></tr>
+    <tr><td>Ngày</td><td>2026-08-05</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>SRS Liên quan</td><td><a href="srs.html">SRS Xác thực</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a>
+    <li><a href="#section-1">1. Tổng quan</a>
       <ul>
-        <li><a href="#section-1-1">1.1 Requirements Addressed</a></li>
-        <li><a href="#section-1-2">1.2 Authentication</a></li>
-        <li><a href="#section-1-3">1.3 Endpoint Summary</a></li>
+        <li><a href="#section-1-1">1.1 Yêu cầu được giải quyết</a></li>
+        <li><a href="#section-1-2">1.2 Xác thực</a></li>
+        <li><a href="#section-1-3">1.3 Tóm tắt Đầu nối</a></li>
       </ul>
     </li>
-    <li><a href="#section-2">2. Response Format</a></li>
-    <li><a href="#section-3">3. Schemas</a></li>
-    <li><a href="#section-4">4. Core Auth Endpoints</a>
+    <li><a href="#section-2">2. Định dạng Phản hồi</a></li>
+    <li><a href="#section-3">3. Schema</a></li>
+    <li><a href="#section-4">4. Đầu nối Xác thực Cốt lõi</a>
       <ul>
-        <li><a href="#section-4-1">4.1 Registration</a></li>
-        <li><a href="#section-4-2">4.2 Sign In</a></li>
-        <li><a href="#section-4-3">4.3 Session Management</a></li>
-        <li><a href="#section-4-4">4.4 Password Management</a></li>
-        <li><a href="#section-4-5">4.5 Email Verification</a></li>
-        <li><a href="#section-4-6">4.6 User Profile</a></li>
-        <li><a href="#section-4-7">4.7 Account Linking</a></li>
-        <li><a href="#section-4-8">4.8 Token Management</a></li>
+        <li><a href="#section-4-1">4.1 Đăng ký</a></li>
+        <li><a href="#section-4-2">4.2 Đăng nhập</a></li>
+        <li><a href="#section-4-3">4.3 Quản lý Phiên làm việc</a></li>
+        <li><a href="#section-4-4">4.4 Quản lý Mật khẩu</a></li>
+        <li><a href="#section-4-5">4.5 Xác minh Email</a></li>
+        <li><a href="#section-4-6">4.6 Hồ sơ Người dùng</a></li>
+        <li><a href="#section-4-7">4.7 Liên kết Tài khoản</a></li>
+        <li><a href="#section-4-8">4.8 Quản lý Token</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">5. Admin Endpoints</a></li>
-    <li><a href="#section-6">6. Organization Endpoints</a></li>
-    <li><a href="#section-7">7. JWT Endpoints</a></li>
-    <li><a href="#section-8">8. Error Codes</a></li>
+    <li><a href="#section-5">5. Đầu nối Admin</a></li>
+    <li><a href="#section-6">6. Đầu nối Tổ chức</a></li>
+    <li><a href="#section-7">7. Đầu nối JWT</a></li>
+    <li><a href="#section-8">8. Mã Lỗi</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2 id="section-1-1">1.1 Requirements Addressed</h2>
+<h2 id="section-1-1">1.1 Yêu cầu được giải quyết</h2>
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
-  <tr><td><span class="req-id">FR-001</span> User Registration</td><td>POST /sign-up/email, POST /sign-in/social</td></tr>
-  <tr><td><span class="req-id">FR-002</span> User Login</td><td>POST /sign-in/email, POST /sign-in/social, POST /sign-in/username</td></tr>
-  <tr><td><span class="req-id">FR-003</span> Logout</td><td>POST /sign-out</td></tr>
-  <tr><td><span class="req-id">FR-004</span> Refresh Token</td><td>POST /refresh-token</td></tr>
-  <tr><td><span class="req-id">FR-005</span> Reset Password (Email)</td><td>POST /request-password-reset, GET /reset-password/{token}</td></tr>
-  <tr><td><span class="req-id">FR-006</span> Reset Password (Phone)</td><td>POST /request-password-reset</td></tr>
-  <tr><td><span class="req-id">FR-007</span> Change Password</td><td>POST /change-password</td></tr>
-  <tr><td><span class="req-id">FR-008</span> Verify Email</td><td>GET /verify-email, POST /send-verification-email</td></tr>
-  <tr><td><span class="req-id">FR-009</span> Verify Phone</td><td>POST /send-verification-sms (via SMS module)</td></tr>
-  <tr><td><span class="req-id">FR-010</span> Manage Users</td><td>GET /admin/list-users, GET /admin/get-user, POST /admin/create-user, POST /admin/update-user, POST /admin/remove-user</td></tr>
-  <tr><td><span class="req-id">FR-011</span> Manage Roles</td><td>POST /admin/set-role, POST /organization/create-role, POST /organization/update-role, POST /organization/delete-role</td></tr>
-  <tr><td><span class="req-id">FR-012</span> Social Authentication</td><td>POST /sign-in/social, POST /link-social, POST /unlink-account</td></tr>
-  <tr><td><span class="req-id">FR-013</span> Session Management</td><td>GET /list-sessions, POST /revoke-session, POST /revoke-sessions, POST /revoke-other-sessions</td></tr>
-  <tr><td><span class="req-id">FR-014</span> User Ban/Impersonation</td><td>POST /admin/ban-user, POST /admin/unban-user, POST /admin/impersonate-user</td></tr>
-  <tr><td><span class="req-id">FR-015</span> Organization Management</td><td>POST /organization/create, POST /organization/update, POST /organization/delete, GET /organization/list</td></tr>
-  <tr><td><span class="req-id">FR-016</span> Team Management</td><td>POST /organization/create-team, POST /organization/update-team, POST /organization/remove-team</td></tr>
-  <tr><td><span class="req-id">FR-017</span> Invitation Management</td><td>POST /organization/invite-member, POST /organization/accept-invitation, POST /organization/reject-invitation</td></tr>
-  <tr><td><span class="req-id">FR-018</span> Resend Invitation</td><td>POST /organization/resend-invitation</td></tr>
-  <tr><td><span class="req-id">FR-019</span> Revoke Invitation</td><td>DELETE /organization/cancel-invitation</td></tr>
-  <tr><td><span class="req-id">FR-020</span> Verify Invitation Token</td><td>GET /organization/verify-invitation</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Đầu nối API</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Đăng ký Người dùng</td><td>POST /sign-up/email, POST /sign-in/social</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Đăng nhập</td><td>POST /sign-in/email, POST /sign-in/social, POST /sign-in/username</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Đăng xuất</td><td>POST /sign-out</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Làm mới Token</td><td>POST /refresh-token</td></tr>
+  <tr><td><span class="req-id">FR-005</span> Đặt lại Mật khẩu (Email)</td><td>POST /request-password-reset, GET /reset-password/{token}</td></tr>
+  <tr><td><span class="req-id">FR-006</span> Đặt lại Mật khẩu (Số điện thoại)</td><td>POST /request-password-reset</td></tr>
+  <tr><td><span class="req-id">FR-007</span> Đổi Mật khẩu</td><td>POST /change-password</td></tr>
+  <tr><td><span class="req-id">FR-008</span> Xác minh Email</td><td>GET /verify-email, POST /send-verification-email</td></tr>
+  <tr><td><span class="req-id">FR-009</span> Xác minh Số điện thoại</td><td>POST /send-verification-sms (qua module SMS)</td></tr>
+  <tr><td><span class="req-id">FR-010</span> Quản lý Người dùng</td><td>GET /admin/list-users, GET /admin/get-user, POST /admin/create-user, POST /admin/update-user, POST /admin/remove-user</td></tr>
+  <tr><td><span class="req-id">FR-011</span> Quản lý Vai trò</td><td>POST /admin/set-role, POST /organization/create-role, POST /organization/update-role, POST /organization/delete-role</td></tr>
+  <tr><td><span class="req-id">FR-012</span> Xác thực Xã hội</td><td>POST /sign-in/social, POST /link-social, POST /unlink-account</td></tr>
+  <tr><td><span class="req-id">FR-013</span> Quản lý Phiên làm việc</td><td>GET /list-sessions, POST /revoke-session, POST /revoke-sessions, POST /revoke-other-sessions</td></tr>
+  <tr><td><span class="req-id">FR-014</span> Khóa Tài khoản/Đăng nhập giả danh</td><td>POST /admin/ban-user, POST /admin/unban-user, POST /admin/impersonate-user</td></tr>
+  <tr><td><span class="req-id">FR-015</span> Quản lý Tổ chức</td><td>POST /organization/create, POST /organization/update, POST /organization/delete, GET /organization/list</td></tr>
+  <tr><td><span class="req-id">FR-016</span> Quản lý Nhóm</td><td>POST /organization/create-team, POST /organization/update-team, POST /organization/remove-team</td></tr>
+  <tr><td><span class="req-id">FR-017</span> Quản lý Lời mời</td><td>POST /organization/invite-member, POST /organization/accept-invitation, POST /organization/reject-invitation</td></tr>
+  <tr><td><span class="req-id">FR-018</span> Gửi lại Lời mời</td><td>POST /organization/resend-invitation</td></tr>
+  <tr><td><span class="req-id">FR-019</span> Thu hồi Lời mời</td><td>DELETE /organization/cancel-invitation</td></tr>
+  <tr><td><span class="req-id">FR-020</span> Xác minh Token Lời mời</td><td>GET /organization/verify-invitation</td></tr>
 </table>
 
-<h2 id="section-1-2">1.2 Authentication</h2>
-<p>All endpoints require one of:</p>
+<h2 id="section-1-2">1.2 Xác thực</h2>
+<p>Tất cả đầu nối yêu cầu một trong các phương thức sau:</p>
 <ul>
-  <li><strong>API Key Cookie</strong> — <code>apiKeyCookie</code> (cookie-based)</li>
+  <li><strong>API Key Cookie</strong> — <code>apiKeyCookie</code> (dựa trên cookie)</li>
   <li><strong>Bearer Token</strong> — <code>Authorization: Bearer &lt;token&gt;</code></li>
 </ul>
-<p>Public endpoints (sign-up, sign-in, password reset request) do not require authentication.</p>
+<p>Các đầu nối công khai (đăng ký, đăng nhập, yêu cầu đặt lại mật khẩu) không yêu cầu xác thực.</p>
 
-<h2 id="section-1-3">1.3 Endpoint Summary</h2>
+<h2 id="section-1-3">1.3 Tóm tắt Đầu nối</h2>
 <table>
-  <tr><th>Tag</th><th>Count</th><th>Description</th></tr>
-  <tr><td>Default</td><td>31</td><td>Core auth: sign-up, sign-in, session, password, email, user profile</td></tr>
-  <tr><td>Admin</td><td>15</td><td>User management, ban/unban, impersonation, session revocation</td></tr>
-  <tr><td>Organization</td><td>27</td><td>Org CRUD, members, teams, invitations, roles, permissions</td></tr>
-  <tr><td>Jwt</td><td>2</td><td>JSON Web Key Set and JWT token endpoints</td></tr>
+  <tr><th>Nhãn</th><th>Số lượng</th><th>Mô tả</th></tr>
+  <tr><td>Default</td><td>31</td><td>Xác thực cốt lõi: đăng ký, đăng nhập, phiên làm việc, mật khẩu, email, hồ sơ người dùng</td></tr>
+  <tr><td>Admin</td><td>15</td><td>Quản lý người dùng, khóa/mở khóa, đăng nhập giả danh, thu hồi phiên</td></tr>
+  <tr><td>Organization</td><td>27</td><td>CRUD tổ chức, thành viên, nhóm, lời mời, vai trò, quyền hạn</td></tr>
+  <tr><td>Jwt</td><td>2</td><td>JSON Web Key Set và các đầu nối JWT token</td></tr>
 </table>
 
 <!-- 2. RESPONSE FORMAT -->
-<h1 id="section-2">2. Response Format</h1>
+<h1 id="section-2">2. Định dạng Phản hồi</h1>
 
-<h2>2.1 Success Response</h2>
+<h2>2.1 Phản hồi Thành công</h2>
 <pre><code>{
   "token": "eyJhbGciOiJSUzI1NiIs...",
   "user": {
@@ -131,144 +131,144 @@
   }
 }</code></pre>
 
-<h2>2.2 Error Response</h2>
+<h2>2.2 Phản hồi Lỗi</h2>
 <pre><code>{
   "message": "Invalid credentials"
 }</code></pre>
 
 <!-- 3. SCHEMAS -->
-<h1 id="section-3">3. Schemas</h1>
+<h1 id="section-3">3. Schema</h1>
 
-<h2>3.1 User</h2>
+<h2>3.1 Người dùng</h2>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>id</td><td>string</td><td>Yes</td><td>Unique identifier (UUID)</td></tr>
-  <tr><td>name</td><td>string</td><td>Yes</td><td>User's display name</td></tr>
-  <tr><td>email</td><td>string</td><td>Yes</td><td>User's email address</td></tr>
-  <tr><td>emailVerified</td><td>boolean</td><td>Yes</td><td>Whether email is verified (default: false)</td></tr>
-  <tr><td>image</td><td>string</td><td>No</td><td>Profile image URL</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Account creation timestamp</td></tr>
-  <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
-  <tr><td>role</td><td>string</td><td>Yes</td><td>System role: <code>"user"</code> or <code>"super_admin"</code> (default: <code>"user"</code>)</td></tr>
-  <tr><td>banned</td><td>boolean</td><td>No</td><td>Whether user is banned (default: false)</td></tr>
-  <tr><td>banReason</td><td>string</td><td>No</td><td>Reason for ban</td></tr>
-  <tr><td>banExpires</td><td>datetime</td><td>No</td><td>When ban expires</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string</td><td>Có</td><td>Định danh duy nhất (UUID)</td></tr>
+  <tr><td>name</td><td>string</td><td>Có</td><td>Tên hiển thị của người dùng</td></tr>
+  <tr><td>email</td><td>string</td><td>Có</td><td>Địa chỉ email của người dùng</td></tr>
+  <tr><td>emailVerified</td><td>boolean</td><td>Có</td><td>Liệu email đã được xác minh chưa (mặc định: false)</td></tr>
+  <tr><td>image</td><td>string</td><td>Không</td><td>URL ảnh hồ sơ</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Có</td><td>Thời điểm tạo tài khoản</td></tr>
+  <tr><td>updatedAt</td><td>datetime</td><td>Có</td><td>Thời điểm cập nhật cuối cùng</td></tr>
+  <tr><td>role</td><td>string</td><td>Có</td><td>Vai trò hệ thống: <code>"user"</code> hoặc <code>"super_admin"</code> (mặc định: <code>"user"</code>)</td></tr>
+  <tr><td>banned</td><td>boolean</td><td>Không</td><td>Liệu người dùng có bị khóa không (mặc định: false)</td></tr>
+  <tr><td>banReason</td><td>string</td><td>Không</td><td>Lý do khóa tài khoản</td></tr>
+  <tr><td>banExpires</td><td>datetime</td><td>Không</td><td>Thời điểm hết hạn khóa</td></tr>
 </table>
-<p><strong>System Role Descriptions:</strong></p>
+<p><strong>Mô tả Vai trò Hệ thống:</strong></p>
 <table>
-  <tr><th>Role</th><th>Description</th><th>Self-Registration</th></tr>
-  <tr><td><code>user</code></td><td>Standard user account (default). Users can create organizations and receive organization-level roles (HR, Candidate, Employer).</td><td>Yes (default)</td></tr>
-  <tr><td><code>super_admin</code></td><td>System administrators with full access. Can manage all users, roles, and organizations.</td><td>No (admin-created only via <code>POST /admin/create-user</code>)</td></tr>
+  <tr><th>Vai trò</th><th>Mô tả</th><th>Tự đăng ký</th></tr>
+  <tr><td><code>user</code></td><td>Tài khoản người dùng tiêu chuẩn (mặc định). Người dùng có thể tạo tổ chức và nhận vai trò cấp tổ chức (HR, Candidate, Employer).</td><td>Có (mặc định)</td></tr>
+  <tr><td><code>super_admin</code></td><td>Quản trị viên hệ thống có quyền truy cập đầy đủ. Có thể quản lý tất cả người dùng, vai trò và tổ chức.</td><td>Không (chỉ tạo bởi admin qua <code>POST /admin/create-user</code>)</td></tr>
 </table>
-<p><strong>Note:</strong> Organization-level roles (HR, Candidate, Employer) are defined per-organization and assigned to members via the organization role system (see section 6.3). They are not system-level roles.</p>
+<p><strong>Lưu ý:</strong> Các vai trò cấp tổ chức (HR, Candidate, Employer) được xác định theo từng tổ chức và được gán cho thành viên thông qua hệ thống vai trò tổ chức (xem phần 6.3). Chúng không phải là vai trò cấp hệ thống.</p>
 
-<h2>3.2 Session</h2>
+<h2>3.2 Phiên làm việc</h2>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>id</td><td>string</td><td>Yes</td><td>Session identifier</td></tr>
-  <tr><td>expiresAt</td><td>datetime</td><td>Yes</td><td>Session expiry timestamp</td></tr>
-  <tr><td>token</td><td>string</td><td>Yes</td><td>Session token</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Session creation timestamp</td></tr>
-  <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
-  <tr><td>ipAddress</td><td>string</td><td>No</td><td>Client IP address</td></tr>
-  <tr><td>userAgent</td><td>string</td><td>No</td><td>Client user agent</td></tr>
-  <tr><td>userId</td><td>string</td><td>Yes</td><td>Associated user ID</td></tr>
-  <tr><td>impersonatedBy</td><td>string</td><td>No</td><td>Admin ID if impersonating</td></tr>
-  <tr><td>activeOrganizationId</td><td>string</td><td>No</td><td>Active organization ID</td></tr>
-  <tr><td>activeTeamId</td><td>string</td><td>No</td><td>Active team ID</td></tr>
-</table>
-
-<h2>3.3 Account</h2>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>id</td><td>string</td><td>Yes</td><td>Account identifier</td></tr>
-  <tr><td>accountId</td><td>string</td><td>Yes</td><td>Provider account ID</td></tr>
-  <tr><td>providerId</td><td>string</td><td>Yes</td><td>Provider identifier (e.g., "google", "github")</td></tr>
-  <tr><td>userId</td><td>string</td><td>Yes</td><td>Associated user ID</td></tr>
-  <tr><td>accessToken</td><td>string</td><td>No</td><td>OAuth access token</td></tr>
-  <tr><td>refreshToken</td><td>string</td><td>No</td><td>OAuth refresh token</td></tr>
-  <tr><td>idToken</td><td>string</td><td>No</td><td>OIDC ID token</td></tr>
-  <tr><td>accessTokenExpiresAt</td><td>datetime</td><td>No</td><td>Access token expiry</td></tr>
-  <tr><td>refreshTokenExpiresAt</td><td>datetime</td><td>No</td><td>Refresh token expiry</td></tr>
-  <tr><td>scope</td><td>string</td><td>No</td><td>OAuth scopes</td></tr>
-  <tr><td>password</td><td>string</td><td>No</td><td>Password hash (email provider only)</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Account creation timestamp</td></tr>
-  <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string</td><td>Có</td><td>Định danh phiên</td></tr>
+  <tr><td>expiresAt</td><td>datetime</td><td>Có</td><td>Thời điểm hết hạn phiên</td></tr>
+  <tr><td>token</td><td>string</td><td>Có</td><td>Token phiên</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Có</td><td>Thời điểm tạo phiên</td></tr>
+  <tr><td>updatedAt</td><td>datetime</td><td>Có</td><td>Thời điểm cập nhật cuối cùng</td></tr>
+  <tr><td>ipAddress</td><td>string</td><td>Không</td><td>Địa chỉ IP của client</td></tr>
+  <tr><td>userAgent</td><td>string</td><td>Không</td><td>User agent của client</td></tr>
+  <tr><td>userId</td><td>string</td><td>Có</td><td>ID người dùng liên kết</td></tr>
+  <tr><td>impersonatedBy</td><td>string</td><td>Không</td><td>ID Admin nếu đang đăng nhập giả danh</td></tr>
+  <tr><td>activeOrganizationId</td><td>string</td><td>Không</td><td>ID tổ chức đang hoạt động</td></tr>
+  <tr><td>activeTeamId</td><td>string</td><td>Không</td><td>ID nhóm đang hoạt động</td></tr>
 </table>
 
-<h2>3.4 Verification</h2>
+<h2>3.3 Tài khoản</h2>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>id</td><td>string</td><td>Yes</td><td>Verification identifier</td></tr>
-  <tr><td>identifier</td><td>string</td><td>Yes</td><td>Verification target (email, phone)</td></tr>
-  <tr><td>value</td><td>string</td><td>Yes</td><td>Verification value (OTP, token)</td></tr>
-  <tr><td>expiresAt</td><td>datetime</td><td>Yes</td><td>Verification expiry</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Creation timestamp</td></tr>
-  <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string</td><td>Có</td><td>Định danh tài khoản</td></tr>
+  <tr><td>accountId</td><td>string</td><td>Có</td><td>ID tài khoản của nhà cung cấp</td></tr>
+  <tr><td>providerId</td><td>string</td><td>Có</td><td>Định danh nhà cung cấp (ví dụ: "google", "github")</td></tr>
+  <tr><td>userId</td><td>string</td><td>Có</td><td>ID người dùng liên kết</td></tr>
+  <tr><td>accessToken</td><td>string</td><td>Không</td><td>Token truy cập OAuth</td></tr>
+  <tr><td>refreshToken</td><td>string</td><td>Không</td><td>Token làm mới OAuth</td></tr>
+  <tr><td>idToken</td><td>string</td><td>Không</td><td>OIDC ID token</td></tr>
+  <tr><td>accessTokenExpiresAt</td><td>datetime</td><td>Không</td><td>Thời hạn token truy cập</td></tr>
+  <tr><td>refreshTokenExpiresAt</td><td>datetime</td><td>Không</td><td>Thời hạn token làm mới</td></tr>
+  <tr><td>scope</td><td>string</td><td>Không</td><td>Phạm vi OAuth</td></tr>
+  <tr><td>password</td><td>string</td><td>Không</td><td>Băm mật khẩu (chỉ cho nhà cung cấp email)</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Có</td><td>Thời điểm tạo tài khoản</td></tr>
+  <tr><td>updatedAt</td><td>datetime</td><td>Có</td><td>Thời điểm cập nhật cuối cùng</td></tr>
 </table>
 
-<h2>3.5 Organization</h2>
+<h2>3.4 Xác minh</h2>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>id</td><td>string</td><td>Yes</td><td>Organization identifier</td></tr>
-  <tr><td>name</td><td>string</td><td>Yes</td><td>Organization name</td></tr>
-  <tr><td>slug</td><td>string</td><td>Yes</td><td>URL-friendly slug</td></tr>
-  <tr><td>logo</td><td>string</td><td>No</td><td>Logo URL</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Creation timestamp</td></tr>
-  <tr><td>metadata</td><td>string</td><td>No</td><td>JSON metadata string</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string</td><td>Có</td><td>Định danh xác minh</td></tr>
+  <tr><td>identifier</td><td>string</td><td>Có</td><td>Đối tượng xác minh (email, số điện thoại)</td></tr>
+  <tr><td>value</td><td>string</td><td>Có</td><td>Giá trị xác minh (OTP, token)</td></tr>
+  <tr><td>expiresAt</td><td>datetime</td><td>Có</td><td>Thời hạn xác minh</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Có</td><td>Thời điểm tạo</td></tr>
+  <tr><td>updatedAt</td><td>datetime</td><td>Có</td><td>Thời điểm cập nhật cuối cùng</td></tr>
 </table>
 
-<h2>3.6 Team</h2>
+<h2>3.5 Tổ chức</h2>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>id</td><td>string</td><td>Yes</td><td>Team identifier</td></tr>
-  <tr><td>name</td><td>string</td><td>Yes</td><td>Team name</td></tr>
-  <tr><td>organizationId</td><td>string</td><td>Yes</td><td>Parent organization ID</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Creation timestamp</td></tr>
-  <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string</td><td>Có</td><td>Định danh tổ chức</td></tr>
+  <tr><td>name</td><td>string</td><td>Có</td><td>Tên tổ chức</td></tr>
+  <tr><td>slug</td><td>string</td><td>Có</td><td>Slug thân thiện với URL</td></tr>
+  <tr><td>logo</td><td>string</td><td>Không</td><td>URL logo</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Có</td><td>Thời điểm tạo</td></tr>
+  <tr><td>metadata</td><td>string</td><td>Không</td><td>Chuỗi metadata JSON</td></tr>
 </table>
 
-<h2>3.7 Invitation</h2>
+<h2>3.6 Nhóm</h2>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>id</td><td>string</td><td>Yes</td><td>Invitation identifier</td></tr>
-  <tr><td>organizationId</td><td>string</td><td>Yes</td><td>Target organization ID</td></tr>
-  <tr><td>email</td><td>string</td><td>Yes</td><td>Invitee email</td></tr>
-  <tr><td>tokenHash</td><td>string</td><td>No</td><td>SHA-256 hash of invitation token (never exposed in responses)</td></tr>
-  <tr><td>role</td><td>string</td><td>No</td><td>Assigned role</td></tr>
-  <tr><td>teamId</td><td>string</td><td>No</td><td>Target team ID</td></tr>
-  <tr><td>employerId</td><td>string</td><td>No</td><td>Employer ID (required for HR role)</td></tr>
-  <tr><td>status</td><td>string</td><td>Yes</td><td>Status: pending, accepted, rejected, canceled, expired, revoked</td></tr>
-  <tr><td>expiresAt</td><td>datetime</td><td>Yes</td><td>Invitation expiry</td></tr>
-  <tr><td>acceptedAt</td><td>datetime</td><td>No</td><td>When invitation was accepted</td></tr>
-  <tr><td>inviterId</td><td>string</td><td>Yes</td><td>User who sent invitation</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Creation timestamp</td></tr>
-  <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string</td><td>Có</td><td>Định danh nhóm</td></tr>
+  <tr><td>name</td><td>string</td><td>Có</td><td>Tên nhóm</td></tr>
+  <tr><td>organizationId</td><td>string</td><td>Có</td><td>ID tổ chức cha</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Có</td><td>Thời điểm tạo</td></tr>
+  <tr><td>updatedAt</td><td>datetime</td><td>Có</td><td>Thời điểm cập nhật cuối cùng</td></tr>
+</table>
+
+<h2>3.7 Lời mời</h2>
+<table class="trace-table">
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string</td><td>Có</td><td>Định danh lời mời</td></tr>
+  <tr><td>organizationId</td><td>string</td><td>Có</td><td>ID tổ chức đích</td></tr>
+  <tr><td>email</td><td>string</td><td>Có</td><td>Email người được mời</td></tr>
+  <tr><td>tokenHash</td><td>string</td><td>Không</td><td>Băm SHA-256 của token lời mời (không bao giờ hiển thị trong phản hồi)</td></tr>
+  <tr><td>role</td><td>string</td><td>Không</td><td>Vai trò được gán</td></tr>
+  <tr><td>teamId</td><td>string</td><td>Không</td><td>ID nhóm đích</td></tr>
+  <tr><td>employerId</td><td>string</td><td>Không</td><td>ID Employer (bắt buộc cho vai trò HR)</td></tr>
+  <tr><td>status</td><td>string</td><td>Có</td><td>Trạng thái: pending, accepted, rejected, canceled, expired, revoked</td></tr>
+  <tr><td>expiresAt</td><td>datetime</td><td>Có</td><td>Thời hạn lời mời</td></tr>
+  <tr><td>acceptedAt</td><td>datetime</td><td>Không</td><td>Thời điểm lời mời được chấp nhận</td></tr>
+  <tr><td>inviterId</td><td>string</td><td>Có</td><td>Người dùng đã gửi lời mời</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Có</td><td>Thời điểm tạo</td></tr>
+  <tr><td>updatedAt</td><td>datetime</td><td>Có</td><td>Thời điểm cập nhật cuối cùng</td></tr>
 </table>
 
 <!-- 4. CORE AUTH ENDPOINTS -->
-<h1 id="section-4">4. Core Auth Endpoints</h1>
+<h1 id="section-4">4. Đầu nối Xác thực Cốt lõi</h1>
 
-<h2 id="section-4-1">4.1 Registration</h2>
+<h2 id="section-4-1">4.1 Đăng ký</h2>
 
-<h3 id="fr-001">POST /sign-up/email <em>(Public)</em> <span class="req-id">FR-001</span></h3>
-<p>Register new user with email and password. Users are assigned the <code>user</code> system role by default.</p>
-<p><strong>Note:</strong> <code>super_admin</code> accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
-<p><strong>Request:</strong></p>
+<h3 id="fr-001">POST /sign-up/email <em>(Công khai)</em> <span class="req-id">FR-001</span></h3>
+<p>Đăng ký người dùng mới bằng email và mật khẩu. Người dùng được gán vai trò hệ thống <code>user</code> theo mặc định.</p>
+<p><strong>Lưu ý:</strong> Tài khoản <code>super_admin</code> không thể tự đăng ký. Chúng phải được tạo bởi admin qua <code>POST /admin/create-user</code>.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "name": "John Doe",
   "email": "john@example.com",
   "password": "securepassword123"
 }</code></pre>
-<p><strong>Request Fields:</strong></p>
+<p><strong>Các trường Yêu cầu:</strong></p>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>name</td><td>string</td><td>Yes</td><td>User's display name (2-100 chars)</td></tr>
-  <tr><td>email</td><td>string</td><td>Yes</td><td>Unique email address</td></tr>
-  <tr><td>password</td><td>string</td><td>Yes</td><td>Min 8 chars, at least 1 uppercase, 1 lowercase, 1 number</td></tr>
-  <tr><td>role</td><td>string</td><td>No</td><td>Enum: <code>"user"</code> (default). Only <code>"user"</code> is allowed for self-registration.</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>name</td><td>string</td><td>Có</td><td>Tên hiển thị của người dùng (2-100 ký tự)</td></tr>
+  <tr><td>email</td><td>string</td><td>Có</td><td>Địa chỉ email duy nhất</td></tr>
+  <tr><td>password</td><td>string</td><td>Có</td><td>Tối thiểu 8 ký tự, ít nhất 1 chữ hoa, 1 chữ thường, 1 chữ số</td></tr>
+  <tr><td>role</td><td>string</td><td>Không</td><td>Enum: <code>"user"</code> (mặc định). Chỉ <code>"user"</code> được phép cho tự đăng ký.</td></tr>
 </table>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "token": "eyJhbGciOiJSUzI1NiIs...",
   "user": {
@@ -281,21 +281,21 @@
     "updatedAt": "2026-08-05T10:30:00Z"
   }
 }</code></pre>
-<p><strong>Error 400 — Invalid role:</strong></p>
+<p><strong>Lỗi 400 — Vai trò không hợp lệ:</strong></p>
 <pre><code>{
   "message": "Role must be 'user'. super_admin accounts are created by admin."
 }</code></pre>
 
-<h2 id="section-4-2">4.2 Sign In</h2>
+<h2 id="section-4-2">4.2 Đăng nhập</h2>
 
-<h3 id="fr-002">POST /sign-in/email <em>(Public)</em> <span class="req-id">FR-002</span></h3>
-<p>Sign in with email and password.</p>
-<p><strong>Request:</strong></p>
+<h3 id="fr-002">POST /sign-in/email <em>(Công khai)</em> <span class="req-id">FR-002</span></h3>
+<p>Đăng nhập bằng email và mật khẩu.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "email": "john@example.com",
   "password": "securepassword123"
 }</code></pre>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "token": "eyJhbGciOiJSUzI1NiIs...",
   "user": {
@@ -307,36 +307,36 @@
   }
 }</code></pre>
 
-<h3 id="fr-012">POST /sign-in/social <em>(Public)</em> <span class="req-id">FR-012</span></h3>
-<p>Sign in with a social provider (Google, GitHub, etc.).</p>
-<p><strong>Request:</strong></p>
+<h3 id="fr-012">POST /sign-in/social <em>(Công khai)</em> <span class="req-id">FR-012</span></h3>
+<p>Đăng nhập bằng nhà cung cấp xã hội (Google, GitHub, v.v.).</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "provider": "google",
   "callbackURL": "http://localhost:3000/dashboard"
 }</code></pre>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "url": "https://accounts.google.com/o/oauth2/auth?...",
   "redirect": true
 }</code></pre>
-<p><strong>Supported Providers:</strong> apple, atlassian, cognito, discord, facebook, figma, github, microsoft, google, huggingface, slack, spotify, twitch, twitter, dropbox, kick, linear, linkedin, gitlab, tiktok, reddit, roblox, salesforce, vk, zoom, notion, kakao, naver, line, paybin, paypal, polar, railway, vercel, wechat</p>
+<p><strong>Các nhà cung cấp được hỗ trợ:</strong> apple, atlassian, cognito, discord, facebook, figma, github, microsoft, google, huggingface, slack, spotify, twitch, twitter, dropbox, kick, linear, linkedin, gitlab, tiktok, reddit, roblox, salesforce, vk, zoom, notion, kakao, naver, line, paybin, paypal, polar, railway, vercel, wechat</p>
 
-<h3>GET /callback/{id} <em>(Public)</em></h3>
-<p>OAuth callback endpoint. Handles the redirect from social providers.</p>
+<h3>GET /callback/{id} <em>(Công khai)</em></h3>
+<p>Đầu nối callback OAuth. Xử lý chuyển hướng từ các nhà cung cấp xã hội.</p>
 
-<h3>POST /callback/{id} <em>(Public)</em></h3>
-<p>OAuth callback with code exchange.</p>
-<p><strong>Request:</strong></p>
+<h3>POST /callback/{id} <em>(Công khai)</em></h3>
+<p>Callback OAuth với trao đổi mã.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "code": "authorization_code",
   "state": "csrf_state"
 }</code></pre>
 
-<h2 id="section-4-3">4.3 Session Management</h2>
+<h2 id="section-4-3">4.3 Quản lý Phiên làm việc</h2>
 
 <h3>GET /get-session <span class="req-id">FR-013</span></h3>
-<p>Get current session details.</p>
-<p><strong>Response 200:</strong></p>
+<p>Lấy thông tin phiên hiện tại.</p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "session": {
     "id": "session-123",
@@ -350,15 +350,15 @@
 }</code></pre>
 
 <h3>POST /get-session</h3>
-<p>Get current session (POST variant).</p>
+<p>Lấy thông tin phiên hiện tại (biến thể POST).</p>
 
 <h3 id="fr-003">POST /sign-out <span class="req-id">FR-003</span></h3>
-<p>Invalidate current session.</p>
-<p><strong>Response 200:</strong> <code>{ "success": true }</code></p>
+<p>Hủy bỏ phiên hiện tại.</p>
+<p><strong>Phản hồi 200:</strong> <code>{ "success": true }</code></p>
 
 <h3>GET /list-sessions <span class="req-id">FR-013</span></h3>
-<p>List all active sessions for the current user.</p>
-<p><strong>Response 200:</strong></p>
+<p>Liệt kê tất cả các phiên đang hoạt động của người dùng hiện tại.</p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>[
   {
     "id": "session-123",
@@ -370,175 +370,175 @@
 ]</code></pre>
 
 <h3>POST /revoke-session</h3>
-<p>Revoke a specific session.</p>
-<p><strong>Request:</strong></p>
+<p>Thu hồi một phiên cụ thể.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "sessionId": "session-123"
 }</code></pre>
 
 <h3>POST /revoke-sessions</h3>
-<p>Revoke all sessions for the current user.</p>
+<p>Thu hồi tất cả các phiên của người dùng hiện tại.</p>
 
 <h3>POST /revoke-other-sessions</h3>
-<p>Revoke all sessions except the current one.</p>
+<p>Thu hồi tất cả các phiên ngoại trừ phiên hiện tại.</p>
 
 <h3>POST /update-session</h3>
-<p>Update session metadata (e.g., active organization).</p>
-<p><strong>Request:</strong></p>
+<p>Cập nhật metadata phiên (ví dụ: tổ chức đang hoạt động).</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "activeOrganizationId": "org-123"
 }</code></pre>
 
 <h3>POST /refresh-token <span class="req-id">FR-004</span></h3>
-<p>Refresh access token using refresh token.</p>
-<p><strong>Response 200:</strong></p>
+<p>Làm mới token truy cập bằng token làm mới.</p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "token": "eyJhbGciOiJSUzI1NiIs...",
   "session": { ... }
 }</code></pre>
 
 <h3>POST /get-access-token</h3>
-<p>Get a new access token for the current session.</p>
+<p>Lấy token truy cập mới cho phiên hiện tại.</p>
 
-<h2 id="section-4-4">4.4 Password Management</h2>
+<h2 id="section-4-4">4.4 Quản lý Mật khẩu</h2>
 
 <h3 id="fr-007">POST /change-password <span class="req-id">FR-007</span></h3>
-<p>Change password (requires current password).</p>
-<p><strong>Request:</strong></p>
+<p>Đổi mật khẩu (yêu cầu mật khẩu hiện tại).</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "currentPassword": "oldpassword",
   "newPassword": "newpassword123"
 }</code></pre>
 
-<h3 id="fr-005">POST /request-password-reset <em>(Public)</em> <span class="req-id">FR-005</span></h3>
-<p>Request password reset. Sends reset link to email.</p>
-<p><strong>Request:</strong></p>
+<h3 id="fr-005">POST /request-password-reset <em>(Công khai)</em> <span class="req-id">FR-005</span></h3>
+<p>Yêu cầu đặt lại mật khẩu. Gửi liên kết đặt lại qua email.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "email": "john@example.com",
   "redirectTo": "http://localhost:3000/reset-password"
 }</code></pre>
 
-<h3>GET /reset-password/{token} <em>(Public)</em></h3>
-<p>Password reset callback. Validates reset token.</p>
+<h3>GET /reset-password/{token} <em>(Công khai)</em></h3>
+<p>Callback đặt lại mật khẩu. Xác thực token đặt lại.</p>
 
-<h3>POST /reset-password <em>(Public)</em> <span class="req-id">FR-005</span></h3>
-<p>Complete password reset with token.</p>
-<p><strong>Request:</strong></p>
+<h3>POST /reset-password <em>(Công khai)</em> <span class="req-id">FR-005</span></h3>
+<p>Hoàn tất đặt lại mật khẩu bằng token.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "token": "reset-token-abc",
   "newPassword": "newpassword123"
 }</code></pre>
 
 <h3>POST /verify-password</h3>
-<p>Verify current password without changing it.</p>
-<p><strong>Request:</strong></p>
+<p>Xác thực mật khẩu hiện tại mà không thay đổi nó.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "password": "currentpassword"
 }</code></pre>
 
-<h2 id="section-4-5">4.5 Email Verification</h2>
+<h2 id="section-4-5">4.5 Xác minh Email</h2>
 
-<h3 id="fr-008">GET /verify-email <em>(Public)</em> <span class="req-id">FR-008</span></h3>
-<p>Verify email via verification link. Called when user clicks the link in email.</p>
-<p><strong>Query:</strong> <code>?token=abc123&callbackURL=http://localhost:3000</code></p>
+<h3 id="fr-008">GET /verify-email <em>(Công khai)</em> <span class="req-id">FR-008</span></h3>
+<p>Xác minh email qua liên kết xác minh. Được gọi khi người dùng nhấp vào liên kết trong email.</p>
+<p><strong>Truy vấn:</strong> <code>?token=abc123&callbackURL=http://localhost:3000</code></p>
 
 <h3>POST /send-verification-email <span class="req-id">FR-008</span></h3>
-<p>Send verification email to current user.</p>
-<p><strong>Request:</strong></p>
+<p>Gửi email xác minh cho người dùng hiện tại.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "email": "john@example.com",
   "callbackURL": "http://localhost:3000/verified"
 }</code></pre>
 
 <h3>POST /change-email</h3>
-<p>Change user email (sends verification to new email).</p>
-<p><strong>Request:</strong></p>
+<p>Thay đổi email người dùng (gửi xác minh đến email mới).</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "newEmail": "newjohn@example.com"
 }</code></pre>
 
-<h2 id="section-4-6">4.6 User Profile</h2>
+<h2 id="section-4-6">4.6 Hồ sơ Người dùng</h2>
 
 <h3>POST /update-user <span class="req-id">FR-010</span></h3>
-<p>Update current user profile.</p>
-<p><strong>Request:</strong></p>
+<p>Cập nhật hồ sơ người dùng hiện tại.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "name": "John Updated",
   "image": "https://example.com/avatar.jpg"
 }</code></pre>
 
 <h3>POST /delete-user</h3>
-<p>Request account deletion. Sends confirmation email.</p>
+<p>Yêu cầu xóa tài khoản. Gửi email xác nhận.</p>
 
-<h3>GET /delete-user/callback <em>(Public)</em></h3>
-<p>Confirm account deletion via email link.</p>
+<h3>GET /delete-user/callback <em>(Công khai)</em></h3>
+<p>Xác nhận xóa tài khoản qua liên kết email.</p>
 
 <h3>GET /account-info</h3>
-<p>Get current account information.</p>
+<p>Lấy thông tin tài khoản hiện tại.</p>
 
-<h2 id="section-4-7">4.7 Account Linking</h2>
+<h2 id="section-4-7">4.7 Liên kết Tài khoản</h2>
 
 <h3>POST /link-social</h3>
-<p>Link a social account to the current user.</p>
-<p><strong>Request:</strong></p>
+<p>Liên kết tài khoản xã hội với người dùng hiện tại.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "provider": "github",
   "callbackURL": "http://localhost:3000/settings"
 }</code></pre>
 
 <h3>POST /unlink-account</h3>
-<p>Unlink a social account from the current user.</p>
-<p><strong>Request:</strong></p>
+<p>Hủy liên kết tài khoản xã hội khỏi người dùng hiện tại.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "providerId": "github",
   "accountId": "account-123"
 }</code></pre>
 
 <h3>GET /list-accounts</h3>
-<p>List all linked accounts for the current user.</p>
+<p>Liệt kê tất cả các tài khoản đã liên kết của người dùng hiện tại.</p>
 
-<h2 id="section-4-8">4.8 Utility</h2>
+<h2 id="section-4-8">4.8 Tiện ích</h2>
 
 <h3>GET /ok</h3>
-<p>Health check endpoint.</p>
-<p><strong>Response 200:</strong> <code>{ "ok": true }</code></p>
+<p>Đầu nối kiểm tra sức khỏe.</p>
+<p><strong>Phản hồi 200:</strong> <code>{ "ok": true }</code></p>
 
 <h3>GET /error</h3>
-<p>Error page endpoint.</p>
+<p>Đầu nối trang lỗi.</p>
 
 <!-- 5. ADMIN ENDPOINTS -->
-<h1 id="section-5">5. Admin Endpoints</h1>
-<p>All admin endpoints require admin role.</p>
+<h1 id="section-5">5. Đầu nối Admin</h1>
+<p>Tất cả đầu nối admin đều yêu cầu vai trò admin.</p>
 
 <h3 id="fr-010">POST /admin/list-users <span class="req-id">FR-010</span></h3>
-<p>List all users with pagination.</p>
-<p><strong>Request:</strong></p>
+<p>Liệt kê tất cả người dùng với phân trang.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "limitValue": 20,
   "offsetValue": 0
 }</code></pre>
 
 <h3>POST /admin/get-user</h3>
-<p>Get user details by ID.</p>
-<p><strong>Request:</strong></p>
+<p>Lấy thông tin người dùng theo ID.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000"
 }</code></pre>
 
 <h3>POST /admin/create-user</h3>
-<p>Create a new user (admin). This is the only way to create <code>super_admin</code> accounts.</p>
-<p><strong>Request:</strong></p>
+<p>Tạo người dùng mới (admin). Đây là cách duy nhất để tạo tài khoản <code>super_admin</code>.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "name": "Jane Doe",
   "email": "jane@example.com",
   "password": "tempPassword123",
   "role": "super_admin"
 }</code></pre>
-<p><strong>Role Options:</strong> <code>user</code>, <code>super_admin</code></p>
+<p><strong>Tùy chọn Vai trò:</strong> <code>user</code>, <code>super_admin</code></p>
 
 <h3>POST /admin/update-user</h3>
-<p>Update user details (admin).</p>
-<p><strong>Request:</strong></p>
+<p>Cập nhật thông tin người dùng (admin).</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
   "name": "Jane Updated",
@@ -546,24 +546,24 @@
 }</code></pre>
 
 <h3>POST /admin/remove-user</h3>
-<p>Permanently remove a user.</p>
-<p><strong>Request:</strong></p>
+<p>Xóa vĩnh viễn người dùng.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000"
 }</code></pre>
 
 <h3 id="fr-011">POST /admin/set-role <span class="req-id">FR-011</span></h3>
-<p>Set user system role.</p>
-<p><strong>Request:</strong></p>
+<p>Đặt vai trò hệ thống cho người dùng.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
   "role": "super_admin"
 }</code></pre>
-<p><strong>Role Options:</strong> <code>user</code>, <code>super_admin</code></p>
+<p><strong>Tùy chọn Vai trò:</strong> <code>user</code>, <code>super_admin</code></p>
 
 <h3 id="fr-014">POST /admin/ban-user <span class="req-id">FR-014</span></h3>
-<p>Ban a user.</p>
-<p><strong>Request:</strong></p>
+<p>Khóa người dùng.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
   "banReason": "Violation of terms",
@@ -571,65 +571,65 @@
 }</code></pre>
 
 <h3>POST /admin/unban-user</h3>
-<p>Unban a user.</p>
-<p><strong>Request:</strong></p>
+<p>Mở khóa người dùng.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000"
 }</code></pre>
 
 <h3>POST /admin/impersonate-user</h3>
-<p>Impersonate a user (admin session).</p>
-<p><strong>Request:</strong></p>
+<p>Đăng nhập giả danh người dùng (phiên admin).</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000"
 }</code></pre>
 
 <h3>POST /admin/stop-impersonating</h3>
-<p>Stop impersonating and return to admin session.</p>
+<p>Dừng đăng nhập giả danh và quay lại phiên admin.</p>
 
 <h3>POST /admin/list-user-sessions</h3>
-<p>List all sessions for a specific user.</p>
-<p><strong>Request:</strong></p>
+<p>Liệt kê tất cả các phiên của một người dùng cụ thể.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000"
 }</code></pre>
 
 <h3>POST /admin/revoke-user-session</h3>
-<p>Revoke a specific session for a user.</p>
-<p><strong>Request:</strong></p>
+<p>Thu hồi một phiên cụ thể của người dùng.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
   "sessionId": "session-123"
 }</code></pre>
 
 <h3>POST /admin/revoke-user-sessions</h3>
-<p>Revoke all sessions for a user.</p>
-<p><strong>Request:</strong></p>
+<p>Thu hồi tất cả các phiên của người dùng.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000"
 }</code></pre>
 
 <h3>POST /admin/set-user-password</h3>
-<p>Set password for a user (admin, no current password required).</p>
-<p><strong>Request:</strong></p>
+<p>Đặt mật khẩu cho người dùng (admin, không yêu cầu mật khẩu hiện tại).</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "userId": "550e8400-e29b-41d4-a716-446655440000",
   "newPassword": "newpassword123"
 }</code></pre>
 
 <h3>POST /admin/has-permission</h3>
-<p>Check if admin has a specific permission.</p>
-<p><strong>Request:</strong></p>
+<p>Kiểm tra xem admin có một quyền cụ thể hay không.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "permission": "user:delete"
 }</code></pre>
 
 <!-- 6. ORGANIZATION ENDPOINTS -->
-<h1 id="section-6">6. Organization Endpoints</h1>
+<h1 id="section-6">6. Đầu nối Tổ chức</h1>
 
 <h3 id="fr-015">POST /organization/create <span class="req-id">FR-015</span></h3>
-<p>Create a new organization.</p>
-<p><strong>Request:</strong></p>
+<p>Tạo tổ chức mới.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "name": "Acme Corp",
   "slug": "acme-corp",
@@ -637,55 +637,55 @@
 }</code></pre>
 
 <h3>POST /organization/update</h3>
-<p>Update organization details.</p>
-<p><strong>Request:</strong></p>
+<p>Cập nhật thông tin tổ chức.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "name": "Acme Corporation"
 }</code></pre>
 
 <h3>POST /organization/delete</h3>
-<p>Delete an organization.</p>
-<p><strong>Request:</strong></p>
+<p>Xóa tổ chức.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123"
 }</code></pre>
 
 <h3>POST /organization/set-active</h3>
-<p>Set active organization for current session.</p>
-<p><strong>Request:</strong></p>
+<p>Đặt tổ chức đang hoạt động cho phiên hiện tại.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123"
 }</code></pre>
 
 <h3>GET /organization/get-full-organization</h3>
-<p>Get full organization details including members, teams, invitations.</p>
-<p><strong>Query:</strong> <code>?organizationId=org-123</code></p>
+<p>Lấy thông tin đầy đủ của tổ chức bao gồm thành viên, nhóm, lời mời.</p>
+<p><strong>Truy vấn:</strong> <code>?organizationId=org-123</code></p>
 
 <h3>GET /organization/list</h3>
-<p>List all organizations for the current user.</p>
+<p>Liệt kê tất cả các tổ chức của người dùng hiện tại.</p>
 
 <h3>GET /organization/get-active-member</h3>
-<p>Get current user's membership in the active organization.</p>
+<p>Lấy thông tin thành viên của người dùng hiện tại trong tổ chức đang hoạt động.</p>
 
 <h3>GET /organization/get-active-member-role</h3>
-<p>Get current user's role in the active organization.</p>
+<p>Lấy vai trò của người dùng hiện tại trong tổ chức đang hoạt động.</p>
 
 <h3>GET /organization/list-members</h3>
-<p>List all members of the active organization.</p>
-<p><strong>Query:</strong> <code>?organizationId=org-123&limitValue=20&offsetValue=0</code></p>
+<p>Liệt kê tất cả thành viên của tổ chức đang hoạt động.</p>
+<p><strong>Truy vấn:</strong> <code>?organizationId=org-123&limitValue=20&offsetValue=0</code></p>
 
 <h3>POST /organization/remove-member</h3>
-<p>Remove a member from the organization.</p>
-<p><strong>Request:</strong></p>
+<p>Xóa thành viên khỏi tổ chức.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "userId": "user-456"
 }</code></pre>
 
 <h3>POST /organization/update-member-role</h3>
-<p>Update a member's role in the organization.</p>
-<p><strong>Request:</strong></p>
+<p>Cập nhật vai trò của thành viên trong tổ chức.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "userId": "user-456",
@@ -693,28 +693,28 @@
 }</code></pre>
 
 <h3>POST /organization/leave</h3>
-<p>Leave the current organization.</p>
-<p><strong>Request:</strong></p>
+<p>Rời khỏi tổ chức hiện tại.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123"
 }</code></pre>
 
 <h3>POST /organization/check-slug</h3>
-<p>Check if organization slug is available.</p>
-<p><strong>Request:</strong></p>
+<p>Kiểm tra xem slug tổ chức có khả dụng không.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "slug": "acme-corp"
 }</code></pre>
 
 <h3>GET /organization/list-user-invitations</h3>
-<p>List pending invitations for the current user.</p>
+<p>Liệt kê các lời mời đang chờ xử lý cho người dùng hiện tại.</p>
 
 <!-- 6.1 Invitations -->
-<h2>6.1 Invitations</h2>
+<h2>6.1 Lời mời</h2>
 
 <h3 id="fr-017">POST /organization/invite-member <span class="req-id">FR-017</span></h3>
-<p>Invite a member to the organization. Generates a secure token (SHA-256 hash stored, raw token sent via email).</p>
-<p><strong>Request:</strong></p>
+<p>Mời thành viên vào tổ chức. Tạo token bảo mật (băm SHA-256 được lưu trữ, token gốc gửi qua email).</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "email": "jane@example.com",
@@ -722,16 +722,16 @@
   "teamId": "team-789",
   "employerId": "emp-456"
 }</code></pre>
-<p><strong>Request Fields:</strong></p>
+<p><strong>Các trường Yêu cầu:</strong></p>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>organizationId</td><td>string</td><td>Yes</td><td>Target organization ID</td></tr>
-  <tr><td>email</td><td>string</td><td>Yes</td><td>Invitee email address</td></tr>
-  <tr><td>role</td><td>string</td><td>Yes</td><td>Organization role: HR, Candidate, Employer</td></tr>
-  <tr><td>teamId</td><td>string</td><td>No</td><td>Target team ID</td></tr>
-  <tr><td>employerId</td><td>string</td><td>No</td><td>Employer ID (required for HR role)</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>organizationId</td><td>string</td><td>Có</td><td>ID tổ chức đích</td></tr>
+  <tr><td>email</td><td>string</td><td>Có</td><td>Địa chỉ email người được mời</td></tr>
+  <tr><td>role</td><td>string</td><td>Có</td><td>Vai trò tổ chức: HR, Candidate, Employer</td></tr>
+  <tr><td>teamId</td><td>string</td><td>Không</td><td>ID nhóm đích</td></tr>
+  <tr><td>employerId</td><td>string</td><td>Không</td><td>ID Employer (bắt buộc cho vai trò HR)</td></tr>
 </table>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "id": "inv-123",
   "email": "jane@example.com",
@@ -739,44 +739,44 @@
   "status": "pending",
   "expiresAt": "2026-08-12T10:30:00Z"
 }</code></pre>
-<p><strong>Error 409 — Duplicate:</strong></p>
+<p><strong>Lỗi 409 — Trùng lặp:</strong></p>
 <pre><code>{
   "message": "A pending invitation already exists for this email with the same role"
 }</code></pre>
 
 <h3>GET /organization/get-invitation</h3>
-<p>Get invitation details.</p>
-<p><strong>Query:</strong> <code>?id=inv-123</code></p>
+<p>Lấy thông tin lời mời.</p>
+<p><strong>Truy vấn:</strong> <code>?id=inv-123</code></p>
 
 <h3>GET /organization/list-invitations</h3>
-<p>List all invitations for the organization.</p>
-<p><strong>Query:</strong> <code>?organizationId=org-123</code></p>
+<p>Liệt kê tất cả lời mời của tổ chức.</p>
+<p><strong>Truy vấn:</strong> <code>?organizationId=org-123</code></p>
 
 <h3>POST /organization/accept-invitation</h3>
-<p>Accept an invitation.</p>
-<p><strong>Request:</strong></p>
+<p>Chấp nhận lời mời.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "invitationId": "inv-123"
 }</code></pre>
 
 <h3>POST /organization/reject-invitation</h3>
-<p>Reject an invitation.</p>
-<p><strong>Request:</strong></p>
+<p>Từ chối lời mời.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "invitationId": "inv-123"
 }</code></pre>
 
 <h3>POST /organization/cancel-invitation</h3>
-<p>Cancel a pending invitation.</p>
-<p><strong>Request:</strong></p>
+<p>Hủy lời mời đang chờ xử lý.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "invitationId": "inv-123"
 }</code></pre>
 
-<h3 id="fr-020">GET /organization/verify-invitation <em>(Public)</em> <span class="req-id">FR-020</span></h3>
-<p>Verify invitation token validity. No authentication required. Used by frontend when user clicks invitation link from email.</p>
-<p><strong>Query:</strong> <code>?token={raw_token}</code></p>
-<p><strong>Response 200 — Valid:</strong></p>
+<h3 id="fr-020">GET /organization/verify-invitation <em>(Công khai)</em> <span class="req-id">FR-020</span></h3>
+<p>Xác minh tính hợp lệ của token lời mời. Không yêu cầu xác thực. Được sử dụng bởi frontend khi người dùng nhấp vào liên kết lời mời từ email.</p>
+<p><strong>Truy vấn:</strong> <code>?token={raw_token}</code></p>
+<p><strong>Phản hồi 200 — Hợp lệ:</strong></p>
 <pre><code>{
   "valid": true,
   "invitation": {
@@ -787,33 +787,33 @@
     "expiresAt": "2026-08-12T10:30:00Z"
   }
 }</code></pre>
-<p><strong>Response 200 — Invalid (expired):</strong></p>
+<p><strong>Phản hồi 200 — Không hợp lệ (hết hạn):</strong></p>
 <pre><code>{
   "valid": false,
   "reason": "expired"
 }</code></pre>
-<p><strong>Response 200 — Invalid (already accepted):</strong></p>
+<p><strong>Phản hồi 200 — Không hợp lệ (đã chấp nhận):</strong></p>
 <pre><code>{
   "valid": false,
   "reason": "accepted"
 }</code></pre>
-<p><strong>Response 200 — Invalid (revoked):</strong></p>
+<p><strong>Phản hồi 200 — Không hợp lệ (đã thu hồi):</strong></p>
 <pre><code>{
   "valid": false,
   "reason": "revoked"
 }</code></pre>
-<p><strong>Error 404 — Token not found:</strong></p>
+<p><strong>Lỗi 404 — Token không tìm thấy:</strong></p>
 <pre><code>{
   "message": "Invalid invitation token"
 }</code></pre>
 
 <h3 id="fr-018">POST /organization/resend-invitation <span class="req-id">FR-018</span></h3>
-<p>Resend an invitation with a new token. The previous token is invalidated. Requires authentication and ownership.</p>
-<p><strong>Request:</strong></p>
+<p>Gửi lại lời mời với token mới. Token trước đó bị vô hiệu hóa. Yêu cầu xác thực và là chủ sở hữu.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "invitationId": "inv-123"
 }</code></pre>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "id": "inv-123",
   "email": "jane@example.com",
@@ -821,152 +821,152 @@
   "expiresAt": "2026-08-12T10:30:00Z",
   "message": "Invitation resent successfully"
 }</code></pre>
-<p><strong>Error 403 — Not owner:</strong></p>
+<p><strong>Lỗi 403 — Không phải chủ sở hữu:</strong></p>
 <pre><code>{
   "message": "Only the original inviter can resend this invitation"
 }</code></pre>
-<p><strong>Error 409 — Already accepted:</strong></p>
+<p><strong>Lỗi 409 — Đã chấp nhận:</strong></p>
 <pre><code>{
   "message": "Cannot resend an accepted invitation"
 }</code></pre>
 
 <h3 id="fr-019">DELETE /organization/cancel-invitation <span class="req-id">FR-019</span></h3>
-<p>Revoke a pending invitation. Only the original inviter can revoke. Already accepted or revoked invitations cannot be revoked.</p>
-<p><strong>Request:</strong></p>
+<p>Thu hồi lời mời đang chờ xử lý. Chỉ người mời ban đầu mới có thể thu hồi. Lời mời đã chấp nhận hoặc đã thu hồi không thể thu hồi lại.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "invitationId": "inv-123"
 }</code></pre>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "message": "Invitation revoked successfully"
 }</code></pre>
-<p><strong>Error 403 — Not owner:</strong></p>
+<p><strong>Lỗi 403 — Không phải chủ sở hữu:</strong></p>
 <pre><code>{
   "message": "Only the original inviter can revoke this invitation"
 }</code></pre>
-<p><strong>Error 409 — Already accepted/revoked:</strong></p>
+<p><strong>Lỗi 409 — Đã chấp nhận/đã thu hồi:</strong></p>
 <pre><code>{
   "message": "Cannot revoke an already accepted or revoked invitation"
 }</code></pre>
 
 <!-- 6.2 Teams -->
-<h2>6.2 Teams</h2>
+<h2>6.2 Nhóm</h2>
 
 <h3 id="fr-016">POST /organization/create-team <span class="req-id">FR-016</span></h3>
-<p>Create a team within the organization.</p>
-<p><strong>Request:</strong></p>
+<p>Tạo nhóm trong tổ chức.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "name": "Engineering"
 }</code></pre>
 
 <h3>GET /organization/list-teams</h3>
-<p>List all teams in the organization.</p>
-<p><strong>Query:</strong> <code>?organizationId=org-123</code></p>
+<p>Liệt kê tất cả các nhóm trong tổ chức.</p>
+<p><strong>Truy vấn:</strong> <code>?organizationId=org-123</code></p>
 
 <h3>GET /organization/list-user-teams</h3>
-<p>List teams the current user belongs to.</p>
+<p>Liệt kê các nhóm mà người dùng hiện tại thuộc về.</p>
 
 <h3>POST /organization/update-team</h3>
-<p>Update team details.</p>
-<p><strong>Request:</strong></p>
+<p>Cập nhật thông tin nhóm.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "teamId": "team-789",
   "name": "Engineering Team"
 }</code></pre>
 
 <h3>POST /organization/remove-team</h3>
-<p>Remove a team from the organization.</p>
-<p><strong>Request:</strong></p>
+<p>Xóa nhóm khỏi tổ chức.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "teamId": "team-789"
 }</code></pre>
 
 <h3>POST /organization/set-active-team</h3>
-<p>Set active team for current session.</p>
-<p><strong>Request:</strong></p>
+<p>Đặt nhóm đang hoạt động cho phiên hiện tại.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "teamId": "team-789"
 }</code></pre>
 
 <h3>GET /organization/list-team-members</h3>
-<p>List members of a team.</p>
-<p><strong>Query:</strong> <code>?teamId=team-789</code></p>
+<p>Liệt kê thành viên của một nhóm.</p>
+<p><strong>Truy vấn:</strong> <code>?teamId=team-789</code></p>
 
 <h3>POST /organization/add-team-member</h3>
-<p>Add a member to a team.</p>
-<p><strong>Request:</strong></p>
+<p>Thêm thành viên vào nhóm.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "teamId": "team-789",
   "userId": "user-456"
 }</code></pre>
 
 <h3>POST /organization/remove-team-member</h3>
-<p>Remove a member from a team.</p>
-<p><strong>Request:</strong></p>
+<p>Xóa thành viên khỏi nhóm.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "teamId": "team-789",
   "userId": "user-456"
 }</code></pre>
 
 <!-- 6.3 Organization Roles -->
-<h2>6.3 Organization Roles</h2>
-<p>Each organization can define its own roles with fine-grained permissions scoped to that organization. These roles are independent of system-level roles (<code>user</code>, <code>super_admin</code>).</p>
-<p><strong>Standard Organization Roles:</strong></p>
+<h2>6.3 Vai trò Tổ chức</h2>
+<p>Mỗi tổ chức có thể định nghĩa các vai trò riêng với quyền chi tiết được giới hạn trong phạm vi tổ chức đó. Các vai trò này độc lập với vai trò cấp hệ thống (<code>user</code>, <code>super_admin</code>).</p>
+<p><strong>Các Vai trò Tổ chức Tiêu chuẩn:</strong></p>
 <table>
-  <tr><th>Role</th><th>Description</th><th>Typical Permissions</th></tr>
-  <tr><td><code>Employer</code></td><td>Organization owner/admin who manages the company profile and job postings</td><td>job:create, job:update, job:delete, application:read, member:read, settings:read, settings:update</td></tr>
-  <tr><td><code>HR</code></td><td>Internal recruitment team members who manage hiring workflows</td><td>job:read, job:create, job:update, application:read, application:update, interview:create, interview:update, member:read</td></tr>
-  <tr><td><code>Candidate</code></td><td>Job seekers who apply for positions within the organization</td><td>job:read, application:create, application:read (own only)</td></tr>
+  <tr><th>Vai trò</th><th>Mô tả</th><th>Quyền thông thường</th></tr>
+  <tr><td><code>Employer</code></td><td>Chủ sở hữu/quản trị viên tổ chức quản lý hồ sơ công ty và tin tuyển dụng</td><td>job:create, job:update, job:delete, application:read, member:read, settings:read, settings:update</td></tr>
+  <tr><td><code>HR</code></td><td>Thành viên nhóm tuyển dụng nội bộ quản lý quy trình tuyển dụng</td><td>job:read, job:create, job:update, application:read, application:update, interview:create, interview:update, member:read</td></tr>
+  <tr><td><code>Candidate</code></td><td>Người tìm việc ứng tuyển vào các vị trí trong tổ chức</td><td>job:read, application:create, application:read (chỉ của bản thân)</td></tr>
 </table>
-<p><strong>Note:</strong> When a user creates an organization, they automatically receive the <code>Employer</code> role in that organization. Additional roles can be created via <code>POST /organization/create-role</code> and assigned to members via invitations or <code>POST /organization/update-member-role</code>.</p>
+<p><strong>Lưu ý:</strong> Khi người dùng tạo tổ chức, họ tự động nhận vai trò <code>Employer</code> trong tổ chức đó. Các vai trò bổ sung có thể được tạo qua <code>POST /organization/create-role</code> và gán cho thành viên qua lời mời hoặc <code>POST /organization/update-member-role</code>.</p>
 
-<h3>Authorization Rules</h3>
+<h3>Quy tắc Phân quyền</h3>
 <table>
-  <tr><th>Action</th><th>Allowed For</th></tr>
-  <tr><td>Create role</td><td>Organization owner or admin</td></tr>
-  <tr><td>Update role</td><td>Organization owner or admin</td></tr>
-  <tr><td>Delete role</td><td>Organization owner or admin</td></tr>
-  <tr><td>List roles</td><td>All organization members</td></tr>
-  <tr><td>Get role</td><td>All organization members</td></tr>
-  <tr><td>Check permission</td><td>All authenticated users</td></tr>
-</table>
-
-<h3>Permission Catalog</h3>
-<p>Valid permissions follow the format <code>resource:action</code>. Multiple permissions are comma-separated.</p>
-<table>
-  <tr><th>Permission</th><th>Description</th></tr>
-  <tr><td><code>member:read</code></td><td>View organization members</td></tr>
-  <tr><td><code>member:update</code></td><td>Update member roles</td></tr>
-  <tr><td><code>member:delete</code></td><td>Remove members from organization</td></tr>
-  <tr><td><code>job:read</code></td><td>View job listings</td></tr>
-  <tr><td><code>job:create</code></td><td>Create new job listings</td></tr>
-  <tr><td><code>job:update</code></td><td>Update job listings</td></tr>
-  <tr><td><code>job:delete</code></td><td>Delete job listings</td></tr>
-  <tr><td><code>application:read</code></td><td>View job applications</td></tr>
-  <tr><td><code>application:update</code></td><td>Update application status</td></tr>
-  <tr><td><code>application:delete</code></td><td>Delete applications</td></tr>
-  <tr><td><code>interview:read</code></td><td>View interviews</td></tr>
-  <tr><td><code>interview:create</code></td><td>Schedule interviews</td></tr>
-  <tr><td><code>interview:update</code></td><td>Update interview details</td></tr>
-  <tr><td><code>interview:delete</code></td><td>Cancel interviews</td></tr>
-  <tr><td><code>report:read</code></td><td>View reports and analytics</td></tr>
-  <tr><td><code>report:create</code></td><td>Generate reports</td></tr>
-  <tr><td><code>settings:read</code></td><td>View organization settings</td></tr>
-  <tr><td><code>settings:update</code></td><td>Update organization settings</td></tr>
+  <tr><th>Hành động</th><th>Được phép cho</th></tr>
+  <tr><td>Tạo vai trò</td><td>Chủ sở hữu hoặc quản trị viên tổ chức</td></tr>
+  <tr><td>Cập nhật vai trò</td><td>Chủ sở hữu hoặc quản trị viên tổ chức</td></tr>
+  <tr><td>Xóa vai trò</td><td>Chủ sở hữu hoặc quản trị viên tổ chức</td></tr>
+  <tr><td>Liệt kê vai trò</td><td>Tất cả thành viên tổ chức</td></tr>
+  <tr><td>Lấy vai trò</td><td>Tất cả thành viên tổ chức</td></tr>
+  <tr><td>Kiểm tra quyền</td><td>Tất cả người dùng đã xác thực</td></tr>
 </table>
 
-<h3>Validation Rules</h3>
+<h3>Danh mục Quyền</h3>
+<p>Các quyền hợp lệ tuân theo định dạng <code>resource:action</code>. Nhiều quyền được ngăn cách bằng dấu phẩy.</p>
+<table>
+  <tr><th>Quyền</th><th>Mô tả</th></tr>
+  <tr><td><code>member:read</code></td><td>Xem thành viên tổ chức</td></tr>
+  <tr><td><code>member:update</code></td><td>Cập nhật vai trò thành viên</td></tr>
+  <tr><td><code>member:delete</code></td><td>Xóa thành viên khỏi tổ chức</td></tr>
+  <tr><td><code>job:read</code></td><td>Xem tin tuyển dụng</td></tr>
+  <tr><td><code>job:create</code></td><td>Tạo tin tuyển dụng mới</td></tr>
+  <tr><td><code>job:update</code></td><td>Cập nhật tin tuyển dụng</td></tr>
+  <tr><td><code>job:delete</code></td><td>Xóa tin tuyển dụng</td></tr>
+  <tr><td><code>application:read</code></td><td>Xem đơn ứng tuyển</td></tr>
+  <tr><td><code>application:update</code></td><td>Cập nhật trạng thái đơn ứng tuyển</td></tr>
+  <tr><td><code>application:delete</code></td><td>Xóa đơn ứng tuyển</td></tr>
+  <tr><td><code>interview:read</code></td><td>Xem phỏng vấn</td></tr>
+  <tr><td><code>interview:create</code></td><td>Lên lịch phỏng vấn</td></tr>
+  <tr><td><code>interview:update</code></td><td>Cập nhật thông tin phỏng vấn</td></tr>
+  <tr><td><code>interview:delete</code></td><td>Hủy phỏng vấn</td></tr>
+  <tr><td><code>report:read</code></td><td>Xem báo cáo và phân tích</td></tr>
+  <tr><td><code>report:create</code></td><td>Tạo báo cáo</td></tr>
+  <tr><td><code>settings:read</code></td><td>Xem cài đặt tổ chức</td></tr>
+  <tr><td><code>settings:update</code></td><td>Cập nhật cài đặt tổ chức</td></tr>
+</table>
+
+<h3>Quy tắc Kiểm tra</h3>
 <ul>
-  <li>Role name: 2-50 chars, alphanumeric and underscores only, unique within organization</li>
-  <li>Permissions: comma-separated string, max 255 chars total</li>
-  <li>Each permission must match format <code>resource:action</code></li>
-  <li>Each permission must be from the allowed catalog above</li>
+  <li>Tên vai trò: 2-50 ký tự, chỉ chữ cái, chữ số và dấu gạch dưới, duy nhất trong tổ chức</li>
+  <li>Quyền: chuỗi ngăn cách bằng dấu phẩy, tối đa 255 ký tự tổng cộng</li>
+  <li>Mỗi quyền phải khớp với định dạng <code>resource:action</code></li>
+  <li>Mỗi quyền phải nằm trong danh mục cho phép ở trên</li>
 </ul>
 
 <h3>POST /organization/create-role</h3>
-<p>Create a custom role in the organization.</p>
-<p><strong>Request:</strong></p>
+<p>Tạo vai trò tùy chỉnh trong tổ chức.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "role": "recruiter",
@@ -975,8 +975,8 @@
 }</code></pre>
 
 <h3>POST /organization/update-role</h3>
-<p>Update an organization role.</p>
-<p><strong>Request:</strong></p>
+<p>Cập nhật vai trò tổ chức.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "roleId": "role-123",
@@ -985,17 +985,17 @@
 }</code></pre>
 
 <h3>POST /organization/delete-role</h3>
-<p>Delete a custom role from the organization. Cannot delete if any member is assigned this role.</p>
-<p><strong>Request:</strong></p>
+<p>Xóa vai trò tùy chỉnh khỏi tổ chức. Không thể xóa nếu có thành viên đang được gán vai trò này.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "roleId": "role-123"
 }</code></pre>
 
 <h3>GET /organization/list-roles</h3>
-<p>List all roles in the organization.</p>
-<p><strong>Query:</strong> <code>?organizationId=org-123</code></p>
-<p><strong>Response 200:</strong></p>
+<p>Liệt kê tất cả vai trò trong tổ chức.</p>
+<p><strong>Truy vấn:</strong> <code>?organizationId=org-123</code></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "roles": [
     {
@@ -1010,27 +1010,27 @@
 }</code></pre>
 
 <h3>GET /organization/get-role</h3>
-<p>Get role details.</p>
-<p><strong>Query:</strong> <code>?organizationId=org-123&roleId=role-123</code></p>
+<p>Lấy thông tin vai trò.</p>
+<p><strong>Truy vấn:</strong> <code>?organizationId=org-123&roleId=role-123</code></p>
 
 <h3>POST /organization/has-permission</h3>
-<p>Check if current user has a permission in the organization.</p>
-<p><strong>Request:</strong></p>
+<p>Kiểm tra xem người dùng hiện tại có một quyền trong tổ chức hay không.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "organizationId": "org-123",
   "permission": "job:create"
 }</code></pre>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "hasPermission": true
 }</code></pre>
 
 <!-- 7. JWT ENDPOINTS -->
-<h1 id="section-7">7. JWT Endpoints</h1>
+<h1 id="section-7">7. Đầu nối JWT</h1>
 
 <h3>GET /jwks</h3>
-<p>Get JSON Web Key Set for JWT verification.</p>
-<p><strong>Response 200:</strong></p>
+<p>Lấy JSON Web Key Set để xác thực JWT.</p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "keys": [
     {
@@ -1044,23 +1044,23 @@
 }</code></pre>
 
 <h3>GET /token</h3>
-<p>Get a signed JWT token for the current session.</p>
+<p>Lấy JWT token đã ký cho phiên hiện tại.</p>
 
 <!-- 8. ERROR CODES -->
-<h1 id="section-8">8. Error Codes</h1>
+<h1 id="section-8">8. Mã Lỗi</h1>
 
 <table>
-  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
-  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Request validation failed (missing/invalid parameters)</td></tr>
-  <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid authentication</td></tr>
-  <tr><td>401</td><td>INVALID_CREDENTIALS</td><td>Wrong email/phone or password</td></tr>
-  <tr><td>401</td><td>TOKEN_EXPIRED</td><td>JWT token expired</td></tr>
-  <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions</td></tr>
-  <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
-  <tr><td>409</td><td>CONFLICT</td><td>Email or phone already registered; duplicate invitation</td></tr>
-  <tr><td>410</td><td>INVITATION_EXPIRED</td><td>Invitation token has expired</td></tr>
-  <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
-  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
+  <tr><th>Trạng thái HTTP</th><th>Mã Lỗi</th><th>Mô tả</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Kiểm tra yêu cầu thất bại (tham số thiếu/không hợp lệ)</td></tr>
+  <tr><td>401</td><td>UNAUTHORIZED</td><td>Thiếu hoặc xác thực không hợp lệ</td></tr>
+  <tr><td>401</td><td>INVALID_CREDENTIALS</td><td>Sai email/số điện thoại hoặc mật khẩu</td></tr>
+  <tr><td>401</td><td>TOKEN_EXPIRED</td><td>JWT token đã hết hạn</td></tr>
+  <tr><td>403</td><td>FORBIDDEN</td><td>Không đủ quyền hạn</td></tr>
+  <tr><td>404</td><td>NOT_FOUND</td><td>Không tìm thấy tài nguyên</td></tr>
+  <tr><td>409</td><td>CONFLICT</td><td>Email hoặc số điện thoại đã được đăng ký; lời mời trùng lặp</td></tr>
+  <tr><td>410</td><td>INVITATION_EXPIRED</td><td>Token lời mời đã hết hạn</td></tr>
+  <tr><td>429</td><td>RATE_LIMITED</td><td>Quá nhiều yêu cầu</td></tr>
+  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Lỗi máy chủ</td></tr>
 </table>
 
 </body>

@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Manage Users Flow
+' Sơ đồ Tuần tự - Luồng Quản lý Người dùng
 ' ============================================================
 
 skinparam sequence {
@@ -11,16 +11,16 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: Manage Users Flow
+title Sơ đồ Tuần tự: Luồng Quản lý Người dùng
 
 actor Admin
 participant "Frontend" as FE
 participant "Auth API" as API
 database "PostgreSQL\n(auth_db)" as DB
 
-== Step 1: List Users ==
+== Bước 1: Liệt kê người dùng ==
 
-Admin -> FE : Navigate to user management
+Admin -> FE : Điều hướng đến quản lý người dùng
 activate FE
 
 FE -> API : POST /admin/list-users\n{ limitValue, offsetValue }
@@ -28,18 +28,18 @@ activate API
 
 API -> DB : SELECT * FROM auth_users\nORDER BY created_at DESC\nLIMIT ? OFFSET ?
 activate DB
-DB --> API : User list
+DB --> API : Danh sách người dùng
 deactivate DB
 
 API --> FE : 200 { users: [...] }
 deactivate API
 
-FE --> Admin : Display user list
+FE --> Admin : Hiển thị danh sách người dùng
 deactivate FE
 
-== Step 2: Update User (optional) ==
+== Bước 2: Cập nhật người dùng (tùy chọn) ==
 
-Admin -> FE : Edit user
+Admin -> FE : Chỉnh sửa người dùng
 activate FE
 
 FE -> API : POST /admin/update-user\n{ userId, name, role }
@@ -47,18 +47,18 @@ activate API
 
 API -> DB : UPDATE auth_users\nSET name = ?, role = ?\nWHERE id = ?
 activate DB
-DB --> API : Updated
+DB --> API : Đã cập nhật
 deactivate DB
 
 API --> FE : 200 { success: true }
 deactivate API
 
-FE --> Admin : "User updated"
+FE --> Admin : "Đã cập nhật người dùng"
 deactivate FE
 
-== Step 3: Delete User (optional) ==
+== Bước 3: Xóa người dùng (tùy chọn) ==
 
-Admin -> FE : Delete user
+Admin -> FE : Xóa người dùng
 activate FE
 
 FE -> API : POST /admin/remove-user\n{ userId }
@@ -66,18 +66,18 @@ activate API
 
 API -> DB : DELETE FROM auth_users\nWHERE id = ?
 activate DB
-DB --> API : Deleted
+DB --> API : Đã xóa
 deactivate DB
 
 API -> DB : DELETE FROM auth_sessions\nWHERE user_id = ?
 activate DB
-DB --> API : Sessions revoked
+DB --> API : Đã thu hồi phiên làm việc
 deactivate DB
 
 API --> FE : 200 { success: true }
 deactivate API
 
-FE --> Admin : "User removed"
+FE --> Admin : "Đã xóa người dùng"
 deactivate FE
 
 @enduml

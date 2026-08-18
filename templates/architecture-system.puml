@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' System Architecture - Authentication System
+' Kiến trúc Hệ thống - Hệ thống Xác thực
 ' ============================================================
 
 !pragma layout smetana
@@ -41,13 +41,13 @@ skinparam arrow {
 
 skinparam linetype polyline
 
-title System Architecture
+title Kiến trúc Hệ thống
 
-' Gateway
-component "API Gateway" as gw #FFD54F
+' Cổng API
+component "Cổng API" as gw #FFD54F
 
-' Core Services (Web App same layer)
-component "Web App" as web
+' Dịch vụ cốt lõi (Ứng dụng Web cùng tầng)
+component "Ứng dụng Web" as web
 component "AUTH" as auth
 component "SMS" as sms
 component "EMAIL" as email
@@ -55,7 +55,7 @@ component "RECR" as recr
 component "WALLET" as wallet
 component "LOG" as log
 
-' Infrastructure
+' Hạ tầng
 database "PostgreSQL" as pg
 database "OpenSearch" as os
 component "Twilio" as twilio

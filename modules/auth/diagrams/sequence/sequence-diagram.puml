@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Account Verification Flow
+' Sơ đồ Tuần tự - Luồng Xác minh Tài khoản
 ' RabbitMQ + Redis Idempotency + SMS DB
 ' ============================================================
 
@@ -12,7 +12,7 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: Account Verification (Idempotent + Async)
+title Sơ đồ Tuần tự: Xác minh Tài khoản (Idempotent + Bất đồng bộ)
 
 actor User
 participant "Frontend" as FE
@@ -24,77 +24,77 @@ participant "Verification\nWorker" as Worker
 participant "SMS Provider\n(Twilio)" as SMS
 database "PostgreSQL\n(sms_db)" as smsDB
 
-== Step 1: Request Verification ==
+== Bước 1: Yêu cầu xác minh ==
 
-User -> FE : Click "Verify Account"
+User -> FE : Nhấp "Xác minh Tài khoản"
 activate FE
 
 FE -> API : POST /auth/send-verification\n{ channel: "sms" }
 activate API
 
-== Step 2: Idempotency Check ==
+== Bước 2: Kiểm tra idempotency ==
 
 API -> Redis : GET idempotency:{user_id}:sms
 activate Redis
 
-alt Key exists (already sent within 5 min)
-  Redis --> API : key found
-  API --> FE : 200 { message: "Verification already sent" }
-  FE --> User : Show "Already sent" message
+alt Key tồn tại (đã gửi trong vòng 5 phút)
+  Redis --> API : Tìm thấy key
+  API --> FE : 200 { message: "Đã gửi xác minh trước đó" }
+  FE --> User : Hiển thị thông báo "Đã gửi trước đó"
   deactivate FE
-else Key not found
+else Key không tìm thấy
   Redis --> API : null
   deactivate Redis
 
-  == Step 3: Set Idempotency Key ==
+  == Bước 3: Đặt idempotency key ==
 
-  API -> Redis : SET idempotency:{user_id}:sms\nEX 300 (5 min TTL)
+  API -> Redis : SET idempotency:{user_id}:sms\nEX 300 (5 phút TTL)
   activate Redis
   Redis --> API : OK
   deactivate Redis
 
-  == Step 4: Store Verification Token ==
+  == Bước 4: Lưu token xác minh ==
 
   API -> authDB : INSERT INTO auth_verification\n(identifier, value, expires_at)
   activate authDB
-  authDB --> API : Verification record created
+  authDB --> API : Đã tạo bản ghi xác minh
   deactivate authDB
 
-  == Step 5: Publish Event to RabbitMQ ==
+  == Bước 5: Gửi sự kiện đến RabbitMQ ==
 
   API -> MQ : PUBLISH verification.sms\n{ userId, phone, otp, verificationId }
   activate MQ
-  MQ --> API : Message queued
+  MQ --> API : Đã xếp hàng tin nhắn
   deactivate MQ
 
-  API --> FE : 200 { message: "Verification sent" }
+  API --> FE : 200 { message: "Đã gửi xác minh" }
   deactivate API
 
-  FE --> User : Show "Verification sent" message
+  FE --> User : Hiển thị thông báo "Đã gửi xác minh"
   deactivate FE
 
-  == Step 6: Worker Consumes Event ==
+  == Bước 6: Worker xử lý sự kiện ==
 
   MQ -> Worker : CONSUME verification.sms
   activate Worker
 
-  Worker -> SMS : Send OTP to phone\n(Twilio API)
+  Worker -> SMS : Gửi OTP qua số điện thoại\n(Twilio API)
   activate SMS
   SMS --> Worker : { sid: "SM123", status: "queued" }
   deactivate SMS
 
-  == Step 7: Log SMS Delivery ==
+  == Bước 7: Ghi nhật ký gửi SMS ==
 
   Worker -> smsDB : INSERT INTO sms_logs\n(user_id, phone, status, provider_message_id)
   activate smsDB
-  smsDB --> Worker : SMS log created
+  smsDB --> Worker : Đã tạo nhật ký SMS
   deactivate smsDB
 
-  == Step 8: Update Verification Status ==
+  == Bước 8: Cập nhật trạng thái xác minh ==
 
   Worker -> authDB : UPDATE auth_verification\nSET status = 'sent'
   activate authDB
-  authDB --> Worker : Updated
+  authDB --> Worker : Đã cập nhật
   deactivate authDB
 
   deactivate Worker

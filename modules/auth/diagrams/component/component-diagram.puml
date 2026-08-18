@@ -1,75 +1,111 @@
 @startuml
 ' ============================================================
-' Component Diagram - AUTH Module (Simplified)
+' Sơ đồ Thành phần - Module AUTH
 ' ============================================================
+
+!pragma layout smetana
+top to bottom direction
+
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 12
+
+skinparam nodesep 40
+skinparam ranksep 50
 
 skinparam component {
   BackgroundColor #FFFFFF
-  BorderColor #333333
-  ArrowColor #333333
-}
-
-skinparam package {
-  BackgroundColor #FFFFFF
   BorderColor #666666
+  FontSize 11
+  FontColor #000000
+  RoundCorner 6
 }
 
-title AUTH Module - Component Diagram
-
-' --- Clients ---
-component "Web App" as web
-component "Mobile App" as mobile
-
-' --- API Layer ---
-package "API Layer" {
-  component "Auth Controller" as authCtrl
-  component "Users Controller" as usersCtrl
-  component "Roles Controller" as rolesCtrl
+skinparam database {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  FontSize 11
+  FontColor #000000
 }
 
-' --- Service Layer ---
-package "Service Layer" {
-  component "Auth Service" as authSvc
-  component "Users Service" as usersSvc
-  component "Roles Service" as rolesSvc
+skinparam queue {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  FontSize 11
+  FontColor #000000
 }
 
-' --- Security ---
-package "Security" {
-  component "JWT Guard" as jwtGuard
-  component "RBAC Guard" as rbacGuard
+skinparam arrow {
+  Color #000000
+  Thickness 2
 }
 
-' --- Data Layer ---
-package "Data Layer" {
-  database "auth_db\n(PostgreSQL)" as db
-}
+skinparam linetype polyline
 
-' --- External ---
-queue "RabbitMQ" as mq
+title Module AUTH - Sơ đồ Thành phần
+
+' --- Khách hàng ---
+component "Ứng dụng Web" as web
+component "Ứng dụng Di động" as mobile
+
+' --- Lớp API ---
+component "Auth Controller" as authCtrl
+component "Users Controller" as usersCtrl
+component "Roles Controller" as rolesCtrl
+
+' --- Lớp Service ---
+component "Auth Service" as authSvc #FFD54F
+component "Users Service" as usersSvc
+component "Roles Service" as rolesSvc
+
+' --- Bảo mật ---
+component "JWT Guard" as jwtGuard
+component "RBAC Guard" as rbacGuard
+
+' --- Hạ tầng ---
+database "auth_db\n(PostgreSQL)" as db
+queue "RabbitMQ" as mq #FFD54F
 database "Redis" as redis
 
-' --- Relationships ---
-web --> authCtrl
-mobile --> authCtrl
-web --> usersCtrl
+' --- Khách hàng -> API ---
+web -down-> authCtrl
+mobile -down-> authCtrl
+web -down-> usersCtrl
 
-authCtrl --> jwtGuard
-usersCtrl --> jwtGuard
-rolesCtrl --> jwtGuard
+' --- API -> Bảo mật ---
+authCtrl -down-> jwtGuard
+usersCtrl -down-> jwtGuard
+rolesCtrl -down-> jwtGuard
 
-jwtGuard --> authSvc
-rbacGuard --> rolesSvc
+' --- Bảo mật -> Service ---
+jwtGuard -down-> authSvc
+rbacGuard -down-> rolesSvc
 
-authCtrl --> authSvc
-usersCtrl --> usersSvc
-rolesCtrl --> rolesSvc
+' --- API -> Service ---
+authCtrl -down-> authSvc
+usersCtrl -down-> usersSvc
+rolesCtrl -down-> rolesSvc
 
-authSvc --> db
-usersSvc --> db
-rolesSvc --> db
+' --- Service -> Hạ tầng ---
+authSvc -down-> db
+usersSvc -down-> db
+rolesSvc -down-> db
 
-authSvc --> mq
-authSvc --> redis
+authSvc -down-> mq
+authSvc -down-> redis
+
+' --- Căn hàng: Lớp API ---
+authCtrl -[hidden]right-> usersCtrl
+usersCtrl -[hidden]right-> rolesCtrl
+
+' --- Căn hàng: Lớp Service ---
+authSvc -[hidden]right-> usersSvc
+usersSvc -[hidden]right-> rolesSvc
+
+' --- Căn hàng: Hạ tầng ---
+db -[hidden]right-> mq
+mq -[hidden]right-> redis
+
+' --- Khoảng cách cuối ---
+redis -[hidden]down-> redis
 
 @enduml

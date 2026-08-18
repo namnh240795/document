@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Software Requirements Specification - Logger</title>
+  <title>Yêu cầu Phần mềm - Logger</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,185 +18,185 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>Software Requirements Specification</h1>
-  <div class="subtitle">Logger Module</div>
+  <h1>Yêu cầu Phần mềm</h1>
+  <div class="subtitle">Module Logger</div>
   <span class="module-badge">LOG</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>Authentication System</td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
     <tr><td>Module</td><td>LOG - Logger</td></tr>
-    <tr><td>Database</td><td>OpenSearch (log-events index)</td></tr>
-    <tr><td>Date</td><td>2026-08-05</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Cơ sở dữ liệu</td><td>OpenSearch (chỉ mục log-events)</td></tr>
+    <tr><td>Ngày tạo</td><td>2026-08-05</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>Trạng thái</td><td>Nháp</td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Introduction</a>
+    <li><a href="#section-1">1. Giới thiệu</a>
       <ul>
-        <li><a href="#section-1-1">1.1 Purpose</a></li>
-        <li><a href="#section-1-2">1.2 Scope</a></li>
-        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
-        <li><a href="#section-1-4">1.4 Definitions</a></li>
+        <li><a href="#section-1-1">1.1 Mục đích</a></li>
+        <li><a href="#section-1-2">1.2 Phạm vi</a></li>
+        <li><a href="#section-1-3">1.3 Phụ thuộc Module</a></li>
+        <li><a href="#section-1-4">1.4 Định nghĩa</a></li>
       </ul>
     </li>
-    <li><a href="#section-2">2. Module Overview</a></li>
-    <li><a href="#section-3">3. Functional Requirements</a>
+    <li><a href="#section-2">2. Tổng quan Module</a></li>
+    <li><a href="#section-3">3. Yêu cầu Chức năng</a>
       <ul>
-        <li><a href="#fr-001">FR-001: Ingest Log Events</a></li>
-        <li><a href="#fr-002">FR-002: Query Logs</a></li>
-        <li><a href="#fr-003">FR-003: Log Analytics</a></li>
-        <li><a href="#fr-004">FR-004: Real-time Monitoring</a></li>
+        <li><a href="#fr-001">FR-001: Thu thập Sự kiện Log</a></li>
+        <li><a href="#fr-002">FR-002: Truy vấn Log</a></li>
+        <li><a href="#fr-003">FR-003: Phân tích Log</a></li>
+        <li><a href="#fr-004">FR-004: Giám sát Thời gian thực</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. Non-Functional Requirements</a>
+    <li><a href="#section-4">4. Yêu cầu Phi chức năng</a>
       <ul>
-        <li><a href="#nfr-001">NFR-001: Ingestion Throughput</a></li>
-        <li><a href="#nfr-002">NFR-002: Query Response Time</a></li>
-        <li><a href="#nfr-003">NFR-003: Service Uptime</a></li>
-        <li><a href="#nfr-004">NFR-004: Log Retention</a></li>
+        <li><a href="#nfr-001">NFR-001: Throughput Thu thập</a></li>
+        <li><a href="#nfr-002">NFR-002: Thời gian Phản hồi Truy vấn</a></li>
+        <li><a href="#nfr-003">NFR-003: Uptime Dịch vụ</a></li>
+        <li><a href="#nfr-004">NFR-004: Lưu trữ Log</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">5. Traceability Matrix</a>
+    <li><a href="#section-5">5. Ma trận Truy suất</a>
       <ul>
-        <li><a href="#trace-fr-001">FR-001: Ingest Log Events</a></li>
-        <li><a href="#trace-fr-002">FR-002: Query Logs</a></li>
-        <li><a href="#trace-fr-003">FR-003: Log Analytics</a></li>
-        <li><a href="#trace-fr-004">FR-004: Real-time Monitoring</a></li>
+        <li><a href="#trace-fr-001">FR-001: Thu thập Sự kiện Log</a></li>
+        <li><a href="#trace-fr-002">FR-002: Truy vấn Log</a></li>
+        <li><a href="#trace-fr-003">FR-003: Phân tích Log</a></li>
+        <li><a href="#trace-fr-004">FR-004: Giám sát Thời gian thực</a></li>
       </ul>
     </li>
   </ul>
 </div>
 
 <!-- 1. INTRODUCTION -->
-<h1 id="section-1">1. Introduction</h1>
+<h1 id="section-1">1. Giới thiệu</h1>
 
-<h2 id="section-1-1">1.1 Purpose</h2>
-<p>This document defines the software requirements for the <strong>Logger</strong> module of the Authentication System.</p>
+<h2 id="section-1-1">1.1 Mục đích</h2>
+<p>Tài liệu này định nghĩa các yêu cầu phần mềm cho module <strong>Logger</strong> của Hệ thống Xác thực.</p>
 
-<h2 id="section-1-2">1.2 Scope</h2>
-<p>The Logger module handles:</p>
+<h2 id="section-1-2">1.2 Phạm vi</h2>
+<p>Module Logger xử lý:</p>
 <ul>
-  <li>Centralized event logging from all services via RabbitMQ</li>
-  <li>Storage in OpenSearch for full-text search and analytics</li>
-  <li>Log querying and filtering</li>
-  <li>Real-time monitoring dashboards</li>
+  <li>Ghi log sự kiện tập trung từ tất cả dịch vụ qua RabbitMQ</li>
+  <li>Lưu trữ trên OpenSearch để tìm kiếm toàn văn và phân tích</li>
+  <li>Truy vấn và lọc log</li>
+  <li>Bảng điều khiển giám sát thời gian thực</li>
 </ul>
 
-<h2 id="section-1-3">1.3 Module Dependencies</h2>
-<p>Receives events from: AUTH, SMS, EMAIL, RECR, WALLET (all modules publish logs)</p>
+<h2 id="section-1-3">1.3 Phụ thuộc Module</h2>
+<p>Nhận sự kiện từ: AUTH, SMS, EMAIL, RECR, WALLET (tất cả module gửi log)</p>
 
-<h2 id="section-1-4">1.4 Definitions</h2>
+<h2 id="section-1-4">1.4 Định nghĩa</h2>
 <table>
-  <tr><th>Term</th><th>Definition</th></tr>
-  <tr><td>FR</td><td>Functional Requirement</td></tr>
-  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
-  <tr><td>OpenSearch</td><td>Distributed search and analytics engine</td></tr>
-  <tr><td>RabbitMQ</td><td>Message broker for async event delivery</td></tr>
+  <tr><th>Thuật ngữ</th><th>Định nghĩa</th></tr>
+  <tr><td>FR</td><td>Yêu cầu Chức năng</td></tr>
+  <tr><td>NFR</td><td>Yêu cầu Phi chức năng</td></tr>
+  <tr><td>OpenSearch</td><td>Công cụ tìm kiếm và phân tích phân tán</td></tr>
+  <tr><td>RabbitMQ</td><td>Trung gian tin nhắn để gửi sự kiện bất đồng bộ</td></tr>
 </table>
 
 <!-- 2. MODULE OVERVIEW -->
-<h1 id="section-2">2. Module Overview</h1>
+<h1 id="section-2">2. Tổng quan Module</h1>
 
 <table>
-  <tr><th>Aspect</th><th>Value</th></tr>
-  <tr><td>Module Code</td><td>LOG</td></tr>
-  <tr><td>Module Name</td><td>Logger</td></tr>
-  <tr><td>Description</td><td>Centralized event logging via RabbitMQ, stored in OpenSearch</td></tr>
-  <tr><td>Database</td><td>OpenSearch (log-events index)</td></tr>
-  <tr><td>Tech Stack</td><td>NestJS, RabbitMQ (amqplib), OpenSearch</td></tr>
+  <tr><th>Khía cạnh</th><th>Giá trị</th></tr>
+  <tr><td>Mã Module</td><td>LOG</td></tr>
+  <tr><td>Tên Module</td><td>Logger</td></tr>
+  <tr><td>Mô tả</td><td>Ghi log sự kiện tập trung qua RabbitMQ, lưu trên OpenSearch</td></tr>
+  <tr><td>Cơ sở dữ liệu</td><td>OpenSearch (chỉ mục log-events)</td></tr>
+  <tr><td>Công nghệ</td><td>NestJS, RabbitMQ (amqplib), OpenSearch</td></tr>
 </table>
 
 <!-- 3. FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-3">3. Functional Requirements</h1>
+<h1 id="section-3">3. Yêu cầu Chức năng</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã YC</th>
     <th>Module</th>
-    <th>Requirement</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Yêu cầu</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr id="fr-001">
     <td><span class="req-id">FR-001</span></td>
     <td>LOG</td>
-    <td>Ingest Log Events</td>
-    <td>High</td>
-    <td>System shall consume log events from RabbitMQ and index to OpenSearch</td>
+    <td>Thu thập Sự kiện Log</td>
+    <td>Cao</td>
+    <td>Hệ thống phải tiêu thụ sự kiện log từ RabbitMQ và chỉ mục lên OpenSearch</td>
   </tr>
   <tr id="fr-002">
     <td><span class="req-id">FR-002</span></td>
     <td>LOG</td>
-    <td>Query Logs</td>
-    <td>High</td>
-    <td>System shall provide API to query logs with filters (level, source, time range)</td>
+    <td>Truy vấn Log</td>
+    <td>Cao</td>
+    <td>Hệ thống phải cung cấp API truy vấn log với bộ lọc (mức độ, nguồn, khoảng thời gian)</td>
   </tr>
   <tr id="fr-003">
     <td><span class="req-id">FR-003</span></td>
     <td>LOG</td>
-    <td>Log Analytics</td>
-    <td>Medium</td>
-    <td>System shall provide analytics on log data (error rates, response times)</td>
+    <td>Phân tích Log</td>
+    <td>Trung bình</td>
+    <td>Hệ thống phải cung cấp phân tích dữ liệu log (tỷ lệ lỗi, thời gian phản hồi)</td>
   </tr>
   <tr id="fr-004">
     <td><span class="req-id">FR-004</span></td>
     <td>LOG</td>
-    <td>Real-time Monitoring</td>
-    <td>Medium</td>
-    <td>System shall support real-time log streaming via WebSocket</td>
+    <td>Giám sát Thời gian thực</td>
+    <td>Trung bình</td>
+    <td>Hệ thống phải hỗ trợ phát trực tuyến log thời gian thực qua WebSocket</td>
   </tr>
 </table>
 
 <!-- 4. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-4">4. Non-Functional Requirements</h1>
+<h1 id="section-4">4. Yêu cầu Phi chức năng</h1>
 
 <table class="trace-table">
-  <tr><th>Req ID</th><th>Category</th><th>Requirement</th><th>Target</th></tr>
+  <tr><th>Mã YC</th><th>Danh mục</th><th>Yêu cầu</th><th>Mục tiêu</th></tr>
   <tr id="nfr-001">
     <td><span class="req-id">NFR-001</span></td>
-    <td>Performance</td>
-    <td>Log ingestion throughput</td>
-    <td>10,000 events/sec</td>
+    <td>Hiệu suất</td>
+    <td>Throughput thu thập log</td>
+    <td>10.000 sự kiện/giây</td>
   </tr>
   <tr id="nfr-002">
     <td><span class="req-id">NFR-002</span></td>
-    <td>Performance</td>
-    <td>Query response time</td>
+    <td>Hiệu suất</td>
+    <td>Thời gian phản hồi truy vấn</td>
     <td>&lt; 500ms (p95)</td>
   </tr>
   <tr id="nfr-003">
     <td><span class="req-id">NFR-003</span></td>
-    <td>Availability</td>
-    <td>Log service uptime</td>
+    <td>Khả dụng</td>
+    <td>Uptime dịch vụ log</td>
     <td>99.9%</td>
   </tr>
   <tr id="nfr-004">
     <td><span class="req-id">NFR-004</span></td>
-    <td>Storage</td>
-    <td>Log retention</td>
-    <td>90 days (configurable)</td>
+    <td>Lưu trữ</td>
+    <td>Thời gian lưu log</td>
+    <td>90 ngày (có thể cấu hình)</td>
   </tr>
 </table>
 
 <!-- 5. TRACEABILITY -->
-<h1 id="section-5">5. Requirements Traceability Matrix</h1>
+<h1 id="section-5">5. Ma trận Truy suất Yêu cầu</h1>
 
 <table class="trace-table">
-  <tr><th>Req ID</th><th>Requirement</th><th>Technology</th><th>Integration</th></tr>
-  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>Ingest Log Events</td><td>RabbitMQ + OpenSearch</td><td>All modules publish to log.events queue</td></tr>
-  <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>Query Logs</td><td>OpenSearch Query API</td><td>REST API</td></tr>
-  <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>Log Analytics</td><td>OpenSearch Aggregations</td><td>Dashboard integration</td></tr>
-  <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Real-time Monitoring</td><td>WebSocket + OpenSearch</td><td>Dashboard streaming</td></tr>
+  <tr><th>Mã YC</th><th>Yêu cầu</th><th>Công nghệ</th><th>Tích hợp</th></tr>
+  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>Thu thập Sự kiện Log</td><td>RabbitMQ + OpenSearch</td><td>Tất cả module gửi đến hàng đợi log.events</td></tr>
+  <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>Truy vấn Log</td><td>OpenSearch Query API</td><td>REST API</td></tr>
+  <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>Phân tích Log</td><td>OpenSearch Aggregations</td><td>Tích hợp bảng điều khiển</td></tr>
+  <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Giám sát Thời gian thực</td><td>WebSocket + OpenSearch</td><td>Phát trực tuyến bảng điều khiển</td></tr>
 </table>
 
 </body>

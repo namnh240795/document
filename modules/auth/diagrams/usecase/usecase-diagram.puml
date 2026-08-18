@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Use Case Diagram - Authentication System
+' Sơ đồ Use Case - Hệ thống Xác thực
 ' NestJS + Better Auth + PostgreSQL + Drizzle ORM
 ' ============================================================
 
@@ -13,33 +13,33 @@ skinparam usecase {
   ArrowColor #333333
 }
 
-' --- Spacing ---
+' --- Khoảng cách ---
 skinparam nodesep 60
 skinparam ranksep 40
 
-' --- Actors ---
+' --- Diễn viên ---
 actor "User" as user
 actor "Admin" as admin
 actor "System" as system
 
-' --- Force actor order ---
+' --- Đảm bảo thứ tự diễn viên ---
 user -[hidden]down- admin
 admin -[hidden]down- system
 
 ' --- Use Cases ---
-usecase "UC-01: Register\n(Email/Phone + Password)" as UC01
-usecase "UC-02: Login\n(Email/Phone + Password)" as UC02
-usecase "UC-03: Logout" as UC03
-usecase "UC-04: Refresh Token" as UC04
-usecase "UC-05: Reset Password (Email)" as UC05
-usecase "UC-06: Reset Password (Phone/OTP)" as UC06
-usecase "UC-07: Change Password" as UC07
-usecase "UC-08: Verify Email" as UC08
-usecase "UC-09: Verify Phone" as UC09
-usecase "UC-10: Manage Users" as UC10
-usecase "UC-11: Manage Roles" as UC11
+usecase "UC-01: Đăng ký\n(Email/SĐT + Mật khẩu)" as UC01
+usecase "UC-02: Đăng nhập\n(Email/SĐT + Mật khẩu)" as UC02
+usecase "UC-03: Đăng xuất" as UC03
+usecase "UC-04: Làm mới Token" as UC04
+usecase "UC-05: Đặt lại mật khẩu (Email)" as UC05
+usecase "UC-06: Đặt lại mật khẩu (SĐT/OTP)" as UC06
+usecase "UC-07: Thay đổi mật khẩu" as UC07
+usecase "UC-08: Xác minh Email" as UC08
+usecase "UC-09: Xác minh SĐT" as UC09
+usecase "UC-10: Quản lý Người dùng" as UC10
+usecase "UC-11: Quản lý Vai trò" as UC11
 
-' --- User Relationships ---
+' --- Mối quan hệ của User ---
 user --> UC01
 user --> UC02
 user --> UC03
@@ -47,11 +47,11 @@ user --> UC05
 user --> UC06
 user --> UC07
 
-' --- Admin Relationships ---
+' --- Mối quan hệ của Admin ---
 admin --> UC10
 admin --> UC11
 
-' --- System Relationships ---
+' --- Mối quan hệ của System ---
 system --> UC08
 system --> UC09
 

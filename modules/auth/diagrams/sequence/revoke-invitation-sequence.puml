@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Revoke Invitation Flow
+' Sơ đồ Tuần tự - Luồng Thu hồi Lời mời
 ' ============================================================
 
 skinparam sequence {
@@ -11,7 +11,7 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: Revoke Invitation Flow
+title Sơ đồ Tuần tự: Luồng Thu hồi Lời mời
 
 actor Admin
 participant "Frontend" as FE
@@ -19,9 +19,9 @@ participant "Auth API" as API
 database "PostgreSQL\n(auth_db)" as DB
 queue "RabbitMQ" as MQ
 
-== Step 1: Revoke Invitation ==
+== Bước 1: Thu hồi lời mời ==
 
-Admin -> FE : Select invitation to revoke
+Admin -> FE : Chọn lời mời cần thu hồi
 activate FE
 
 FE -> API : DELETE /organization/cancel-invitation\n{ invitationId }
@@ -29,39 +29,39 @@ activate API
 
 API -> DB : SELECT * FROM auth_invitations\nWHERE id = ?
 activate DB
-DB --> API : Invitation
+DB --> API : Lời mời
 deactivate DB
 
-== Step 2: Ownership Check ==
+== Bước 2: Kiểm tra quyền sở hữu ==
 
-API -> API : Verify inviter_id == current user id
+API -> API : Xác minh inviter_id == current user id
 
-alt Not owner
+alt Không phải chủ sở hữu
   API --> FE : 403 Forbidden
 end
 
-alt Already accepted or revoked
-  API --> FE : 409 Cannot revoke
+alt Đã chấp nhận hoặc đã thu hồi
+  API --> FE : 409 Không thể thu hồi
 end
 
-== Step 3: Update Status ==
+== Bước 3: Cập nhật trạng thái ==
 
 API -> DB : UPDATE auth_invitations\nSET status = 'revoked'\nWHERE id = ?
 activate DB
-DB --> API : Updated
+DB --> API : Đã cập nhật
 deactivate DB
 
-== Step 4: Emit Event ==
+== Bước 4: Gửi sự kiện ==
 
 API -> MQ : PUBLISH invitation.revoked\n{ invitationId, email, role, revokedBy }
 activate MQ
-MQ --> API : Queued
+MQ --> API : Đã xếp hàng
 deactivate MQ
 
-API --> FE : 200 { message: "Revoked" }
+API --> FE : 200 { message: "Đã thu hồi" }
 deactivate API
 
-FE --> Admin : "Invitation revoked"
+FE --> Admin : "Đã thu hồi lời mời"
 deactivate FE
 
 @enduml

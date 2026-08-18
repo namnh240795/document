@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Sequence Diagram - Resend Invitation Flow
+' Sơ đồ Tuần tự - Luồng Gửi lại Lời mời
 ' ============================================================
 
 skinparam sequence {
@@ -11,7 +11,7 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title Sequence Diagram: Resend Invitation Flow
+title Sơ đồ Tuần tự: Luồng Gửi lại Lời mời
 
 actor Admin
 participant "Frontend" as FE
@@ -20,9 +20,9 @@ database "PostgreSQL\n(auth_db)" as DB
 queue "RabbitMQ" as MQ
 participant "EMAIL\nService" as Email
 
-== Step 1: Resend Invitation ==
+== Bước 1: Gửi lại lời mời ==
 
-Admin -> FE : Select invitation to resend
+Admin -> FE : Chọn lời mời cần gửi lại
 activate FE
 
 FE -> API : POST /organization/resend-invitation\n{ invitationId }
@@ -30,41 +30,41 @@ activate API
 
 API -> DB : SELECT * FROM auth_invitations\nWHERE id = ?
 activate DB
-DB --> API : Invitation
+DB --> API : Lời mời
 deactivate DB
 
-alt Already accepted
-  API --> FE : 409 Cannot resend accepted
+alt Đã chấp nhận
+  API --> FE : 409 Không thể gửi lại lời mời đã chấp nhận
 end
 
-== Step 2: Generate New Token ==
+== Bước 2: Tạo token mới ==
 
-API -> API : Generate new token\n(old token invalidated)
+API -> API : Tạo token mới\n(token cũ bị hủy)
 
 API -> DB : UPDATE auth_invitations\nSET token_hash = ?,\nstatus = 'pending',\nexpires_at = NOW() + 72h\nWHERE id = ?
 activate DB
-DB --> API : Updated
+DB --> API : Đã cập nhật
 deactivate DB
 
-== Step 3: Send Email ==
+== Bước 3: Gửi email ==
 
 API -> MQ : PUBLISH invitation.resent\n{ invitationId, email, inviteUrl }
 activate MQ
-MQ --> API : Queued
+MQ --> API : Đã xếp hàng
 deactivate MQ
 
-API --> FE : 200 { invitation, message: "Resent" }
+API --> FE : 200 { invitation, message: "Đã gửi lại" }
 deactivate API
 
-FE --> Admin : "Invitation resent"
+FE --> Admin : "Đã gửi lại lời mời"
 deactivate FE
 
-== Step 4: Email Delivery (async) ==
+== Bước 4: Gửi email (bất đồng bộ) ==
 
 MQ -> Email : CONSUME invitation.resent
 activate Email
 
-Email -> Email : Send new invitation email\n(new raw token in URL)
+Email -> Email : Gửi email lời mời mới\n(raw token mới trong URL)
 
 deactivate Email
 

@@ -1,6 +1,6 @@
 @startuml
 ' ============================================================
-' Activity Diagram - Manage Users Flow
+' Sơ đồ Hoạt động - Quản lý Người dùng
 ' ============================================================
 
 skinparam activity {
@@ -11,27 +11,27 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Manage Users Flow
+title Quản lý Người dùng
 
 start
 
-:Admin navigates to user management;
+:Admin điều hướng đến quản lý người dùng;
 
-:System displays user list\n(pagination, search);
+:System hiển thị danh sách người dùng\n(phân trang, tìm kiếm);
 
-if (Action selected?) then (view)
-  :Display user details;
+if (Chọn hành động?) then (view)
+  :Hiển thị chi tiết người dùng;
 elseif (update) then
-  :Edit user fields;
-  :Validate changes;
-  :Update user record;
+  :Chỉnh sửa thông tin người dùng;
+  :Kiểm tra thay đổi;
+  :Cập nhật bản ghi người dùng;
 elseif (delete) then
-  :Confirm deletion;
-  :Delete user record;
-  :Revoke all sessions;
+  :Xác nhận xóa;
+  :Xóa bản ghi người dùng;
+  :Thu hồi tất cả phiên làm việc;
 endif
 
-:Return success response;
+:Trả về phản hồi thành công;
 
 stop
 
