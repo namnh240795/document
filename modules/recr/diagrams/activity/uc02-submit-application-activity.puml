@@ -1,0 +1,59 @@
+@startuml
+' UC-02: Nộp hồ sơ - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-02: Nộp hồ sơ (Ứng viên)
+
+start
+:Đăng nhập với tư cách Ứng viên;
+
+:Xem Danh sách Việc làm;
+
+:Chọn vị trí Việc làm;
+
+:Xem Chi tiết Việc làm;
+
+:Nhấn Ứng tuyển;
+
+:Tải lên CV (PDF/DOCX);
+
+:Nhập Thư xin việc;
+
+:Xem lại Hồ sơ;
+
+:Nộp Hồ sơ;
+
+:Xác thực Hồ sơ;
+
+if (Hồ sơ hợp lệ?) then (có)
+  :Kiểm tra Hồ sơ trùng lặp;
+
+  if (Đã ứng tuyển trước đó?) then (không)
+    :Tạo bản ghi Hồ sơ;
+
+    :Cập nhật Số lượng Ứng tuyển của Việc làm;
+
+    :Thông báo Nhà tuyển dụng;
+
+    :Hiển thị thông báo Thành công;
+
+    :Xem Trạng thái Hồ sơ;
+
+  else (có)
+    :Hiển thị lỗi "Đã ứng tuyển";
+  endif
+
+else (không)
+  :Trả về lỗi Xác thực;
+
+  :Hiển thị Chi tiết lỗi;
+endif
+
+stop
+@enduml

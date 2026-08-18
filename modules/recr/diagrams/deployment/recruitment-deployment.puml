@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
-' Recruitment System - Deployment Diagram
-' Infrastructure topology
+' Hệ thống Tuyển dụng - Sơ đồ Triển khai
+' Topology hạ tầng
 ' ============================================================
 
 skinparam node {
@@ -21,54 +21,54 @@ skinparam cloud {
   BorderColor #333333
 }
 
-title Recruitment System - Deployment Diagram
+title Hệ thống Tuyển dụng - Sơ đồ Triển khai
 
 ' --- CDN / Edge ---
 cloud "CDN\n(CloudFront)" as cdn
 
-' --- Load Balancer ---
-node "Load Balancer\n(ALB)" as alb
+' --- Bộ cân tải ---
+node "Bộ cân tải\n(ALB)" as alb
 
-' --- Application Servers ---
-node "App Server 1\n(EC2 / ECS)" as app1 {
+' --- Máy chủ Ứng dụng ---
+node "Máy chủ Ứng dụng 1\n(EC2 / ECS)" as app1 {
   artifact "API Gateway\n(Node.js)" as api1
-  artifact "Recruitment Service\n(Node.js)" as recr1
-  artifact "Auth Service\n(Node.js)" as auth1
+  artifact "Dịch vụ Tuyển dụng\n(Node.js)" as recr1
+  artifact "Dịch vụ Xác thực\n(Node.js)" as auth1
 }
 
-node "App Server 2\n(EC2 / ECS)" as app2 {
+node "Máy chủ Ứng dụng 2\n(EC2 / ECS)" as app2 {
   artifact "API Gateway\n(Node.js)" as api2
-  artifact "Recruitment Service\n(Node.js)" as recr2
-  artifact "Auth Service\n(Node.js)" as auth2
+  artifact "Dịch vụ Tuyển dụng\n(Node.js)" as recr2
+  artifact "Dịch vụ Xác thực\n(Node.js)" as auth2
 }
 
-' --- Worker Servers ---
-node "Worker Server\n(EC2)" as worker {
-  artifact "Notification Worker\n(Node.js)" as workerNotif
-  artifact "Resume Parser\n(Node.js)" as workerParser
+' --- Máy chủ Worker ---
+node "Máy chủ Worker\n(EC2)" as worker {
+  artifact "Worker Thông báo\n(Node.js)" as workerNotif
+  artifact "Trình phân tích CV\n(Node.js)" as workerParser
 }
 
-' --- Data Tier ---
-node "Primary DB\n(RDS PostgreSQL)" as dbPrimary {
+' --- Tầng Dữ liệu ---
+node "CSDL Chính\n(RDS PostgreSQL)" as dbPrimary {
   database "recr_db\n(recr_*)" as recrData
   database "auth_db\n(auth_*)" as authData
 }
 
-node "Read Replica\n(RDS PostgreSQL)" as dbReplica {
-  database "recr_db (read)" as recrRead
+node "Replica Đọc\n(RDS PostgreSQL)" as dbReplica {
+  database "recr_db (đọc)" as recrRead
 }
 
-node "Cache\n(ElastiCache Redis)" as redis
+node "Bộ nhớ đệm\n(ElastiCache Redis)" as redis
 
-node "Message Queue\n(RabbitMQ)" as mq
+node "Hàng đợi Thông báo\n(RabbitMQ)" as mq
 
-' --- Search ---
-node "Search Engine\n(OpenSearch)" as search
+' --- Tìm kiếm ---
+node "Công cụ Tìm kiếm\n(OpenSearch)" as search
 
-' --- External ---
-cloud "External APIs" as external
+' --- Bên ngoài ---
+cloud "API Bên ngoài" as external
 
-' --- Relationships ---
+' --- Quan hệ ---
 cdn --> alb : HTTPS
 alb --> app1 : HTTP
 alb --> app2 : HTTP
@@ -76,7 +76,7 @@ alb --> app2 : HTTP
 app1 --> dbPrimary : TCP 5432
 app2 --> dbPrimary : TCP 5432
 
-dbPrimary --> dbReplica : replication
+dbPrimary --> dbReplica : sao chép
 
 app1 --> redis : TCP 6379
 app2 --> redis : TCP 6379
@@ -87,7 +87,7 @@ app2 --> search : TCP 9200
 app1 --> mq : TCP 5672
 app2 --> mq : TCP 5672
 
-mq --> worker : consume
+mq --> worker : tiêu thụ
 
 worker --> dbPrimary : TCP 5432
 workerNotif --> external : HTTPS

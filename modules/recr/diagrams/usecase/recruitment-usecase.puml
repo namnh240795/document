@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
-' Recruitment System - Use Case Diagram
-' Roles: Candidate, HR, Employer
+' Hệ thống Tuyển dụng - Sơ đồ Use Case
+' Vai trò: Ứng viên, HR, Nhà tuyển dụng
 ' ============================================================
 
 left to right direction
@@ -17,43 +17,37 @@ skinparam nodesep 60
 skinparam ranksep 40
 
 ' --- Actors ---
-actor "Candidate" as candidate
+actor "Ứng viên" as candidate
 actor "HR" as hr
-actor "Employer" as employer
+actor "Nhà tuyển dụng" as employer
 
 ' --- Force actor order ---
 candidate -[hidden]down- hr
 hr -[hidden]down- employer
 
-' --- Use Cases - Candidate ---
-usecase "UC-01: Register Account" as UC01
-usecase "UC-02: Login" as UC02
-usecase "UC-03: Browse Jobs" as UC03
-usecase "UC-04: Submit Application" as UC04
-usecase "UC-05: View Application Status" as UC05
-usecase "UC-06: Update Profile" as UC06
-usecase "UC-07: Upload Resume" as UC07
+' --- Use Cases - Ứng viên ---
+usecase "UC-03: Tìm việc" as UC03
+usecase "UC-04: Nộp hồ sơ" as UC04
+usecase "UC-05: Xem trạng thái hồ sơ" as UC05
+usecase "UC-06: Cập nhật hồ sơ" as UC06
+usecase "UC-07: Tải lên CV" as UC07
 
 ' --- Use Cases - HR ---
-usecase "UC-08: Review Applications" as UC08
-usecase "UC-09: Screen Candidates" as UC09
-usecase "UC-10: Schedule Interview" as UC10
-usecase "UC-11: Evaluate Candidate" as UC11
-usecase "UC-12: Send Offer" as UC12
-usecase "UC-13: Reject Candidate" as UC13
-usecase "UC-14: Track Pipeline" as UC14
-usecase "UC-15: Generate Reports" as UC15
+usecase "UC-08: Xem hồ sơ" as UC08
+usecase "UC-09: Lọc ứng viên" as UC09
+usecase "UC-10: Phỏng vấn" as UC10
+usecase "UC-11: Đánh giá ứng viên" as UC11
+usecase "UC-12: Gửi đề nghị" as UC12
+usecase "UC-13: Từ chối ứng viên" as UC13
+usecase "UC-14: Theo dõi quy trình" as UC14
+usecase "UC-15: Tạo báo cáo" as UC15
 
-' --- Use Cases - Employer ---
-usecase "UC-16: Post Job" as UC16
-usecase "UC-17: Manage Job Listings" as UC17
-usecase "UC-18: View Applicants" as UC18
-usecase "UC-19: Approve Job Posting" as UC19
-usecase "UC-20: View Recruitment Analytics" as UC20
+' --- Use Cases - Nhà tuyển dụng ---
+usecase "UC-16: Đăng tin tuyển dụng" as UC16
+usecase "UC-17: Quản lý tin tuyển dụng" as UC17
+usecase "UC-18: Xem ứng viên" as UC18
 
-' --- Relationships - Candidate ---
-candidate --> UC01
-candidate --> UC02
+' --- Relationships - Ứng viên ---
 candidate --> UC03
 candidate --> UC04
 candidate --> UC05
@@ -70,16 +64,12 @@ hr --> UC13
 hr --> UC14
 hr --> UC15
 
-' --- Relationships - Employer ---
+' --- Relationships - Nhà tuyển dụng ---
 employer --> UC16
 employer --> UC17
 employer --> UC18
-employer --> UC19
-employer --> UC20
 
 ' --- Include/Extend ---
-UC04 ..> UC01 : <<include>>
-UC04 ..> UC02 : <<include>>
 UC08 ..> UC09 : <<include>>
 UC10 ..> UC11 : <<include>>
 UC12 ..> UC14 : <<extend>>

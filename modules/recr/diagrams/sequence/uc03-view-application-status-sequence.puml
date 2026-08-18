@@ -1,0 +1,55 @@
+@startuml
+' UC-03: Xem trạng thái hồ sơ - Sơ đồ Chuỗi
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-03: Xem trạng thái hồ sơ
+
+actor "Ứng viên" as Cand
+participant "Cổng việc làm" as FE
+participant "API Gateway" as GW
+participant "Dịch vụ Tuyển dụng" as RS
+database "CSDL Tuyển dụng" as DB
+
+== Bước 1: Tải Hồ sơ ==
+
+Cand -> FE : Truy cập hồ sơ của tôi
+activate FE
+
+FE -> GW : GET /recr/candidate/applications
+activate GW
+
+GW -> RS : Lấy danh sách hồ sơ
+activate RS
+
+RS -> DB : Truy vấn hồ sơ
+activate DB
+DB --> RS : Danh sách hồ sơ
+deactivate DB
+
+RS --> GW : Phản hồi hồ sơ
+deactivate RS
+
+GW --> FE : Hồ sơ
+deactivate GW
+
+FE --> Cand : Hiển thị hồ sơ
+deactivate FE
+
+== Bước 2: Xem Chi tiết ==
+
+Cand -> FE : Chọn hồ sơ
+FE -> GW : GET /recr/candidate/applications/:id
+activate GW
+GW --> FE : Chi tiết hồ sơ
+deactivate GW
+
+FE --> Cand : Hiển thị chi tiết
+deactivate FE
+
+@enduml

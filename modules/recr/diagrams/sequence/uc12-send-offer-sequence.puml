@@ -1,5 +1,5 @@
 @startuml
-' UC-12: Send Offer - Sequence Diagram
+' UC-12: Gửi đề nghị - Sơ đồ Chuỗi
 skinparam sequence {
   ArrowColor #333333
   ActorBorderColor #333333
@@ -8,63 +8,63 @@ skinparam sequence {
   ParticipantBorderColor #333333
 }
 
-title UC-12: Send Offer
+title UC-12: Gửi đề nghị
 
 actor "HR" as HR
-participant "Dashboard" as FE
+participant "Bảng điều khiển" as FE
 participant "API Gateway" as GW
-participant "Recruitment Service" as RS
-participant "Notification Service" as NS
-database "Recruitment DB" as DB
+participant "Dịch vụ Tuyển dụng" as RS
+participant "Dịch vụ Thông báo" as NS
+database "CSDL Tuyển dụng" as DB
 
-== Step 1: Create Offer ==
+== Bước 1: Tạo Đề nghị ==
 
-HR -> FE : Access candidate application
+HR -> FE : Truy cập hồ sơ ứng viên
 activate FE
 
 FE -> GW : GET /recr/hr/applications/:id
 activate GW
-GW --> FE : Application details
+GW --> FE : Chi tiết hồ sơ
 deactivate GW
 
-HR -> FE : Create offer
+HR -> FE : Tạo đề nghị
 FE -> GW : POST /recr/hr/offers
 activate GW
 
-GW -> RS : Validate & Process
+GW -> RS : Xác thực & Xử lý
 activate RS
 
-== Step 2: Create Offer Record ==
+== Bước 2: Tạo bản ghi Đề nghị ==
 
-RS -> DB : Create offer record
+RS -> DB : Tạo bản ghi đề nghị
 activate DB
-DB --> RS : Offer created
+DB --> RS : Đề nghị đã tạo
 deactivate DB
 
-RS -> DB : Update application status to "offer"
+RS -> DB : Cập nhật trạng thái hồ sơ thành "offer"
 activate DB
-DB --> RS : Status updated
+DB --> RS : Trạng thái đã cập nhật
 deactivate DB
 
-== Step 3: Send Notification ==
+== Bước 3: Gửi Thông báo ==
 
-RS -> NS : Publish offer.sent
+RS -> NS : Đăng offer.sent
 activate NS
 
-NS -> NS : Generate offer document
-NS -> NS : Send offer email
-NS --> RS : Done
+NS -> NS : Tạo tài liệu đề nghị
+NS -> NS : Gửi email đề nghị
+NS --> RS : Xong
 deactivate NS
 
-== Step 4: Response ==
+== Bước 4: Phản hồi ==
 
 RS --> GW : 201 Created
 deactivate RS
 
-GW --> FE : Offer ID
+GW --> FE : Mã Đề nghị
 deactivate GW
 
-FE --> HR : Offer sent
+FE --> HR : Đề nghị đã gửi
 deactivate FE
 
 @enduml

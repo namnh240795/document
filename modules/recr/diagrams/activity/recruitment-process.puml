@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
-' Recruitment System - Activity Diagram
-' Process flow for 3 roles: Candidate, HR, Employer
+' Hệ thống Tuyển dụng - Sơ đồ Hoạt động
+' Quy trình cho 3 vai trò: Ứng viên, HR, Nhà tuyển dụng
 ' ============================================================
 
 skinparam activity {
@@ -12,119 +12,119 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title Recruitment Process Flow (3 Roles)
+title Quy trình Tuyển dụng (3 Vai trò)
 
-|System|
+|Hệ thống|
 start
-:User Access System;
+:Người dùng truy cập Hệ thống;
 
-if (Login Role?) then (Candidate)
-  |Candidate|
-  :Browse Job Listings;
+if (Đăng nhập với vai trò?) then (Ứng viên)
+  |Ứng viên|
+  :Xem danh sách Việc làm;
 
-  :Select Job Position;
+  :Chọn vị trí Việc làm;
 
-  :Submit Application;
+  :Nộp hồ sơ;
 
-  |System|
-  :Validate Application;
+  |Hệ thống|
+  :Xác thực Hồ sơ;
 
-  if (Valid Application?) then (yes)
-    :Create Application Record;
+  if (Hồ sơ hợp lệ?) then (có)
+    :Tạo bản ghi Hồ sơ;
 
-    :Notify HR;
+    :Thông báo HR;
 
     |HR|
-    :Review Application;
+    :Xem Hồ sơ;
 
-    if (Qualified Candidate?) then (yes)
-      :Schedule Interview;
+    if (Ứng viên đạt yêu cầu?) then (có)
+      :Lên lịch Phỏng vấn;
 
-      |Candidate|
-      :Attend Interview;
+      |Ứng viên|
+      :Tham gia Phỏng vấn;
 
       |HR|
-      :Evaluate Interview;
+      :Đánh giá Phỏng vấn;
 
-      if (Positive Evaluation?) then (yes)
-        :Create Offer;
+      if (Đánh giá tích cực?) then (có)
+        :Tạo Đề nghị;
 
-        |Employer|
-        :Approve Offer;
+        |Nhà tuyển dụng|
+        :Phê duyệt Đề nghị;
 
-        if (Offer Approved?) then (yes)
-          :Send Offer Letter;
+        if (Đề nghị được duyệt?) then (có)
+          :Gửi Thư đề nghị;
 
-          |Candidate|
-          if (Accepts Offer?) then (yes)
-            :Update Status to Hired;
+          |Ứng viên|
+          if (Chấp nhận Đề nghị?) then (có)
+            :Cập nhật trạng thái là Đã tuyển;
 
-            |System|
-            :Create Employee Record;
+            |Hệ thống|
+            :Tạo bản ghi Nhân viên;
 
-          else (no)
-            :Notify HR;
+          else (không)
+            :Thông báo HR;
           endif
 
-        else (no)
-          :Notify HR;
+        else (không)
+          :Thông báo HR;
         endif
 
-      else (no)
-        :Reject Candidate;
+      else (không)
+        :Từ chối Ứng viên;
 
-        |System|
-        :Send Rejection Email;
+        |Hệ thống|
+        :Gửi email Từ chối;
       endif
 
-    else (no)
-      :Reject Candidate;
+    else (không)
+      :Từ chối Ứng viên;
 
-      |System|
-      :Send Rejection Email;
+      |Hệ thống|
+      :Gửi email Từ chối;
     endif
 
-  else (no)
-    :Return Error;
+  else (không)
+    :Trả về lỗi;
   endif
 
-elseif (Employer)
-  |Employer|
-  :Create Job Posting;
+elseif (Nhà tuyển dụng)
+  |Nhà tuyển dụng|
+  :Tạo Tin tuyển dụng;
 
-  :Submit for Approval;
+  :Gửi để Phê duyệt;
 
   |HR|
-  :Review Job Posting;
+  :Xem Tin tuyển dụng;
 
-  if (Approved?) then (yes)
-    :Approve Job;
+  if (Được phê duyệt?) then (có)
+    :Phê duyệt Việc làm;
 
-    |System|
-    :Publish Job;
+    |Hệ thống|
+    :Đăng Tin tuyển dụng;
 
-    :Notify Employer;
+    :Thông báo Nhà tuyển dụng;
 
-  else (no)
-    :Return for Revision;
+  else (không)
+    :Trả về để Sửa đổi;
 
-    |Employer|
-    :Revise Job Posting;
+    |Nhà tuyển dụng|
+    :Sửa đổi Tin tuyển dụng;
   endif
 
 elseif (HR)
   |HR|
-  :Access Dashboard;
+  :Truy cập Bảng điều khiển;
 
-  :View Pipeline;
+  :Xem Quy trình;
 
-  :Review Applications;
+  :Xem Hồ sơ;
 
-  :Schedule Interviews;
+  :Lên lịch Phỏng vấn;
 
-  :Manage Offers;
+  :Quản lý Đề nghị;
 
-  :Generate Reports;
+  :Tạo Báo cáo;
 
 endif
 

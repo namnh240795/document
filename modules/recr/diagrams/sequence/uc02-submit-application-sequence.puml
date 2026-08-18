@@ -1,0 +1,91 @@
+@startuml
+' UC-02: Nộp hồ sơ - Sơ đồ Chuỗi
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-02: Nộp hồ sơ
+
+actor "Ứng viên" as Cand
+participant "Cổng việc làm" as FE
+participant "API Gateway" as GW
+participant "Dịch vụ Tuyển dụng" as RS
+participant "Dịch vụ Thông báo" as NS
+database "CSDL Tuyển dụng" as DB
+database "Lưu trữ File" as S3
+
+== Bước 1: Đăng nhập & Xem việc ==
+
+Cand -> FE : Đăng nhập
+activate FE
+
+FE -> GW : POST /auth/login
+activate GW
+GW --> FE : JWT Token
+deactivate GW
+
+Cand -> FE : Xem việc làm
+FE -> GW : GET /recr/jobs
+activate GW
+GW --> FE : Danh sách việc làm
+deactivate GW
+
+Cand -> FE : Chọn việc làm
+FE -> GW : GET /recr/jobs/:id
+activate GW
+GW --> FE : Chi tiết việc làm
+deactivate GW
+
+== Bước 2: Tải lên CV ==
+
+Cand -> FE : Tải lên CV
+FE -> S3 : PUT /resumes/{candidate_id}.pdf
+activate S3
+S3 --> FE : URL CV
+deactivate S3
+
+== Bước 3: Nộp hồ sơ ==
+
+Cand -> FE : Nộp hồ sơ
+FE -> GW : POST /recr/applications
+activate GW
+
+GW -> RS : Xác thực & Xử lý
+activate RS
+
+RS -> DB : Kiểm tra hồ sơ trùng lặp
+activate DB
+DB --> RS : Không trùng lặp
+deactivate DB
+
+RS -> DB : Tạo bản ghi hồ sơ
+activate DB
+DB --> RS : Hồ sơ đã tạo
+deactivate DB
+
+== Bước 4: Thông báo ==
+
+RS -> NS : Đăng application.submitted
+activate NS
+
+NS -> NS : Gửi email xác nhận
+NS -> NS : Thông báo nhà tuyển dụng
+NS --> RS : Xong
+deactivate NS
+
+== Bước 5: Phản hồi ==
+
+RS --> GW : 201 Created
+deactivate RS
+
+GW --> FE : Mã Hồ sơ
+deactivate GW
+
+FE --> Cand : Hồ sơ đã nộp
+deactivate FE
+
+@enduml

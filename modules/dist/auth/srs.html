@@ -65,7 +65,7 @@
         <li><a href="#fr-011">FR-011: Quản lý Vai trò</a></li>
         <li><a href="#fr-012">FR-012: Xác thực Xã hội</a></li>
         <li><a href="#fr-013">FR-013: Quản lý Phiên làm việc</a></li>
-        <li><a href="#fr-014">FR-014: Khóa Tài khoản FR-014: Khóa Tài khoản User Ban & Impersonation Đăng nhập giả danh Đăng nhập giả danh</a></li>
+        <li><a href="#fr-014">FR-014: Khóa Tài khoản & Đăng nhập giả danh</a></li>
         <li><a href="#fr-015">FR-015: Quản lý Tổ chức</a></li>
         <li><a href="#fr-016">FR-016: Quản lý Nhóm</a></li>
         <li><a href="#fr-017">FR-017: Quản lý Lời mời</a></li>
@@ -90,7 +90,7 @@
         <li><a href="#uc-11">4.11 UC-11: Quản lý Vai trò</a></li>
         <li><a href="#uc-12">4.12 UC-12: Xác thực Xã hội</a></li>
         <li><a href="#uc-13">4.13 UC-13: Quản lý Phiên làm việc</a></li>
-        <li><a href="#uc-14">4.14 UC-14: Khóa Tài khoản 4.14 UC-14: Khóa Tài khoản User Ban & Impersonation Đăng nhập giả danh Đăng nhập giả danh</a></li>
+        <li><a href="#uc-14">4.14 UC-14: Khóa Tài khoản & Đăng nhập giả danh</a></li>
         <li><a href="#uc-15">4.15 UC-15: Quản lý Tổ chức</a></li>
         <li><a href="#uc-16">4.16 UC-16: Quản lý Nhóm</a></li>
         <li><a href="#uc-17">4.17 UC-17: Quản lý Lời mời</a></li>
@@ -121,7 +121,7 @@
         <li><a href="#trace-fr-011">FR-011: Quản lý Vai trò</a></li>
         <li><a href="#trace-fr-012">FR-012: Xác thực Xã hội</a></li>
         <li><a href="#trace-fr-013">FR-013: Quản lý Phiên làm việc</a></li>
-        <li><a href="#trace-fr-014">FR-014: Khóa Tài khoản FR-014: Khóa Tài khoản User Ban & Impersonation Đăng nhập giả danh Đăng nhập giả danh</a></li>
+        <li><a href="#trace-fr-014">FR-014: Khóa Tài khoản & Đăng nhập giả danh</a></li>
         <li><a href="#trace-fr-015">FR-015: Quản lý Tổ chức</a></li>
         <li><a href="#trace-fr-016">FR-016: Quản lý Nhóm</a></li>
         <li><a href="#trace-fr-017">FR-017: Quản lý Lời mời</a></li>
@@ -302,7 +302,7 @@
   <tr id="fr-014">
     <td><span class="req-id">FR-014</span></td>
     <td>AUTH</td>
-    <td>Khóa Tài khoản User Ban & Impersonation Đăng nhập giả danh</td>
+    <td>Khóa Tài khoản & Đăng nhập giả danh</td>
     <td>UC-14</td>
     <td>Trung bình</td>
     <td>Admin có thể khóa/mở khóa tài khoản người dùng và đăng nhập giả danh để hỗ trợ</td>
@@ -671,7 +671,7 @@
   <div class="caption">Figure: Quản lý Phiên làm việc Sequence Diagram</div>
 </div>
 
-<h2 id="uc-14">4.14 UC-14: Khóa Tài khoản 4.14 UC-14: Khóa Tài khoản User Ban & Impersonation Đăng nhập giả danh Đăng nhập giả danh</h2>
+<h2 id="uc-14">4.14 UC-14: Khóa Tài khoản & Đăng nhập giả danh</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Admin</td></tr>
@@ -685,13 +685,13 @@
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/ban-impersonate-activity.png" alt="Ban & Impersonate Activity Diagram">
-  <div class="caption">Figure: Khóa Tài khoản User Ban & Impersonation Đăng nhập giả danh Activity Diagram</div>
+  <div class="caption">Figure: Khóa Tài khoản & Đăng nhập giả danh Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/ban-impersonate-sequence.png" alt="Ban & Impersonate Sequence Diagram">
-  <div class="caption">Figure: Khóa Tài khoản User Ban & Impersonation Đăng nhập giả danh Sequence Diagram</div>
+  <div class="caption">Figure: Khóa Tài khoản & Đăng nhập giả danh Sequence Diagram</div>
 </div>
 
 <h2 id="uc-15">4.15 UC-15: Quản lý Tổ chức</h2>
@@ -927,7 +927,7 @@
   <tr id="trace-fr-011"><td><span class="req-id">FR-011</span></td><td>Quản lý Vai trò</td><td>auth_roles, auth_user_roles</td><td>POST /admin/set-role, POST /organization/create-role</td></tr>
   <tr id="trace-fr-012"><td><span class="req-id">FR-012</span></td><td>Xác thực Xã hội</td><td>auth_accounts</td><td>POST /sign-in/social, POST /link-social, POST /unlink-account</td></tr>
   <tr id="trace-fr-013"><td><span class="req-id">FR-013</span></td><td>Quản lý Phiên làm việc</td><td>auth_sessions</td><td>GET /list-sessions, POST /revoke-session, POST /revoke-sessions</td></tr>
-  <tr id="trace-fr-014"><td><span class="req-id">FR-014</span></td><td>Khóa Tài khoản User Ban & Impersonation Đăng nhập giả danh</td><td>auth_users, auth_sessions</td><td>POST /admin/ban-user, POST /admin/impersonate-user</td></tr>
+  <tr id="trace-fr-014"><td><span class="req-id">FR-014</span></td><td>Khóa Tài khoản & Đăng nhập giả danh</td><td>auth_users, auth_sessions</td><td>POST /admin/ban-user, POST /admin/impersonate-user</td></tr>
   <tr id="trace-fr-015"><td><span class="req-id">FR-015</span></td><td>Quản lý Tổ chức</td><td>auth_organizations, auth_members</td><td>POST /organization/create, GET /organization/list</td></tr>
   <tr id="trace-fr-016"><td><span class="req-id">FR-016</span></td><td>Quản lý Nhóm</td><td>auth_teams, auth_team_members</td><td>POST /organization/create-team, POST /organization/add-team-member</td></tr>
   <tr id="trace-fr-017"><td><span class="req-id">FR-017</span></td><td>Quản lý Lời mời</td><td>auth_invitations</td><td>POST /organization/invite-member, POST /organization/accept-invitation</td></tr>

@@ -1,0 +1,63 @@
+@startuml uc11-review-job-sequence
+title UC-11: Đánh giá Việc làm - Sơ đồ Chuỗi
+
+actor "Ứng viên" as Candidate
+participant "API Gateway" as API
+participant "ReviewController" as Controller
+participant "ReviewService" as Service
+participant "JobRepository" as JobRepo
+participant "ReviewRepository" as ReviewRepo
+database "PostgreSQL" as DB
+participant "EventEmitter" as Events
+
+== Xem Việc làm ==
+Candidate -> API : GET /recr/jobs/:id
+API -> Controller : getJob(id)
+Controller -> Service : getJobById(id)
+Service -> JobRepo : findById(id)
+JobRepo -> DB : SELECT * FROM recr_jobs
+DB --> JobRepo : job
+JobRepo --> Service : job
+Service --> Controller : job
+Controller --> API : job
+API --> Candidate : Chi tiết việc làm
+
+== Nộp Đánh giá ==
+Candidate -> API : POST /recr/candidate/reviews/jobs
+API -> Controller : createReview(dto, userId)
+Controller -> Service : createJobReview(dto, userId)
+
+Service -> JobRepo : findById(dto.jobId)
+JobRepo -> DB : SELECT * FROM recr_jobs
+DB --> JobRepo : job
+JobRepo --> Service : job
+
+Service -> ReviewRepo : checkExistingReview(dto.jobId, userId)
+ReviewRepo -> DB : SELECT * FROM recr_job_reviews WHERE job_id = ? AND user_id = ?
+DB --> ReviewRepo : existing
+ReviewRepo --> Service : existing
+
+alt Đã đánh giá trước đó
+  Service --> Controller : Lỗi: Đã đánh giá
+  Controller --> API : 409 CONFLICT
+  API --> Candidate : Thông báo lỗi
+else Đánh giá mới
+  Service -> ReviewRepo : create({jobId, userId, ...dto})
+  ReviewRepo -> DB : INSERT INTO recr_job_reviews
+  DB --> ReviewRepo : review
+  ReviewRepo --> Service : review
+
+  Service -> JobRepo : updateAverageRating(dto.jobId)
+  JobRepo -> DB : UPDATE recr_jobs SET avg_rating = ?
+  DB --> JobRepo : updated
+  JobRepo --> Service : updated
+
+  Service -> Events : emit('review.submitted', {reviewId, type: 'job'})
+  Events --> Service : ok
+
+  Service --> Controller : review
+  Controller --> API : 201 Created
+  API --> Candidate : Đánh giá đã nộp
+end
+
+@enduml

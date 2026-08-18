@@ -1,0 +1,62 @@
+@startuml
+' UC-08: Đánh giá ứng viên - Sơ đồ Chuỗi
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-08: Đánh giá ứng viên
+
+actor "HR" as HR
+participant "Bảng điều khiển" as FE
+participant "API Gateway" as GW
+participant "Dịch vụ Tuyển dụng" as RS
+database "CSDL Tuyển dụng" as DB
+
+== Bước 1: Truy cập Phỏng vấn ==
+
+HR -> FE : Truy cập chi tiết phỏng vấn
+activate FE
+
+FE -> GW : GET /recr/hr/interviews/:id
+activate GW
+GW --> FE : Chi tiết phỏng vấn
+deactivate GW
+
+FE --> HR : Hiển thị phỏng vấn
+deactivate FE
+
+== Bước 2: Nộp Đánh giá ==
+
+HR -> FE : Nộp đánh giá
+FE -> GW : POST /recr/hr/evaluations
+activate GW
+
+GW -> RS : Xác thực & Xử lý
+activate RS
+
+RS -> DB : Tạo bản ghi đánh giá
+activate DB
+DB --> RS : Đánh giá đã tạo
+deactivate DB
+
+RS -> DB : Cập nhật trạng thái phỏng vấn
+activate DB
+DB --> RS : Trạng thái đã cập nhật
+deactivate DB
+
+== Bước 3: Phản hồi ==
+
+RS --> GW : 201 Created
+deactivate RS
+
+GW --> FE : Đánh giá đã nộp
+deactivate GW
+
+FE --> HR : Thông báo thành công
+deactivate FE
+
+@enduml

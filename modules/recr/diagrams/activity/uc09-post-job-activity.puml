@@ -1,0 +1,73 @@
+@startuml
+' UC-09: Đăng tin tuyển dụng - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-09: Đăng tin tuyển dụng (Nhà tuyển dụng)
+
+start
+:Đăng nhập với tư cách Nhà tuyển dụng;
+
+:Truy cập Quản lý Việc làm;
+
+:Nhấn "Tạo Việc làm mới";
+
+:Nhập Tên Việc làm;
+
+:Nhập Mô tả Việc làm;
+
+:Chọn Phòng ban;
+
+:Nhập Địa điểm;
+
+:Nhập Khoảng lương;
+
+:Chọn Loại hình Việc làm;
+
+:Thêm Yêu cầu Việc làm;
+
+:Lưu bản nháp;
+
+:Xác thực Dữ liệu Việc làm;
+
+if (Việc làm hợp lệ?) then (có)
+  :Tạo bản ghi Việc làm (Bản nháp);
+
+  :Thông báo Nhà tuyển dụng;
+
+  :Xem Tin tuyển dụng;
+
+  :Gửi để Phê duyệt HR;
+
+  :Cập nhật Trạng thái là "Đang chờ";
+
+  :Thông báo HR;
+
+  :Xem Tin tuyển dụng;
+
+  if (Được phê duyệt?) then (có)
+    :Phê duyệt Việc làm;
+
+    :Cập nhật Trạng thái là "Đang mở";
+
+    :Đăng Danh sách Việc làm;
+
+  else (không)
+    :Trả về để Sửa đổi;
+
+    :Sửa đổi Tin tuyển dụng;
+  endif
+
+else (không)
+  :Trả về lỗi Xác thực;
+
+  :Hiển thị Chi tiết lỗi;
+endif
+
+stop
+@enduml

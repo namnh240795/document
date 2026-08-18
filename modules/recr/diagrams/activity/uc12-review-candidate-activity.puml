@@ -1,0 +1,69 @@
+@startuml
+' UC-12: Đánh giá Ứng viên - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-12: Đánh giá Ứng viên (Phỏng vấn viên)
+
+start
+:Điều hướng đến Phỏng vấn đã hoàn thành;
+
+:Nhấn "Viết Đánh giá";
+
+:Kiểm tra Phỏng vấn đã Hoàn thành chưa;
+
+if (Phỏng vấn đã Hoàn thành?) then (có)
+  :Hiển thị Form Đánh giá;
+
+  :Đánh giá Ứng viên (1-5 sao);
+  note right
+    - Kỹ thuật
+    - Kỹ năng Giao tiếp
+    - Phù hợp Văn hóa
+    - Giải quyết Vấn đề
+    - Cộng tác Nhóm
+  end note
+
+  :Nhập Tiêu đề Đánh giá;
+
+  :Nhập Mô tả Đánh giá;
+
+  :Chọn Đề xuất;
+  note right
+    - strong_yes
+    - yes
+    - neutral
+    - no
+    - strong_no
+  end note
+
+  :Nộp Đánh giá;
+
+  :Xác thực Dữ liệu Đánh giá;
+
+  if (Đã đánh giá trước đó?) then (có)
+    :Hiển thị thông báo "Đã đánh giá";
+
+  else (không)
+    :Lưu bản ghi Đánh giá;
+
+    :Cập nhật Điểm trung bình Ứng viên;
+
+    :Trả về Phản hồi Thành công;
+
+    :Hiển thị Xác nhận;
+
+  endif
+
+else (không)
+  :Hiển thị thông báo "Phỏng vấn phải được Hoàn thành trước";
+
+endif
+
+stop
+@enduml

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>API Technical Specification - Recruitment</title>
+  <title>Đề Xuất Kỹ Thuật API - Tuyển Dụng</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,103 +18,78 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>API Technical Specification</h1>
-  <div class="subtitle">Recruitment API</div>
+  <h1>Đề Xuất Kỹ Thuật API</h1>
+  <div class="subtitle">API Tuyển Dụng</div>
   <span class="module-badge">RECR</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.4</td></tr>
+    <tr><td>Phiên bản</td><td>1.4</td></tr>
     <tr><td>Base URL</td><td>https://api.example.com/v1</td></tr>
-    <tr><td>System</td><td>HR Management System</td></tr>
-    <tr><td>Module</td><td>RECR - Recruitment</td></tr>
-    <tr><td>Date</td><td>2026-08-17</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">Recruitment SRS</a></td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Quản lý Nhân sự</td></tr>
+    <tr><td>Module</td><td>RECR - Tuyển dụng</td></tr>
+    <tr><td>Ngày</td><td>2026-08-17</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Tuyển dụng</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a></li>
-    <li><a href="#section-2">2. Response Format</a></li>
-    <li><a href="#section-3">3. Error Codes</a></li>
-    <li><a href="#section-4">4. Rate Limiting</a></li>
-    <li><a href="#section-5">5. Endpoints</a>
+    <li><a href="#section-1">1. Tổng quan</a></li>
+    <li><a href="#section-2">2. Định dạng Phản hồi</a></li>
+    <li><a href="#section-3">3. Mã lỗi</a></li>
+    <li><a href="#section-4">4. Giới hạn tốc độ yêu cầu</a></li>
+    <li><a href="#section-5">5. Các Endpoint</a>
       <ul>
-        <li><a href="#section-5-1">5.1 Authentication (All Roles)</a>
-          <ul>
-            <li><a href="#register">POST /recr/auth/register</a></li>
-            <li><a href="#login">POST /recr/auth/login</a></li>
-          </ul>
-        </li>
-        <li><a href="#section-5-2">5.2 Candidate Endpoints</a></li>
-        <li><a href="#section-5-3">5.3 HR Endpoints</a></li>
-        <li><a href="#section-5-4">5.4 Employer Endpoints</a></li>
-        <li><a href="#section-5-5">5.5 Invitation Endpoints</a>
-          <ul>
-            <li><a href="#invite-send">POST /recr/invitations/send</a></li>
-            <li><a href="#invite-verify">GET /recr/invitations/verify</a></li>
-            <li><a href="#invite-accept">POST /recr/invitations/accept</a></li>
-            <li><a href="#invite-list">GET /recr/invitations</a></li>
-            <li><a href="#invite-revoke">DELETE /recr/invitations/:id</a></li>
-            <li><a href="#invite-resend">POST /recr/invitations/:id/resend</a></li>
-          </ul>
-        </li>
+        <li><a href="#section-5-2">5.2 Endpoint cho Ứng viên</a></li>
+        <li><a href="#section-5-3">5.3 Endpoint cho HR</a></li>
+        <li><a href="#section-5-4">5.4 Endpoint cho Nhà tuyển dụng</a></li>
       </ul>
     </li>
-    <li><a href="#section-6">6. Pagination</a></li>
-    <li><a href="#section-7">7. Webhook Events</a></li>
-    <li><a href="#section-8">8. Changelog</a></li>
+    <li><a href="#section-6">6. Phân trang</a></li>
+    <li><a href="#section-7">7. Sự kiện Webhook</a></li>
+    <li><a href="#section-8">8. Nhật ký thay đổi</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2>1.1 Requirements Addressed</h2>
+<h2>1.1 Các yêu cầu được đề cập</h2>
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
-  <tr><td><span class="req-id">FR-001</span> User Registration (system role: <code>user</code>)</td><td>POST /recr/auth/register</td></tr>
-  <tr><td><span class="req-id">FR-002</span> Login</td><td>POST /recr/auth/login</td></tr>
-  <tr><td><span class="req-id">FR-003</span> Browse Jobs</td><td>GET /recr/jobs</td></tr>
-  <tr><td><span class="req-id">FR-004</span> Submit Application</td><td>POST /recr/applications</td></tr>
-  <tr><td><span class="req-id">FR-007</span> Upload Resume</td><td>POST /recr/candidate/resume</td></tr>
-  <tr><td><span class="req-id">FR-008</span> Review Applications</td><td>GET /recr/hr/applications</td></tr>
-  <tr><td><span class="req-id">FR-017</span> Post Job</td><td>POST /recr/employer/jobs</td></tr>
-  <tr><td><span class="req-id">FR-037</span> Manage Candidate Resumes</td><td>GET /recr/candidate/resumes, POST /recr/candidate/resume, DELETE /recr/candidate/resumes/:id</td></tr>
-  <tr><td><span class="req-id">FR-038</span> Application Resume Linking</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
-  <tr><td><span class="req-id">FR-039</span> Send Invitation</td><td>POST /recr/invitations/send</td></tr>
-  <tr><td><span class="req-id">FR-040</span> Generate Token</td><td>POST /recr/invitations/send</td></tr>
-  <tr><td><span class="req-id">FR-042</span> Verify Token</td><td>GET /recr/invitations/verify</td></tr>
-  <tr><td><span class="req-id">FR-043</span> Accept Invitation</td><td>POST /recr/invitations/accept</td></tr>
-  <tr><td><span class="req-id">FR-044</span> Revoke Invitation</td><td>DELETE /recr/invitations/:id</td></tr>
-  <tr><td><span class="req-id">FR-045</span> List Invitations</td><td>GET /recr/invitations</td></tr>
-  <tr><td><span class="req-id">FR-046</span> Resend Invitation</td><td>POST /recr/invitations/:id/resend</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Endpoint API</th></tr>
+  <tr><td><span class="req-id">FR-003</span> Duyệt tin tuyển dụng</td><td>GET /recr/jobs</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Nộp đơn ứng tuyển</td><td>POST /recr/applications</td></tr>
+  <tr><td><span class="req-id">FR-007</span> Tải lên hồ sơ</td><td>POST /recr/candidate/resume</td></tr>
+  <tr><td><span class="req-id">FR-008</span> Xem đơn ứng tuyển</td><td>GET /recr/hr/applications</td></tr>
+  <tr><td><span class="req-id">FR-017</span> Đăng tin tuyển dụng</td><td>POST /recr/employer/jobs</td></tr>
+  <tr><td><span class="req-id">FR-037</span> Quản lý hồ sơ ứng viên</td><td>GET /recr/candidate/resumes, POST /recr/candidate/resume, DELETE /recr/candidate/resumes/:id</td></tr>
+  <tr><td><span class="req-id">FR-038</span> Liên kết hồ sơ với đơn ứng tuyển</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
 </table>
 
-<h2>1.2 API Principles</h2>
+<h2>1.2 Nguyên tắc API</h2>
 <ul>
-  <li>RESTful design</li>
-  <li>JSON request/response</li>
-  <li>Versioned via URL path (<code>/v1/</code>)</li>
-  <li>Stateless (JWT authentication)</li>
-  <li>Two-level role system:
+  <li>Thiết kế RESTful</li>
+  <li>Yêu cầu/Phản hồi dạng JSON</li>
+  <li>Phiên bản hóa qua đường dẫn URL (<code>/v1/</code>)</li>
+  <li>Không trạng thái (Xác thực JWT)</li>
+  <li>Hệ thống vai trò hai cấp:
     <ul>
-      <li><strong>System-level roles</strong> (managed by AUTH): <code>user</code> (self-registered), <code>super_admin</code> (admin-created only)</li>
-      <li><strong>Organization-level roles</strong> (managed within orgs): <code>HR</code>, <code>Candidate</code>, <code>Employer</code></li>
+      <li><strong>Vai trò cấp hệ thống</strong> (được quản lý bởi AUTH): <code>user</code> (tự đăng ký), <code>super_admin</code> (chỉ tạo bởi quản trị viên)</li>
+      <li><strong>Vai trò cấp tổ chức</strong> (được quản lý trong tổ chức): <code>HR</code>, <code>Candidate</code>, <code>Employer</code></li>
     </ul>
   </li>
-  <li>Org-level role-based endpoints: <code>/candidate/</code>, <code>/hr/</code>, <code>/employer/</code></li>
+  <li>Endpoint dựa trên vai trò cấp tổ chức: <code>/candidate/</code>, <code>/hr/</code>, <code>/employer/</code></li>
 </ul>
 
-<h2>1.3 Authentication</h2>
-<p>All endpoints require JWT Bearer token unless marked as <strong>Public</strong>. The JWT includes the user's <strong>system-level role</strong>.</p>
+<h2>1.3 Xác thực</h2>
+<p>Tất cả các endpoint đều yêu cầu JWT Bearer token trừ khi được đánh dấu là <strong>Công khai</strong>. JWT chứa <strong> vai trò cấp hệ thống</strong> của người dùng.</p>
 <pre><code>Authorization: Bearer &lt;access_token&gt;
 
 // JWT Payload includes:
@@ -128,9 +103,9 @@
 // are managed within organizations, not in the system JWT.</code></pre>
 
 <!-- 2. RESPONSE FORMAT -->
-<h1 id="section-2">2. Response Format</h1>
+<h1 id="section-2">2. Định dạng Phản hồi</h1>
 
-<h2>2.1 Success Response</h2>
+<h2>2.1 Phản hồi thành công</h2>
 <pre><code>{
   "success": true,
   "data": { ... },
@@ -140,7 +115,7 @@
   }
 }</code></pre>
 
-<h2>2.2 Error Response</h2>
+<h2>2.2 Phản hồi lỗi</h2>
 <pre><code>{
   "success": false,
   "error": {
@@ -153,306 +128,77 @@
 }</code></pre>
 
 <!-- 3. ERROR CODES -->
-<h1 id="section-3">3. Error Codes</h1>
+<h1 id="section-3">3. Mã lỗi</h1>
 
 <table>
-  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
-  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Request validation failed</td></tr>
-  <tr><td>400</td><td>INVALID_ROLE</td><td>Invalid role for self-registration (<code>super_admin</code> must be created by admin)</td></tr>
-  <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid token</td></tr>
-  <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions for role</td></tr>
-  <tr><td>404</td><td>NOT_FOUND</td><td>Resource not found</td></tr>
-  <tr><td>409</td><td>EMAIL_EXISTS</td><td>Email already registered (from AUTH module)</td></tr>
-  <tr><td>409</td><td>APPLICATION_EXISTS</td><td>Candidate already applied to this job</td></tr>
-  <tr><td>409</td><td>RESUME_LINKED</td><td>Cannot delete resume that is linked to a submitted application</td></tr>
-  <tr><td>400</td><td>INVALID_FILE</td><td>File not found in FILE module or is not a RESUME category file</td></tr>
-  <tr><td>400</td><td>INVALID_RESUME_FILE</td><td>Resume file_id does not exist or does not belong to candidate</td></tr>
-  <tr><td>400</td><td>INVALID_FILE_CATEGORY</td><td>Only RESUME category files can be linked to applications</td></tr>
-  <tr><td>400</td><td>FILE_TOO_LARGE</td><td>File size exceeds 10MB limit</td></tr>
-  <tr><td>422</td><td>INVALID_STATUS_TRANSITION</td><td>Invalid status change</td></tr>
-  <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
-  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error</td></tr>
-  <tr><td>503</td><td>SERVICE_UNAVAILABLE</td><td>AUTH module or downstream service unreachable</td></tr>
-  <tr><td>409</td><td>INVITE_EXISTS</td><td>Pending invitation already exists for email+employer</td></tr>
-  <tr><td>400</td><td>INVITE_EXPIRED</td><td>Invitation token has expired</td></tr>
-  <tr><td>400</td><td>INVITE_ALREADY_USED</td><td>Invitation already accepted</td></tr>
-  <tr><td>400</td><td>INVITE_REVOKED</td><td>Invitation has been revoked</td></tr>
-  <tr><td>400</td><td>CANNOT_INVITE_SELF</td><td>Cannot send invitation to yourself</td></tr>
-  <tr><td>400</td><td>INVITE_NOT_PENDING</td><td>Only PENDING invitations can be revoked</td></tr>
-  <tr><td>400</td><td>INVITE_NOT_RESENDABLE</td><td>Only EXPIRED or REVOKED invitations can be resent</td></tr>
-  <tr><td>400</td><td>EMAIL_MISMATCH</td><td>Logged-in user email does not match invitation</td></tr>
+  <tr><th>Mã HTTP</th><th>Mã lỗi</th><th>Mô tả</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Kiểm tra yêu cầu không thành công</td></tr>
+  <tr><td>400</td><td>INVALID_ROLE</td><td>Vai trò không hợp lệ cho tự đăng ký (<code>super_admin</code> phải được tạo bởi quản trị viên)</td></tr>
+  <tr><td>401</td><td>UNAUTHORIZED</td><td>Thiếu hoặc token không hợp lệ</td></tr>
+  <tr><td>403</td><td>FORBIDDEN</td><td>Không đủ quyền cho vai trò</td></tr>
+  <tr><td>404</td><td>NOT_FOUND</td><td>Không tìm thấy tài nguyên</td></tr>
+  <tr><td>409</td><td>EMAIL_EXISTS</td><td>Email đã được đăng ký (từ module AUTH)</td></tr>
+  <tr><td>409</td><td>APPLICATION_EXISTS</td><td>Ứng viên đã nộp đơn cho vị trí này</td></tr>
+  <tr><td>409</td><td>RESUME_LINKED</td><td>Không thể xóa hồ sơ đã liên kết với đơn ứng tuyển đã nộp</td></tr>
+  <tr><td>400</td><td>INVALID_FILE</td><td>Không tìm thấy tệp trong module FILE hoặc tệp không thuộc danh mục RESUME</td></tr>
+  <tr><td>400</td><td>INVALID_RESUME_FILE</td><td>file_id của hồ sơ không tồn tại hoặc không thuộc về ứng viên</td></tr>
+  <tr><td>400</td><td>INVALID_FILE_CATEGORY</td><td>Chỉ các tệp danh mục RESUME mới có thể liên kết với đơn ứng tuyển</td></tr>
+  <tr><td>400</td><td>FILE_TOO_LARGE</td><td>Kích thước tệp vượt quá giới hạn 10MB</td></tr>
+  <tr><td>422</td><td>INVALID_STATUS_TRANSITION</td><td>Thay đổi trạng thái không hợp lệ</td></tr>
+  <tr><td>429</td><td>RATE_LIMITED</td><td>Quá nhiều yêu cầu</td></tr>
+  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Lỗi máy chủ</td></tr>
+  <tr><td>503</td><td>SERVICE_UNAVAILABLE</td><td>Không thể truy cập module AUTH hoặc dịch vụ downstream</td></tr>
+  <tr><td>409</td><td>INVITE_EXISTS</td><td>Lời mời đang chờ xử lý đã tồn tại cho email+nhà tuyển dụng</td></tr>
+  <tr><td>400</td><td>INVITE_EXPIRED</td><td>Token lời mời đã hết hạn</td></tr>
+  <tr><td>400</td><td>INVITE_ALREADY_USED</td><td>Lời mời đã được chấp nhận</td></tr>
+  <tr><td>400</td><td>INVITE_REVOKED</td><td>Lời mời đã bị thu hồi</td></tr>
+  <tr><td>400</td><td>CANNOT_INVITE_SELF</td><td>Không thể gửi lời mời cho chính mình</td></tr>
+  <tr><td>400</td><td>INVITE_NOT_PENDING</td><td>Chỉ các lời mời đang CHỜ XỬ LÝ mới có thể bị thu hồi</td></tr>
+  <tr><td>400</td><td>INVITE_NOT_RESENDABLE</td><td>Chỉ các lời mời ĐÃ HẾT HẠN hoặc ĐÃ THU HỒI mới có thể gửi lại</td></tr>
+  <tr><td>400</td><td>EMAIL_MISMATCH</td><td>Email người dùng đăng nhập không khớp với lời mời</td></tr>
 </table>
 
 <!-- 4. RATE LIMITING -->
-<h1 id="section-4">4. Rate Limiting</h1>
+<h1 id="section-4">4. Giới hạn tốc độ yêu cầu</h1>
 
 <table>
-  <tr><th>Endpoint Category</th><th>Requests/min</th><th>Burst</th></tr>
-  <tr><td>Auth endpoints</td><td>10</td><td>5</td></tr>
-  <tr><td>Candidate endpoints (org role)</td><td>60</td><td>20</td></tr>
-  <tr><td>HR endpoints (org role)</td><td>100</td><td>30</td></tr>
-  <tr><td>Employer endpoints (org role)</td><td>60</td><td>20</td></tr>
+  <tr><th>Loại Endpoint</th><th>Yêu cầu/phút</th><th>Burst</th></tr>
+  <tr><td>Endpoint xác thực</td><td>10</td><td>5</td></tr>
+  <tr><td>Endpoint ứng viên (vai trò tổ chức)</td><td>60</td><td>20</td></tr>
+  <tr><td>Endpoint HR (vai trò tổ chức)</td><td>100</td><td>30</td></tr>
+  <tr><td>Endpoint nhà tuyển dụng (vai trò tổ chức)</td><td>60</td><td>20</td></tr>
 </table>
 
 <!-- 5. ENDPOINTS -->
-<h1 id="section-5">5. Endpoints</h1>
+<h1 id="section-5">5. Các Endpoint</h1>
 
-<h2 id="section-5-1">5.1 Authentication (All Roles)</h2>
-
-<h3 id="register">POST /recr/auth/register <em>(Public)</em> <span class="req-id">FR-001</span></h3>
-<p>Register a new user account. Creates a user with the system-level role <code>user</code>. The <code>role</code> parameter is not required and defaults to <code>user</code>. Organization-level roles (HR, Candidate, Employer) are assigned within organizations after registration.</p>
-<p><strong>Cross-module dependency:</strong> RECR Service calls AUTH Service to create the user account (email, password). AUTH creates user with system role <code>user</code> and returns <code>user_id</code> + JWT token. RECR then creates the recruitment-specific profile in <code>recr_db</code>.</p>
-
-<h4>Flow Summary</h4>
-<ol>
-  <li>Frontend sends registration request to RECR Service</li>
-  <li>RECR validates input, calls AUTH Service to create user account</li>
-  <li>AUTH checks email availability, hashes password, creates user with system role <code>user</code>, generates JWT</li>
-  <li>RECR creates profile in <code>recr_db</code> (if needed)</li>
-  <li>RECR publishes <code>user.registered</code> event to Event Bus</li>
-  <li>RECR returns 201 Created with user profile + JWT token</li>
-</ol>
-<p><strong>Note:</strong> The <code>role</code> parameter in the request body is optional. If provided, it must be <code>user</code>. The system does not allow self-registration with <code>super_admin</code> role. Organization-level roles (HR, Candidate, Employer) are managed within organizations by org owners/admins.</p>
-<div class="diagram">
-  <img src="./images/sequence/uc01-register-sequence.png" alt="UC-01 Register Sequence Diagram">
-  <div class="caption">Figure: UC-01 Register Account - Cross-Module Sequence (RECR → AUTH → RECR DB)</div>
-</div>
-
-<h4>Request Body</h4>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
-  <tr><td><code>email</code></td><td>string</td><td>Yes</td><td>Valid email format, max 255 chars</td><td>User email address (unique)</td></tr>
-  <tr><td><code>password</code></td><td>string</td><td>Yes</td><td>Min 8 chars, at least 1 uppercase, 1 lowercase, 1 number</td><td>Plain text (hashed by AUTH)</td></tr>
-  <tr><td><code>full_name</code></td><td>string</td><td>Yes</td><td>2-100 chars, no special characters except spaces and hyphens</td><td>Full name</td></tr>
-  <tr><td><code>phone</code></td><td>string</td><td>No</td><td>Valid phone format (e.g., +84xxx or 09xxxxxxx)</td><td>Phone number</td></tr>
-  <tr><td><code>role</code></td><td>string</td><td>No</td><td>Enum: <code>"user"</code> (default)</td><td>System role. Defaults to <code>user</code>. Only <code>user</code> allowed for self-registration.</td></tr>
-</table>
-
-<pre><code>{
-  "email": "john@example.com",
-  "password": "SecurePass123",
-  "full_name": "John Doe",
-  "phone": "+84901234567"
-}</code></pre>
-
-<p><strong>Note:</strong> The <code>role</code> field is optional. If omitted, the user is created with the <code>user</code> system role. Organization-level roles (HR, Candidate, Employer) are assigned when the user joins or is added to an organization.</p>
-
-<h4>Response 201</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "id": 1,
-    "email": "john@example.com",
-    "full_name": "John Doe",
-    "phone": "+84901234567",
-    "role": "user",
-    "token": "eyJhbGciOiJIUzI1NiIs...",
-    "expires_at": "2026-08-12T10:30:00Z"
-  },
-  "meta": {
-    "requestId": "req-abc-123",
-    "timestamp": "2026-08-12T10:00:00Z"
-  }
-}</code></pre>
-
-<p><strong>Note:</strong> The response contains the system-level role (<code>user</code>). Organization-level roles (HR, Candidate, Employer) are retrieved when the user accesses an organization context.</p>
-
-<h4>Error Responses</h4>
-
-<p><strong>409 Conflict — Email already registered:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "EMAIL_EXISTS",
-    "message": "Email already registered"
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Validation error:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid input data",
-    "details": [
-      { "field": "email", "message": "Invalid email format" },
-      { "field": "password", "message": "Password must be at least 8 characters with uppercase, lowercase, and number" }
-    ]
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Invalid role:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVALID_ROLE",
-    "message": "Role must be 'user'. Super admin accounts are created by admin only."
-  }
-}</code></pre>
-
-<p><strong>503 Service Unavailable — AUTH module unreachable:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "SERVICE_UNAVAILABLE",
-    "message": "Registration service temporarily unavailable. Please try again later."
-  }
-}</code></pre>
-
-<h4>Business Rules</h4>
-<table>
-  <tr><th>Rule</th><th>Description</th></tr>
-  <tr><td>BR-AUTH-01</td><td>Email must be unique across the entire system (checked by AUTH module)</td></tr>
-  <tr><td>BR-AUTH-02</td><td>Password is hashed by AUTH module (bcrypt, 12 rounds) — RECR never stores plain text</td></tr>
-  <tr><td>BR-RECR-01</td><td>Registration creates user with system-level role <code>user</code> (via AUTH module)</td></tr>
-  <tr><td>BR-RECR-02</td><td><code>super_admin</code> role cannot be self-registered — must be created by an existing admin</td></tr>
-  <tr><td>BR-RECR-03</td><td>Organization-level roles (HR, Candidate, Employer) are managed within organizations, not at registration</td></tr>
-  <tr><td>BR-RECR-04</td><td>Registration is atomic: if AUTH succeeds but RECR profile creation fails, AUTH account is rolled back</td></tr>
-  <tr><td>BR-RECR-05</td><td><code>user.registered</code> event is published after successful registration (async, non-blocking)</td></tr>
-</table>
-
-<h3 id="login">POST /recr/auth/login <em>(Public)</em> <span class="req-id">FR-002</span></h3>
-<p>Login with email and password. Returns JWT token with system-level role claim and user profile.</p>
-<p><strong>Cross-module dependency:</strong> RECR Service calls AUTH Service to verify credentials. AUTH checks email, compares password hash, verifies account status, and generates JWT with system-level role. RECR then fetches user profile from <code>recr_db</code>.</p>
-
-<h4>Flow Summary</h4>
-<ol>
-  <li>Frontend sends login request to RECR Service</li>
-  <li>RECR validates input, calls AUTH Service to authenticate</li>
-  <li>AUTH finds user by email, compares password hash (bcrypt)</li>
-  <li>AUTH checks account is active (not locked, not deleted)</li>
-  <li>AUTH generates JWT token with system-level role claim (<code>user</code> or <code>super_admin</code>)</li>
-  <li>RECR fetches user profile from <code>recr_db</code></li>
-  <li>RECR returns 200 OK with user profile + JWT token</li>
-</ol>
-<div class="diagram">
-  <img src="./images/sequence/uc02-login-sequence.png" alt="UC-02 Login Sequence Diagram">
-  <div class="caption">Figure: UC-02 Login - Cross-Module Sequence (RECR → AUTH → RECR DB)</div>
-</div>
-
-<h4>Request Body</h4>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
-  <tr><td><code>email</code></td><td>string</td><td>Yes</td><td>Valid email format, max 255 chars</td><td>Registered email address</td></tr>
-  <tr><td><code>password</code></td><td>string</td><td>Yes</td><td>Min 1 char (validation done by AUTH)</td><td>Plain text password</td></tr>
-</table>
-
-<pre><code>{
-  "email": "john@example.com",
-  "password": "SecurePass123"
-}</code></pre>
-
-<h4>Response 200</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "id": 1,
-    "email": "john@example.com",
-    "full_name": "John Doe",
-    "phone": "+84901234567",
-    "role": "user",
-    "token": "eyJhbGciOiJIUzI1NiIs...",
-    "token_type": "Bearer",
-    "expires_at": "2026-08-12T22:00:00Z"
-  },
-  "meta": {
-    "requestId": "req-xyz-789",
-    "timestamp": "2026-08-12T10:00:00Z"
-  }
-}</code></pre>
-
-<p><strong>Note:</strong> The JWT contains the system-level role (<code>user</code> or <code>super_admin</code>). Organization-level roles (HR, Candidate, Employer) are retrieved when the user accesses an organization context. The frontend uses the system role to determine initial navigation, and org roles are loaded when the user selects an organization.</p>
-
-<h4>Error Responses</h4>
-
-<p><strong>401 Unauthorized — Invalid credentials:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVALID_CREDENTIALS",
-    "message": "Email or password is incorrect"
-  }
-}</code></pre>
-
-<p><strong>403 Forbidden — Account locked (too many failed attempts):</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "ACCOUNT_LOCKED",
-    "message": "Account locked due to too many failed login attempts. Please try again in 15 minutes or reset your password."
-  }
-}</code></pre>
-
-<p><strong>403 Forbidden — Account inactive:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "ACCOUNT_INACTIVE",
-    "message": "Account has been deactivated. Please contact support."
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Validation error:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid input data",
-    "details": [
-      { "field": "email", "message": "Invalid email format" },
-      { "field": "password", "message": "Password is required" }
-    ]
-  }
-}</code></pre>
-
-<p><strong>429 Too Many Requests — Rate limited:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "RATE_LIMITED",
-    "message": "Too many login attempts. Please try again later."
-  }
-}</code></pre>
-
-<h4>Business Rules</h4>
-<table>
-  <tr><th>Rule</th><th>Description</th></tr>
-  <tr><td>BR-AUTH-10</td><td>Email is case-insensitive — <code>John@Example.com</code> matches <code>john@example.com</code></td></tr>
-  <tr><td>BR-AUTH-11</td><td>Password is verified via bcrypt hash comparison (12 rounds)</td></tr>
-  <tr><td>BR-AUTH-12</td><td>After 5 consecutive failed attempts, account is locked for 15 minutes</td></tr>
-  <tr><td>BR-AUTH-13</td><td>JWT token expires in 24 hours (configurable via AUTH module)</td></tr>
-  <tr><td>BR-AUTH-14</td><td>JWT payload includes: <code>sub</code> (user_id), <code>email</code>, <code>role</code> (system role: <code>user</code> or <code>super_admin</code>), <code>iat</code>, <code>exp</code></td></tr>
-  <tr><td>BR-RECR-10</td><td>Login returns user profile with system-level role; org-level roles loaded on demand</td></tr>
-  <tr><td>BR-RECR-11</td><td>Failed login attempt is logged via LOG module for audit trail</td></tr>
-</table>
-
-<h2 id="section-5-2">5.2 Candidate Endpoints</h2>
-<p><strong>Note:</strong> These endpoints require the <strong>Candidate</strong> organization-level role within an active organization context. The Candidate role is assigned by organization owners/admins, not at system registration.</p>
+<h2 id="section-5-2">5.2 Endpoint cho Ứng viên</h2>
+<p><strong>Lưu ý:</strong> Các endpoint này yêu cầu vai trò tổ chức <strong>Ứng viên</strong> trong ngữ cảnh tổ chức đang hoạt động. Vai trò Ứng viên được gán bởi chủ/quản trị viên tổ chức, không phải khi đăng ký hệ thống.</p>
 
 <h3>GET /recr/jobs <span class="req-id">FR-003</span></h3>
-<p>Browse job listings. Public endpoint (no auth required).</p>
-<p><strong>Query Params:</strong> <code>search</code>, <code>location</code>, <code>salary_min</code>, <code>employment_type</code>, <code>page</code>, <code>limit</code></p>
+<p>Duyệt danh sách tin tuyển dụng. Endpoint công khai (không yêu cầu xác thực).</p>
+<p><strong>Tham số truy vấn:</strong> <code>search</code>, <code>location</code>, <code>salary_min</code>, <code>employment_type</code>, <code>page</code>, <code>limit</code></p>
 
 <h3>POST /recr/applications <span class="req-id">FR-004, FR-038</span></h3>
-<p>Submit job application. Requires <strong>candidate</strong> role.</p>
-<p><strong>Cross-module dependency:</strong> ApplicationService calls FileService (FILE) to validate the resume_file_id exists and is a RESUME category file. The resume_file_id is frozen (copied) to the application record at submission time.</p>
+<p>Nộp đơn ứng tuyển. Yêu cầu vai trò <strong>candidate</strong>.</p>
+<p><strong>Phụ thuộc liên module:</strong> ApplicationService gọi FileService (FILE) để xác minh resume_file_id tồn tại và là tệp danh mục RESUME. resume_file_id được đóng băng (sao chép) vào bản ghi đơn ứng tuyển tại thời điểm nộp.</p>
 
-<h4>Flow Summary</h4>
+<h4>Tóm tắt luồng</h4>
 <ol>
-  <li>Frontend sends application with job_id, cover_letter, and resume_file_id (or resume_id from candidate's resume list)</li>
-  <li>ApplicationService validates the candidate exists and has not already applied to this job</li>
-  <li>ApplicationService calls FileService (FILE) to validate resume_file_id exists and is accessible to the candidate</li>
-  <li>ApplicationService creates application record with frozen resume_file_id</li>
-  <li>ApplicationService emits application.submitted event</li>
-  <li>ApplicationService returns 201 Created with application details</li>
+  <li>Frontend gửi đơn ứng tuyển với job_id, cover_letter và resume_file_id (hoặc resume_id từ danh sách hồ sơ của ứng viên)</li>
+  <li>ApplicationService kiểm tra ứng viên tồn tại và chưa nộp đơn cho vị trí này</li>
+  <li>ApplicationService gọi FileService (FILE) để xác minh resume_file_id tồn tại và có thể truy cập bởi ứng viên</li>
+  <li>ApplicationService tạo bản ghi đơn ứng tuyển với resume_file_id đã đóng băng</li>
+  <li>ApplicationService phát sự kiện application.submitted</li>
+  <li>ApplicationService trả về 201 Created với chi tiết đơn ứng tuyển</li>
 </ol>
 
 <h4>Request Body</h4>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
-  <tr><td><code>job_id</code></td><td>integer</td><td>Yes</td><td>Valid job ID, job must be open</td><td>Target job listing</td></tr>
-  <tr><td><code>cover_letter</code></td><td>string</td><td>No</td><td>Max 5000 chars</td><td>Cover letter text</td></tr>
-  <tr><td><code>resume_file_id</code></td><td>string (UUID)</td><td>Yes</td><td>Must exist in FILE module, must be RESUME category, must belong to candidate</td><td>File ID from FILE module (frozen at submission)</td></tr>
+  <tr><th>Trường</th><th>Kiểu</th><th>Bắt buộc</th><th>Kiểm tra</th><th>Mô tả</th></tr>
+  <tr><td><code>job_id</code></td><td>integer</td><td>Có</td><td>ID vị trí hợp lệ, vị trí phải đang mở</td><td>Vị trí tuyển dụng mục tiêu</td></tr>
+  <tr><td><code>cover_letter</code></td><td>string</td><td>Không</td><td>Tối đa 5000 ký tự</td><td>Nội dung thư xin việc</td></tr>
+  <tr><td><code>resume_file_id</code></td><td>string (UUID)</td><td>Có</td><td>Phải tồn tại trong module FILE, phải là danh mục RESUME, phải thuộc về ứng viên</td><td>ID tệp từ module FILE (được đóng băng khi nộp)</td></tr>
 </table>
 
 <pre><code>{
@@ -461,7 +207,7 @@
   "resume_file_id": "550e8400-e29b-41d4-a716-446655440000"
 }</code></pre>
 
-<h4>Response 201</h4>
+<h4>Phản hồi 201</h4>
 <pre><code>{
   "success": true,
   "data": {
@@ -475,9 +221,9 @@
   }
 }</code></pre>
 
-<h4>Error Responses</h4>
+<h4>Phản hồi lỗi</h4>
 
-<p><strong>409 Conflict — Already applied:</strong></p>
+<p><strong>409 Xung đột -- Đã nộp đơn:</strong></p>
 <pre><code>{
   "success": false,
   "error": {
@@ -486,7 +232,7 @@
   }
 }</code></pre>
 
-<p><strong>400 Bad Request — Invalid resume file:</strong></p>
+<p><strong>400 Yêu cầu không hợp lệ -- Tệp hồ sơ không hợp lệ:</strong></p>
 <pre><code>{
   "success": false,
   "error": {
@@ -495,7 +241,7 @@
   }
 }</code></pre>
 
-<p><strong>400 Bad Request — Wrong file category:</strong></p>
+<p><strong>400 Yêu cầu không hợp lệ -- Sai danh mục tệp:</strong></p>
 <pre><code>{
   "success": false,
   "error": {
@@ -504,44 +250,44 @@
   }
 }</code></pre>
 
-<h4>Business Rules</h4>
+<h4>Quy tắc kinh doanh</h4>
 <table>
-  <tr><th>Rule</th><th>Description</th></tr>
-  <tr><td>BR-RECR-08</td><td>Application freezes resume at submission: resume_file_id is immutable after application creation</td></tr>
-  <tr><td>BR-RECR-09</td><td>Only RESUME category files (from FILE module) can be linked to applications</td></tr>
+  <tr><th>Quy tắc</th><th>Mô tả</th></tr>
+  <tr><td>BR-RECR-08</td><td>Đơn ứng tuyển đóng băng hồ sơ khi nộp: resume_file_id không thể thay đổi sau khi tạo đơn ứng tuyển</td></tr>
+  <tr><td>BR-RECR-09</td><td>Chỉ các tệp danh mục RESUME (từ module FILE) mới có thể liên kết với đơn ứng tuyển</td></tr>
 </table>
 
 <h3>GET /recr/candidate/applications <span class="req-id">FR-005</span></h3>
-<p>View my applications. Requires <strong>candidate</strong> role.</p>
+<p>Xem đơn ứng tuyển của tôi. Yêu cầu vai trò <strong>candidate</strong>.</p>
 
 <h3>PATCH /recr/candidate/profile <span class="req-id">FR-006</span></h3>
-<p>Update profile. Requires <strong>candidate</strong> role.</p>
+<p>Cập nhật hồ sơ. Yêu cầu vai trò <strong>candidate</strong>.</p>
 
 <h3>POST /recr/candidate/resume <span class="req-id">FR-007, FR-037</span></h3>
-<p>Upload a resume file to the candidate's resume list. Requires <strong>candidate</strong> role. File stored via FILE module.</p>
-<p><strong>Cross-module dependency:</strong> ProfileService calls FileService (FILE) to get a presigned upload URL, then the file is uploaded to FILE module. ProfileService stores the returned file_id in <code>recr_candidate_resumes</code> table.</p>
+<p>Tải lên tệp hồ sơ vào danh sách hồ sơ của ứng viên. Yêu cầu vai trò <strong>candidate</strong>. Tệp được lưu trữ thông qua module FILE.</p>
+<p><strong>Phụ thuộc liên module:</strong> ProfileService gọi FileService (FILE) để lấy URL tải lên đã ký, sau đó tệp được tải lên module FILE. ProfileService lưu file_id được trả về trong bảng <code>recr_candidate_resumes</code>.</p>
 
-<h4>Flow Summary</h4>
+<h4>Tóm tắt luồng</h4>
 <ol>
-  <li>Frontend requests a presigned upload URL from RECR (or directly calls FILE module)</li>
-  <li>Frontend uploads file to FILE module via presigned URL</li>
-  <li>Frontend calls POST /recr/candidate/resume with file_id from FILE module</li>
-  <li>ProfileService validates the file_id exists in FILE module and is RESUME category</li>
-  <li>ProfileService creates record in recr_candidate_resumes with file_id reference</li>
-  <li>ProfileService returns 201 Created with resume metadata</li>
+  <li>Frontend yêu cầu URL tải lên đã ký từ RECR (hoặc gọi trực tiếp module FILE)</li>
+  <li>Frontend tải tệp lên module FILE thông qua URL đã ký</li>
+  <li>Frontend gọi POST /recr/candidate/resume với file_id từ module FILE</li>
+  <li>ProfileService kiểm tra file_id tồn tại trong module FILE và là danh mục RESUME</li>
+  <li>ProfileService tạo bản ghi trong recr_candidate_resumes với tham chiếu file_id</li>
+  <li>ProfileService trả về 201 Created với metadata hồ sơ</li>
 </ol>
 
 <h4>Request Body</h4>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
-  <tr><td><code>file_id</code></td><td>string (UUID)</td><td>Yes</td><td>Must exist in FILE module, must be RESUME category</td><td>File ID returned by FILE module after upload</td></tr>
+  <tr><th>Trường</th><th>Kiểu</th><th>Bắt buộc</th><th>Kiểm tra</th><th>Mô tả</th></tr>
+  <tr><td><code>file_id</code></td><td>string (UUID)</td><td>Có</td><td>Phải tồn tại trong module FILE, phải là danh mục RESUME</td><td>ID tệp được module FILE trả về sau khi tải lên</td></tr>
 </table>
 
 <pre><code>{
   "file_id": "550e8400-e29b-41d4-a716-446655440000"
 }</code></pre>
 
-<h4>Response 201</h4>
+<h4>Phản hồi 201</h4>
 <pre><code>{
   "success": true,
   "data": {
@@ -555,9 +301,9 @@
   }
 }</code></pre>
 
-<h4>Error Responses</h4>
+<h4>Phản hồi lỗi</h4>
 
-<p><strong>400 Bad Request — Invalid file:</strong></p>
+<p><strong>400 Yêu cầu không hợp lệ -- Tệp không hợp lệ:</strong></p>
 <pre><code>{
   "success": false,
   "error": {
@@ -566,7 +312,7 @@
   }
 }</code></pre>
 
-<p><strong>400 Bad Request — File too large:</strong></p>
+<p><strong>400 Yêu cầu không hợp lệ -- Tệp quá lớn:</strong></p>
 <pre><code>{
   "success": false,
   "error": {
@@ -575,17 +321,17 @@
   }
 }</code></pre>
 
-<h4>Business Rules</h4>
+<h4>Quy tắc kinh doanh</h4>
 <table>
-  <tr><th>Rule</th><th>Description</th></tr>
-  <tr><td>BR-RECR-07</td><td>Resume files must be stored via FILE module; direct file uploads to RECR are not allowed</td></tr>
-  <tr><td>BR-RECR-09</td><td>Only RESUME category files can be uploaded as candidate resumes</td></tr>
+  <tr><th>Quy tắc</th><th>Mô tả</th></tr>
+  <tr><td>BR-RECR-07</td><td>Các tệp hồ sơ phải được lưu trữ thông qua module FILE; không cho phép tải tệp trực tiếp lên RECR</td></tr>
+  <tr><td>BR-RECR-09</td><td>Chỉ các tệp danh mục RESUME mới có thể được tải lên làm hồ sơ ứng viên</td></tr>
 </table>
 
 <h3>GET /recr/candidate/resumes <span class="req-id">FR-037</span></h3>
-<p>List all resumes for the current candidate. Requires <strong>candidate</strong> role.</p>
+<p>Liệt kê tất cả hồ sơ của ứng viên hiện tại. Yêu cầu vai trò <strong>candidate</strong>.</p>
 
-<h4>Response 200</h4>
+<h4>Phản hồi 200</h4>
 <pre><code>{
   "success": true,
   "data": {
@@ -613,9 +359,9 @@
 }</code></pre>
 
 <h3>DELETE /recr/candidate/resumes/:id <span class="req-id">FR-037</span></h3>
-<p>Delete a resume from the candidate's list. Requires <strong>candidate</strong> role. Only allowed if the resume is not linked to any submitted application.</p>
+<p>Xóa hồ sơ khỏi danh sách của ứng viên. Yêu cầu vai trò <strong>candidate</strong>. Chỉ được phép khi hồ sơ chưa liên kết với đơn ứng tuyển nào đã nộp.</p>
 
-<h4>Response 200</h4>
+<h4>Phản hồi 200</h4>
 <pre><code>{
   "success": true,
   "data": {
@@ -623,9 +369,9 @@
   }
 }</code></pre>
 
-<h4>Error Responses</h4>
+<h4>Phản hồi lỗi</h4>
 
-<p><strong>409 Conflict — Resume linked to application:</strong></p>
+<p><strong>409 Xung đột -- Hồ sơ liên kết với đơn ứng tuyển:</strong></p>
 <pre><code>{
   "success": false,
   "error": {
@@ -635,10 +381,10 @@
 }</code></pre>
 
 <h3>GET /recr/candidate/applications/:id/resume <span class="req-id">FR-038</span></h3>
-<p>Get presigned download URL for an application's frozen resume. Requires <strong>candidate</strong> role. Candidate can only view resumes from their own applications.</p>
-<p><strong>Cross-module dependency:</strong> ApplicationController calls FileService (FILE) to generate a time-limited presigned download URL for the frozen resume_file_id.</p>
+<p>Lấy URL tải xuống đã ký cho hồ sơ đã đóng băng của đơn ứng tuyển. Yêu cầu vai trò <strong>candidate</strong>. Ứng viên chỉ có thể xem hồ sơ từ đơn ứng tuyển của chính mình.</p>
+<p><strong>Phụ thuộc liên module:</strong> ApplicationController gọi FileService (FILE) để tạo URL tải xuống đã ký có thời hạn cho resume_file_id đã đóng băng.</p>
 
-<h4>Response 200</h4>
+<h4>Phản hồi 200</h4>
 <pre><code>{
   "success": true,
   "data": {
@@ -648,19 +394,19 @@
   }
 }</code></pre>
 
-<h2 id="section-5-3">5.3 HR Endpoints</h2>
-<p><strong>Note:</strong> These endpoints require the <strong>HR</strong> organization-level role within an active organization context. The HR role is assigned by organization owners/admins.</p>
+<h2 id="section-5-3">5.3 Endpoint cho HR</h2>
+<p><strong>Lưu ý:</strong> Các endpoint này yêu cầu vai trò tổ chức <strong>HR</strong> trong ngữ cảnh tổ chức đang hoạt động. Vai trò HR được gán bởi chủ/quản trị viên tổ chức.</p>
 
 <h3>GET /recr/hr/applications <span class="req-id">FR-008</span></h3>
-<p>Review applications. Requires <strong>hr</strong> role.</p>
-<p><strong>Query Params:</strong> <code>job_id</code>, <code>status</code>, <code>page</code>, <code>limit</code></p>
+<p>Xem đơn ứng tuyển. Yêu cầu vai trò <strong>hr</strong>.</p>
+<p><strong>Tham số truy vấn:</strong> <code>job_id</code>, <code>status</code>, <code>page</code>, <code>limit</code></p>
 
 <h3>PATCH /recr/hr/applications/:id/status <span class="req-id">FR-009</span></h3>
-<p>Update application status. Requires <strong>hr</strong> role.</p>
+<p>Cập nhật trạng thái đơn ứng tuyển. Yêu cầu vai trò <strong>hr</strong>.</p>
 
 <h3>POST /recr/hr/interviews <span class="req-id">FR-010</span></h3>
-<p>Schedule interview. Requires <strong>hr</strong> role.</p>
-<p><strong>Request:</strong></p>
+<p>Lên lịch phỏng vấn. Yêu cầu vai trò <strong>hr</strong>.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "application_id": 1,
   "interviewer_id": 201,
@@ -671,23 +417,23 @@
 }</code></pre>
 
 <h3>POST /recr/hr/evaluations <span class="req-id">FR-011</span></h3>
-<p>Submit evaluation. Requires <strong>hr</strong> role.</p>
+<p>Gửi đánh giá. Yêu cầu vai trò <strong>hr</strong>.</p>
 
 <h3>POST /recr/hr/offers <span class="req-id">FR-012</span></h3>
-<p>Create offer. Requires <strong>hr</strong> role.</p>
+<p>Tạo đề nghị tuyển dụng. Yêu cầu vai trò <strong>hr</strong>.</p>
 
 <h3>GET /recr/hr/pipeline <span class="req-id">FR-014</span></h3>
-<p>View recruitment pipeline. Requires <strong>hr</strong> role.</p>
+<p>Xem quy trình tuyển dụng. Yêu cầu vai trò <strong>hr</strong>.</p>
 
 <h3>GET /recr/hr/reports <span class="req-id">FR-015</span></h3>
-<p>Generate reports. Requires <strong>hr</strong> role.</p>
+<p>Tạo báo cáo. Yêu cầu vai trò <strong>hr</strong>.</p>
 
-<h2 id="section-5-4">5.4 Employer Endpoints</h2>
-<p><strong>Note:</strong> These endpoints require the <strong>Employer</strong> organization-level role within an active organization context. The Employer role is typically assigned to organization owners/admins who create job listings.</p>
+<h2 id="section-5-4">5.4 Endpoint cho Nhà tuyển dụng</h2>
+<p><strong>Lưu ý:</strong> Các endpoint này yêu cầu vai trò tổ chức <strong>Nhà tuyển dụng</strong> trong ngữ cảnh tổ chức đang hoạt động. Vai trò Nhà tuyển dụng thường được gán cho chủ/quản trị viên tổ chức tạo tin tuyển dụng.</p>
 
 <h3>POST /recr/employer/jobs <span class="req-id">FR-017</span></h3>
-<p>Create job listing. Requires <strong>employer</strong> role.</p>
-<p><strong>Request:</strong></p>
+<p>Tạo tin tuyển dụng. Yêu cầu vai trò <strong>employer</strong>.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "title": "Senior Software Engineer",
   "description": "We are looking for a senior engineer...",
@@ -702,393 +448,51 @@
 }</code></pre>
 
 <h3>GET /recr/employer/jobs <span class="req-id">FR-018</span></h3>
-<p>List my jobs. Requires <strong>employer</strong> role.</p>
+<p>Liệt kê tin tuyển dụng của tôi. Yêu cầu vai trò <strong>employer</strong>.</p>
 
 <h3>PATCH /recr/employer/jobs/:id <span class="req-id">FR-018</span></h3>
-<p>Update job listing. Requires <strong>employer</strong> role.</p>
+<p>Cập nhật tin tuyển dụng. Yêu cầu vai trò <strong>employer</strong>.</p>
 
 <h3>GET /recr/employer/jobs/:id/applicants <span class="req-id">FR-019</span></h3>
-<p>View applicants. Requires <strong>employer</strong> role.</p>
+<p>Xem người nộp đơn. Yêu cầu vai trò <strong>employer</strong>.</p>
 
 <h3>PATCH /recr/employer/jobs/:id/submit <span class="req-id">FR-020</span></h3>
-<p>Submit for HR approval. Requires <strong>employer</strong> role.</p>
+<p>Gửi để HR phê duyệt. Yêu cầu vai trò <strong>employer</strong>.</p>
 
 <h3>GET /recr/employer/analytics <span class="req-id">FR-021</span></h3>
-<p>View analytics. Requires <strong>employer</strong> role.</p>
+<p>Xem phân tích. Yêu cầu vai trò <strong>employer</strong>.</p>
 
-<h2 id="section-5-5">5.5 Invitation Endpoints</h2>
-<p><strong>Note:</strong> These endpoints require authentication unless marked as Public.</p>
-
-<h3 id="invite-send">POST /recr/invitations/send <span class="req-id">FR-039, FR-040, FR-041</span></h3>
-<p>Send invitation to email. Requires HR/Employer role.</p>
-
-<h4>Request Body</h4>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
-  <tr><td><code>email</code></td><td>string</td><td>Yes</td><td>Valid email format</td><td>Invitee email address</td></tr>
-  <tr><td><code>role</code></td><td>string</td><td>Yes</td><td>Enum: <code>HR</code>, <code>Candidate</code>, <code>Employer</code></td><td>Role to assign to the invitee</td></tr>
-  <tr><td><code>employer_id</code></td><td>string</td><td>No</td><td>Valid UUID</td><td>Associated employer ID</td></tr>
-  <tr><td><code>message</code></td><td>string</td><td>No</td><td>Max 500 chars</td><td>Optional personal message</td></tr>
-</table>
-
-<h4>Response 201</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "id": "inv-001",
-    "email": "candidate@example.com",
-    "role": "Candidate",
-    "status": "PENDING",
-    "expiredAt": "2026-08-24T10:00:00Z",
-    "message": "You are invited to join our recruitment platform."
-  }
-}</code></pre>
-
-<h4>Error Responses</h4>
-<p><strong>400 Bad Request — Invalid email:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVALID_EMAIL",
-    "message": "Invalid email format"
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Invalid role:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVALID_ROLE",
-    "message": "Invalid role. Must be HR, Candidate, or Employer"
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Cannot invite self:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "CANNOT_INVITE_SELF",
-    "message": "Cannot send invitation to yourself"
-  }
-}</code></pre>
-
-<p><strong>409 Conflict — Invite already exists:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_EXISTS",
-    "message": "Pending invitation already exists for this email"
-  }
-}</code></pre>
-
-<p><strong>429 Too Many Requests — Rate limited:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "RATE_LIMITED",
-    "message": "Too many invitation requests. Please try again later."
-  }
-}</code></pre>
-
-<h3 id="invite-verify">GET /recr/invitations/verify?token={raw_token} <span class="req-id">FR-042</span></h3>
-<p>Verify invitation token validity. Public endpoint (no auth required).</p>
-
-<h4>Query Params</h4>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td><code>token</code></td><td>string</td><td>Yes</td><td>Raw invitation token</td></tr>
-</table>
-
-<h4>Response 200</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "valid": true,
-    "invitation": {
-      "id": "inv-001",
-      "email": "candidate@example.com",
-      "role": "Candidate",
-      "status": "PENDING",
-      "expiredAt": "2026-08-24T10:00:00Z"
-    },
-    "reason": null
-  }
-}</code></pre>
-
-<h4>Error Responses</h4>
-<p><strong>404 Not Found:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_NOT_FOUND",
-    "message": "Invitation not found"
-  }
-}</code></pre>
-
-<p><strong>410 Gone — Expired:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_EXPIRED",
-    "message": "Invitation token has expired"
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Already used:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_ALREADY_USED",
-    "message": "Invitation already accepted"
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Revoked:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_REVOKED",
-    "message": "Invitation has been revoked"
-  }
-}</code></pre>
-
-<h3 id="invite-accept">POST /recr/invitations/accept <span class="req-id">FR-043</span></h3>
-<p>Accept invitation. Requires authentication.</p>
-
-<h4>Request Body</h4>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Validation</th><th>Description</th></tr>
-  <tr><td><code>token</code></td><td>string</td><td>Yes</td><td>Non-empty</td><td>Raw invitation token</td></tr>
-  <tr><td><code>full_name</code></td><td>string</td><td>Yes</td><td>2-100 chars</td><td>Full name of the invitee</td></tr>
-  <tr><td><code>password</code></td><td>string</td><td>No</td><td>Min 8 chars, at least 1 uppercase, 1 lowercase, 1 number</td><td>Password (optional if account exists)</td></tr>
-</table>
-
-<h4>Response 200</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "invitation": {
-      "id": "inv-001",
-      "email": "candidate@example.com",
-      "role": "Candidate",
-      "status": "ACCEPTED"
-    },
-    "message": "Invitation accepted successfully"
-  }
-}</code></pre>
-
-<h4>Error Responses</h4>
-<p><strong>400 Bad Request — Email mismatch:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "EMAIL_MISMATCH",
-    "message": "Logged-in user email does not match invitation"
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Expired:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_EXPIRED",
-    "message": "Invitation token has expired"
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Already used:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_ALREADY_USED",
-    "message": "Invitation already accepted"
-  }
-}</code></pre>
-
-<p><strong>400 Bad Request — Revoked:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_REVOKED",
-    "message": "Invitation has been revoked"
-  }
-}</code></pre>
-
-<p><strong>404 Not Found:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_NOT_FOUND",
-    "message": "Invitation not found"
-  }
-}</code></pre>
-
-<h3 id="invite-list">GET /recr/invitations <span class="req-id">FR-045</span></h3>
-<p>List invitations with filters. Requires authentication.</p>
-
-<h4>Query Params</h4>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td><code>employer_id</code></td><td>string</td><td>No</td><td>Filter by employer ID</td></tr>
-  <tr><td><code>status</code></td><td>string</td><td>No</td><td>Filter by status (PENDING, ACCEPTED, EXPIRED, REVOKED)</td></tr>
-  <tr><td><code>page</code></td><td>integer</td><td>No</td><td>Page number (default: 1)</td></tr>
-  <tr><td><code>limit</code></td><td>integer</td><td>No</td><td>Items per page (default: 10)</td></tr>
-</table>
-
-<h4>Response 200</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "invitations": [
-      {
-        "id": "inv-001",
-        "email": "candidate@example.com",
-        "role": "Candidate",
-        "status": "PENDING",
-        "expiredAt": "2026-08-24T10:00:00Z",
-        "created_at": "2026-08-17T10:00:00Z"
-      }
-    ],
-    "total": 1,
-    "page": 1,
-    "limit": 10,
-    "totalPages": 1
-  }
-}</code></pre>
-
-<h3 id="invite-revoke">DELETE /recr/invitations/:id <span class="req-id">FR-044</span></h3>
-<p>Revoke invitation. Requires authentication (inviter or admin).</p>
-
-<h4>Path Params</h4>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Description</th></tr>
-  <tr><td><code>id</code></td><td>UUID</td><td>Invitation ID</td></tr>
-</table>
-
-<h4>Response 200</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "invitation": {
-      "id": "inv-001",
-      "email": "candidate@example.com",
-      "role": "Candidate",
-      "status": "REVOKED"
-    },
-    "message": "Invitation revoked successfully"
-  }
-}</code></pre>
-
-<h4>Error Responses</h4>
-<p><strong>400 Bad Request — Not pending:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_NOT_PENDING",
-    "message": "Only PENDING invitations can be revoked"
-  }
-}</code></pre>
-
-<p><strong>403 Forbidden:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "FORBIDDEN",
-    "message": "You do not have permission to revoke this invitation"
-  }
-}</code></pre>
-
-<p><strong>404 Not Found:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_NOT_FOUND",
-    "message": "Invitation not found"
-  }
-}</code></pre>
-
-<h3 id="invite-resend">POST /recr/invitations/:id/resend <span class="req-id">FR-046</span></h3>
-<p>Resend invitation with new token. Requires authentication (inviter or admin).</p>
-
-<h4>Path Params</h4>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Description</th></tr>
-  <tr><td><code>id</code></td><td>UUID</td><td>Invitation ID</td></tr>
-</table>
-
-<h4>Response 200</h4>
-<pre><code>{
-  "success": true,
-  "data": {
-    "invitation": {
-      "id": "inv-001",
-      "email": "candidate@example.com",
-      "role": "Candidate",
-      "status": "PENDING",
-      "expiredAt": "2026-08-31T10:00:00Z"
-    },
-    "message": "Invitation resent successfully"
-  }
-}</code></pre>
-
-<h4>Error Responses</h4>
-<p><strong>400 Bad Request — Not resendable:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_NOT_RESENDABLE",
-    "message": "Only EXPIRED or REVOKED invitations can be resent"
-  }
-}</code></pre>
-
-<p><strong>403 Forbidden:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "FORBIDDEN",
-    "message": "You do not have permission to resend this invitation"
-  }
-}</code></pre>
-
-<p><strong>404 Not Found:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "INVITE_NOT_FOUND",
-    "message": "Invitation not found"
-  }
-}</code></pre>
 
 <!-- 6. PAGINATION -->
-<h1 id="section-6">6. Pagination</h1>
-<p>All list endpoints support offset pagination.</p>
+<h1 id="section-6">6. Phân trang</h1>
+<p>Tất cả các endpoint danh sách hỗ trợ phân trang offset.</p>
 <pre><code>GET /recr/jobs?page=2&amp;limit=20</code></pre>
 
 <!-- 7. WEBHOOK EVENTS -->
-<h1 id="section-7">7. Webhook Events</h1>
+<h1 id="section-7">7. Sự kiện Webhook</h1>
 
 <table>
-  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
-  <tr><td>user.registered</td><td>Outbound</td><td>RabbitMQ</td><td>New user registered with system role <code>user</code></td></tr>
-  <tr><td>application.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate submits application</td></tr>
-  <tr><td>interview.scheduled</td><td>Outbound</td><td>RabbitMQ</td><td>HR schedules interview</td></tr>
-  <tr><td>offer.sent</td><td>Outbound</td><td>RabbitMQ</td><td>HR sends offer letter</td></tr>
-  <tr><td>candidate.hired</td><td>Outbound</td><td>RabbitMQ</td><td>Candidate accepts offer</td></tr>
-  <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Employer submits job for approval</td></tr>
-  <tr><td>file.deleted</td><td>Inbound</td><td>RabbitMQ</td><td>FILE module notifies RECR when a file is deleted; RECR cleans up references in recr_candidate_resumes and recr_applications</td></tr>
-  <tr><td>invitation.created</td><td>Outbound</td><td>RabbitMQ</td><td>Invitation created, send email notification</td></tr>
-  <tr><td>invitation.accepted</td><td>Outbound</td><td>RabbitMQ</td><td>Invitation accepted, trigger AUTH module</td></tr>
+  <tr><th>Sự kiện</th><th>Hướng</th><th>Giao thức</th><th>Mô tả</th></tr>
+  <tr><td>user.registered</td><td>Đi</td><td>RabbitMQ</td><td>Người dùng mới đăng ký với vai trò hệ thống <code>user</code></td></tr>
+  <tr><td>application.submitted</td><td>Đi</td><td>RabbitMQ</td><td>Ứng viên nộp đơn ứng tuyển</td></tr>
+  <tr><td>interview.scheduled</td><td>Đi</td><td>RabbitMQ</td><td>HR lên lịch phỏng vấn</td></tr>
+  <tr><td>offer.sent</td><td>Đi</td><td>RabbitMQ</td><td>HR gửi thư đề nghị tuyển dụng</td></tr>
+  <tr><td>candidate.hired</td><td>Đi</td><td>RabbitMQ</td><td>Ứng viên chấp nhận đề nghị</td></tr>
+  <tr><td>job.submitted_for_approval</td><td>Đi</td><td>RabbitMQ</td><td>Nhà tuyển dụng gửi tin tuyển dụng để phê duyệt</td></tr>
+  <tr><td>file.deleted</td><td>Đến</td><td>RabbitMQ</td><td>Module FILE thông báo cho RECR khi tệp bị xóa; RECR dọn dẹp các tham chiếu trong recr_candidate_resumes và recr_applications</td></tr>
+  <tr><td>invitation.created</td><td>Đi</td><td>RabbitMQ</td><td>Lời mời được tạo, gửi thông báo email</td></tr>
+  <tr><td>invitation.accepted</td><td>Đi</td><td>RabbitMQ</td><td>Lời mời được chấp nhận, kích hoạt module AUTH</td></tr>
 </table>
 
 <!-- 8. CHANGELOG -->
-<h1 id="section-8">8. Changelog</h1>
+<h1 id="section-8">8. Nhật ký thay đổi</h1>
 <table>
-  <tr><th>Date</th><th>Version</th><th>Changes</th></tr>
-  <tr><td>2026-07-31</td><td>1.0.0</td><td>Initial release with 3 roles: Candidate, HR, Employer</td></tr>
-  <tr><td>2026-08-12</td><td>1.1.0</td><td>Detailed register API: separate request/response for Candidate &amp; Employer, validation rules, error responses, business rules, cross-module flow</td></tr>
-  <tr><td>2026-08-17</td><td>1.2.0</td><td>New two-level role system: system roles (user, super_admin) and org roles (HR, Candidate, Employer). Registration creates user with <code>user</code> role. JWT contains system role. Org roles managed within organizations.</td></tr>
-  <tr><td>2026-08-17</td><td>1.3.0</td><td>FILE module integration: Resume uploads via FILE module with file_id references. New endpoints: GET /recr/candidate/resumes, DELETE /recr/candidate/resumes/:id, GET /recr/candidate/applications/:id/resume. POST /recr/applications now requires resume_file_id. Added business rules BR-RECR-07, BR-RECR-08, BR-03-RECR-09. Inbound file.deleted event handling.</td></tr>
-  <tr><td>2026-08-17</td><td>1.4.0</td><td>INVITE feature integrated as RECR module feature. New endpoints: POST /recr/invitations/send, GET /recr/invitations/verify, POST /recr/invitations/accept, GET /recr/invitations, DELETE /recr/invitations/:id, POST /recr/invitations/:id/resend. Table: recr_invitations. Events: invitation.created, invitation.accepted.</td></tr>
+  <tr><th>Ngày</th><th>Phiên bản</th><th>Thay đổi</th></tr>
+  <tr><td>2026-07-31</td><td>1.0.0</td><td>Phiên bản đầu tiên với 3 vai trò: Ứng viên, HR, Nhà tuyển dụng</td></tr>
+  <tr><td>2026-08-12</td><td>1.1.0</td><td>API đăng ký chi tiết: request/response riêng biệt cho Ứng viên và Nhà tuyển dụng, quy tắc kiểm tra, phản hồi lỗi, quy tắc kinh doanh, luồng liên module</td></tr>
+  <tr><td>2026-08-17</td><td>1.2.0</td><td>Hệ thống vai trò hai cấp mới: vai trò hệ thống (user, super_admin) và vai trò tổ chức (HR, Candidate, Employer). Đăng ký tạo người dùng với vai trò <code>user</code>. JWT chứa vai trò hệ thống. Vai trò tổ chức được quản lý trong tổ chức.</td></tr>
+  <tr><td>2026-08-17</td><td>1.3.0</td><td>Tích hợp module FILE: Tải lên hồ sơ thông qua module FILE với tham chiếu file_id. Các endpoint mới: GET /recr/candidate/resumes, DELETE /recr/candidate/resumes/:id, GET /recr/candidate/applications/:id/resume. POST /recr/applications hiện yêu cầu resume_file_id. Thêm quy tắc kinh doanh BR-RECR-07, BR-RECR-08, BR-03-RECR-09. Xử lý sự kiện file.deleted đến.</td></tr>
+  <tr><td>2026-08-17</td><td>1.4.0</td><td>Tính năng INVITE được tích hợp như tính năng module RECR. Các endpoint mới: POST /recr/invitations/send, GET /recr/invitations/verify, POST /recr/invitations/accept, GET /recr/invitations, DELETE /recr/invitations/:id, POST /recr/invitations/:id/resend. Bảng: recr_invitations. Sự kiện: invitation.created, invitation.accepted.</td></tr>
 </table>
 
 </body>

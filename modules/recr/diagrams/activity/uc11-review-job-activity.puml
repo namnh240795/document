@@ -1,0 +1,62 @@
+@startuml
+' UC-11: Đánh giá Việc làm - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-11: Đánh giá Việc làm (Ứng viên)
+
+start
+:Điều hướng đến Danh sách Việc làm;
+
+:Nhấn "Viết Đánh giá";
+
+:Kiểm tra Ứng viên đã Ứng tuyển chưa;
+
+if (Đã Ứng tuyển?) then (có)
+  :Hiển thị Form Đánh giá;
+
+  :Đánh giá Việc làm (1-5 sao);
+  note right
+    - Đánh giá Tổng quan
+    - Cân bằng Công việc - Cuộc sống
+    - Lương thưởng
+    - Phát triển Nghề nghiệp
+    - Văn hóa Công ty
+  end note
+
+  :Nhập Tiêu đề Đánh giá;
+
+  :Nhập Mô tả Đánh giá;
+
+  :Chọn Tùy chọn Ẩn danh;
+
+  :Nộp Đánh giá;
+
+  :Xác thực Dữ liệu Đánh giá;
+
+  if (Đã đánh giá trước đó?) then (có)
+    :Hiển thị thông báo "Đã đánh giá";
+
+  else (không)
+    :Lưu bản ghi Đánh giá;
+
+    :Cập nhật Điểm trung bình Việc làm;
+
+    :Trả về Phản hồi Thành công;
+
+    :Hiển thị Xác nhận;
+
+  endif
+
+else (không)
+  :Hiển thị thông báo "Chỉ người Ứng tuyển mới có thể Đánh giá";
+
+endif
+
+stop
+@enduml

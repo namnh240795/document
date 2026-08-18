@@ -1,0 +1,52 @@
+@startuml
+' UC-03: Xem trạng thái hồ sơ - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-03: Xem trạng thái hồ sơ (Ứng viên)
+
+start
+:Đăng nhập với tư cách Ứng viên;
+
+:Truy cập Hồ sơ của tôi;
+
+:Truy vấn Hồ sơ;
+
+:Trả về Danh sách Hồ sơ;
+
+:Xem Danh sách Hồ sơ;
+
+:Chọn Hồ sơ;
+
+:Xem Chi tiết Hồ sơ;
+
+:Xem Trạng thái hiện tại;
+
+:Xem Lịch sử Trạng thái;
+
+if (Trạng thái = Phỏng vấn?) then (có)
+  :Xem Chi tiết Phỏng vấn;
+
+  :Xem Ngày & Địa điểm;
+
+elseif (Trạng thái = Đề nghị?) then (có)
+  :Xem Chi tiết Đề nghị;
+
+  :Xem Lương & Phúc lợi;
+
+  :Chấp nhận/Từ chối Đề nghị;
+
+elseif (Trạng thái = Từ chối?) then (có)
+  :Xem Lý do Từ chối;
+
+else (không)
+  :Xem Dòng thời gian Hồ sơ;
+endif
+
+stop
+@enduml

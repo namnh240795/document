@@ -1,0 +1,54 @@
+@startuml
+' UC-01: Tìm việc - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-01: Tìm việc (Ứng viên)
+
+start
+:Truy cập Danh sách Việc làm;
+
+:Xem tất cả Việc làm đang mở;
+
+:Áp dụng Bộ lọc;
+
+if (Lọc theo Địa điểm?) then (có)
+  :Nhập Địa điểm;
+endif
+
+if (Lọc theo Lương?) then (có)
+  :Nhập Khoảng lương;
+endif
+
+if (Lọc theo Loại?) then (có)
+  :Chọn Loại hình Việc làm;
+endif
+
+:Tìm kiếm/Áp dụng Bộ lọc;
+
+:Truy vấn Cơ sở dữ liệu Việc làm;
+
+:Trả về Kết quả lọc;
+
+:Xem Danh sách Việc làm;
+
+:Chọn Việc làm để Xem;
+
+:Xem Chi tiết Việc làm;
+
+if (Quan tâm?) then (có)
+  :Nhấn Ứng tuyển;
+
+  :Nộp hồ sơ;
+
+else (không)
+  :Tiếp tục Xem;
+endif
+
+stop
+@enduml

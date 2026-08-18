@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Software Requirements Specification - Recruitment</title>
+  <title>Đặc tả Yêu cầu Phần mềm - Tuyển dụng</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,1633 +18,1421 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>Software Requirements Specification</h1>
-  <div class="subtitle">Recruitment Module</div>
+  <h1>Đặc tả Yêu cầu Phần mềm</h1>
+  <div class="subtitle">Module Tuyển dụng</div>
   <span class="module-badge">RECR</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>HR Management System</td></tr>
-    <tr><td>Module</td><td>RECR - Recruitment</td></tr>
-    <tr><td>Database</td><td>recr_db</td></tr>
-    <tr><td>Date</td><td>2026-07-31</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Quản lý Nhân sự</td></tr>
+    <tr><td>Module</td><td>RECR - Tuyển dụng</td></tr>
+    <tr><td>Cơ sở dữ liệu</td><td>recr_db</td></tr>
+    <tr><td>Ngày</td><td>2026-07-31</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>Trạng thái</td><td>Bản nháp</td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Introduction</a>
+    <li><a href="#section-1">1. Giới thiệu</a>
       <ul>
-        <li><a href="#section-1-1">1.1 Purpose</a></li>
-        <li><a href="#section-1-2">1.2 Scope</a></li>
-        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
-        <li><a href="#section-1-4">1.4 Definitions</a></li>
-        <li><a href="#section-1-5">1.5 User Roles</a></li>
+        <li><a href="#section-1-1">1.1 Mục đích</a></li>
+        <li><a href="#section-1-2">1.2 Phạm vi</a></li>
+        <li><a href="#section-1-3">1.3 Phụ thuộc Module</a></li>
+        <li><a href="#section-1-4">1.4 Định nghĩa</a></li>
+        <li><a href="#section-1-5">1.5 Vai trò Người dùng</a></li>
       </ul>
     </li>
-    <li><a href="#section-2">2. Module Overview</a>
+    <li><a href="#section-2">2. Tổng quan Module</a>
       <ul>
-        <li><a href="#section-2-1">2.1 Module Description</a></li>
-        <li><a href="#section-2-2">2.2 Use Case Diagram</a></li>
+        <li><a href="#section-2-1">2.1 Mô tả Module</a></li>
+        <li><a href="#section-2-2">2.2 Sơ đồ Trường hợp sử dụng</a></li>
       </ul>
     </li>
-    <li><a href="#section-3">3. Detailed Use Case Specifications</a>
+    <li><a href="#section-3">3. Chi tiết Đặc tả Trường hợp sử dụng</a>
       <ul>
-        <li><a href="#section-3-1">3.1 UC-01: Register Account</a></li>
-        <li><a href="#section-3-2">3.2 UC-02: Login</a></li>
-        <li><a href="#section-3-3">3.3 UC-03: Purchase Subscription</a></li>
-        <li><a href="#section-3-4">3.4 UC-04: Manage Subscription</a></li>
-        <li><a href="#section-3-5">3.5 UC-05: Browse Jobs</a></li>
-        <li><a href="#section-3-6">3.6 UC-06: Submit Application</a></li>
-        <li><a href="#section-3-7">3.7 UC-07: View Application Status</a></li>
-        <li><a href="#section-3-8">3.8 UC-08: Review Applications</a></li>
-        <li><a href="#section-3-9">3.9 UC-09: Schedule Interview</a></li>
-        <li><a href="#section-3-10">3.10 UC-10: Evaluate Candidate</a></li>
-        <li><a href="#section-3-11">3.11 UC-11: Post Job</a></li>
-        <li><a href="#section-3-12">3.12 UC-12: Manage Jobs</a></li>
-        <li><a href="#section-3-13">3.13 UC-13: Review Job</a></li>
-        <li><a href="#section-3-14">3.14 UC-14: Review Candidate</a></li>
-        <li><a href="#section-3-15">3.15 UC-15: Update Profile</a></li>
-        <li><a href="#section-3-16">3.16 UC-16: View Dashboard</a></li>
-        <li><a href="#section-3-18">3.17 UC-18: Manage Resumes</a></li>
-        <li><a href="#section-3-19">3.18 UC-19: Send Invitation</a></li>
-        <li><a href="#section-3-20">3.19 UC-20: Verify Invitation</a></li>
-        <li><a href="#section-3-21">3.20 UC-21: Accept Invitation</a></li>
-        <li><a href="#section-3-22">3.21 UC-22: Revoke/Resend Invitation</a></li>
+        <li><a href="#section-3-1">3.1 UC-01: Mua Gói Đăng ký</a></li>
+        <li><a href="#section-3-2">3.2 UC-02: Quản lý Gói Đăng ký</a></li>
+        <li><a href="#section-3-3">3.3 UC-03: Duyệt Việc làm</a></li>
+        <li><a href="#section-3-4">3.4 UC-04: Nộp Hồ sơ Ứng tuyển</a></li>
+        <li><a href="#section-3-5">3.5 UC-05: Xem Trạng thái Hồ sơ</a></li>
+        <li><a href="#section-3-6">3.6 UC-06: Duyệt Hồ sơ Ứng tuyển</a></li>
+        <li><a href="#section-3-7">3.7 UC-07: Lịch phỏng vấn</a></li>
+        <li><a href="#section-3-8">3.8 UC-08: Đánh giá Ứng viên</a></li>
+        <li><a href="#section-3-9">3.9 UC-09: Đăng tin Việc làm</a></li>
+        <li><a href="#section-3-10">3.10 UC-10: Quản lý Việc làm</a></li>
+        <li><a href="#section-3-11">3.11 UC-11: Đánh giá Việc làm</a></li>
+        <li><a href="#section-3-12">3.12 UC-12: Đánh giá Ứng viên</a></li>
+        <li><a href="#section-3-13">3.13 UC-13: Cập nhật Hồ sơ</a></li>
+        <li><a href="#section-3-14">3.14 UC-14: Xem Bảng Điều khiển</a></li>
+        <li><a href="#section-3-15">3.15 UC-15: Quản lý Hồ sơ Xin việc</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. Functional Requirements</a>
+    <li><a href="#section-4">4. Yêu cầu Chức năng</a>
       <ul>
-        <li><a href="#section-4-1">4.1 Candidate Requirements</a></li>
-        <li><a href="#section-4-2">4.2 HR Requirements</a></li>
-        <li><a href="#section-4-3">4.3 Employer Requirements</a></li>
-        <li><a href="#section-4-4">4.4 Subscription Requirements</a></li>
-        <li><a href="#section-4-5">4.5 Review Requirements</a></li>
-        <li><a href="#section-4-6">4.6 Analytics Requirements</a></li>
-        <li><a href="#section-4-7">4.7 Invitation Requirements</a></li>
+        <li><a href="#section-4-1">4.1 Yêu cầu Ứng viên</a></li>
+        <li><a href="#section-4-2">4.2 Yêu cầu HR</a></li>
+        <li><a href="#section-4-3">4.3 Yêu cầu Nhà tuyển dụng</a></li>
+        <li><a href="#section-4-4">4.4 Yêu cầu Gói Đăng ký</a></li>
+        <li><a href="#section-4-5">4.5 Yêu cầu Đánh giá</a></li>
+        <li><a href="#section-4-6">4.6 Yêu cầu Phân tích</a></li>
+        <li><a href="#section-4-7">4.7 Yêu cầu Lời mời</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">5. Data Model</a></li>
-    <li><a href="#section-6">6. API Specification</a></li>
-    <li><a href="#section-7">7. Integration</a></li>
-    <li><a href="#section-8">8. Non-Functional Requirements</a></li>
-    <li><a href="#section-9">9. RBAC Resume Access Matrix</a></li>
-    <li><a href="#section-10">10. Requirements Traceability Matrix</a></li>
+    <li><a href="#section-5">5. Mô hình Dữ liệu</a></li>
+    <li><a href="#section-6">6. Đặc tả API</a></li>
+    <li><a href="#section-7">7. Tích hợp</a></li>
+    <li><a href="#section-8">8. Yêu cầu Phi chức năng</a></li>
+    <li><a href="#section-9">9. Ma trận Truy cập Hồ sơ RBAC</a></li>
+    <li><a href="#section-10">10. Ma trận Truy xuất Yêu cầu</a></li>
   </ul>
 </div>
 
 <!-- 1. INTRODUCTION -->
-<h1 id="section-1">1. Introduction</h1>
+<h1 id="section-1">1. Giới thiệu</h1>
 
-<h2 id="section-1-1">1.1 Purpose</h2>
-<p>This document defines the software requirements for the <strong>Recruitment</strong> module of the HR Management System.</p>
+<h2 id="section-1-1">1.1 Mục đích</h2>
+<p>Tài liệu này định nghĩa các yêu cầu phần mềm cho module <strong>Tuyển dụng</strong> của Hệ thống Quản lý Nhân sự.</p>
 
-<h2 id="section-1-2">1.2 Scope</h2>
-<p>The Recruitment module manages the end-to-end hiring process with a two-level role system. <strong>System-level roles</strong> (<code>user</code>, <code>super_admin</code>) are managed by the AUTH module. <strong>Organization-level roles</strong> (<code>HR</code>, <code>Candidate</code>, <code>Employer</code>) are managed within organizations. Users self-register with the <code>user</code> system role and receive org-level roles when they join or are added to an organization.</p>
+<h2 id="section-1-2">1.2 Phạm vi</h2>
+<p>Module Tuyển dụng quản lý quy trình tuyển dụng từ đầu đến cuối với hệ thống vai trò hai cấp. <strong>Vai trò cấp hệ thống</strong> (<code>user</code>, <code>super_admin</code>) được quản lý bởi module AUTH. <strong>Vai trò cấp tổ chức</strong> (<code>HR</code>, <code>Candidate</code>, <code>Employer</code>) được quản lý trong nội bộ tổ chức. Người dùng tự đăng ký với vai trò hệ thống <code>user</code> và nhận vai trò cấp tổ chức khi tham gia hoặc được thêm vào một tổ chức.</p>
 
-<h2 id="section-1-3">1.3 Module Dependencies</h2>
+<h2 id="section-1-3">1.3 Phụ thuộc Module</h2>
 <table>
-  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
-  <tr><td>AUTH</td><td>Hard</td><td>User authentication and role-based access control</td></tr>
-  <tr><td>FILE</td><td>Hard</td><td>File storage for candidate resumes and application attachments (presigned upload/download URLs, file metadata management)</td></tr>
-  <tr><td>LOG</td><td>Soft</td><td>Event logging for audit trail</td></tr>
+  <tr><th>Module</th><th>Loại Phụ thuộc</th><th>Mô tả</th></tr>
+  <tr><td>AUTH</td><td>Bắt buộc</td><td>Xác thực người dùng và kiểm soát truy cập dựa trên vai trò</td></tr>
+  <tr><td>FILE</td><td>Bắt buộc</td><td>Lưu trữ tệp cho hồ sơ xin việc và tệp đính kèm của ứng viên (URL tải lên/tải xuống presigned, quản lý metadata tệp)</td></tr>
+  <tr><td>LOG</td><td>Tùy chọn</td><td>Ghi nhật ký sự kiện cho truy vết kiểm toán</td></tr>
 </table>
 
-<h2 id="section-1-4">1.4 Definitions</h2>
+<h2 id="section-1-4">1.4 Định nghĩa</h2>
 <table>
-  <tr><th>Term</th><th>Definition</th></tr>
-  <tr><td>SRS</td><td>Software Requirements Specification</td></tr>
-  <tr><td>FR</td><td>Functional Requirement</td></tr>
-  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
-  <tr><td>UC</td><td>Use Case</td></tr>
-  <tr><td>DR</td><td>Data Requirement</td></tr>
-  <tr><td>IR</td><td>Integration Requirement</td></tr>
+  <tr><th>Thuật ngữ</th><th>Định nghĩa</th></tr>
+  <tr><td>SRS</td><td>Đặc tả Yêu cầu Phần mềm</td></tr>
+  <tr><td>FR</td><td>Yêu cầu Chức năng</td></tr>
+  <tr><td>NFR</td><td>Yêu cầu Phi chức năng</td></tr>
+  <tr><td>UC</td><td>Trường hợp sử dụng</td></tr>
+  <tr><td>DR</td><td>Yêu cầu Dữ liệu</td></tr>
+  <tr><td>IR</td><td>Yêu cầu Tích hợp</td></tr>
 </table>
 
-<h2 id="section-1-5">1.5 User Roles</h2>
+<h2 id="section-1-5">1.5 Vai trò Người dùng</h2>
 
-<h3>System-Level Roles (managed by AUTH module)</h3>
+<h3>Vai trò Cấp hệ thống (được quản lý bởi module AUTH)</h3>
 <table>
-  <tr><th>Role</th><th>Description</th><th>Creation</th><th>Key Permissions</th></tr>
-  <tr><td><strong>user</strong></td><td>Default role for self-registered users</td><td>Self-registration via POST /recr/auth/register</td><td>Create organizations, access basic features</td></tr>
-  <tr><td><strong>super_admin</strong></td><td>System administrator</td><td>Created by existing admin only (not self-registered)</td><td>Full system access, manage all organizations and users</td></tr>
+  <tr><th>Vai trò</th><th>Mô tả</th><th>Tạo mới</th><th>Quyền hạn Chính</th></tr>
+  <tr><td><strong>user</strong></td><td>Vai trò mặc định cho người dùng tự đăng ký</td><td>Tự đăng ký qua POST /recr/auth/register</td><td>Tạo tổ chức, truy cập các tính năng cơ bản</td></tr>
+  <tr><td><strong>super_admin</strong></td><td>Quản trị viên hệ thống</td><td>Chỉ được tạo bởi admin hiện có (không tự đăng ký)</td><td>Truy cập toàn bộ hệ thống, quản lý tất cả tổ chức và người dùng</td></tr>
 </table>
 
-<h3>Organization-Level Roles (managed within organizations)</h3>
+<h3>Vai trò Cấp tổ chức (được quản lý trong nội bộ tổ chức)</h3>
 <table>
-  <tr><th>Role</th><th>Description</th><th>Creation</th><th>Key Permissions</th></tr>
-  <tr><td><strong>Candidate</strong></td><td>Job seekers looking for employment within an organization</td><td>Assigned by org owner/admin</td><td>Browse jobs, submit applications, view application status, manage profile</td></tr>
-  <tr><td><strong>HR</strong></td><td>Internal recruitment team members within an organization</td><td>Assigned by org owner/admin</td><td>Review applications, schedule interviews, evaluate candidates, manage offers, generate reports</td></tr>
-  <tr><td><strong>Employer</strong></td><td>Organization owner/admin who posts jobs</td><td>Assigned by org owner/admin (typically the org creator)</td><td>Create job postings, view applicants, approve job postings, view analytics</td></tr>
+  <tr><th>Vai trò</th><th>Mô tả</th><th>Tạo mới</th><th>Quyền hạn Chính</th></tr>
+  <tr><td><strong>Candidate</strong></td><td>Người tìm việc đang tìm kiếm việc làm trong một tổ chức</td><td>Được giao bởi chủ sở hữu/quản trị viên tổ chức</td><td>Duyệt việc làm, nộp hồ sơ ứng tuyển, xem trạng thái hồ sơ, quản lý hồ sơ cá nhân</td></tr>
+  <tr><td><strong>HR</strong></td><td>Thành viên đội ngũ tuyển dụng nội bộ trong một tổ chức</td><td>Được giao bởi chủ sở hữu/quản trị viên tổ chức</td><td>Duyệt hồ sơ ứng tuyển, lên lịch phỏng vấn, đánh giá ứng viên, quản lý đề nghị tuyển dụng, tạo báo cáo</td></tr>
+  <tr><td><strong>Employer</strong></td><td>Chủ sở hữu/quản trị viên tổ chức đăng tin tuyển dụng</td><td>Được giao bởi chủ sở hữu/quản trị viên tổ chức (thường là người tạo tổ chức)</td><td>Tạo tin tuyển dụng, xem người nộp đơn, duyệt tin tuyển dụng, xem phân tích</td></tr>
 </table>
 
-<p><strong>Note:</strong> A single user can have different org-level roles in different organizations. The system-level role determines what the user can do across the entire system, while org-level roles determine what the user can do within a specific organization.</p>
+<p><strong>Lưu ý:</strong> Một người dùng có thể có các vai trò cấp tổ chức khác nhau trong các tổ chức khác nhau. Vai trò cấp hệ thống xác định những gì người dùng có thể thực hiện trên toàn hệ thống, trong khi vai trò cấp tổ chức xác định những gì người dùng có thể thực hiện trong một tổ chức cụ thể.</p>
 
 <!-- 2. MODULE OVERVIEW -->
-<h1 id="section-2">2. Module Overview</h1>
+<h1 id="section-2">2. Tổng quan Module</h1>
 
-<h2 id="section-2-1">2.1 Module Description</h2>
+<h2 id="section-2-1">2.1 Mô tả Module</h2>
 <table>
-  <tr><th>Aspect</th><th>Value</th></tr>
-  <tr><td>Module Code</td><td>RECR</td></tr>
-  <tr><td>Module Name</td><td>Recruitment</td></tr>
-  <tr><td>Description</td><td>End-to-end recruitment management with two-level role system: system roles (user, super_admin) and org roles (Candidate, HR, Employer). Integrates with FILE module for secure resume storage via presigned URLs.</td></tr>
-  <tr><td>Database</td><td>recr_db</td></tr>
-  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_candidate_resumes, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history, recr_job_reviews, recr_candidate_reviews, recr_invitations</td></tr>
-  <tr><td>Tech Stack</td><td>Node.js, NestJS, PostgreSQL, Drizzle ORM, RabbitMQ, Elasticsearch</td></tr>
+  <tr><th>Thuộc tính</th><th>Giá trị</th></tr>
+  <tr><td>Mã Module</td><td>RECR</td></tr>
+  <tr><td>Tên Module</td><td>Tuyển dụng</td></tr>
+  <tr><td>Mô tả</td><td>Quản lý tuyển dụng từ đầu đến cuối với hệ thống vai trò hai cấp: vai trò hệ thống (user, super_admin) và vai trò tổ chức (Candidate, HR, Employer). Tích hợp với module FILE để lưu trữ hồ sơ xin việc an toàn qua URL presigned.</td></tr>
+  <tr><td>Cơ sở dữ liệu</td><td>recr_db</td></tr>
+  <tr><td>Bảng</td><td>recr_users, recr_candidates, recr_candidate_resumes, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history, recr_job_reviews, recr_candidate_reviews, recr_invitations</td></tr>
+  <tr><td>Công nghệ</td><td>Node.js, NestJS, PostgreSQL, Drizzle ORM, RabbitMQ, Elasticsearch</td></tr>
 </table>
 
-<h2 id="section-2-2">2.2 Use Case Diagram</h2>
+<h2 id="section-2-2">2.2 Sơ đồ Trường hợp sử dụng</h2>
 <div class="diagram">
-  <img src="./images/usecase/recruitment-usecase.png" alt="Use Case Diagram">
-  <div class="caption">Figure 1: Recruitment Use Case Diagram (3 Roles)</div>
+  <img src="./images/usecase/recruitment-usecase.png" alt="Sơ đồ Trường hợp sử dụng">
+  <div class="caption">Hình 1: Sơ đồ Trường hợp sử dụng Tuyển dụng (3 Vai trò)</div>
 </div>
 
 <!-- 3. DETAILED USE CASE SPECIFICATIONS -->
-<h1 id="section-3">3. Detailed Use Case Specifications</h1>
+<h1 id="section-3">3. Chi tiết Đặc tả Trường hợp sử dụng</h1>
 
-<h2 id="section-3-1">3.1 UC-01: Register Account</h2>
+<h2 id="section-3-1">3.1 UC-01: Mua Gói Đăng ký</h2>
 <table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-01</td></tr>
-  <tr><td>Name</td><td>Register Account</td></tr>
-  <tr><td>Actor</td><td>User (any person registering for the first time)</td></tr>
-  <tr><td>Precondition</td><td>User is not logged in</td></tr>
-  <tr><td>Postcondition</td><td>User account created with system role <code>user</code>, JWT token issued</td></tr>
-  <tr><td>Trigger</td><td>User clicks "Register" button</td></tr>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-01</td></tr>
+  <tr><td>Tên</td><td>Mua Gói Đăng ký</td></tr>
+  <tr><td>Diễn viên</td><td>Tất cả (Candidate, HR, Employer)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập, chưa có gói đăng ký</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Gói đăng ký được kích hoạt, người dùng có thể truy cập tính năng cao cấp</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng nhấn "Đăng ký gói"</td></tr>
 </table>
-<p><strong>Main Flow:</strong></p>
+<p><strong>Luồng Chính:</strong></p>
 <ol>
-  <li>User navigates to registration page</li>
-  <li>User enters email, password, full name, phone</li>
-  <li>System validates input data</li>
-  <li>System checks email availability</li>
-  <li>System hashes password and creates user record <strong>with system role <code>user</code></strong></li>
-  <li>System generates JWT token <strong>with system role claim</strong></li>
-  <li>System returns success response</li>
-</ol>
-<p><strong>AUTH Module Dependency:</strong></p>
-<ul>
-  <li>Steps 3-5 (validate, check email, hash password, create user <strong>with system role</strong>) are handled by <strong>AUTH module</strong> (FR-001)</li>
-  <li>AUTH creates user with system role <code>user</code> (self-registration always uses <code>user</code> role)</li>
-  <li>AUTH stores role in auth_users and includes it in JWT token</li>
-  <li>AUTH returns user_id and JWT token (with system role) to RECR</li>
-  <li>RECR then creates recruitment-specific profile if needed and links to auth user</li>
-</ul>
-<p><strong>Organization Roles Note:</strong></p>
-<ul>
-  <li>After registration, the user has system role <code>user</code> but <strong>no organization-level roles</strong></li>
-  <li>Organization-level roles (HR, Candidate, Employer) are assigned when the user joins or is added to an organization</li>
-  <li>The user can create a new organization (becoming its owner/Employer) or be invited to an existing organization</li>
-</ul>
-<p><strong>Subscription Note:</strong></p>
-<ul>
-  <li>All users can <strong>optionally</strong> purchase subscription after joining an organization</li>
-  <li>Subscription provides premium features but is <strong>not required</strong> for basic functionality</li>
-  <li>See UC-03: Purchase Subscription for details</li>
-</ul>
-<p><strong>Alternative Flows:</strong></p>
-<ul>
-  <li>3a. Email already exists: System returns error "Email already registered"</li>
-  <li>3b. Invalid input: System returns validation error with details</li>
-  <li>3c. User tries to register with <code>super_admin</code> role: System returns error "Super admin accounts cannot be self-registered"</li>
-</ul>
-<div class="diagram">
-  <img src="./images/activity/uc01-register-activity.png" alt="UC-01 Activity Diagram">
-  <div class="caption">Figure 3: UC-01 Register Account - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc01-register-sequence.png" alt="UC-01 Sequence Diagram">
-  <div class="caption">Figure 4: UC-01 Register Account - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-2">3.2 UC-02: Login</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-02</td></tr>
-  <tr><td>Name</td><td>Login</td></tr>
-  <tr><td>Actor</td><td>All (user, super_admin)</td></tr>
-  <tr><td>Precondition</td><td>User has registered account</td></tr>
-  <tr><td>Postcondition</td><td>User authenticated, JWT token issued with system-level role</td></tr>
-  <tr><td>Trigger</td><td>User clicks "Login" button</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>User enters email and password</li>
-  <li>System validates input</li>
-  <li>System checks email exists</li>
-  <li>System verifies password hash</li>
-  <li>System checks account is active</li>
-  <li>System generates JWT token with <strong>system-level role</strong> claim (<code>user</code> or <code>super_admin</code>)</li>
-  <li>System returns token and system role</li>
-  <li>Frontend redirects based on system role; org-level roles loaded when user selects an organization</li>
-</ol>
-<p><strong>AUTH Module Dependency:</strong></p>
-<ul>
-  <li>Steps 2-6 (validate, check email, verify password, check active, generate JWT) are handled by <strong>AUTH module</strong> (FR-002)</li>
-  <li>AUTH reads system role from auth_users table (stored during registration in UC-01)</li>
-  <li>AUTH returns JWT token with system-level role claim to RECR</li>
-  <li>RECR uses system role claim for initial navigation; org-level roles are loaded on demand when user accesses an organization</li>
-</ul>
-<div class="diagram">
-  <img src="./images/activity/uc02-login-activity.png" alt="UC-02 Activity Diagram">
-  <div class="caption">Figure 5: UC-02 Login - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc02-login-sequence.png" alt="UC-02 Sequence Diagram">
-  <div class="caption">Figure 6: UC-02 Login - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-3">3.3 UC-03: Purchase Subscription</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-03</td></tr>
-  <tr><td>Name</td><td>Purchase Subscription</td></tr>
-  <tr><td>Actor</td><td>All (Candidate, HR, Employer)</td></tr>
-  <tr><td>Precondition</td><td>User is logged in, no active subscription</td></tr>
-  <tr><td>Postcondition</td><td>Subscription activated, user can access premium features</td></tr>
-  <tr><td>Trigger</td><td>User clicks "Subscribe"</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>User navigates to subscription page</li>
-  <li>System displays available plans:
+  <li>Người dùng điều hướng đến trang đăng ký gói</li>
+  <li>Hệ thống hiển thị các gói có sẵn:
     <ul>
-      <li><strong>1 Month:</strong> Standard price</li>
-      <li><strong>6 Months:</strong> 10% discount</li>
-      <li><strong>1 Year:</strong> 2 months free (pay for 10 months)</li>
+      <li><strong>1 Tháng:</strong> Giá tiêu chuẩn</li>
+      <li><strong>6 Tháng:</strong> Giảm 10%</li>
+      <li><strong>1 Năm:</strong> 2 tháng miễn phí (trả tiền cho 10 tháng)</li>
     </ul>
   </li>
-  <li>User selects a plan</li>
-  <li>System calculates final price with discount</li>
-  <li>User reviews order summary</li>
-  <li>User completes payment</li>
-  <li>System creates subscription record</li>
-  <li>System activates subscription</li>
-  <li>User receives confirmation</li>
-  <li>User can now access premium features (varies by role)</li>
+  <li>Người dùng chọn gói</li>
+  <li>Hệ thống tính toán giá cuối cùng với giảm giá</li>
+  <li>Người dùng xem lại tóm tắt đơn hàng</li>
+  <li>Người dùng hoàn thành thanh toán</li>
+  <li>Hệ thống tạo bản ghi đăng ký</li>
+  <li>Hệ thống kích hoạt đăng ký</li>
+  <li>Người dùng nhận xác nhận</li>
+  <li>Người dùng có thể truy cập tính năng cao cấp (khác nhau tùy vai trò)</li>
 </ol>
-<p><strong>Subscription Benefits by Role:</strong></p>
+<p><strong>Lợi ích Đăng ký theo Vai trò:</strong></p>
 <ul>
-  <li><strong>Candidate:</strong> Priority application, profile boost, advanced analytics</li>
-  <li><strong>HR:</strong> Advanced recruitment tools, priority support, enhanced analytics</li>
-  <li><strong>Employer:</strong> Premium job posting, featured listings, advanced applicant tracking</li>
+  <li><strong>Candidate:</strong> Ưu tiên ứng tuyển, nâng cấp hồ sơ, phân tích nâng cao</li>
+  <li><strong>HR:</strong> Công cụ tuyển dụng nâng cao, hỗ trợ ưu tiên, phân tích nâng cao</li>
+  <li><strong>Employer:</strong> Đăng tin cao cấp, tin được giới thiệu, theo dõi ứng viên nâng cao</li>
 </ul>
-<p><strong>Alternative Flows:</strong></p>
+<p><strong>Luồng Thay thế:</strong></p>
 <ul>
-  <li>7a. Payment failed: System shows error, subscription not activated</li>
-  <li>7b. Payment cancelled: System returns to plan selection</li>
-</ul>
-
-<h2 id="section-3-4">3.4 UC-04: Manage Subscription</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-04</td></tr>
-  <tr><td>Name</td><td>Manage Subscription</td></tr>
-  <tr><td>Actor</td><td>All (Candidate, HR, Employer)</td></tr>
-  <tr><td>Precondition</td><td>User has subscription (active or expired)</td></tr>
-  <tr><td>Postcondition</td><td>Subscription status updated</td></tr>
-  <tr><td>Trigger</td><td>User accesses subscription management</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>User navigates to subscription management</li>
-  <li>System displays current subscription status:
-    <ul>
-      <li>Plan name and duration</li>
-      <li>Start date and end date</li>
-      <li>Days remaining</li>
-      <li>Auto-renewal status</li>
-    </ul>
-  </li>
-  <li>Employer can:
-    <ul>
-      <li>Renew subscription</li>
-      <li>Upgrade plan (e.g., 1 month → 6 months)</li>
-      <li>Cancel auto-renewal</li>
-    </ul>
-  </li>
-  <li>System processes request</li>
-  <li>System updates subscription record</li>
-</ol>
-
-<h2 id="section-3-5">3.5 UC-05: Browse Jobs</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-05</td></tr>
-  <tr><td>Name</td><td>Browse Jobs</td></tr>
-  <tr><td>Actor</td><td>Candidate</td></tr>
-  <tr><td>Precondition</td><td>Jobs exist in system</td></tr>
-  <tr><td>Postcondition</td><td>Candidate views job listings</td></tr>
-  <tr><td>Trigger</td><td>Candidate accesses job listings page</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>Candidate navigates to job listings page</li>
-  <li>System displays all open jobs</li>
-  <li>Candidate applies filters (location, salary, type)</li>
-  <li>System returns filtered results</li>
-  <li>Candidate selects a job to view details</li>
-  <li>System displays job details with requirements</li>
-</ol>
-<div class="diagram">
-  <img src="./images/activity/uc03-browse-jobs-activity.png" alt="UC-03 Activity Diagram">
-  <div class="caption">Figure 7: UC-03 Browse Jobs - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc03-browse-jobs-sequence.png" alt="UC-03 Sequence Diagram">
-  <div class="caption">Figure 8: UC-03 Browse Jobs - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-6">3.6 UC-06: Submit Application</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-06</td></tr>
-  <tr><td>Name</td><td>Submit Application</td></tr>
-  <tr><td>Actor</td><td>Candidate</td></tr>
-  <tr><td>Precondition</td><td>Candidate is logged in, job exists</td></tr>
-  <tr><td>Postcondition</td><td>Application created, employer notified</td></tr>
-  <tr><td>Trigger</td><td>Candidate clicks "Apply" on job listing</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>Candidate selects job and clicks "Apply"</li>
-  <li>Candidate selects an existing resume from their resume list, or uploads a new resume (PDF/DOCX, max 10MB via FILE module)</li>
-  <li>Candidate enters cover letter</li>
-  <li>Candidate reviews and submits application</li>
-  <li>System validates application (validates resume_file_id exists in FILE module)</li>
-  <li>System checks for duplicate application</li>
-  <li>System freezes the resume by copying <code>resume_file_id</code> to the application record (immutable after submission)</li>
-  <li>System creates application record</li>
-  <li>System sends notification to employer</li>
-  <li>Candidate sees success message</li>
-</ol>
-<p><strong>Alternative Flows:</strong></p>
-<ul>
-  <li>6a. Already applied: System shows "Already Applied" error</li>
-  <li>5a. Invalid input: System shows validation error</li>
-</ul>
-<div class="diagram">
-  <img src="./images/activity/uc04-submit-application-activity.png" alt="UC-04 Activity Diagram">
-  <div class="caption">Figure 9: UC-04 Submit Application - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc04-submit-application-sequence.png" alt="UC-04 Sequence Diagram">
-  <div class="caption">Figure 10: UC-04 Submit Application - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-7">3.7 UC-07: View Application Status</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-07</td></tr>
-  <tr><td>Name</td><td>View Application Status</td></tr>
-  <tr><td>Actor</td><td>Candidate</td></tr>
-  <tr><td>Precondition</td><td>Candidate has submitted applications</td></tr>
-  <tr><td>Postcondition</td><td>Candidate views application progress</td></tr>
-  <tr><td>Trigger</td><td>Candidate accesses "My Applications"</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>Candidate navigates to "My Applications"</li>
-  <li>System displays list of applications</li>
-  <li>Candidate selects an application</li>
-  <li>System displays application details and status</li>
-  <li>Candidate views status history and timeline</li>
-</ol>
-<div class="diagram">
-  <img src="./images/activity/uc05-view-application-status-activity.png" alt="UC-05 Activity Diagram">
-  <div class="caption">Figure 11: UC-05 View Application Status - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc05-view-application-status-sequence.png" alt="UC-05 Sequence Diagram">
-  <div class="caption">Figure 12: UC-05 View Application Status - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-8">3.8 UC-08: Review Applications</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-08</td></tr>
-  <tr><td>Name</td><td>Review Applications</td></tr>
-  <tr><td>Actor</td><td>HR</td></tr>
-  <tr><td>Precondition</td><td>Applications exist in system</td></tr>
-  <tr><td>Postcondition</td><td>HR reviews and updates application status</td></tr>
-  <tr><td>Trigger</td><td>HR accesses application dashboard</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>HR navigates to application dashboard</li>
-  <li>System displays all applications</li>
-  <li>HR applies filters (job, status)</li>
-  <li>System returns filtered results</li>
-  <li>HR selects an application to review</li>
-  <li>HR views candidate profile, cover letter, and resume (via presigned download URL from FILE module)</li>
-  <li>HR updates application status (screening/rejected)</li>
-</ol>
-<div class="diagram">
-  <img src="./images/activity/uc08-review-applications-activity.png" alt="UC-08 Activity Diagram">
-  <div class="caption">Figure 13: UC-08 Review Applications - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc08-review-applications-sequence.png" alt="UC-08 Sequence Diagram">
-  <div class="caption">Figure 14: UC-08 Review Applications - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-9">3.9 UC-09: Schedule Interview</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-09</td></tr>
-  <tr><td>Name</td><td>Schedule Interview</td></tr>
-  <tr><td>Actor</td><td>HR</td></tr>
-  <tr><td>Precondition</td><td>Candidate passed screening</td></tr>
-  <tr><td>Postcondition</td><td>Interview scheduled, notifications sent</td></tr>
-  <tr><td>Trigger</td><td>HR clicks "Schedule Interview"</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>HR selects candidate from screened applications</li>
-  <li>HR selects interviewer</li>
-  <li>HR chooses date/time and location</li>
-  <li>HR adds meeting link and notes</li>
-  <li>System validates interviewer availability</li>
-  <li>System creates interview record</li>
-  <li>System sends calendar invites</li>
-  <li>System notifies candidate and interviewer</li>
-</ol>
-<div class="diagram">
-  <img src="./images/activity/uc10-schedule-interview-activity.png" alt="UC-10 Activity Diagram">
-  <div class="caption">Figure 15: UC-10 Schedule Interview - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc10-schedule-interview-sequence.png" alt="UC-10 Sequence Diagram">
-  <div class="caption">Figure 16: UC-10 Schedule Interview - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-10">3.10 UC-10: Evaluate Candidate</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-10</td></tr>
-  <tr><td>Name</td><td>Evaluate Candidate</td></tr>
-  <tr><td>Actor</td><td>HR</td></tr>
-  <tr><td>Precondition</td><td>Interview completed</td></tr>
-  <tr><td>Postcondition</td><td>Evaluation recorded</td></tr>
-  <tr><td>Trigger</td><td>HR accesses interview details</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>HR accesses completed interview</li>
-  <li>HR reviews candidate profile and resume</li>
-  <li>HR enters evaluation scores (technical, communication, cultural fit)</li>
-  <li>HR selects recommendation (strong_yes/yes/neutral/no/strong_no)</li>
-  <li>HR adds comments</li>
-  <li>System saves evaluation record</li>
-  <li>System updates interview status</li>
-</ol>
-<div class="diagram">
-  <img src="./images/activity/uc11-evaluate-candidate-activity.png" alt="UC-11 Activity Diagram">
-  <div class="caption">Figure 17: UC-11 Evaluate Candidate - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc11-evaluate-candidate-sequence.png" alt="UC-11 Sequence Diagram">
-  <div class="caption">Figure 18: UC-11 Evaluate Candidate - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-11">3.11 UC-11: Post Job</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-11</td></tr>
-  <tr><td>Name</td><td>Post Job</td></tr>
-  <tr><td>Actor</td><td>HR, Employer</td></tr>
-  <tr><td>Precondition</td><td>User is logged in</td></tr>
-  <tr><td>Postcondition</td><td>Job created and submitted for approval</td></tr>
-  <tr><td>Trigger</td><td>User clicks "Create New Job"</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>User navigates to job management</li>
-  <li>User enters job details (title, description, department, location)</li>
-  <li>User enters salary range and employment type</li>
-  <li>User adds job requirements</li>
-  <li>System saves job as draft with user as owner</li>
-  <li>User submits job for approval</li>
-  <li>System updates status to "pending_approval"</li>
-  <li>System notifies HR (if HR created) or notifies admin (if Employer created)</li>
-</ol>
-<p><strong>Note:</strong> Subscription is optional. Users with subscription get premium features like priority posting, featured listings.</p>
-<div class="diagram">
-  <img src="./images/activity/uc16-post-job-activity.png" alt="UC-16 Activity Diagram">
-  <div class="caption">Figure 21: UC-11 Post Job - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc16-post-job-sequence.png" alt="UC-16 Sequence Diagram">
-  <div class="caption">Figure 22: UC-11 Post Job - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-12">3.12 UC-12: Manage Jobs</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-12</td></tr>
-  <tr><td>Name</td><td>Manage Jobs</td></tr>
-  <tr><td>Actor</td><td>HR, Employer</td></tr>
-  <tr><td>Precondition</td><td>User has created jobs</td></tr>
-  <tr><td>Postcondition</td><td>Job status updated</td></tr>
-  <tr><td>Trigger</td><td>User accesses job management page</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>User navigates to job management</li>
-  <li>System displays user's job repository:
-    <ul>
-      <li>All jobs created by this user</li>
-      <li>Status indicators (draft, open, closed, archived)</li>
-      <li>Application counts per job</li>
-    </ul>
-  </li>
-  <li>User can:
-    <ul>
-      <li>Edit job details</li>
-      <li>Change job status (open/close/archive)</li>
-      <li>View applicants for each job</li>
-    </ul>
-  </li>
-  <li>System updates job record</li>
-</ol>
-<p><strong>Alternative Flows:</strong></p>
-<ul>
-  <li>2a. Employer without subscription: System shows subscription required message</li>
+  <li>7a. Thanh toán thất bại: Hệ thống hiển thị lỗi, gói đăng ký không được kích hoạt</li>
+  <li>7b. Đã hủy thanh toán: Hệ thống quay lại lựa chọn gói</li>
 </ul>
 
-<h2 id="section-3-13">3.13 UC-13: Review Job</h2>
+<h2 id="section-3-2">3.2 UC-02: Quản lý Gói Đăng ký</h2>
 <table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-13</td></tr>
-  <tr><td>Name</td><td>Review Job</td></tr>
-  <tr><td>Actor</td><td>Candidate</td></tr>
-  <tr><td>Precondition</td><td>Candidate has applied to or worked at the company</td></tr>
-  <tr><td>Postcondition</td><td>Job review submitted and visible to other users</td></tr>
-  <tr><td>Trigger</td><td>Candidate clicks "Review" on a job listing</td></tr>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-02</td></tr>
+  <tr><td>Tên</td><td>Quản lý Gói Đăng ký</td></tr>
+  <tr><td>Diễn viên</td><td>Tất cả (Candidate, HR, Employer)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng có gói đăng ký (đang hoạt động hoặc đã hết hạn)</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Trạng thái gói đăng ký được cập nhật</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng truy cập trang quản lý đăng ký</td></tr>
 </table>
-<p><strong>Main Flow:</strong></p>
+<p><strong>Luồng Chính:</strong></p>
 <ol>
-  <li>Candidate navigates to job listing</li>
-  <li>Candidate clicks "Write Review"</li>
-  <li>Candidate rates the job on multiple dimensions:
+  <li>Người dùng điều hướng đến trang quản lý đăng ký</li>
+  <li>Hệ thống hiển thị trạng thái đăng ký hiện tại:
     <ul>
-      <li>Overall rating (1-5 stars)</li>
-      <li>Work-life balance</li>
-      <li>Compensation</li>
-      <li>Career growth</li>
-      <li>Company culture</li>
+      <li>Tên gói và thời hạn</li>
+      <li>Ngày bắt đầu và ngày kết thúc</li>
+      <li>Số ngày còn lại</li>
+      <li>Trạng thái gia hạn tự động</li>
     </ul>
   </li>
-  <li>Candidate writes review title and description</li>
-  <li>Candidate submits review</li>
-  <li>System saves review record</li>
-  <li>System updates job average rating</li>
-</ol>
-<p><strong>Alternative Flows:</strong></p>
-<ul>
-  <li>1a. Candidate hasn't applied: System shows "Only applicants can review" message</li>
-  <li>2a. Already reviewed: System shows "You've already reviewed this job" message</li>
-</ul>
-<div class="diagram">
-  <img src="./images/activity/uc13-review-job-activity.png" alt="UC-13 Activity Diagram">
-  <div class="caption">Figure 24: UC-13 Review Job - Activity Diagram</div>
-</div>
-<div class="diagram">
-  <img src="./images/sequence/uc13-review-job-sequence.png" alt="UC-13 Sequence Diagram">
-  <div class="caption">Figure 25: UC-13 Review Job - Sequence Diagram</div>
-</div>
-
-<h2 id="section-3-14">3.14 UC-14: Review Candidate</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-14</td></tr>
-  <tr><td>Name</td><td>Review Candidate</td></tr>
-  <tr><td>Actor</td><td>HR, Interviewer</td></tr>
-  <tr><td>Precondition</td><td>Interview has been completed</td></tr>
-  <tr><td>Postcondition</td><td>Candidate review submitted</td></tr>
-  <tr><td>Trigger</td><td>Interviewer clicks "Review Candidate" after interview</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>Interviewer navigates to completed interview</li>
-  <li>Interviewer clicks "Write Review"</li>
-  <li>Interviewer rates the candidate on multiple dimensions:
+  <li>Employer có thể:
     <ul>
-      <li>Technical skills (1-5 stars)</li>
-      <li>Communication skills</li>
-      <li>Cultural fit</li>
-      <li>Problem-solving ability</li>
-      <li>Team collaboration</li>
+      <li>Gia hạn đăng ký</li>
+      <li>Nâng cấp gói (ví dụ: 1 tháng -> 6 tháng)</li>
+      <li>Hủy gia hạn tự động</li>
     </ul>
   </li>
-  <li>Interviewer writes review title and description</li>
-  <li>Interviewer selects recommendation (strong_yes/yes/neutral/no/strong_no)</li>
-  <li>Interviewer submits review</li>
-  <li>System saves review record</li>
-  <li>System updates candidate average rating</li>
+  <li>Hệ thống xử lý yêu cầu</li>
+  <li>Hệ thống cập nhật bản ghi đăng ký</li>
 </ol>
-<p><strong>Alternative Flows:</strong></p>
-<ul>
-  <li>1a. Interview not completed: System shows "Interview must be completed first" message</li>
-  <li>2a. Already reviewed: System shows "You've already reviewed this candidate" message</li>
-</ul>
+
+<h2 id="section-3-3">3.3 UC-03: Duyệt Việc làm</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-03</td></tr>
+  <tr><td>Tên</td><td>Duyệt Việc làm</td></tr>
+  <tr><td>Diễn viên</td><td>Candidate</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Có việc làm trong hệ thống</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Ứng viên xem danh sách việc làm</td></tr>
+  <tr><td>Kích hoạt</td><td>Ứng viên truy cập trang danh sách việc làm</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Ứng viên điều hướng đến trang danh sách việc làm</li>
+  <li>Hệ thống hiển thị tất cả việc làm đang mở</li>
+  <li>Ứng viên áp dụng bộ lọc (địa điểm, lương, loại hình)</li>
+  <li>Hệ thống trả về kết quả đã lọc</li>
+  <li>Ứng viên chọn một việc làm để xem chi tiết</li>
+  <li>Hệ thống hiển thị chi tiết việc làm với yêu cầu</li>
+</ol>
 <div class="diagram">
-  <img src="./images/activity/uc14-review-candidate-activity.png" alt="UC-14 Activity Diagram">
-  <div class="caption">Figure 26: UC-14 Review Candidate - Activity Diagram</div>
+  <img src="./images/activity/uc01-browse-jobs-activity.png" alt="Sơ đồ Hoạt động UC-01">
+  <div class="caption">Hình 7: UC-03 Duyệt Việc làm - Sơ đồ Hoạt động</div>
 </div>
 <div class="diagram">
-  <img src="./images/sequence/uc14-review-candidate-sequence.png" alt="UC-14 Sequence Diagram">
-  <div class="caption">Figure 27: UC-14 Review Candidate - Sequence Diagram</div>
+  <img src="./images/sequence/uc01-browse-jobs-sequence.png" alt="Sơ đồ Chuỗi UC-01">
+  <div class="caption">Hình 8: UC-03 Duyệt Việc làm - Sơ đồ Chuỗi</div>
 </div>
 
-<h2 id="section-3-15">3.15 UC-15: Update Profile</h2>
+<h2 id="section-3-4">3.4 UC-04: Nộp Hồ sơ Ứng tuyển</h2>
 <table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-15</td></tr>
-  <tr><td>Name</td><td>Update Profile</td></tr>
-  <tr><td>Actor</td><td>All (Candidate, HR, Employer)</td></tr>
-  <tr><td>Precondition</td><td>User is logged in</td></tr>
-  <tr><td>Postcondition</td><td>Profile updated successfully</td></tr>
-  <tr><td>Trigger</td><td>User clicks "Edit Profile"</td></tr>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-04</td></tr>
+  <tr><td>Tên</td><td>Nộp Hồ sơ Ứng tuyển</td></tr>
+  <tr><td>Diễn viên</td><td>Candidate</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Ứng viên đã đăng nhập, việc làm tồn tại</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Hồ sơ ứng tuyển được tạo, nhà tuyển dụng được thông báo</td></tr>
+  <tr><td>Kích hoạt</td><td>Ứng viên nhấn "Ứng tuyển" trên danh sách việc làm</td></tr>
 </table>
-<p><strong>Main Flow:</strong></p>
+<p><strong>Luồng Chính:</strong></p>
 <ol>
-  <li>User navigates to profile page</li>
-  <li>System displays current profile data</li>
-  <li>User edits profile fields:
+  <li>Ứng viên chọn việc làm và nhấn "Ứng tuyển"</li>
+  <li>Ứng viên chọn hồ sơ hiện có từ danh sách hồ sơ của mình, hoặc tải lên hồ sơ mới (PDF/DOCX, tối đa 10MB qua module FILE)</li>
+  <li>Ứng viên nhập thư xin việc</li>
+  <li>Ứng viên xem lại và nộp hồ sơ</li>
+  <li>Hệ thống kiểm tra hồ sơ (kiểm tra resume_file_id tồn tại trong module FILE)</li>
+  <li>Hệ thống kiểm tra trùng lặp hồ sơ</li>
+  <li>Hệ thống đóng băng hồ sơ bằng cách sao chép <code>resume_file_id</code> vào bản ghi hồ sơ (không thể thay đổi sau khi nộp)</li>
+  <li>Hệ thống tạo bản ghi hồ sơ</li>
+  <li>Hệ thống gửi thông báo cho nhà tuyển dụng</li>
+  <li>Ứng viên thấy thông báo thành công</li>
+</ol>
+<p><strong>Luồng Thay thế:</strong></p>
+<ul>
+  <li>6a. Đã ứng tuyển: Hệ thống hiển thị lỗi "Đã Ứng tuyển"</li>
+  <li>5a. Dữ liệu đầu vào không hợp lệ: Hệ thống hiển thị lỗi xác thực</li>
+</ul>
+<div class="diagram">
+  <img src="./images/activity/uc02-submit-application-activity.png" alt="Sơ đồ Hoạt động UC-02">
+  <div class="caption">Hình 9: UC-04 Nộp Hồ sơ Ứng tuyển - Sơ đồ Hoạt động</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc02-submit-application-sequence.png" alt="Sơ đồ Chuỗi UC-02">
+  <div class="caption">Hình 10: UC-04 Nộp Hồ sơ Ứng tuyển - Sơ đồ Chuỗi</div>
+</div>
+
+<h2 id="section-3-5">3.5 UC-05: Xem Trạng thái Hồ sơ</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-05</td></tr>
+  <tr><td>Tên</td><td>Xem Trạng thái Hồ sơ</td></tr>
+  <tr><td>Diễn viên</td><td>Candidate</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Ứng viên đã nộp hồ sơ</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Ứng viên xem tiến trình hồ sơ</td></tr>
+  <tr><td>Kích hoạt</td><td>Ứng viên truy cập "Hồ sơ của tôi"</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Ứng viên điều hướng đến "Hồ sơ của tôi"</li>
+  <li>Hệ thống hiển thị danh sách hồ sơ</li>
+  <li>Ứng viên chọn một hồ sơ</li>
+  <li>Hệ thống hiển thị chi tiết và trạng thái hồ sơ</li>
+  <li>Ứng viên xem lịch sử trạng thái và dòng thời gian</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc03-view-application-status-activity.png" alt="Sơ đồ Hoạt động UC-03">
+  <div class="caption">Hình 11: UC-05 Xem Trạng thái Hồ sơ - Sơ đồ Hoạt động</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc03-view-application-status-sequence.png" alt="Sơ đồ Chuỗi UC-03">
+  <div class="caption">Hình 12: UC-05 Xem Trạng thái Hồ sơ - Sơ đồ Chuỗi</div>
+</div>
+
+<h2 id="section-3-6">3.6 UC-06: Duyệt Hồ sơ Ứng tuyển</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-06</td></tr>
+  <tr><td>Tên</td><td>Duyệt Hồ sơ Ứng tuyển</td></tr>
+  <tr><td>Diễn viên</td><td>HR</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Có hồ sơ ứng tuyển trong hệ thống</td></tr>
+  <tr><td>Điều kiện thành công</td><td>HR duyệt và cập nhật trạng thái hồ sơ</td></tr>
+  <tr><td>Kích hoạt</td><td>HR truy cập bảng điều khiển hồ sơ</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>HR điều hướng đến bảng điều khiển hồ sơ</li>
+  <li>Hệ thống hiển thị tất cả hồ sơ</li>
+  <li>HR áp dụng bộ lọc (việc làm, trạng thái)</li>
+  <li>Hệ thống trả về kết quả đã lọc</li>
+  <li>HR chọn một hồ sơ để duyệt</li>
+  <li>HR xem hồ sơ ứng viên, thư xin việc và hồ sơ xin việc (qua URL tải xuống presigned từ module FILE)</li>
+  <li>HR cập nhật trạng thái hồ sơ (sàng lọc/từ chối)</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc06-review-applications-activity.png" alt="Sơ đồ Hoạt động UC-06">
+  <div class="caption">Hình 13: UC-06 Duyệt Hồ sơ Ứng tuyển - Sơ đồ Hoạt động</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc06-review-applications-sequence.png" alt="Sơ đồ Chuỗi UC-06">
+  <div class="caption">Hình 14: UC-06 Duyệt Hồ sơ Ứng tuyển - Sơ đồ Chuỗi</div>
+</div>
+
+<h2 id="section-3-7">3.7 UC-07: Lịch phỏng vấn</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-07</td></tr>
+  <tr><td>Tên</td><td>Lịch phỏng vấn</td></tr>
+  <tr><td>Diễn viên</td><td>HR</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Ứng viên đã vượt qua sàng lọc</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Phỏng vấn được lên lịch, thông báo được gửi</td></tr>
+  <tr><td>Kích hoạt</td><td>HR nhấn "Lên lịch phỏng vấn"</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>HR chọn ứng viên từ các hồ sơ đã sàng lọc</li>
+  <li>HR chọn người phỏng vấn</li>
+  <li>HR chọn ngày/giờ và địa điểm</li>
+  <li>HR thêm liên kết họp và ghi chú</li>
+  <li>Hệ thống kiểm tra lịch trống của người phỏng vấn</li>
+  <li>Hệ thống tạo bản ghi phỏng vấn</li>
+  <li>Hệ thống gửi lời mời lịch</li>
+  <li>Hệ thống thông báo cho ứng viên và người phỏng vấn</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc07-schedule-interview-activity.png" alt="Sơ đồ Hoạt động UC-08">
+  <div class="caption">Hình 15: UC-07 Lịch phỏng vấn - Sơ đồ Hoạt động</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc07-schedule-interview-sequence.png" alt="Sơ đồ Chuỗi UC-08">
+  <div class="caption">Hình 16: UC-07 Lịch phỏng vấn - Sơ đồ Chuỗi</div>
+</div>
+
+<h2 id="section-3-8">3.8 UC-08: Đánh giá Ứng viên</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-08</td></tr>
+  <tr><td>Tên</td><td>Đánh giá Ứng viên</td></tr>
+  <tr><td>Diễn viên</td><td>HR</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Phỏng vấn đã hoàn thành</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Đánh giá được ghi nhận</td></tr>
+  <tr><td>Kích hoạt</td><td>HR truy cập chi tiết phỏng vấn</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>HR truy cập phỏng vấn đã hoàn thành</li>
+  <li>HR xem lại hồ sơ và CV của ứng viên</li>
+  <li>HR nhập điểm đánh giá (kỹ thuật, giao tiếp, phù hợp văn hóa)</li>
+  <li>HR chọn đề xuất (strong_yes/yes/neutral/no/strong_no)</li>
+  <li>HR thêm nhận xét</li>
+  <li>Hệ thống lưu bản ghi đánh giá</li>
+  <li>Hệ thống cập nhật trạng thái phỏng vấn</li>
+</ol>
+<div class="diagram">
+  <img src="./images/activity/uc08-evaluate-candidate-activity.png" alt="Sơ đồ Hoạt động UC-09">
+  <div class="caption">Hình 17: UC-08 Đánh giá Ứng viên - Sơ đồ Hoạt động</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc08-evaluate-candidate-sequence.png" alt="Sơ đồ Chuỗi UC-09">
+  <div class="caption">Hình 18: UC-08 Đánh giá Ứng viên - Sơ đồ Chuỗi</div>
+</div>
+
+<h2 id="section-3-9">3.9 UC-09: Đăng tin Việc làm</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-09</td></tr>
+  <tr><td>Tên</td><td>Đăng tin Việc làm</td></tr>
+  <tr><td>Diễn viên</td><td>HR, Employer</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Việc làm được tạo và gửi để duyệt</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng nhấn "Tạo Việc làm mới"</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Người dùng điều hướng đến trang quản lý việc làm</li>
+  <li>Người dùng nhập chi tiết việc làm (tiêu đề, mô tả, phòng ban, địa điểm)</li>
+  <li>Người dùng nhập khoảng lương và loại hình việc làm</li>
+  <li>Người dùng thêm yêu cầu việc làm</li>
+  <li>Hệ thống lưu việc làm dưới dạng bản nháp với người dùng là chủ sở hữu</li>
+  <li>Người dùng gửi việc làm để duyệt</li>
+  <li>Hệ thống cập nhật trạng thái thành "pending_approval"</li>
+  <li>Hệ thống thông báo cho HR (nếu HR tạo) hoặc thông báo cho admin (nếu Employer tạo)</li>
+</ol>
+<p><strong>Lưu ý:</strong> Đăng ký là tùy chọn. Người dùng có đăng ký sẽ được các tính năng cao cấp như ưu tiên đăng tin, tin được giới thiệu.</p>
+<div class="diagram">
+  <img src="./images/activity/uc09-post-job-activity.png" alt="Sơ đồ Hoạt động UC-14">
+  <div class="caption">Hình 21: UC-09 Đăng tin Việc làm - Sơ đồ Hoạt động</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc09-post-job-sequence.png" alt="Sơ đồ Chuỗi UC-14">
+  <div class="caption">Hình 22: UC-09 Đăng tin Việc làm - Sơ đồ Chuỗi</div>
+</div>
+
+<h2 id="section-3-10">3.10 UC-10: Quản lý Việc làm</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-10</td></tr>
+  <tr><td>Tên</td><td>Quản lý Việc làm</td></tr>
+  <tr><td>Diễn viên</td><td>HR, Employer</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã tạo việc làm</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Trạng thái việc làm được cập nhật</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng truy cập trang quản lý việc làm</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Người dùng điều hướng đến trang quản lý việc làm</li>
+  <li>Hệ thống hiển thị kho việc làm của người dùng:
     <ul>
-      <li><strong>All roles:</strong> Full name, phone, avatar</li>
-      <li><strong>Candidate:</strong> Resume, skills, experience, expected salary</li>
-      <li><strong>HR:</strong> Department, position</li>
-      <li><strong>Employer:</strong> Company name, website, description, industry, size</li>
+      <li>Tất cả việc làm do người dùng này tạo</li>
+      <li>Chỉ báo trạng thái (nháp, mở, đóng, lưu trữ)</li>
+      <li>Số lượng hồ sơ trên mỗi việc làm</li>
     </ul>
   </li>
-  <li>User submits changes</li>
-  <li>System validates input</li>
-  <li>System updates profile record</li>
-  <li>System returns success response</li>
+  <li>Người dùng có thể:
+    <ul>
+      <li>Chỉnh sửa chi tiết việc làm</li>
+      <li>Thay đổi trạng thái việc làm (mở/đóng/lưu trữ)</li>
+      <li>Xem người nộp đơn cho mỗi việc làm</li>
+    </ul>
+  </li>
+  <li>Hệ thống cập nhật bản ghi việc làm</li>
 </ol>
-<p><strong>Alternative Flows:</strong></p>
+<p><strong>Luồng Thay thế:</strong></p>
 <ul>
-  <li>3a. Invalid input: System shows validation error</li>
-  <li>4a. Upload failed: System shows file upload error</li>
+  <li>2a. Employer chưa có đăng ký: Hệ thống hiển thị thông báo yêu cầu đăng ký</li>
+</ul>
+
+<h2 id="section-3-11">3.11 UC-11: Đánh giá Việc làm</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-11</td></tr>
+  <tr><td>Tên</td><td>Đánh giá Việc làm</td></tr>
+  <tr><td>Diễn viên</td><td>Candidate</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Ứng viên đã ứng tuyển hoặc làm việc tại công ty</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Đánh giá việc làm được nộp và hiển thị cho người dùng khác</td></tr>
+  <tr><td>Kích hoạt</td><td>Ứng viên nhấn "Đánh giá" trên danh sách việc làm</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Ứng viên điều hướng đến danh sách việc làm</li>
+  <li>Ứng viên nhấn "Viết Đánh giá"</li>
+  <li>Ứng viên đánh giá việc làm trên nhiều chiều:
+    <ul>
+      <li>Đánh giá tổng thể (1-5 sao)</li>
+      <li>Cân bằng công việc-cuộc sống</li>
+      <li>Đền bù</li>
+      <li>Phát triển nghề nghiệp</li>
+      <li>Văn hóa công ty</li>
+    </ul>
+  </li>
+  <li>Ứng viên viết tiêu đề và mô tả đánh giá</li>
+  <li>Ứng viên gửi đánh giá</li>
+  <li>Hệ thống lưu bản ghi đánh giá</li>
+  <li>Hệ thống cập nhật điểm trung bình đánh giá của việc làm</li>
+</ol>
+<p><strong>Luồng Thay thế:</strong></p>
+<ul>
+  <li>1a. Ứng viên chưa ứng tuyển: Hệ thống hiển thị thông báo "Chỉ người nộp đơn mới có thể đánh giá"</li>
+  <li>2a. Đã đánh giá: Hệ thống hiển thị thông báo "Bạn đã đánh giá việc làm này rồi"</li>
 </ul>
 <div class="diagram">
-  <img src="./images/activity/uc15-update-profile-activity.png" alt="UC-15 Activity Diagram">
-  <div class="caption">Figure 28: UC-15 Update Profile - Activity Diagram</div>
+  <img src="./images/activity/uc11-review-job-activity.png" alt="Sơ đồ Hoạt động UC-11">
+  <div class="caption">Hình 24: UC-11 Đánh giá Việc làm - Sơ đồ Hoạt động</div>
 </div>
 <div class="diagram">
-  <img src="./images/sequence/uc15-update-profile-sequence.png" alt="UC-15 Sequence Diagram">
-  <div class="caption">Figure 29: UC-15 Update Profile - Sequence Diagram</div>
+  <img src="./images/sequence/uc11-review-job-sequence.png" alt="Sơ đồ Chuỗi UC-11">
+  <div class="caption">Hình 25: UC-11 Đánh giá Việc làm - Sơ đồ Chuỗi</div>
 </div>
 
-<h2 id="section-3-16">3.16 UC-16: View Dashboard</h2>
+<h2 id="section-3-12">3.12 UC-12: Đánh giá Ứng viên</h2>
 <table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-16</td></tr>
-  <tr><td>Name</td><td>View Dashboard</td></tr>
-  <tr><td>Actor</td><td>HR, Employer</td></tr>
-  <tr><td>Precondition</td><td>User is logged in</td></tr>
-  <tr><td>Postcondition</td><td>User views analytics dashboard</td></tr>
-  <tr><td>Trigger</td><td>User clicks "Dashboard" menu</td></tr>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-12</td></tr>
+  <tr><td>Tên</td><td>Đánh giá Ứng viên</td></tr>
+  <tr><td>Diễn viên</td><td>HR, Người phỏng vấn</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Phỏng vấn đã hoàn thành</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Đánh giá ứng viên được nộp</td></tr>
+  <tr><td>Kích hoạt</td><td>Người phỏng vấn nhấn "Đánh giá Ứng viên" sau phỏng vấn</td></tr>
 </table>
-<p><strong>Main Flow:</strong></p>
+<p><strong>Luồng Chính:</strong></p>
 <ol>
-  <li>User navigates to dashboard page</li>
-  <li>System queries OpenSearch for aggregated data</li>
-  <li>System displays dashboard with:
+  <li>Người phỏng vấn điều hướng đến phỏng vấn đã hoàn thành</li>
+  <li>Người phỏng vấn nhấn "Viết Đánh giá"</li>
+  <li>Người phỏng vấn đánh giá ứng viên trên nhiều chiều:
     <ul>
-      <li><strong>User Analytics:</strong>
+      <li>Kỹ năng chuyên môn (1-5 sao)</li>
+      <li>Kỹ năng giao tiếp</li>
+      <li>Phù hợp văn hóa</li>
+      <li>Khả năng giải quyết vấn đề</li>
+      <li>Làm việc nhóm</li>
+    </ul>
+  </li>
+  <li>Người phỏng vấn viết tiêu đề và mô tả đánh giá</li>
+  <li>Người phỏng vấn chọn đề xuất (strong_yes/yes/neutral/no/strong_no)</li>
+  <li>Người phỏng vấn gửi đánh giá</li>
+  <li>Hệ thống lưu bản ghi đánh giá</li>
+  <li>Hệ thống cập nhật điểm trung bình đánh giá của ứng viên</li>
+</ol>
+<p><strong>Luồng Thay thế:</strong></p>
+<ul>
+  <li>1a. Phỏng vấn chưa hoàn thành: Hệ thống hiển thị thông báo "Phỏng vấn phải được hoàn thành trước"</li>
+  <li>2a. Đã đánh giá: Hệ thống hiển thị thông báo "Bạn đã đánh giá ứng viên này rồi"</li>
+</ul>
+<div class="diagram">
+  <img src="./images/activity/uc12-review-candidate-activity.png" alt="Sơ đồ Hoạt động UC-12">
+  <div class="caption">Hình 26: UC-12 Đánh giá Ứng viên - Sơ đồ Hoạt động</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc12-review-candidate-sequence.png" alt="Sơ đồ Chuỗi UC-12">
+  <div class="caption">Hình 27: UC-12 Đánh giá Ứng viên - Sơ đồ Chuỗi</div>
+</div>
+
+<h2 id="section-3-13">3.13 UC-13: Cập nhật Hồ sơ</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-13</td></tr>
+  <tr><td>Tên</td><td>Cập nhật Hồ sơ</td></tr>
+  <tr><td>Diễn viên</td><td>Tất cả (Candidate, HR, Employer)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Hồ sơ được cập nhật thành công</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng nhấn "Chỉnh sửa Hồ sơ"</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Người dùng điều hướng đến trang hồ sơ</li>
+  <li>Hệ thống hiển thị dữ liệu hồ sơ hiện tại</li>
+  <li>Người dùng chỉnh sửa các trường hồ sơ:
+    <ul>
+      <li><strong>Tất cả vai trò:</strong> Họ tên, số điện thoại, ảnh đại diện</li>
+      <li><strong>Candidate:</strong> Hồ sơ xin việc, kỹ năng, kinh nghiệm, lương mong muốn</li>
+      <li><strong>HR:</strong> Phòng ban, chức vụ</li>
+      <li><strong>Employer:</strong> Tên công ty, trang web, mô tả, ngành nghề, quy mô</li>
+    </ul>
+  </li>
+  <li>Người dùng gửi thay đổi</li>
+  <li>Hệ thống kiểm tra dữ liệu đầu vào</li>
+  <li>Hệ thống cập nhật bản ghi hồ sơ</li>
+  <li>Hệ thống trả về phản hồi thành công</li>
+</ol>
+<p><strong>Luồng Thay thế:</strong></p>
+<ul>
+  <li>3a. Dữ liệu đầu vào không hợp lệ: Hệ thống hiển thị lỗi xác thực</li>
+  <li>4a. Tải lên thất bại: Hệ thống hiển thị lỗi tải lên tệp</li>
+</ul>
+<div class="diagram">
+  <img src="./images/activity/uc13-update-profile-activity.png" alt="Sơ đồ Hoạt động UC-13">
+  <div class="caption">Hình 28: UC-13 Cập nhật Hồ sơ - Sơ đồ Hoạt động</div>
+</div>
+<div class="diagram">
+  <img src="./images/sequence/uc13-update-profile-sequence.png" alt="Sơ đồ Chuỗi UC-13">
+  <div class="caption">Hình 29: UC-13 Cập nhật Hồ sơ - Sơ đồ Chuỗi</div>
+</div>
+
+<h2 id="section-3-14">3.14 UC-14: Xem Bảng Điều khiển</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-14</td></tr>
+  <tr><td>Tên</td><td>Xem Bảng Điều khiển</td></tr>
+  <tr><td>Diễn viên</td><td>HR, Employer</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Người dùng xem bảng điều khiển phân tích</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng nhấn menu "Bảng điều khiển"</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Người dùng điều hướng đến trang bảng điều khiển</li>
+  <li>Hệ thống truy vấn OpenSearch để lấy dữ liệu tổng hợp</li>
+  <li>Hệ thống hiển thị bảng điều khiển với:
+    <ul>
+      <li><strong>Phân tích Người dùng:</strong>
         <ul>
-          <li>Total registered users (by role: Candidate, HR, Employer)</li>
-          <li>New registrations (daily, weekly, monthly)</li>
-          <li>Active users (logged in within last 7 days)</li>
-          <li>User growth trend chart</li>
+          <li>Tổng số người dùng đã đăng ký (theo vai trò: Candidate, HR, Employer)</li>
+          <li>Đăng ký mới (hàng ngày, hàng tuần, hàng tháng)</li>
+          <li>Người dùng hoạt động (đăng nhập trong 7 ngày qua)</li>
+          <li>Biểu đồ xu hướng tăng trưởng người dùng</li>
         </ul>
       </li>
-      <li><strong>Login Analytics:</strong>
+      <li><strong>Phân tích Đăng nhập:</strong>
         <ul>
-          <li>Total logins (by role)</li>
-          <li>Login frequency (hourly, daily)</li>
-          <li>Failed login attempts</li>
-          <li>Peak login times</li>
+          <li>Tổng số lần đăng nhập (theo vai trò)</li>
+          <li>Tần suất đăng nhập (theo giờ, theo ngày)</li>
+          <li>Số lần đăng nhập thất bại</li>
+          <li>Thời điểm đăng nhập cao điểm</li>
         </ul>
       </li>
-      <li><strong>Recruitment Analytics:</strong> (HR only)
+      <li><strong>Phân tích Tuyển dụng:</strong> (Chỉ HR)
         <ul>
-          <li>Active job listings</li>
-          <li>Applications received</li>
-          <li>Interviews scheduled</li>
-          <li>Offers sent</li>
+          <li>Việc làm đang mở</li>
+          <li>Hồ sơ đã nhận</li>
+          <li>Phỏng vấn đã lên lịch</li>
+          <li>Đề nghị đã gửi</li>
         </ul>
       </li>
-      <li><strong>Subscription Analytics:</strong>
+      <li><strong>Phân tích Đăng ký:</strong>
         <ul>
-          <li>Active subscriptions by plan</li>
-          <li>Revenue by plan</li>
-          <li>Expiring subscriptions</li>
+          <li>Đăng ký đang hoạt động theo gói</li>
+          <li>Doanh thu theo gói</li>
+          <li>Đăng ký sắp hết hạn</li>
         </ul>
       </li>
     </ul>
   </li>
-  <li>User can filter by date range</li>
-  <li>System updates dashboard with filtered data</li>
+  <li>Người dùng có thể lọc theo khoảng thời gian</li>
+  <li>Hệ thống cập nhật bảng điều khiển với dữ liệu đã lọc</li>
 </ol>
-<p><strong>Alternative Flows:</strong></p>
+<p><strong>Luồng Thay thế:</strong></p>
 <ul>
-  <li>2a. OpenSearch unavailable: System shows cached data or error message</li>
-  <li>4a. No data: System shows "No data available" message</li>
+  <li>2a. OpenSearch không khả dụng: Hệ thống hiển thị dữ liệu đã lưu trong bộ nhớ đệm hoặc thông báo lỗi</li>
+  <li>4a. Không có dữ liệu: Hệ thống hiển thị thông báo "Không có dữ liệu"</li>
 </ul>
 
-<h2 id="section-3-18">3.17 UC-18: Manage Resumes</h2>
+<h2 id="section-3-15">3.15 UC-15: Quản lý Hồ sơ Xin việc</h2>
 <table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-18</td></tr>
-  <tr><td>Name</td><td>Manage Resumes</td></tr>
-  <tr><td>Actor</td><td>Candidate</td></tr>
-  <tr><td>Precondition</td><td>Candidate is logged in</td></tr>
-  <tr><td>Postcondition</td><td>Candidate's resume list is updated</td></tr>
-  <tr><td>Trigger</td><td>Candidate navigates to "My Resumes" page</td></tr>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-15</td></tr>
+  <tr><td>Tên</td><td>Quản lý Hồ sơ Xin việc</td></tr>
+  <tr><td>Diễn viên</td><td>Candidate</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Ứng viên đã đăng nhập</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Danh sách hồ sơ của ứng viên được cập nhật</td></tr>
+  <tr><td>Kích hoạt</td><td>Ứng viên điều hướng đến trang "Hồ sơ của tôi"</td></tr>
 </table>
-<p><strong>Main Flow:</strong></p>
+<p><strong>Luồng Chính:</strong></p>
 <ol>
-  <li>Candidate navigates to "My Resumes" management page</li>
-  <li>System displays list of all uploaded resumes with metadata (file name, type, size, upload date)</li>
-  <li>Candidate can:
+  <li>Ứng viên điều hướng đến trang quản lý "Hồ sơ của tôi"</li>
+  <li>Hệ thống hiển thị danh sách tất cả hồ sơ đã tải lên kèm metadata (tên tệp, loại, kích thước, ngày tải lên)</li>
+  <li>Ứng viên có thể:
     <ul>
-      <li><strong>Upload new resume:</strong> Select file (PDF/DOCX, max 10MB) - file stored via FILE module with path <code>{candidate_user_id}/resumes/{uuid}.pdf</code></li>
-      <li><strong>Set primary resume:</strong> Mark a resume as primary (default for new applications)</li>
-      <li><strong>Delete resume:</strong> Remove a resume that is not linked to any submitted application</li>
-      <li><strong>Download resume:</strong> Get presigned download URL from FILE module to view resume</li>
+      <li><strong>Tải lên hồ sơ mới:</strong> Chọn tệp (PDF/DOCX, tối đa 10MB) - tệp được lưu qua module FILE với đường dẫn <code>{candidate_user_id}/resumes/{uuid}.pdf</code></li>
+      <li><strong>Đặt hồ sơ chính:</strong> Đánh dấu một hồ sơ là chính (mặc định cho các hồ sơ mới)</li>
+      <li><strong>Xóa hồ sơ:</strong> Xóa hồ sơ chưa được liên kết với bất kỳ hồ sơ ứng tuyển nào</li>
+      <li><strong>Tải xuống hồ sơ:</strong> Lấy URL tải xuống presigned từ module FILE để xem hồ sơ</li>
     </ul>
   </li>
-  <li>System validates file type and size</li>
-  <li>System calls FILE module to store file and receive file_id</li>
-  <li>System creates <code>recr_candidate_resumes</code> record with file_id reference</li>
-  <li>System returns updated resume list</li>
+  <li>Hệ thống kiểm tra loại tệp và kích thước</li>
+  <li>Hệ thống gọi module FILE để lưu tệp và nhận file_id</li>
+  <li>Hệ thống tạo bản ghi <code>recr_candidate_resumes</code> với tham chiếu file_id</li>
+  <li>Hệ thống trả về danh sách hồ sơ đã cập nhật</li>
 </ol>
-<p><strong>Alternative Flows:</strong></p>
+<p><strong>Luồng Thay thế:</strong></p>
 <ul>
-  <li>3a. Invalid file type: System returns error "Only PDF and DOCX files are allowed"</li>
-  <li>3b. File too large: System returns error "File size must not exceed 10MB"</li>
-  <li>3c. Delete linked resume: System returns error "Cannot delete resume linked to submitted application"</li>
-  <li>4a. FILE module unavailable: System returns error "File service temporarily unavailable"</li>
-</ul>
-
-<h2 id="section-3-19">3.18 UC-19: Send Invitation</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-19</td></tr>
-  <tr><td>Name</td><td>Send Invitation</td></tr>
-  <tr><td>Actor</td><td>HR, Employer</td></tr>
-  <tr><td>Precondition</td><td>User is logged in with HR or Employer role</td></tr>
-  <tr><td>Postcondition</td><td>Invitation created, email sent via RabbitMQ</td></tr>
-  <tr><td>Trigger</td><td>HR/Employer clicks "Invite" button</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>HR/Employer navigates to invitation management page</li>
-  <li>HR/Employer enters recipient email address and selects organization role</li>
-  <li>System validates input (valid email, valid role)</li>
-  <li>System checks for duplicate pending invitation for the same email</li>
-  <li>System generates a secure random invitation token</li>
-  <li>System stores SHA-256 hash of the token in the database</li>
-  <li>System creates invitation record with status PENDING and expiry date</li>
-  <li>System emits <code>invitation.created</code> event to RabbitMQ for EMAIL module</li>
-  <li>System returns success response with invitation details</li>
-</ol>
-<p><strong>Alternative Flows:</strong></p>
-<ul>
-  <li>3a. Invalid input: System returns validation error with details</li>
-  <li>4a. Duplicate pending invitation: System returns error "A pending invitation already exists for this email"</li>
-</ul>
-
-<h2 id="section-3-20">3.19 UC-20: Verify Invitation</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-20</td></tr>
-  <tr><td>Name</td><td>Verify Invitation</td></tr>
-  <tr><td>Actor</td><td>Candidate (unauthenticated)</td></tr>
-  <tr><td>Precondition</td><td>User received invitation email</td></tr>
-  <tr><td>Postcondition</td><td>Invitation details returned for display</td></tr>
-  <tr><td>Trigger</td><td>Candidate clicks invitation link in email</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>Candidate clicks the invitation link in the email</li>
-  <li>Frontend extracts the token from the URL</li>
-  <li>Frontend calls the verify endpoint with the raw token</li>
-  <li>System computes SHA-256 hash of the token and looks up the invitation record</li>
-  <li>System validates invitation status is PENDING</li>
-  <li>System validates invitation has not expired</li>
-  <li>System returns invitation details (email, organization name, role) for display</li>
-</ol>
-<p><strong>Alternative Flows:</strong></p>
-<ul>
-  <li>4a. Token not found: System returns error "Invalid invitation link"</li>
-  <li>5a. Invitation already accepted: System returns error "This invitation has already been accepted"</li>
-  <li>6a. Invitation expired: System returns error "This invitation has expired"</li>
-</ul>
-
-<h2 id="section-3-21">3.20 UC-21: Accept Invitation</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-21</td></tr>
-  <tr><td>Name</td><td>Accept Invitation</td></tr>
-  <tr><td>Actor</td><td>Candidate (authenticated)</td></tr>
-  <tr><td>Precondition</td><td>User is logged in, invitation is PENDING</td></tr>
-  <tr><td>Postcondition</td><td>Invitation accepted, AUTH module notified</td></tr>
-  <tr><td>Trigger</td><td>Candidate clicks "Accept Invitation" button</td></tr>
-</table>
-<p><strong>Main Flow:</strong></p>
-<ol>
-  <li>Candidate navigates to invitation page (after UC-20 verification)</li>
-  <li>Candidate reviews invitation details (organization, role)</li>
-  <li>Candidate fills in any required information</li>
-  <li>Candidate clicks "Accept Invitation"</li>
-  <li>System validates invitation is still PENDING</li>
-  <li>System updates invitation status to ACCEPTED</li>
-  <li>System emits <code>invitation.accepted</code> event to RabbitMQ for AUTH module</li>
-  <li>System assigns organization role to the user</li>
-  <li>System returns success response</li>
-</ol>
-<p><strong>Alternative Flows:</strong></p>
-<ul>
-  <li>5a. Invitation no longer PENDING: System returns error "This invitation is no longer valid"</li>
-</ul>
-
-<h2 id="section-3-22">3.21 UC-22: Revoke/Resend Invitation</h2>
-<table>
-  <tr><th>Field</th><th>Description</th></tr>
-  <tr><td>Use Case ID</td><td>UC-22</td></tr>
-  <tr><td>Name</td><td>Revoke/Resend Invitation</td></tr>
-  <tr><td>Actor</td><td>HR, Employer</td></tr>
-  <tr><td>Precondition</td><td>Invitation exists, user is inviter or admin</td></tr>
-  <tr><td>Postcondition</td><td>Invitation revoked or resent with new token</td></tr>
-  <tr><td>Trigger</td><td>HR/Employer clicks "Revoke" or "Resend" on invitation</td></tr>
-</table>
-<p><strong>Main Flow (Revoke):</strong></p>
-<ol>
-  <li>HR/Employer navigates to invitation list</li>
-  <li>HR/Employer selects an invitation and clicks "Revoke"</li>
-  <li>System validates invitation status is PENDING</li>
-  <li>System updates invitation status to REVOKED</li>
-  <li>System returns success response</li>
-</ol>
-<p><strong>Main Flow (Resend):</strong></p>
-<ol>
-  <li>HR/Employer navigates to invitation list</li>
-  <li>HR/Employer selects an invitation and clicks "Resend"</li>
-  <li>System generates a new secure random token</li>
-  <li>System stores new SHA-256 hash and updates expiry date</li>
-  <li>System emits <code>invitation.created</code> event to RabbitMQ for EMAIL module</li>
-  <li>System returns success response</li>
-</ol>
-<p><strong>Alternative Flows:</strong></p>
-<ul>
-  <li>3a. Invitation not PENDING: System returns error "Only pending invitations can be revoked"</li>
+  <li>3a. Loại tệp không hợp lệ: Hệ thống trả về lỗi "Chỉ cho phép tệp PDF và DOCX"</li>
+  <li>3b. Tệp quá lớn: Hệ thống trả về lỗi "Kích thước tệp không được vượt quá 10MB"</li>
+  <li>3c. Xóa hồ sơ đã liên kết: Hệ thống trả về lỗi "Không thể xóa hồ sơ đã liên kết với hồ sơ ứng tuyển đã nộp"</li>
+  <li>4a. Module FILE không khả dụng: Hệ thống trả về lỗi "Dịch vụ tệp tạm thời không khả dụng"</li>
 </ul>
 
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-4">4. Functional Requirements</h1>
+<h1 id="section-4">4. Yêu cầu Chức năng</h1>
 
-<h2 id="section-4-1">4.1 Candidate Requirements</h2>
+<h2 id="section-4-1">4.1 Yêu cầu Ứng viên</h2>
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã Yêu cầu</th>
     <th>Module</th>
-    <th>Requirement</th>
-    <th>Use Case</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Yêu cầu</th>
+    <th>Trường hợp SD</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr>
     <td><span id="fr-001" class="req-id">FR-001</span></td>
     <td>RECR</td>
-    <td>User Registration</td>
+    <td>Đăng ký Người dùng</td>
     <td>UC-01</td>
-    <td>High</td>
-    <td>Users can register accounts with email, password, and basic profile information. Creates user with system role <code>user</code>. Organization-level roles (HR, Candidate, Employer) are assigned within organizations.</td>
+    <td>Cao</td>
+    <td>Người dùng có thể đăng ký tài khoản với email, mật khẩu và thông tin hồ sơ cơ bản. Tạo người dùng với vai trò hệ thống <code>user</code>. Các vai trò cấp tổ chức (HR, Candidate, Employer) được giao trong nội bộ tổ chức.</td>
   </tr>
   <tr>
     <td><span id="fr-002" class="req-id">FR-002</span></td>
     <td>RECR</td>
-    <td>Login</td>
+    <td>Đăng nhập</td>
     <td>UC-02</td>
-    <td>High</td>
-    <td>All users can log in with email/password and receive JWT token</td>
+    <td>Cao</td>
+    <td>Tất cả người dùng có thể đăng nhập bằng email/mật khẩu và nhận JWT token</td>
   </tr>
   <tr>
     <td><span id="fr-003" class="req-id">FR-003</span></td>
     <td>RECR</td>
-    <td>Browse Jobs</td>
-    <td>UC-05</td>
-    <td>High</td>
-    <td>Candidates can browse and search job listings with filters (location, salary, type)</td>
+    <td>Duyệt Việc làm</td>
+    <td>UC-03</td>
+    <td>Cao</td>
+    <td>Ứng viên có thể duyệt và tìm kiếm việc làm với bộ lọc (địa điểm, lương, loại hình)</td>
   </tr>
   <tr>
     <td><span id="fr-004" class="req-id">FR-004</span></td>
     <td>RECR</td>
-    <td>Submit Application</td>
-    <td>UC-06</td>
-    <td>High</td>
-    <td>Candidates can submit applications with a selected resume (from their resume list) or a newly uploaded resume, plus cover letter. The <code>resume_file_id</code> is frozen at submission time and becomes immutable on the application record.</td>
+    <td>Nộp Hồ sơ Ứng tuyển</td>
+    <td>UC-04</td>
+    <td>Cao</td>
+    <td>Ứng viên có thể nộp hồ sơ với hồ sơ được chọn (từ danh sách hồ sơ) hoặc hồ sơ mới tải lên, kèm thư xin việc. <code>resume_file_id</code> được đóng băng tại thời điểm nộp và trở nên không thể thay đổi trên bản ghi hồ sơ.</td>
   </tr>
   <tr>
     <td><span id="fr-005" class="req-id">FR-005</span></td>
     <td>RECR</td>
-    <td>View Application Status</td>
-    <td>UC-07</td>
-    <td>High</td>
-    <td>Candidates can track their application progress through recruitment stages</td>
+    <td>Xem Trạng thái Hồ sơ</td>
+    <td>UC-05</td>
+    <td>Cao</td>
+    <td>Ứng viên có thể theo dõi tiến trình hồ sơ qua các giai đoạn tuyển dụng</td>
   </tr>
   <tr>
     <td><span id="fr-006" class="req-id">FR-006</span></td>
     <td>RECR</td>
-    <td>Update Candidate Profile</td>
-    <td>UC-15</td>
-    <td>Medium</td>
-    <td>Candidates can update their profile, skills, and experience</td>
+    <td>Cập nhật Hồ sơ Ứng viên</td>
+    <td>UC-13</td>
+    <td>Trung bình</td>
+    <td>Ứng viên có thể cập nhật hồ sơ, kỹ năng và kinh nghiệm</td>
   </tr>
   <tr>
     <td><span id="fr-007" class="req-id">FR-007</span></td>
     <td>RECR</td>
-    <td>Upload Resume</td>
-    <td>UC-18</td>
-    <td>High</td>
-    <td>Candidates can upload and manage multiple resume files (PDF/DOCX, max 10MB each) via FILE module. Files stored at <code>{candidate_user_id}/resumes/{uuid}.pdf</code>. Metadata stored in <code>recr_candidate_resumes</code> table with file_id reference to <code>sys_files</code>.</td>
+    <td>Tải lên Hồ sơ</td>
+    <td>UC-15</td>
+    <td>Cao</td>
+    <td>Ứng viên có thể tải lên và quản lý nhiều tệp hồ sơ (PDF/DOCX, tối đa 10MB mỗi tệp) qua module FILE. Tệp được lưu tại <code>{candidate_user_id}/resumes/{uuid}.pdf</code>. Metadata được lưu trong bảng <code>recr_candidate_resumes</code> với tham chiếu file_id đến <code>sys_files</code>.</td>
   </tr>
   <tr>
     <td><span id="fr-037" class="req-id">FR-037</span></td>
     <td>RECR</td>
-    <td>Manage Candidate Resumes</td>
-    <td>UC-18</td>
-    <td>High</td>
-    <td>Candidates can list, upload, set primary, and delete resumes from their resume list. Deleting a resume is only allowed if it is not linked to any submitted application.</td>
+    <td>Quản lý Hồ sơ Ứng viên</td>
+    <td>UC-15</td>
+    <td>Cao</td>
+    <td>Ứng viên có thể liệt kê, tải lên, đặt chính và xóa hồ sơ từ danh sách hồ sơ. Xóa hồ sơ chỉ được phép khi hồ sơ chưa được liên kết với bất kỳ hồ sơ ứng tuyển nào.</td>
   </tr>
   <tr>
     <td><span id="fr-038" class="req-id">FR-038</span></td>
     <td>RECR</td>
-    <td>Application Resume Linking</td>
-    <td>UC-06</td>
-    <td>High</td>
-    <td>When a candidate submits an application, the selected resume is linked by copying <code>resume_file_id</code> to the application record. This file reference is immutable after submission (frozen at submission time).</td>
+    <td>Liên kết Hồ sơ Ứng tuyển</td>
+    <td>UC-04</td>
+    <td>Cao</td>
+    <td>Khi ứng viên nộp hồ sơ, hồ sơ được chọn được liên kết bằng cách sao chép <code>resume_file_id</code> vào bản ghi hồ sơ. Tham chiếu tệp này không thể thay đổi sau khi nộp (đóng băng tại thời điểm nộp).</td>
   </tr>
 </table>
 
-<h2 id="section-4-2">4.2 HR Requirements</h2>
+<h2 id="section-4-2">4.2 Yêu cầu HR</h2>
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã Yêu cầu</th>
     <th>Module</th>
-    <th>Requirement</th>
-    <th>Use Case</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Yêu cầu</th>
+    <th>Trường hợp SD</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr>
     <td><span id="fr-008" class="req-id">FR-008</span></td>
     <td>RECR</td>
-    <td>Review Applications</td>
-    <td>UC-08</td>
-    <td>High</td>
-    <td>HR can review applications, filter by job, status, and candidate qualifications. View candidate resume via presigned download URL from FILE module.</td>
+    <td>Duyệt Hồ sơ Ứng tuyển</td>
+    <td>UC-06</td>
+    <td>Cao</td>
+    <td>HR có thể duyệt hồ sơ, lọc theo việc làm, trạng thái và trình độ ứng viên. Xem hồ sơ xin việc qua URL tải xuống presigned từ module FILE.</td>
   </tr>
   <tr>
     <td><span id="fr-009" class="req-id">FR-009</span></td>
     <td>RECR</td>
-    <td>Screen Candidates</td>
-    <td>UC-08</td>
-    <td>High</td>
-    <td>HR can screen candidates and move them through recruitment stages</td>
+    <td>Sàng lọc Ứng viên</td>
+    <td>UC-06</td>
+    <td>Cao</td>
+    <td>HR có thể sàng lọc ứng viên và chuyển họ qua các giai đoạn tuyển dụng</td>
   </tr>
   <tr>
     <td><span id="fr-010" class="req-id">FR-010</span></td>
     <td>RECR</td>
-    <td>Schedule Interview</td>
-    <td>UC-09</td>
-    <td>High</td>
-    <td>HR can schedule interviews with date/time, location, meeting link</td>
+    <td>Lên lịch Phỏng vấn</td>
+    <td>UC-07</td>
+    <td>Cao</td>
+    <td>HR có thể lên lịch phỏng vấn với ngày/giờ, địa điểm, liên kết họp</td>
   </tr>
   <tr>
     <td><span id="fr-011" class="req-id">FR-011</span></td>
     <td>RECR</td>
-    <td>Evaluate Candidate</td>
-    <td>UC-10</td>
-    <td>High</td>
-    <td>HR can submit evaluations with scores and recommendations</td>
+    <td>Đánh giá Ứng viên</td>
+    <td>UC-08</td>
+    <td>Cao</td>
+    <td>HR có thể gửi đánh giá với điểm số và đề xuất</td>
   </tr>
   <tr>
     <td><span id="fr-012" class="req-id">FR-012</span></td>
     <td>RECR</td>
-    <td>Reject Candidate</td>
-    <td>UC-08</td>
-    <td>High</td>
-    <td>HR can reject candidates with optional rejection reason</td>
+    <td>Từ chối Ứng viên</td>
+    <td>UC-06</td>
+    <td>Cao</td>
+    <td>HR có thể từ chối ứng viên với lý do tùy chọn</td>
   </tr>
   <tr>
     <td><span id="fr-013" class="req-id">FR-013</span></td>
     <td>RECR</td>
-    <td>Track Pipeline</td>
-    <td>UC-08</td>
-    <td>High</td>
-    <td>HR can view recruitment pipeline with candidate counts per stage</td>
+    <td>Theo dõi Quy trình</td>
+    <td>UC-06</td>
+    <td>Cao</td>
+    <td>HR có thể xem quy trình tuyển dụng với số lượng ứng viên theo giai đoạn</td>
   </tr>
   <tr>
     <td><span id="fr-014" class="req-id">FR-014</span></td>
     <td>RECR</td>
-    <td>Generate Reports</td>
-    <td>UC-08</td>
-    <td>Medium</td>
-    <td>HR can generate recruitment metrics and analytics reports</td>
+    <td>Tạo Báo cáo</td>
+    <td>UC-06</td>
+    <td>Trung bình</td>
+    <td>HR có thể tạo báo cáo chỉ số và phân tích tuyển dụng</td>
   </tr>
   <tr>
     <td><span id="fr-028" class="req-id">FR-028</span></td>
     <td>RECR</td>
-    <td>HR Post Job</td>
-    <td>UC-11</td>
-    <td>High</td>
-    <td>HR can create job listings for their organization</td>
+    <td>HR Đăng tin Việc làm</td>
+    <td>UC-09</td>
+    <td>Cao</td>
+    <td>HR có thể tạo tin tuyển dụng cho tổ chức của mình</td>
   </tr>
   <tr>
     <td><span id="fr-029" class="req-id">FR-029</span></td>
     <td>RECR</td>
-    <td>HR Manage Jobs</td>
-    <td>UC-12</td>
-    <td>High</td>
-    <td>HR can edit, close, or archive their job listings</td>
+    <td>HR Quản lý Việc làm</td>
+    <td>UC-10</td>
+    <td>Cao</td>
+    <td>HR có thể chỉnh sửa, đóng hoặc lưu trữ tin tuyển dụng</td>
   </tr>
   <tr>
     <td><span id="fr-032" class="req-id">FR-032</span></td>
     <td>RECR</td>
-    <td>Update HR Profile</td>
-    <td>UC-15</td>
-    <td>Medium</td>
-    <td>HR can update their department, position, and personal information</td>
+    <td>Cập nhật Hồ sơ HR</td>
+    <td>UC-13</td>
+    <td>Trung bình</td>
+    <td>HR có thể cập nhật phòng ban, chức vụ và thông tin cá nhân</td>
   </tr>
 </table>
 
-<h2 id="section-4-3">4.3 Employer Requirements</h2>
+<h2 id="section-4-3">4.3 Yêu cầu Nhà tuyển dụng</h2>
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã Yêu cầu</th>
     <th>Module</th>
-    <th>Requirement</th>
-    <th>Use Case</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Yêu cầu</th>
+    <th>Trường hợp SD</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr>
     <td><span id="fr-015" class="req-id">FR-015</span></td>
     <td>RECR</td>
-    <td>Employer Registration</td>
+    <td>Đăng ký Nhà tuyển dụng</td>
     <td>UC-01</td>
-    <td>High</td>
-    <td>Employers can register company accounts with company details</td>
+    <td>Cao</td>
+    <td>Nhà tuyển dụng có thể đăng ký tài khoản công ty với thông tin công ty</td>
   </tr>
   <tr>
     <td><span id="fr-016" class="req-id">FR-016</span></td>
     <td>RECR</td>
-    <td>Post Job</td>
-    <td>UC-11</td>
-    <td>High</td>
-    <td>Employers can create job listings with requirements and salary range</td>
+    <td>Đăng tin Việc làm</td>
+    <td>UC-09</td>
+    <td>Cao</td>
+    <td>Nhà tuyển dụng có thể tạo tin tuyển dụng với yêu cầu và khoảng lương</td>
   </tr>
   <tr>
     <td><span id="fr-017" class="req-id">FR-017</span></td>
     <td>RECR</td>
-    <td>Manage Job Listings</td>
-    <td>UC-12</td>
-    <td>High</td>
-    <td>Employers can edit, close, or archive their job listings</td>
+    <td>Quản lý Tin tuyển dụng</td>
+    <td>UC-10</td>
+    <td>Cao</td>
+    <td>Nhà tuyển dụng có thể chỉnh sửa, đóng hoặc lưu trữ tin tuyển dụng</td>
   </tr>
   <tr>
     <td><span id="fr-018" class="req-id">FR-018</span></td>
     <td>RECR</td>
-    <td>View Applicants</td>
-    <td>UC-12</td>
-    <td>High</td>
-    <td>Employers can view applicants for their posted jobs</td>
+    <td>Xem Người nộp đơn</td>
+    <td>UC-10</td>
+    <td>Cao</td>
+    <td>Nhà tuyển dụng có thể xem người nộp đơn cho việc làm đã đăng</td>
   </tr>
   <tr>
     <td><span id="fr-019" class="req-id">FR-019</span></td>
     <td>RECR</td>
-    <td>Approve Job Posting</td>
-    <td>UC-11</td>
-    <td>Medium</td>
-    <td>Employers can submit jobs for HR approval before publishing. Employers can also view applicant resumes via presigned download URL from FILE module when reviewing applicants for their job postings.</td>
+    <td>Duyệt Tin tuyển dụng</td>
+    <td>UC-09</td>
+    <td>Trung bình</td>
+    <td>Nhà tuyển dụng có thể gửi việc làm để HR duyệt trước khi công bố. Nhà tuyển dụng cũng có thể xem hồ sơ xin việc qua URL tải xuống presigned từ module FILE khi xem người nộp đơn cho tin tuyển dụng.</td>
   </tr>
   <tr>
     <td><span id="fr-020" class="req-id">FR-020</span></td>
     <td>RECR</td>
-    <td>View Analytics</td>
-    <td>UC-12</td>
-    <td>Medium</td>
-    <td>Employers can view recruitment analytics for their job postings</td>
+    <td>Xem Phân tích</td>
+    <td>UC-10</td>
+    <td>Trung bình</td>
+    <td>Nhà tuyển dụng có thể xem phân tích tuyển dụng cho tin tuyển dụng</td>
   </tr>
   <tr>
     <td><span id="fr-033" class="req-id">FR-033</span></td>
     <td>RECR</td>
-    <td>Update Employer Profile</td>
-    <td>UC-15</td>
-    <td>Medium</td>
-    <td>Employers can update their company information, description, and branding</td>
+    <td>Cập nhật Hồ sơ Nhà tuyển dụng</td>
+    <td>UC-13</td>
+    <td>Trung bình</td>
+    <td>Nhà tuyển dụng có thể cập nhật thông tin công ty, mô tả và branding</td>
   </tr>
 </table>
 
-<h2 id="section-4-4">4.4 Subscription Requirements</h2>
+<h2 id="section-4-4">4.4 Yêu cầu Đăng ký</h2>
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã Yêu cầu</th>
     <th>Module</th>
-    <th>Requirement</th>
-    <th>Use Case</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Yêu cầu</th>
+    <th>Trường hợp SD</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr>
     <td><span id="fr-021" class="req-id">FR-021</span></td>
     <td>RECR</td>
-    <td>Subscription Plans</td>
-    <td>UC-03</td>
-    <td>High</td>
-    <td>System provides 3 subscription plans: 1 month, 6 months (10% discount), 1 year (2 months free)</td>
+    <td>Gói Đăng ký</td>
+    <td>UC-01</td>
+    <td>Cao</td>
+    <td>Hệ thống cung cấp 3 gói đăng ký: 1 tháng, 6 tháng (giảm 10%), 1 năm (2 tháng miễn phí)</td>
   </tr>
   <tr>
     <td><span id="fr-022" class="req-id">FR-022</span></td>
     <td>RECR</td>
-    <td>Purchase Subscription</td>
-    <td>UC-03</td>
-    <td>Medium</td>
-    <td>All users (Candidate, HR, Employer) can optionally purchase subscription for premium features</td>
+    <td>Mua Đăng ký</td>
+    <td>UC-01</td>
+    <td>Trung bình</td>
+    <td>Tất cả người dùng (Candidate, HR, Employer) có thể tùy chọn mua đăng ký cho tính năng cao cấp</td>
   </tr>
   <tr>
     <td><span id="fr-023" class="req-id">FR-023</span></td>
     <td>RECR</td>
-    <td>Subscription Access Control</td>
-    <td>UC-03, UC-04</td>
-    <td>High</td>
-    <td>System validates subscription status to provide premium features</td>
+    <td>Kiểm soát Truy cập Đăng ký</td>
+    <td>UC-01, UC-02</td>
+    <td>Cao</td>
+    <td>Hệ thống kiểm tra trạng thái đăng ký để cung cấp tính năng cao cấp</td>
   </tr>
   <tr>
     <td><span id="fr-024" class="req-id">FR-024</span></td>
     <td>RECR</td>
-    <td>Subscription Validation</td>
-    <td>UC-04</td>
-    <td>High</td>
-    <td>System validates subscription status before allowing access to restricted features</td>
+    <td>Xác thực Đăng ký</td>
+    <td>UC-02</td>
+    <td>Cao</td>
+    <td>Hệ thống kiểm tra trạng thái đăng ký trước khi cho phép truy cập tính năng bị giới hạn</td>
   </tr>
   <tr>
     <td><span id="fr-025" class="req-id">FR-025</span></td>
     <td>RECR</td>
-    <td>Subscription Renewal</td>
-    <td>UC-04</td>
-    <td>Medium</td>
-    <td>All users can renew or upgrade their subscription</td>
+    <td>Gia hạn Đăng ký</td>
+    <td>UC-02</td>
+    <td>Trung bình</td>
+    <td>Tất cả người dùng có thể gia hạn hoặc nâng cấp đăng ký</td>
   </tr>
   <tr>
     <td><span id="fr-026" class="req-id">FR-026</span></td>
     <td>RECR</td>
-    <td>Subscription History</td>
-    <td>UC-04</td>
-    <td>Low</td>
-    <td>All users can view their subscription history and payment records</td>
+    <td>Lịch sử Đăng ký</td>
+    <td>UC-02</td>
+    <td>Thấp</td>
+    <td>Tất cả người dùng có thể xem lịch sử đăng ký và hóa đơn thanh toán</td>
   </tr>
 </table>
 
-<h2 id="section-4-5">4.5 Review Requirements</h2>
+<h2 id="section-4-5">4.5 Yêu cầu Đánh giá</h2>
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã Yêu cầu</th>
     <th>Module</th>
-    <th>Requirement</th>
-    <th>Use Case</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Yêu cầu</th>
+    <th>Trường hợp SD</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr>
     <td><span id="fr-030" class="req-id">FR-030</span></td>
     <td>RECR</td>
-    <td>Job Review</td>
-    <td>UC-13</td>
-    <td>Medium</td>
-    <td>Candidates can review jobs with ratings and descriptions</td>
+    <td>Đánh giá Việc làm</td>
+    <td>UC-11</td>
+    <td>Trung bình</td>
+    <td>Ứng viên có thể đánh giá việc làm với điểm số và mô tả</td>
   </tr>
   <tr>
     <td><span id="fr-031" class="req-id">FR-031</span></td>
     <td>RECR</td>
-    <td>Candidate Review</td>
-    <td>UC-14</td>
-    <td>Medium</td>
-    <td>Interviewers can review candidates with ratings and recommendations</td>
+    <td>Đánh giá Ứng viên</td>
+    <td>UC-12</td>
+    <td>Trung bình</td>
+    <td>Người phỏng vấn có thể đánh giá ứng viên với điểm số và đề xuất</td>
   </tr>
 </table>
 
-<h2 id="section-4-6">4.6 Analytics Requirements</h2>
+<h2 id="section-4-6">4.6 Yêu cầu Phân tích</h2>
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã Yêu cầu</th>
     <th>Module</th>
-    <th>Requirement</th>
-    <th>Use Case</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Yêu cầu</th>
+    <th>Trường hợp SD</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr>
     <td><span id="fr-034" class="req-id">FR-034</span></td>
     <td>RECR</td>
-    <td>User Registration Analytics</td>
-    <td>UC-16</td>
-    <td>Medium</td>
-    <td>Track and display user registration statistics (total, daily, weekly, monthly)</td>
+    <td>Phân tích Đăng ký Người dùng</td>
+    <td>UC-14</td>
+    <td>Trung bình</td>
+    <td>Theo dõi và hiển thị thống kê đăng ký người dùng (tổng, hàng ngày, hàng tuần, hàng tháng)</td>
   </tr>
   <tr>
     <td><span id="fr-035" class="req-id">FR-035</span></td>
     <td>RECR</td>
-    <td>User Login Analytics</td>
-    <td>UC-16</td>
-    <td>Medium</td>
-    <td>Track and display user login statistics (frequency, peak times, failed attempts)</td>
+    <td>Phân tích Đăng nhập Người dùng</td>
+    <td>UC-14</td>
+    <td>Trung bình</td>
+    <td>Theo dõi và hiển thị thống kê đăng nhập người dùng (tần suất, thời điểm cao điểm, số lần thất bại)</td>
   </tr>
   <tr>
     <td><span id="fr-036" class="req-id">FR-036</span></td>
     <td>RECR</td>
-    <td>Dashboard View</td>
-    <td>UC-16</td>
-    <td>Medium</td>
-    <td>Display aggregated analytics dashboard with charts and filters</td>
+    <td>Xem Bảng điều khiển</td>
+    <td>UC-14</td>
+    <td>Trung bình</td>
+    <td>Hiển thị bảng điều khiển phân tích tổng hợp với biểu đồ và bộ lọc</td>
   </tr>
 </table>
 
-<h2 id="section-4-7">4.7 Invitation Requirements</h2>
+<h2 id="section-4-7">4.7 Yêu cầu Lời mời</h2>
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã Yêu cầu</th>
     <th>Module</th>
-    <th>Requirement</th>
-    <th>Use Case</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Yêu cầu</th>
+    <th>Trường hợp SD</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr>
     <td><span id="fr-039" class="req-id">FR-039</span></td>
     <td>RECR</td>
-    <td>Send Invitation</td>
+    <td>Gửi Lời mời</td>
     <td>UC-19</td>
-    <td>High</td>
-    <td>HR/Employer can send invitations to candidates or HR via email with assigned organization role</td>
+    <td>Cao</td>
+    <td>HR/Employer có thể gửi lời mời đến ứng viên hoặc HR qua email với vai trò tổ chức được giao</td>
   </tr>
   <tr>
     <td><span id="fr-040" class="req-id">FR-040</span></td>
     <td>RECR</td>
-    <td>Generate Invitation Token</td>
+    <td>Tạo Token Lời mời</td>
     <td>UC-19</td>
-    <td>High</td>
-    <td>System generates secure random token, stores SHA-256 hash, includes raw token in invitation URL</td>
+    <td>Cao</td>
+    <td>Hệ thống tạo token ngẫu nhiên an toàn, lưu băm SHA-256, đưa token gốc vào URL lời mời</td>
   </tr>
   <tr>
     <td><span id="fr-041" class="req-id">FR-041</span></td>
     <td>RECR</td>
-    <td>Send Invitation Email</td>
+    <td>Gửi Email Lời mời</td>
     <td>UC-19</td>
-    <td>High</td>
-    <td>System emits RabbitMQ event to EMAIL module for sending invitation email</td>
+    <td>Cao</td>
+    <td>Hệ thống phát sự kiện RabbitMQ tới module EMAIL để gửi email lời mời</td>
   </tr>
   <tr>
     <td><span id="fr-042" class="req-id">FR-042</span></td>
     <td>RECR</td>
-    <td>Verify Invitation Token</td>
+    <td>Xác minh Token Lời mời</td>
     <td>UC-20</td>
-    <td>High</td>
-    <td>System validates invitation token on click, checking expiry and status</td>
+    <td>Cao</td>
+    <td>Hệ thống xác thực token lời mời khi nhấp, kiểm tra hết hạn và trạng thái</td>
   </tr>
   <tr>
     <td><span id="fr-043" class="req-id">FR-043</span></td>
     <td>RECR</td>
-    <td>Accept Invitation</td>
+    <td>Chấp nhận Lời mời</td>
     <td>UC-21</td>
-    <td>High</td>
-    <td>System updates invitation status to ACCEPTED and emits event for AUTH module</td>
+    <td>Cao</td>
+    <td>Hệ thống cập nhật trạng thái lời mời thành ACCEPTED và phát sự kiện cho module AUTH</td>
   </tr>
   <tr>
     <td><span id="fr-044" class="req-id">FR-044</span></td>
     <td>RECR</td>
-    <td>Revoke Invitation</td>
+    <td>Thu hồi Lời mời</td>
     <td>UC-22</td>
-    <td>Medium</td>
-    <td>HR/Employer can cancel a pending invitation</td>
+    <td>Trung bình</td>
+    <td>HR/Employer có thể hủy lời mời đang chờ</td>
   </tr>
   <tr>
     <td><span id="fr-045" class="req-id">FR-045</span></td>
     <td>RECR</td>
-    <td>List Invitations</td>
+    <td>Liệt kê Lời mời</td>
     <td>UC-19</td>
-    <td>Medium</td>
-    <td>System allows viewing all invitations with filtering and pagination</td>
+    <td>Trung bình</td>
+    <td>Hệ thống cho phép xem tất cả lời mời với bộ lọc và phân trang</td>
   </tr>
   <tr>
     <td><span id="fr-046" class="req-id">FR-046</span></td>
     <td>RECR</td>
-    <td>Resend Invitation</td>
+    <td>Gửi lại Lời mời</td>
     <td>UC-22</td>
-    <td>Medium</td>
-    <td>System generates new token for expired or revoked invitations and resends email</td>
+    <td>Trung bình</td>
+    <td>Hệ thống tạo token mới cho lời mời hết hạn hoặc bị thu hồi và gửi lại email</td>
   </tr>
 </table>
 
 <!-- 5. DATA MODEL -->
-<h1 id="section-5">5. Data Model</h1>
+<h1 id="section-5">5. Mô hình Dữ liệu</h1>
 
-<h2>5.1 Entity Relationship Diagram</h2>
+<h2>5.1 Sơ đồ Quan hệ Thực thể</h2>
 <div class="diagram">
-  <img src="./images/erd/erd-recr.png" alt="ERD Diagram">
-  <div class="caption">Figure 2: Recruitment ERD (3 Roles)</div>
+  <img src="./images/erd/erd-recr.png" alt="Sơ đồ ERD">
+  <div class="caption">Hình 2: ERD Tuyển dụng (3 Vai trò)</div>
 </div>
 
-<h2>5.2 Data Requirements</h2>
+<h2>5.2 Yêu cầu Dữ liệu</h2>
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
-    <th>Entity</th>
-    <th>Description</th>
-    <th>Related FR</th>
+    <th>Mã Yêu cầu</th>
+    <th>Thực thể</th>
+    <th>Mô tả</th>
+    <th>FR Liên quan</th>
   </tr>
-  <tr><td><span class="req-id">DR-001</span></td><td>recr_users</td><td>User accounts with role-based authentication</td><td>FR-001, FR-002, FR-016</td></tr>
-  <tr><td><span class="req-id">DR-002</span></td><td>recr_candidates</td><td>Candidate profiles with skills (resume_link replaced by file_id references via recr_candidate_resumes)</td><td>FR-006, FR-007</td></tr>
-  <tr><td><span class="req-id">DR-002a</span></td><td>recr_candidate_resumes</td><td>Candidate resume list with FILE module file_id references (supports multiple resumes per candidate)</td><td>FR-007, FR-037, FR-038</td></tr>
-  <tr><td><span class="req-id">DR-003</span></td><td>recr_employers</td><td>Employer company profiles</td><td>FR-016</td></tr>
-  <tr><td><span class="req-id">DR-004</span></td><td>recr_jobs</td><td>Job listings with requirements</td><td>FR-017, FR-018</td></tr>
-  <tr><td><span class="req-id">DR-005</span></td><td>recr_applications</td><td>Job applications linking candidates to jobs, with frozen resume_file_id reference to FILE module</td><td>FR-004, FR-005, FR-038</td></tr>
-  <tr><td><span class="req-id">DR-006</span></td><td>recr_interviews</td><td>Interview scheduling and status</td><td>FR-010</td></tr>
-  <tr><td><span class="req-id">DR-007</span></td><td>recr_evaluations</td><td>Interview evaluation scores</td><td>FR-011</td></tr>
-  <tr><td><span class="req-id">DR-008</span></td><td>recr_hr_profiles</td><td>HR user profiles</td><td>-</td></tr>
-  <tr><td><span class="req-id">DR-009</span></td><td>recr_job_requirements</td><td>Job requirements</td><td>FR-016, FR-017</td></tr>
-  <tr><td><span class="req-id">DR-010</span></td><td>recr_subscription_plans</td><td>Subscription plan definitions</td><td>FR-021</td></tr>
-  <tr><td><span class="req-id">DR-010</span></td><td>recr_subscriptions</td><td>User subscriptions</td><td>FR-023, FR-024</td></tr>
-  <tr><td><span class="req-id">DR-011</span></td><td>recr_subscription_history</td><td>Subscription change history</td><td>FR-027</td></tr>
-  <tr><td><span class="req-id">DR-012</span></td><td>recr_job_reviews</td><td>Job reviews from candidates</td><td>FR-030</td></tr>
-  <tr><td><span class="req-id">DR-013</span></td><td>recr_candidate_reviews</td><td>Candidate reviews from interviewers</td><td>FR-031</td></tr>
-  <tr><td><span class="req-id">DR-014</span></td><td>recr_invitations</td><td>Invitation records with token-based verification</td><td>FR-039, FR-042, FR-043, FR-044</td></tr>
+  <tr><td><span class="req-id">DR-001</span></td><td>recr_users</td><td>Tài khoản người dùng với xác thực dựa trên vai trò</td><td>FR-001, FR-002, FR-016</td></tr>
+  <tr><td><span class="req-id">DR-002</span></td><td>recr_candidates</td><td>Hồ sơ ứng viên với kỹ năng (resume_link được thay bằng tham chiếu file_id qua recr_candidate_resumes)</td><td>FR-006, FR-007</td></tr>
+  <tr><td><span class="req-id">DR-002a</span></td><td>recr_candidate_resumes</td><td>Danh sách hồ sơ ứng viên với tham chiếu file_id module FILE (hỗ trợ nhiều hồ sơ mỗi ứng viên)</td><td>FR-007, FR-037, FR-038</td></tr>
+  <tr><td><span class="req-id">DR-003</span></td><td>recr_employers</td><td>Hồ sơ công ty nhà tuyển dụng</td><td>FR-016</td></tr>
+  <tr><td><span class="req-id">DR-004</span></td><td>recr_jobs</td><td>Tin tuyển dụng với yêu cầu</td><td>FR-017, FR-018</td></tr>
+  <tr><td><span class="req-id">DR-005</span></td><td>recr_applications</td><td>Hồ sơ ứng tuyển liên kết ứng viên với việc làm, với tham chiếu resume_file_id đóng băng tới module FILE</td><td>FR-004, FR-005, FR-038</td></tr>
+  <tr><td><span class="req-id">DR-006</span></td><td>recr_interviews</td><td>Lên lịch và trạng thái phỏng vấn</td><td>FR-010</td></tr>
+  <tr><td><span class="req-id">DR-007</span></td><td>recr_evaluations</td><td>Điểm đánh giá phỏng vấn</td><td>FR-011</td></tr>
+  <tr><td><span class="req-id">DR-008</span></td><td>recr_hr_profiles</td><td>Hồ sơ người dùng HR</td><td>-</td></tr>
+  <tr><td><span class="req-id">DR-009</span></td><td>recr_job_requirements</td><td>Yêu cầu việc làm</td><td>FR-016, FR-017</td></tr>
+  <tr><td><span class="req-id">DR-010</span></td><td>recr_subscription_plans</td><td>Định nghĩa gói đăng ký</td><td>FR-021</td></tr>
+  <tr><td><span class="req-id">DR-010</span></td><td>recr_subscriptions</td><td>Đăng ký người dùng</td><td>FR-023, FR-024</td></tr>
+  <tr><td><span class="req-id">DR-011</span></td><td>recr_subscription_history</td><td>Lịch sử thay đổi đăng ký</td><td>FR-027</td></tr>
+  <tr><td><span class="req-id">DR-012</span></td><td>recr_job_reviews</td><td>Đánh giá việc làm từ ứng viên</td><td>FR-030</td></tr>
+  <tr><td><span class="req-id">DR-013</span></td><td>recr_candidate_reviews</td><td>Đánh giá ứng viên từ người phỏng vấn</td><td>FR-031</td></tr>
+  <tr><td><span class="req-id">DR-014</span></td><td>recr_invitations</td><td>Bản ghi lời mời với xác minh dựa trên token</td><td>FR-039, FR-042, FR-043, FR-044</td></tr>
 </table>
 
 <!-- 6. API SPECIFICATION -->
-<h1 id="section-6">6. API Specification</h1>
+<h1 id="section-6">6. Đặc tả API</h1>
 
-<h2>6.1 Endpoint Summary</h2>
+<h2>6.1 Tổng quan Endpoint</h2>
 
-<h3>Authentication Endpoints (All Roles)</h3>
+<h3>Endpoint Xác thực (Tất cả Vai trò)</h3>
 <table class="trace-table">
   <tr>
-    <th>Method</th>
-    <th>Path</th>
-    <th>Description</th>
-    <th>Requirement IDs</th>
+    <th>Phương thức</th>
+    <th>Đường dẫn</th>
+    <th>Mô tả</th>
+    <th>Mã Yêu cầu</th>
   </tr>
-  <tr><td>POST</td><td>/recr/auth/register</td><td>Register new user with system role <code>user</code></td><td>FR-001</td></tr>
-  <tr><td>POST</td><td>/recr/auth/login</td><td>Login with email/password</td><td>FR-002</td></tr>
+  <tr><td>POST</td><td>/recr/auth/register</td><td>Đăng ký người dùng mới với vai trò hệ thống <code>user</code></td><td>FR-001</td></tr>
+  <tr><td>POST</td><td>/recr/auth/login</td><td>Đăng nhập bằng email/mật khẩu</td><td>FR-002</td></tr>
 </table>
 
-<h3>Candidate Endpoints</h3>
+<h3>Endpoint Ứng viên</h3>
 <table class="trace-table">
   <tr>
-    <th>Method</th>
-    <th>Path</th>
-    <th>Description</th>
-    <th>Requirement IDs</th>
+    <th>Phương thức</th>
+    <th>Đường dẫn</th>
+    <th>Mô tả</th>
+    <th>Mã Yêu cầu</th>
   </tr>
-  <tr><td>GET</td><td>/recr/jobs</td><td>Browse job listings</td><td>FR-003</td></tr>
-  <tr><td>POST</td><td>/recr/applications</td><td>Submit application</td><td>FR-004, FR-038</td></tr>
-  <tr><td>GET</td><td>/recr/candidate/applications</td><td>View my applications</td><td>FR-005</td></tr>
-  <tr><td>PATCH</td><td>/recr/candidate/profile</td><td>Update profile</td><td>FR-006</td></tr>
-  <tr><td>POST</td><td>/recr/candidate/resume</td><td>Upload resume (via FILE module)</td><td>FR-007, FR-037</td></tr>
-  <tr><td>GET</td><td>/recr/candidate/resumes</td><td>List my resumes</td><td>FR-037</td></tr>
-  <tr><td>DELETE</td><td>/recr/candidate/resumes/:id</td><td>Delete a resume</td><td>FR-037</td></tr>
-  <tr><td>GET</td><td>/recr/candidate/applications/:id/resume</td><td>Get presigned download URL for application resume</td><td>FR-038</td></tr>
-  <tr><td>POST</td><td>/recr/candidate/reviews/jobs</td><td>Review a job</td><td>FR-030</td></tr>
-  <tr><td>GET</td><td>/recr/candidate/reviews/jobs/:jobId</td><td>Get job reviews</td><td>FR-030</td></tr>
+  <tr><td>GET</td><td>/recr/jobs</td><td>Duyệt tin tuyển dụng</td><td>FR-003</td></tr>
+  <tr><td>POST</td><td>/recr/applications</td><td>Nộp hồ sơ ứng tuyển</td><td>FR-004, FR-038</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/applications</td><td>Xem hồ sơ của tôi</td><td>FR-005</td></tr>
+  <tr><td>PATCH</td><td>/recr/candidate/profile</td><td>Cập nhật hồ sơ</td><td>FR-006</td></tr>
+  <tr><td>POST</td><td>/recr/candidate/resume</td><td>Tải lên hồ sơ (qua module FILE)</td><td>FR-007, FR-037</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/resumes</td><td>Liệt kê hồ sơ của tôi</td><td>FR-037</td></tr>
+  <tr><td>DELETE</td><td>/recr/candidate/resumes/:id</td><td>Xóa hồ sơ</td><td>FR-037</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/applications/:id/resume</td><td>Lấy URL tải xuống presigned cho hồ sơ ứng tuyển</td><td>FR-038</td></tr>
+  <tr><td>POST</td><td>/recr/candidate/reviews/jobs</td><td>Đánh giá việc làm</td><td>FR-030</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/reviews/jobs/:jobId</td><td>Lấy đánh giá việc làm</td><td>FR-030</td></tr>
 </table>
 
-<h3>HR Endpoints</h3>
+<h3>Endpoint HR</h3>
 <table class="trace-table">
   <tr>
-    <th>Method</th>
-    <th>Path</th>
-    <th>Description</th>
-    <th>Requirement IDs</th>
+    <th>Phương thức</th>
+    <th>Đường dẫn</th>
+    <th>Mô tả</th>
+    <th>Mã Yêu cầu</th>
   </tr>
-  <tr><td>GET</td><td>/recr/hr/applications</td><td>Review applications</td><td>FR-008</td></tr>
-  <tr><td>PATCH</td><td>/recr/hr/applications/:id/status</td><td>Update application status</td><td>FR-009</td></tr>
-  <tr><td>POST</td><td>/recr/hr/interviews</td><td>Schedule interview</td><td>FR-010</td></tr>
-  <tr><td>POST</td><td>/recr/hr/evaluations</td><td>Submit evaluation</td><td>FR-011</td></tr>
-  <tr><td>GET</td><td>/recr/hr/pipeline</td><td>View recruitment pipeline</td><td>FR-013</td></tr>
-  <tr><td>GET</td><td>/recr/hr/reports</td><td>Generate reports</td><td>FR-014</td></tr>
-  <tr><td>POST</td><td>/recr/hr/jobs</td><td>Create job listing</td><td>FR-028</td></tr>
-  <tr><td>GET</td><td>/recr/hr/jobs</td><td>List my jobs</td><td>FR-029</td></tr>
-  <tr><td>PATCH</td><td>/recr/hr/jobs/:id</td><td>Update job listing</td><td>FR-029</td></tr>
-  <tr><td>GET</td><td>/recr/hr/jobs/:id/applicants</td><td>View applicants for my job</td><td>FR-029</td></tr>
-  <tr><td>POST</td><td>/recr/hr/reviews/candidates</td><td>Review a candidate</td><td>FR-031</td></tr>
-  <tr><td>GET</td><td>/recr/hr/reviews/candidates/:candidateId</td><td>Get candidate reviews</td><td>FR-031</td></tr>
+  <tr><td>GET</td><td>/recr/hr/applications</td><td>Duyệt hồ sơ ứng tuyển</td><td>FR-008</td></tr>
+  <tr><td>PATCH</td><td>/recr/hr/applications/:id/status</td><td>Cập nhật trạng thái hồ sơ</td><td>FR-009</td></tr>
+  <tr><td>POST</td><td>/recr/hr/interviews</td><td>Lên lịch phỏng vấn</td><td>FR-010</td></tr>
+  <tr><td>POST</td><td>/recr/hr/evaluations</td><td>Gửi đánh giá</td><td>FR-011</td></tr>
+  <tr><td>GET</td><td>/recr/hr/pipeline</td><td>Xem quy trình tuyển dụng</td><td>FR-013</td></tr>
+  <tr><td>GET</td><td>/recr/hr/reports</td><td>Tạo báo cáo</td><td>FR-014</td></tr>
+  <tr><td>POST</td><td>/recr/hr/jobs</td><td>Tạo tin tuyển dụng</td><td>FR-028</td></tr>
+  <tr><td>GET</td><td>/recr/hr/jobs</td><td>Liệt kê việc làm của tôi</td><td>FR-029</td></tr>
+  <tr><td>PATCH</td><td>/recr/hr/jobs/:id</td><td>Cập nhật tin tuyển dụng</td><td>FR-029</td></tr>
+  <tr><td>GET</td><td>/recr/hr/jobs/:id/applicants</td><td>Xem người nộp đơn cho việc làm</td><td>FR-029</td></tr>
+  <tr><td>POST</td><td>/recr/hr/reviews/candidates</td><td>Đánh giá ứng viên</td><td>FR-031</td></tr>
+  <tr><td>GET</td><td>/recr/hr/reviews/candidates/:candidateId</td><td>Lấy đánh giá ứng viên</td><td>FR-031</td></tr>
 </table>
 
-<h3>Subscription Endpoints (All Roles)</h3>
+<h3>Endpoint Đăng ký (Tất cả Vai trò)</h3>
 <table class="trace-table">
   <tr>
-    <th>Method</th>
-    <th>Path</th>
-    <th>Description</th>
-    <th>Requirement IDs</th>
+    <th>Phương thức</th>
+    <th>Đường dẫn</th>
+    <th>Mô tả</th>
+    <th>Mã Yêu cầu</th>
   </tr>
-  <tr><td>GET</td><td>/recr/subscription/plans</td><td>List subscription plans</td><td>FR-021</td></tr>
-  <tr><td>POST</td><td>/recr/subscription/purchase</td><td>Purchase subscription</td><td>FR-022</td></tr>
-  <tr><td>GET</td><td>/recr/subscription/status</td><td>Get subscription status</td><td>FR-024</td></tr>
-  <tr><td>POST</td><td>/recr/subscription/renew</td><td>Renew subscription</td><td>FR-025</td></tr>
-  <tr><td>GET</td><td>/recr/subscription/history</td><td>View subscription history</td><td>FR-026</td></tr>
+  <tr><td>GET</td><td>/recr/subscription/plans</td><td>Liệt kê gói đăng ký</td><td>FR-021</td></tr>
+  <tr><td>POST</td><td>/recr/subscription/purchase</td><td>Mua đăng ký</td><td>FR-022</td></tr>
+  <tr><td>GET</td><td>/recr/subscription/status</td><td>Lấy trạng thái đăng ký</td><td>FR-024</td></tr>
+  <tr><td>POST</td><td>/recr/subscription/renew</td><td>Gia hạn đăng ký</td><td>FR-025</td></tr>
+  <tr><td>GET</td><td>/recr/subscription/history</td><td>Xem lịch sử đăng ký</td><td>FR-026</td></tr>
 </table>
 
-<h3>Invitation Endpoints</h3>
+<h3>Endpoint Lời mời</h3>
 <table class="trace-table">
   <tr>
-    <th>Method</th>
-    <th>Path</th>
-    <th>Description</th>
-    <th>Requirement IDs</th>
+    <th>Phương thức</th>
+    <th>Đường dẫn</th>
+    <th>Mô tả</th>
+    <th>Mã Yêu cầu</th>
   </tr>
-  <tr><td>POST</td><td>/recr/invitations/send</td><td>Send invitation to candidate/HR</td><td>FR-039, FR-040, FR-041</td></tr>
-  <tr><td>GET</td><td>/recr/invitations/verify</td><td>Verify invitation token (Public)</td><td>FR-042</td></tr>
-  <tr><td>POST</td><td>/recr/invitations/accept</td><td>Accept invitation</td><td>FR-043</td></tr>
-  <tr><td>GET</td><td>/recr/invitations</td><td>List invitations</td><td>FR-045</td></tr>
-  <tr><td>DELETE</td><td>/recr/invitations/:id</td><td>Revoke invitation</td><td>FR-044</td></tr>
-  <tr><td>POST</td><td>/recr/invitations/:id/resend</td><td>Resend invitation</td><td>FR-046</td></tr>
+  <tr><td>POST</td><td>/recr/invitations/send</td><td>Gửi lời mời đến ứng viên/HR</td><td>FR-039, FR-040, FR-041</td></tr>
+  <tr><td>GET</td><td>/recr/invitations/verify</td><td>Xác minh token lời mời (Công khai)</td><td>FR-042</td></tr>
+  <tr><td>POST</td><td>/recr/invitations/accept</td><td>Chấp nhận lời mời</td><td>FR-043</td></tr>
+  <tr><td>GET</td><td>/recr/invitations</td><td>Liệt kê lời mời</td><td>FR-045</td></tr>
+  <tr><td>DELETE</td><td>/recr/invitations/:id</td><td>Thu hồi lời mời</td><td>FR-044</td></tr>
+  <tr><td>POST</td><td>/recr/invitations/:id/resend</td><td>Gửi lại lời mời</td><td>FR-046</td></tr>
 </table>
 
-<h3>Employer Endpoints</h3>
+<h3>Endpoint Nhà tuyển dụng</h3>
 <table class="trace-table">
   <tr>
-    <th>Method</th>
-    <th>Path</th>
-    <th>Description</th>
-    <th>Requirement IDs</th>
+    <th>Phương thức</th>
+    <th>Đường dẫn</th>
+    <th>Mô tả</th>
+    <th>Mã Yêu cầu</th>
   </tr>
-  <tr><td>POST</td><td>/recr/employer/jobs</td><td>Create job listing</td><td>FR-016</td></tr>
-  <tr><td>GET</td><td>/recr/employer/jobs</td><td>List my jobs</td><td>FR-017</td></tr>
-  <tr><td>PATCH</td><td>/recr/employer/jobs/:id</td><td>Update job listing</td><td>FR-017</td></tr>
-  <tr><td>GET</td><td>/recr/employer/jobs/:id/applicants</td><td>View applicants</td><td>FR-018</td></tr>
-  <tr><td>PATCH</td><td>/recr/employer/jobs/:id/submit</td><td>Submit for approval</td><td>FR-019</td></tr>
-  <tr><td>GET</td><td>/recr/employer/analytics</td><td>View analytics</td><td>FR-020</td></tr>
+  <tr><td>POST</td><td>/recr/employer/jobs</td><td>Tạo tin tuyển dụng</td><td>FR-016</td></tr>
+  <tr><td>GET</td><td>/recr/employer/jobs</td><td>Liệt kê việc làm của tôi</td><td>FR-017</td></tr>
+  <tr><td>PATCH</td><td>/recr/employer/jobs/:id</td><td>Cập nhật tin tuyển dụng</td><td>FR-017</td></tr>
+  <tr><td>GET</td><td>/recr/employer/jobs/:id/applicants</td><td>Xem người nộp đơn</td><td>FR-018</td></tr>
+  <tr><td>PATCH</td><td>/recr/employer/jobs/:id/submit</td><td>Gửi để duyệt</td><td>FR-019</td></tr>
+  <tr><td>GET</td><td>/recr/employer/analytics</td><td>Xem phân tích</td><td>FR-020</td></tr>
 </table>
 
 <!-- 7. INTEGRATION -->
-<h1 id="section-7">7. Integration</h1>
+<h1 id="section-7">7. Tích hợp</h1>
 
-<h2>7.1 Sequence Diagram</h2>
+<h2>7.1 Sơ đồ Chuỗi</h2>
 <div class="diagram">
-  <img src="./images/sequence/recruitment-integration.png" alt="Sequence Diagram">
-  <div class="caption">Figure 23: Candidate Application Flow</div>
+  <img src="./images/sequence/recruitment-integration.png" alt="Sơ đồ Chuỗi">
+  <div class="caption">Hình 23: Luồng Ứng tuyển Ứng viên</div>
 </div>
 
-<h2>7.2 Webhook Events</h2>
+<h2>7.2 Sự kiện Webhook</h2>
 <table>
-  <tr><th>Event</th><th>Direction</th><th>Protocol</th><th>Description</th></tr>
-  <tr><td>application.submitted</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when candidate submits application</td></tr>
-  <tr><td>interview.scheduled</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when interview is scheduled</td></tr>
-  <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when HR/Employer submits job for approval</td></tr>
-  <tr><td>subscription.purchased</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when user purchases subscription</td></tr>
-  <tr><td>file.deleted</td><td>Inbound</td><td>RabbitMQ</td><td>Received from FILE module when a file is deleted; RECR cleans up references in recr_candidate_resumes and recr_applications</td></tr>
-  <tr><td>invitation.created</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when invitation is created</td></tr>
-  <tr><td>invitation.accepted</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when invitation is accepted</td></tr>
+  <tr><th>Sự kiện</th><th>Hướng</th><th>Giao thức</th><th>Mô tả</th></tr>
+  <tr><td>application.submitted</td><td>Đi ra</td><td>RabbitMQ</td><td>Được kích hoạt khi ứng viên nộp hồ sơ</td></tr>
+  <tr><td>interview.scheduled</td><td>Đi ra</td><td>RabbitMQ</td><td>Được kích hoạt khi phỏng vấn được lên lịch</td></tr>
+  <tr><td>job.submitted_for_approval</td><td>Đi ra</td><td>RabbitMQ</td><td>Được kích hoạt khi HR/Employer gửi việc làm để duyệt</td></tr>
+  <tr><td>subscription.purchased</td><td>Đi ra</td><td>RabbitMQ</td><td>Được kích hoạt khi người dùng mua đăng ký</td></tr>
+  <tr><td>file.deleted</td><td>Đi vào</td><td>RabbitMQ</td><td>Nhận từ module FILE khi tệp bị xóa; RECR dọn dẹp tham chiếu trong recr_candidate_resumes và recr_applications</td></tr>
+  <tr><td>invitation.created</td><td>Đi ra</td><td>RabbitMQ</td><td>Được kích hoạt khi lời mời được tạo</td></tr>
+  <tr><td>invitation.accepted</td><td>Đi ra</td><td>RabbitMQ</td><td>Được kích hoạt khi lời mời được chấp nhận</td></tr>
 </table>
 
 <!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-8">8. Non-Functional Requirements</h1>
+<h1 id="section-8">8. Yêu cầu Phi chức năng</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
-    <th>Category</th>
-    <th>Requirement</th>
-    <th>Target</th>
+    <th>Mã Yêu cầu</th>
+    <th>Danh mục</th>
+    <th>Yêu cầu</th>
+    <th>Mục tiêu</th>
   </tr>
-  <tr><td><span id="nfr-001" class="req-id">NFR-001</span></td><td>Performance</td><td>API response time for list queries</td><td>&lt; 500ms (p95)</td></tr>
-  <tr><td><span id="nfr-002" class="req-id">NFR-002</span></td><td>Performance</td><td>Application submission processing</td><td>&lt; 2s</td></tr>
-  <tr><td><span id="nfr-003" class="req-id">NFR-003</span></td><td>Scalability</td><td>Support concurrent users</td><td>500+ concurrent users</td></tr>
-  <tr><td><span id="nfr-004" class="req-id">NFR-004</span></td><td>Availability</td><td>System uptime</td><td>99.9%</td></tr>
-  <tr><td><span id="nfr-005" class="req-id">NFR-005</span></td><td>Security</td><td>Role-based access control</td><td>Candidate, HR, Employer roles</td></tr>
-  <tr><td><span id="nfr-006" class="req-id">NFR-006</span></td><td>Data</td><td>Resume file storage via FILE module</td><td>FILE module manages file storage (S3-compatible), max 10MB per file, presigned URL access</td></tr>
-  <tr><td><span id="nfr-007" class="req-id">NFR-007</span></td><td>Search</td><td>Job search capability</td><td>Full-text search within 500ms</td></tr>
+  <tr><td><span id="nfr-001" class="req-id">NFR-001</span></td><td>Hiệu suất</td><td>Thời gian phản hồi API cho truy vấn danh sách</td><td>&lt; 500ms (p95)</td></tr>
+  <tr><td><span id="nfr-002" class="req-id">NFR-002</span></td><td>Hiệu suất</td><td>Xử lý nộp hồ sơ ứng tuyển</td><td>&lt; 2s</td></tr>
+  <tr><td><span id="nfr-003" class="req-id">NFR-003</span></td><td>Khả năng mở rộng</td><td>Hỗ trợ người dùng đồng thời</td><td>500+ người dùng đồng thời</td></tr>
+  <tr><td><span id="nfr-004" class="req-id">NFR-004</span></td><td>Khả dụng</td><td>Thời gian hoạt động hệ thống</td><td>99.9%</td></tr>
+  <tr><td><span id="nfr-005" class="req-id">NFR-005</span></td><td>Bảo mật</td><td>Kiểm soát truy cập dựa trên vai trò</td><td>Các vai trò Candidate, HR, Employer</td></tr>
+  <tr><td><span id="nfr-006" class="req-id">NFR-006</span></td><td>Dữ liệu</td><td>Lưu trữ tệp hồ sơ qua module FILE</td><td>Module FILE quản lý lưu trữ tệp (tương thích S3), tối đa 10MB mỗi tệp, truy cập qua URL presigned</td></tr>
+  <tr><td><span id="nfr-007" class="req-id">NFR-007</span></td><td>Tìm kiếm</td><td>Khả năng tìm kiếm việc làm</td><td>Tìm kiếm toàn văn trong 500ms</td></tr>
 </table>
 
 <!-- 9. RBAC MATRIX -->
-<h1 id="section-9">9. RBAC Resume Access Matrix</h1>
+<h1 id="section-9">9. Ma trận Truy cập Hồ sơ RBAC</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Action</th>
-    <th>Candidate (Owner)</th>
-    <th>HR (Organization)</th>
-    <th>Employer (Organization)</th>
+    <th>Hành động</th>
+    <th>Ứng viên (Chủ sở hữu)</th>
+    <th>HR (Tổ chức)</th>
+    <th>Nhà tuyển dụng (Tổ chức)</th>
   </tr>
   <tr>
-    <td>Upload Resume</td>
-    <td>Own only</td>
-    <td>Not allowed</td>
-    <td>Not allowed</td>
+    <td>Tải lên Hồ sơ</td>
+    <td>Chỉ của mình</td>
+    <td>Không cho phép</td>
+    <td>Không cho phép</td>
   </tr>
   <tr>
-    <td>List Own Resumes</td>
-    <td>Own only</td>
-    <td>Not allowed</td>
-    <td>Not allowed</td>
+    <td>Liệt kê Hồ sơ của mình</td>
+    <td>Chỉ của mình</td>
+    <td>Không cho phép</td>
+    <td>Không cho phép</td>
   </tr>
   <tr>
-    <td>Delete Resume</td>
-    <td>Own only (if not linked to application)</td>
-    <td>Not allowed</td>
-    <td>Not allowed</td>
+    <td>Xóa Hồ sơ</td>
+    <td>Chỉ của mình (nếu chưa liên kết với hồ sơ ứng tuyển)</td>
+    <td>Không cho phép</td>
+    <td>Không cho phép</td>
   </tr>
   <tr>
-    <td>View Application Resume</td>
-    <td>Own applications</td>
-    <td>Organization applications</td>
-    <td>Organization applications</td>
+    <td>Xem Hồ sơ Ứng tuyển</td>
+    <td>Hồ sơ của mình</td>
+    <td>Hồ sơ của tổ chức</td>
+    <td>Hồ sơ của tổ chức</td>
   </tr>
   <tr>
-    <td>Download Resume</td>
-    <td>Own only</td>
-    <td>Via presigned URL (organization applications)</td>
-    <td>Via presigned URL (organization applications)</td>
+    <td>Tải xuống Hồ sơ</td>
+    <td>Chỉ của mình</td>
+    <td>Qua URL presigned (hồ sơ của tổ chức)</td>
+    <td>Qua URL presigned (hồ sơ của tổ chức)</td>
   </tr>
 </table>
 
-<p><strong>Note:</strong> All resume downloads by HR and Employer are via time-limited presigned URLs generated by the FILE module. Direct file access is never exposed.</p>
+<p><strong>Lưu ý:</strong> Tất cả việc tải hồ sơ của HR và Nhà tuyển dụng đều thực hiện qua URL presigned có thời hạn được tạo bởi module FILE. Truy cập tệp trực tiếp không bao giờ được hiển thị.</p>
 
 <!-- 10. TRACEABILITY -->
-<h1 id="section-10">10. Requirements Traceability Matrix</h1>
+<h1 id="section-10">10. Ma trận Truy xuất Yêu cầu</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
-    <th>Requirement</th>
-    <th>Role</th>
-    <th>TDS Section</th>
-    <th>DB Table</th>
-    <th>API Endpoint</th>
+    <th>Mã Yêu cầu</th>
+    <th>Yêu cầu</th>
+    <th>Vai trò</th>
+    <th>Phần TDS</th>
+    <th>Bảng CSDL</th>
+    <th>Endpoint API</th>
   </tr>
-  <tr><td>FR-001</td><td>Candidate Registration</td><td>Candidate</td><td>3.1</td><td>recr_users, recr_candidates</td><td>POST /recr/auth/register</td></tr>
-  <tr><td>FR-002</td><td>Candidate Login</td><td>Candidate</td><td>3.1</td><td>recr_users</td><td>POST /recr/auth/login</td></tr>
-  <tr><td>FR-003</td><td>Browse Jobs</td><td>Candidate</td><td>3.1</td><td>recr_jobs</td><td>GET /recr/jobs</td></tr>
-  <tr><td>FR-004</td><td>Submit Application</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>POST /recr/applications</td></tr>
-  <tr><td>FR-005</td><td>View Application Status</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>GET /recr/candidate/applications</td></tr>
-  <tr><td>FR-006</td><td>Update Profile</td><td>Candidate</td><td>3.1</td><td>recr_candidates</td><td>PATCH /recr/candidate/profile</td></tr>
-  <tr><td>FR-007</td><td>Upload Resume</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>POST /recr/candidate/resume</td></tr>
-  <tr><td>FR-008</td><td>Review Applications</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/applications</td></tr>
-  <tr><td>FR-009</td><td>Screen Candidates</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
-  <tr><td>FR-010</td><td>Schedule Interview</td><td>HR</td><td>3.2</td><td>recr_interviews</td><td>POST /recr/hr/interviews</td></tr>
-  <tr><td>FR-011</td><td>Evaluate Candidate</td><td>HR</td><td>3.2</td><td>recr_evaluations</td><td>POST /recr/hr/evaluations</td></tr>
-  <tr><td>FR-012</td><td>Reject Candidate</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
-  <tr><td>FR-013</td><td>Track Pipeline</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/pipeline</td></tr>
-  <tr><td>FR-014</td><td>Generate Reports</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/reports</td></tr>
-  <tr><td>FR-015</td><td>Employer Registration</td><td>Employer</td><td>3.1</td><td>recr_employers</td><td>POST /recr/auth/register</td></tr>
-  <tr><td>FR-016</td><td>Post Job (Employer)</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>POST /recr/employer/jobs</td></tr>
-  <tr><td>FR-017</td><td>Manage Job Listings</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>GET/PATCH /recr/employer/jobs</td></tr>
-  <tr><td>FR-018</td><td>View Applicants</td><td>Employer</td><td>3.3</td><td>recr_applications</td><td>GET /recr/employer/jobs/:id/applicants</td></tr>
-  <tr><td>FR-019</td><td>Approve Job Posting</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>PATCH /recr/employer/jobs/:id/submit</td></tr>
-  <tr><td>FR-020</td><td>View Analytics</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>GET /recr/employer/analytics</td></tr>
-  <tr><td>FR-021</td><td>Subscription Plans</td><td>All</td><td>4.4</td><td>recr_subscription_plans</td><td>GET /recr/subscription/plans</td></tr>
-  <tr><td>FR-022</td><td>Purchase Subscription</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/purchase</td></tr>
-  <tr><td>FR-023</td><td>Subscription Access Control</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>-</td></tr>
-  <tr><td>FR-024</td><td>Subscription Validation</td><td>System</td><td>4.4</td><td>recr_subscriptions</td><td>GET /recr/subscription/status</td></tr>
-  <tr><td>FR-025</td><td>Subscription Renewal</td><td>All</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/renew</td></tr>
-  <tr><td>FR-026</td><td>Subscription History</td><td>All</td><td>4.4</td><td>recr_subscription_history</td><td>GET /recr/subscription/history</td></tr>
-  <tr><td>FR-028</td><td>HR Post Job</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>POST /recr/hr/jobs</td></tr>
-  <tr><td>FR-029</td><td>HR Manage Jobs</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
-  <tr><td>FR-030</td><td>Job Review</td><td>Candidate</td><td>3.3</td><td>recr_job_reviews</td><td>POST /recr/candidate/reviews/jobs</td></tr>
-  <tr><td>FR-031</td><td>Candidate Review</td><td>HR</td><td>3.3</td><td>recr_candidate_reviews</td><td>POST /recr/hr/reviews/candidates</td></tr>
-  <tr><td>FR-037</td><td>Manage Candidate Resumes</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>GET/POST/DELETE /recr/candidate/resumes</td></tr>
-  <tr><td>FR-038</td><td>Application Resume Linking</td><td>Candidate</td><td>3.1</td><td>recr_applications, sys_files (FILE)</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
-  <tr><td>FR-039</td><td>Send Invitation</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>POST /recr/invitations/send</td></tr>
-  <tr><td>FR-040</td><td>Generate Token</td><td>System</td><td>3.18</td><td>recr_invitations</td><td>POST /recr/invitations/send</td></tr>
-  <tr><td>FR-041</td><td>Send Email Event</td><td>System</td><td>3.18</td><td>-</td><td>POST /recr/invitations/send (RabbitMQ)</td></tr>
-  <tr><td>FR-042</td><td>Verify Token</td><td>Candidate</td><td>3.19</td><td>recr_invitations</td><td>GET /recr/invitations/verify</td></tr>
-  <tr><td>FR-043</td><td>Accept Invitation</td><td>Candidate</td><td>3.20</td><td>recr_invitations</td><td>POST /recr/invitations/accept</td></tr>
-  <tr><td>FR-044</td><td>Revoke Invitation</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>DELETE /recr/invitations/:id</td></tr>
-  <tr><td>FR-045</td><td>List Invitations</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>GET /recr/invitations</td></tr>
-  <tr><td>FR-046</td><td>Resend Invitation</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>POST /recr/invitations/:id/resend</td></tr>
-  <tr><td>NFR-001</td><td>API Response Time</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
-  <tr><td>NFR-002</td><td>Application Processing</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
-  <tr><td>NFR-003</td><td>Concurrent Users</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
-  <tr><td>NFR-004</td><td>System Uptime</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
-  <tr><td>NFR-005</td><td>RBAC</td><td>All</td><td>6.1</td><td>recr_users</td><td>-</td></tr>
-  <tr><td>NFR-006</td><td>Resume Storage</td><td>All</td><td>6.1</td><td>sys_files (FILE)</td><td>FILE module API (presigned URLs)</td></tr>
-  <tr><td>NFR-007</td><td>Job Search</td><td>All</td><td>6.1</td><td>recr_jobs</td><td>GET /recr/jobs</td></tr>
+  <tr><td>FR-001</td><td>Đăng ký Ứng viên</td><td>Candidate</td><td>3.1</td><td>recr_users, recr_candidates</td><td>POST /recr/auth/register</td></tr>
+  <tr><td>FR-002</td><td>Đăng nhập Ứng viên</td><td>Candidate</td><td>3.1</td><td>recr_users</td><td>POST /recr/auth/login</td></tr>
+  <tr><td>FR-003</td><td>Duyệt Việc làm</td><td>Candidate</td><td>3.1</td><td>recr_jobs</td><td>GET /recr/jobs</td></tr>
+  <tr><td>FR-004</td><td>Nộp Hồ sơ Ứng tuyển</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>POST /recr/applications</td></tr>
+  <tr><td>FR-005</td><td>Xem Trạng thái Hồ sơ</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>GET /recr/candidate/applications</td></tr>
+  <tr><td>FR-006</td><td>Cập nhật Hồ sơ</td><td>Candidate</td><td>3.1</td><td>recr_candidates</td><td>PATCH /recr/candidate/profile</td></tr>
+  <tr><td>FR-007</td><td>Tải lên Hồ sơ</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>POST /recr/candidate/resume</td></tr>
+  <tr><td>FR-008</td><td>Duyệt Hồ sơ Ứng tuyển</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/applications</td></tr>
+  <tr><td>FR-009</td><td>Sàng lọc Ứng viên</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
+  <tr><td>FR-010</td><td>Lên lịch Phỏng vấn</td><td>HR</td><td>3.2</td><td>recr_interviews</td><td>POST /recr/hr/interviews</td></tr>
+  <tr><td>FR-011</td><td>Đánh giá Ứng viên</td><td>HR</td><td>3.2</td><td>recr_evaluations</td><td>POST /recr/hr/evaluations</td></tr>
+  <tr><td>FR-012</td><td>Từ chối Ứng viên</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
+  <tr><td>FR-013</td><td>Theo dõi Quy trình</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/pipeline</td></tr>
+  <tr><td>FR-014</td><td>Tạo Báo cáo</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/reports</td></tr>
+  <tr><td>FR-015</td><td>Đăng ký Nhà tuyển dụng</td><td>Employer</td><td>3.1</td><td>recr_employers</td><td>POST /recr/auth/register</td></tr>
+  <tr><td>FR-016</td><td>Đăng tin Việc làm (Employer)</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>POST /recr/employer/jobs</td></tr>
+  <tr><td>FR-017</td><td>Quản lý Tin tuyển dụng</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>GET/PATCH /recr/employer/jobs</td></tr>
+  <tr><td>FR-018</td><td>Xem Người nộp đơn</td><td>Employer</td><td>3.3</td><td>recr_applications</td><td>GET /recr/employer/jobs/:id/applicants</td></tr>
+  <tr><td>FR-019</td><td>Duyệt Tin tuyển dụng</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>PATCH /recr/employer/jobs/:id/submit</td></tr>
+  <tr><td>FR-020</td><td>Xem Phân tích</td><td>Employer</td><td>3.3</td><td>recr_jobs</td><td>GET /recr/employer/analytics</td></tr>
+  <tr><td>FR-021</td><td>Gói Đăng ký</td><td>Tất cả</td><td>4.4</td><td>recr_subscription_plans</td><td>GET /recr/subscription/plans</td></tr>
+  <tr><td>FR-022</td><td>Mua Đăng ký</td><td>Tất cả</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/purchase</td></tr>
+  <tr><td>FR-023</td><td>Kiểm soát Truy cập Đăng ký</td><td>Tất cả</td><td>4.4</td><td>recr_subscriptions</td><td>-</td></tr>
+  <tr><td>FR-024</td><td>Xác thực Đăng ký</td><td>Hệ thống</td><td>4.4</td><td>recr_subscriptions</td><td>GET /recr/subscription/status</td></tr>
+  <tr><td>FR-025</td><td>Gia hạn Đăng ký</td><td>Tất cả</td><td>4.4</td><td>recr_subscriptions</td><td>POST /recr/subscription/renew</td></tr>
+  <tr><td>FR-026</td><td>Lịch sử Đăng ký</td><td>Tất cả</td><td>4.4</td><td>recr_subscription_history</td><td>GET /recr/subscription/history</td></tr>
+  <tr><td>FR-028</td><td>HR Đăng tin Việc làm</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>POST /recr/hr/jobs</td></tr>
+  <tr><td>FR-029</td><td>HR Quản lý Việc làm</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
+  <tr><td>FR-030</td><td>Đánh giá Việc làm</td><td>Candidate</td><td>3.3</td><td>recr_job_reviews</td><td>POST /recr/candidate/reviews/jobs</td></tr>
+  <tr><td>FR-031</td><td>Đánh giá Ứng viên</td><td>HR</td><td>3.3</td><td>recr_candidate_reviews</td><td>POST /recr/hr/reviews/candidates</td></tr>
+  <tr><td>FR-037</td><td>Quản lý Hồ sơ Ứng viên</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>GET/POST/DELETE /recr/candidate/resumes</td></tr>
+  <tr><td>FR-038</td><td>Liên kết Hồ sơ Ứng tuyển</td><td>Candidate</td><td>3.1</td><td>recr_applications, sys_files (FILE)</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
+  <tr><td>FR-039</td><td>Gửi Lời mời</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>POST /recr/invitations/send</td></tr>
+  <tr><td>FR-040</td><td>Tạo Token</td><td>Hệ thống</td><td>3.18</td><td>recr_invitations</td><td>POST /recr/invitations/send</td></tr>
+  <tr><td>FR-041</td><td>Gửi Sự kiện Email</td><td>Hệ thống</td><td>3.18</td><td>-</td><td>POST /recr/invitations/send (RabbitMQ)</td></tr>
+  <tr><td>FR-042</td><td>Xác minh Token</td><td>Candidate</td><td>3.19</td><td>recr_invitations</td><td>GET /recr/invitations/verify</td></tr>
+  <tr><td>FR-043</td><td>Chấp nhận Lời mời</td><td>Candidate</td><td>3.20</td><td>recr_invitations</td><td>POST /recr/invitations/accept</td></tr>
+  <tr><td>FR-044</td><td>Thu hồi Lời mời</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>DELETE /recr/invitations/:id</td></tr>
+  <tr><td>FR-045</td><td>Liệt kê Lời mời</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>GET /recr/invitations</td></tr>
+  <tr><td>FR-046</td><td>Gửi lại Lời mời</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>POST /recr/invitations/:id/resend</td></tr>
+  <tr><td>NFR-001</td><td>Thời gian Phản hồi API</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
+  <tr><td>NFR-002</td><td>Xử lý Hồ sơ</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
+  <tr><td>NFR-003</td><td>Người dùng Đồng thời</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
+  <tr><td>NFR-004</td><td>Thời gian Hoạt động Hệ thống</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
+  <tr><td>NFR-005</td><td>RBAC</td><td>Tất cả</td><td>6.1</td><td>recr_users</td><td>-</td></tr>
+  <tr><td>NFR-006</td><td>Lưu trữ Hồ sơ</td><td>Tất cả</td><td>6.1</td><td>sys_files (FILE)</td><td>API module FILE (URL presigned)</td></tr>
+  <tr><td>NFR-007</td><td>Tìm kiếm Việc làm</td><td>Tất cả</td><td>6.1</td><td>recr_jobs</td><td>GET /recr/jobs</td></tr>
 </table>
 
 </body>

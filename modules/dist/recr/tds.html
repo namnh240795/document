@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Technical Design Specification - Recruitment</title>
+  <title>Thiết Kế Kỹ Thuật - Tuyển Dụng</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,98 +18,98 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>Technical Design Specification</h1>
-  <div class="subtitle">Recruitment Module</div>
+  <h1>Thiết Kế Kỹ Thuật</h1>
+  <div class="subtitle">Module Tuyển Dụng</div>
   <span class="module-badge">RECR</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>HR Management System</td></tr>
-    <tr><td>Module</td><td>RECR - Recruitment</td></tr>
-    <tr><td>Tech Stack</td><td>NestJS, TypeScript, PostgreSQL, RabbitMQ, Drizzle ORM</td></tr>
-    <tr><td>Date</td><td>2026-08-13</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Status</td><td>Draft</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">Recruitment SRS</a></td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Quản lý Nhân sự</td></tr>
+    <tr><td>Module</td><td>RECR - Tuyển Dụng</td></tr>
+    <tr><td>Công nghệ</td><td>NestJS, TypeScript, PostgreSQL, RabbitMQ, Drizzle ORM</td></tr>
+    <tr><td>Ngày</td><td>2026-08-13</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>Trạng thái</td><td>Nháp</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Tuyển Dụng</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục Lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a>
+    <li><a href="#section-1">1. Tổng quan</a>
       <ul>
-        <li><a href="#section-1-1">1.1 Purpose</a></li>
-        <li><a href="#section-1-2">1.2 SRS Reference</a></li>
-        <li><a href="#section-1-3">1.3 Requirements Addressed</a></li>
+        <li><a href="#section-1-1">1.1 Mục đích</a></li>
+        <li><a href="#section-1-2">1.2 Tham chiếu SRS</a></li>
+        <li><a href="#section-1-3">1.3 Các yêu cầu được đề cập</a></li>
       </ul>
     </li>
-    <li><a href="#section-2">2. Architecture</a>
+    <li><a href="#section-2">2. Kiến trúc</a>
       <ul>
-        <li><a href="#section-2-1">2.1 NestJS Monorepo Structure</a></li>
-        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+        <li><a href="#section-2-1">2.1 Cấu trúc NestJS Monorepo</a></li>
+        <li><a href="#section-2-2">2.2 Các quyết định thiết kế chính</a></li>
       </ul>
     </li>
-    <li><a href="#section-3">3. Project Structure</a>
+    <li><a href="#section-3">3. Cấu trúc Dự án</a>
       <ul>
-        <li><a href="#section-3-1">3.1 Module Structure</a></li>
-        <li><a href="#section-3-2">3.2 File Organization</a></li>
+        <li><a href="#section-3-1">3.1 Cấu trúc Module</a></li>
+        <li><a href="#section-3-2">3.2 Tổ chức File</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. Controller Design</a></li>
-    <li><a href="#section-5">5. Service Design</a></li>
-    <li><a href="#section-6">6. Worker Design</a></li>
-    <li><a href="#section-7">7. Event Processing</a></li>
-    <li><a href="#section-8">8. Cross-Module Integration</a>
+    <li><a href="#section-4">4. Thiết kế Controller</a></li>
+    <li><a href="#section-5">5. Thiết kế Service</a></li>
+    <li><a href="#section-6">6. Thiết kế Worker</a></li>
+    <li><a href="#section-7">7. Xử lý Sự kiện</a></li>
+    <li><a href="#section-8">8. Tích hợp Cross-Module</a>
       <ul>
-        <li><a href="#section-8-1">8.1 FILE Module Integration</a></li>
-        <li><a href="#section-8-2">8.2 FileConsumer (Inbound Event Handler)</a></li>
+        <li><a href="#section-8-1">8.1 Tích hợp Module FILE</a></li>
+        <li><a href="#section-8-2">8.2 FileConsumer (Trình xử lý sự kiện đầu vào)</a></li>
       </ul>
     </li>
-    <li><a href="#section-9">9. OpenSearch Integration</a></li>
-    <li><a href="#section-10">10. Data Architecture</a></li>
-    <li><a href="#section-11">11. Security Design</a></li>
-    <li><a href="#section-12">12. Traceability Summary</a></li>
+    <li><a href="#section-9">9. Tích hợp OpenSearch</a></li>
+    <li><a href="#section-10">10. Kiến trúc Dữ liệu</a></li>
+    <li><a href="#section-11">11. Thiết kế Bảo mật</a></li>
+    <li><a href="#section-12">12. Tóm tắt Truy xuất nguồn gốc</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2 id="section-1-1">1.1 Purpose</h2>
-<p>This document describes the technical design for the <strong>Recruitment</strong> module, implemented as a NestJS monorepo microservice.</p>
+<h2 id="section-1-1">1.1 Mục đích</h2>
+<p>Tài liệu này mô tả thiết kế kỹ thuật cho module <strong>Tuyển Dụng</strong>, được triển khai dưới dạng microservice NestJS monorepo.</p>
 
-<h2 id="section-1-2">1.2 SRS Reference</h2>
+<h2 id="section-1-2">1.2 Tham chiếu SRS</h2>
 <table>
-  <tr><th>Document</th><th>Version</th><th>Description</th></tr>
-  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html">Recruitment SRS</a></td></tr>
-  <tr><td>API Spec</td><td>1.0</td><td><a href="api-technical-spec.html">Recruitment API Spec</a></td></tr>
-  <tr><td>Database Design</td><td>1.0</td><td><a href="database-design.html">Recruitment Database Design</a></td></tr>
+  <tr><th>Tài liệu</th><th>Phiên bản</th><th>Mô tả</th></tr>
+  <tr><td>SRS</td><td>1.0</td><td><a href="srs.html">SRS Tuyển Dụng</a></td></tr>
+  <tr><td>API Spec</td><td>1.0</td><td><a href="api-technical-spec.html">API Spec Tuyển Dụng</a></td></tr>
+  <tr><td>Thiết kế Cơ sở dữ liệu</td><td>1.0</td><td><a href="database-design.html">Thiết kế Cơ sở dữ liệu Tuyển Dụng</a></td></tr>
 </table>
 
-<h2 id="section-1-3">1.3 Requirements Addressed</h2>
+<h2 id="section-1-3">1.3 Các yêu cầu được đề cập</h2>
 <table class="trace-table">
-  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <tr><td>Candidate</td><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> - <a href="srs.html#fr-007"><span class="req-id">FR-007</span></a>, <a href="srs.html#fr-037"><span class="req-id">FR-037</span></a>, <a href="srs.html#fr-038"><span class="req-id">FR-038</span></a></td><td>Section 4, 5, 6</td></tr>
-  <tr><td>HR</td><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a> - <a href="srs.html#fr-014"><span class="req-id">FR-014</span></a>, <a href="srs.html#fr-028"><span class="req-id">FR-028</span></a>, <a href="srs.html#fr-029"><span class="req-id">FR-029</span></a>, <a href="srs.html#fr-032"><span class="req-id">FR-032</span></a></td><td>Section 4, 5, 6</td></tr>
-  <tr><td>Employer</td><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a> - <a href="srs.html#fr-020"><span class="req-id">FR-020</span></a>, <a href="srs.html#fr-033"><span class="req-id">FR-033</span></a></td><td>Section 4, 5, 6</td></tr>
-  <tr><td>Subscription</td><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> - <a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></td><td>Section 4, 5, 6</td></tr>
-  <tr><td>Reviews</td><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a>, <a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td><td>Section 4, 5, 6</td></tr>
-  <tr><td>Analytics</td><td><a href="srs.html#fr-034"><span class="req-id">FR-034</span></a> - <a href="srs.html#fr-036"><span class="req-id">FR-036</span></a></td><td>Section 8</td></tr>
-  <tr><td>Non-Functional</td><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a> - <a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Section 10</td></tr>
-  <tr><td>Invitation</td><td><a href="srs.html#fr-039"><span class="req-id">FR-039</span></a> - <a href="srs.html#fr-046"><span class="req-id">FR-046</span></a></td><td>Section 4, 5, 6, 7</td></tr>
+  <tr><th>Danh mục</th><th>Mã yêu cầu</th><th>Phần thiết kế</th></tr>
+  <tr><td>Ứng viên</td><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> - <a href="srs.html#fr-007"><span class="req-id">FR-007</span></a>, <a href="srs.html#fr-037"><span class="req-id">FR-037</span></a>, <a href="srs.html#fr-038"><span class="req-id">FR-038</span></a></td><td>Phần 4, 5, 6</td></tr>
+  <tr><td>HR</td><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a> - <a href="srs.html#fr-014"><span class="req-id">FR-014</span></a>, <a href="srs.html#fr-028"><span class="req-id">FR-028</span></a>, <a href="srs.html#fr-029"><span class="req-id">FR-029</span></a>, <a href="srs.html#fr-032"><span class="req-id">FR-032</span></a></td><td>Phần 4, 5, 6</td></tr>
+  <tr><td>Nhà tuyển dụng</td><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a> - <a href="srs.html#fr-020"><span class="req-id">FR-020</span></a>, <a href="srs.html#fr-033"><span class="req-id">FR-033</span></a></td><td>Phần 4, 5, 6</td></tr>
+  <tr><td>Gói dịch vụ</td><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a> - <a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></td><td>Phần 4, 5, 6</td></tr>
+  <tr><td>Đánh giá</td><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a>, <a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td><td>Phần 4, 5, 6</td></tr>
+  <tr><td>Phân tích</td><td><a href="srs.html#fr-034"><span class="req-id">FR-034</span></a> - <a href="srs.html#fr-036"><span class="req-id">FR-036</span></a></td><td>Phần 8</td></tr>
+  <tr><td>Phi chức năng</td><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a> - <a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Phần 10</td></tr>
+  <tr><td>Lời mời</td><td><a href="srs.html#fr-039"><span class="req-id">FR-039</span></a> - <a href="srs.html#fr-046"><span class="req-id">FR-046</span></a></td><td>Phần 4, 5, 6, 7 (Xử lý bởi Module AUTH)</td></tr>
 </table>
 
 <!-- 2. ARCHITECTURE -->
-<h1 id="section-2">2. Architecture</h1>
+<h1 id="section-2">2. Kiến trúc</h1>
 
-<h2 id="section-2-1">2.1 NestJS Monorepo Structure</h2>
-<p>The RECR module follows NestJS monorepo architecture with clear separation of concerns:</p>
+<h2 id="section-2-1">2.1 Cấu trúc NestJS Monorepo</h2>
+<p>Module RECR tuân theo kiến trúc NestJS monorepo với sự phân tách rõ ràng giữa các thành phần:</p>
 <pre><code>apps/
 ├── recr-api/                    # HTTP API Service (Controller layer)
 │   ├── src/
@@ -141,41 +141,41 @@ libs/
     │   └── validators/          # Custom validators
     └── package.json</code></pre>
 
-<h2 id="section-2-2">2.2 Key Design Decisions</h2>
+<h2 id="section-2-2">2.2 Các quyết định thiết kế chính</h2>
 <table class="trace-table">
-  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
+  <tr><th>#</th><th>Quyết định</th><th>Lý do</th><th>Giải quyết</th></tr>
   <tr>
-    <td>1</td><td>Separate API and Worker services</td>
-    <td>API handles HTTP requests synchronously. Worker processes background jobs (emails, notifications, analytics) asynchronously via RabbitMQ.</td>
+    <td>1</td><td>Tách biệt API và Worker services</td>
+    <td>API xử lý các yêu cầu HTTP đồng bộ. Worker xử lý các công việc nền (email, thông báo, phân tích) bất đồng bộ thông qua RabbitMQ.</td>
     <td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a>, <a href="srs.html#nfr-002"><span class="req-id">NFR-002</span></a></td>
   </tr>
   <tr>
-    <td>2</td><td>Shared core library (recr-core)</td>
-    <td>Services, entities, and DTOs shared between API and Worker. Single source of truth for business logic.</td>
+    <td>2</td><td>Thư viện core chia sẻ (recr-core)</td>
+    <td>Services, entities, và DTOs được chia sẻ giữa API và Worker. Là nguồn duy nhất cho logic nghiệp vụ.</td>
     <td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a> - <a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td>
   </tr>
   <tr>
-    <td>3</td><td>Event-driven architecture with RabbitMQ</td>
-    <td>Decouples modules. Events emitted by services, consumed by workers for async processing.</td>
+    <td>3</td><td>Kiến trúc sự kiện驱动 với RabbitMQ</td>
+    <td>Tách rời các module. Sự kiện được phát ra bởi services, được tiêu thụ bởi workers để xử lý bất đồng bộ.</td>
     <td><a href="srs.html#nfr-003"><span class="req-id">NFR-003</span></a></td>
   </tr>
   <tr>
-    <td>4</td><td>Drizzle ORM for database access</td>
-    <td>Type-safe queries, lightweight, excellent TypeScript support.</td>
+    <td>4</td><td>Drizzle ORM cho truy cập cơ sở dữ liệu</td>
+    <td>Truy vấn an toàn kiểu, nhẹ nhàng, hỗ trợ TypeScript xuất sắc.</td>
     <td><a href="srs.html#nfr-005"><span class="req-id">NFR-005</span></a></td>
   </tr>
   <tr>
-    <td>5</td><td>Subscription is optional for all roles</td>
-    <td>All users can purchase subscription for premium features, but basic functionality is available without it.</td>
+    <td>5</td><td>Gói dịch vụ là tùy chọn cho tất cả vai trò</td>
+    <td>Tất cả người dùng có thể mua gói dịch vụ cho các tính năng cao cấp, nhưng chức năng cơ bản vẫn khả dụng mà không cần.</td>
     <td><a href="srs.html#fr-023"><span class="req-id">FR-023</span></a></td>
   </tr>
 </table>
 
 <!-- 3. PROJECT STRUCTURE -->
-<h1 id="section-3">3. Project Structure</h1>
+<h1 id="section-3">3. Cấu trúc Dự án</h1>
 
-<h2 id="section-3-1">3.1 Module Structure</h2>
-<p>Each domain module follows NestJS module pattern:</p>
+<h2 id="section-3-1">3.1 Cấu trúc Module</h2>
+<p>Mỗi module domain tuân theo mô hình NestJS module:</p>
 <pre><code>libs/recr-core/src/
 ├── job/
 │   ├── job.module.ts
@@ -240,34 +240,34 @@ libs/
     ├── review-events.ts         # Review events
     └── analytics-events.ts      # Analytics tracking events</code></pre>
 
-<h2 id="section-3-2">3.2 File Organization</h2>
+<h2 id="section-3-2">3.2 Tổ chức File</h2>
 <table>
-  <tr><th>Directory</th><th>Purpose</th><th>Used By</th></tr>
-  <tr><td><code>apps/recr-api/</code></td><td>HTTP API gateway, route handling</td><td>API consumers (frontend, mobile)</td></tr>
-  <tr><td><code>apps/recr-worker/</code></td><td>Background job processing</td><td>RabbitMQ consumers</td></tr>
-  <tr><td><code>libs/recr-core/</code></td><td>Shared business logic, entities, DTOs</td><td>Both API and Worker</td></tr>
-  <tr><td><code>libs/shared/</code></td><td>Cross-module utilities</td><td>All modules</td></tr>
+  <tr><th>Thư mục</th><th>Mục đích</th><th>Sử dụng bởi</th></tr>
+  <tr><td><code>apps/recr-api/</code></td><td>Cổng HTTP API, xử lý định tuyến</td><td>API consumers (frontend, mobile)</td></tr>
+  <tr><td><code>apps/recr-worker/</code></td><td>Xử lý công việc nền</td><td>RabbitMQ consumers</td></tr>
+  <tr><td><code>libs/recr-core/</code></td><td>Logic nghiệp vụ chia sẻ, entities, DTOs</td><td>Cả API và Worker</td></tr>
+  <tr><td><code>libs/shared/</code></td><td>Tiện ích cross-module</td><td>Tất cả modules</td></tr>
 </table>
 
 <!-- 4. CONTROLLER DESIGN -->
-<h1 id="section-4">4. Controller Design</h1>
-<p>Controllers handle HTTP requests and delegate to services. Located in <code>apps/recr-api/src/controllers/</code>.</p>
+<h1 id="section-4">4. Thiết kế Controller</h1>
+<p>Controllers xử lý các yêu cầu HTTP và ủy quyền cho services. Nằm trong <code>apps/recr-api/src/controllers/</code>.</p>
 
-<h2>4.1 Controller List</h2>
+<h2>4.1 Danh sách Controller</h2>
 <table>
-  <tr><th>Controller</th><th>Base Path</th><th>Responsibility</th><th>Requirements</th></tr>
-  <tr><td>AuthController</td><td><code>/recr/auth</code></td><td>Registration, login</td><td>FR-001, FR-002, FR-015</td></tr>
-  <tr><td>JobController</td><td><code>/recr/jobs</code>, <code>/recr/employer/jobs</code>, <code>/recr/hr/jobs</code></td><td>Job CRUD, search, filtering</td><td>FR-003, FR-016, FR-017, FR-028, FR-029</td></tr>
-  <tr><td>ApplicationController</td><td><code>/recr/applications</code>, <code>/recr/candidate/applications/:id/resume</code></td><td>Application submission, status tracking, resume download (FILE module presigned URLs)</td><td>FR-004, FR-005, FR-008, FR-009, FR-038</td></tr>
-  <tr><td>InterviewController</td><td><code>/recr/hr/interviews</code></td><td>Interview scheduling</td><td>FR-010</td></tr>
-  <tr><td>EvaluationController</td><td><code>/recr/hr/evaluations</code></td><td>Candidate evaluation</td><td>FR-011</td></tr>
-  <tr><td>ProfileController</td><td><code>/recr/candidate/profile</code>, <code>/recr/candidate/resume</code>, <code>/recr/candidate/resumes</code>, <code>/recr/hr/profile</code>, <code>/recr/employer/profile</code></td><td>Profile update (all roles), resume management (FILE module integration)</td><td>FR-006, FR-007, FR-032, FR-033, FR-037</td></tr>
-  <tr><td>SubscriptionController</td><td><code>/recr/subscription</code></td><td>Plan listing, purchase, renewal</td><td>FR-021 - FR-026</td></tr>
-  <tr><td>ReviewController</td><td><code>/recr/candidate/reviews</code>, <code>/recr/hr/reviews</code></td><td>Job reviews, candidate reviews</td><td>FR-030, FR-031</td></tr>
-  <tr><td>InviteController</td><td><code>/recr/invitations</code></td><td>Invitation send, verify, accept, revoke, resend</td><td>FR-039, FR-042, FR-043, FR-044, FR-045, FR-046</td></tr>
+  <tr><th>Controller</th><th>Đường dẫn cơ sở</th><th>Trách nhiệm</th><th>Yêu cầu</th></tr>
+  <tr><td>AuthController</td><td><code>/recr/auth</code></td><td>Đăng ký, đăng nhập (Chức năng xác thực thực tế được xử lý bởi Module AUTH)</td><td>FR-001, FR-002, FR-015</td></tr>
+  <tr><td>JobController</td><td><code>/recr/jobs</code>, <code>/recr/employer/jobs</code>, <code>/recr/hr/jobs</code></td><td>CRUD việc làm, tìm kiếm, lọc</td><td>FR-003, FR-016, FR-017, FR-028, FR-029</td></tr>
+  <tr><td>ApplicationController</td><td><code>/recr/applications</code>, <code>/recr/candidate/applications/:id/resume</code></td><td>Nộp hồ sơ, theo dõi trạng thái, tải CV (presigned URL từ module FILE)</td><td>FR-004, FR-005, FR-008, FR-009, FR-038</td></tr>
+  <tr><td>InterviewController</td><td><code>/recr/hr/interviews</code></td><td>Lên lịch phỏng vấn</td><td>FR-010</td></tr>
+  <tr><td>EvaluationController</td><td><code>/recr/hr/evaluations</code></td><td>Đánh giá ứng viên</td><td>FR-011</td></tr>
+  <tr><td>ProfileController</td><td><code>/recr/candidate/profile</code>, <code>/recr/candidate/resume</code>, <code>/recr/candidate/resumes</code>, <code>/recr/hr/profile</code>, <code>/recr/employer/profile</code></td><td>Cập nhật hồ sơ (tất cả vai trò), quản lý CV (tích hợp module FILE)</td><td>FR-006, FR-007, FR-032, FR-033, FR-037</td></tr>
+  <tr><td>SubscriptionController</td><td><code>/recr/subscription</code></td><td>Liệt kê gói, mua, gia hạn</td><td>FR-021 - FR-026</td></tr>
+  <tr><td>ReviewController</td><td><code>/recr/candidate/reviews</code>, <code>/recr/hr/reviews</code></td><td>Đánh giá việc làm, đánh giá ứng viên</td><td>FR-030, FR-031</td></tr>
+  <tr><td>InviteController</td><td><code>/recr/invitations</code></td><td>Gửi lời mời, xác minh, chấp nhận, thu hồi, gửi lại (Chức năng lời mời được xử lý bởi Module AUTH)</td><td>FR-039, FR-042, FR-043, FR-044, FR-045, FR-046</td></tr>
 </table>
 
-<h2>4.2 Controller Example</h2>
+<h2>4.2 Ví dụ Controller</h2>
 <pre><code>// apps/recr-api/src/controllers/job.controller.ts
 @Controller('recr')
 export class JobController {
@@ -294,23 +294,23 @@ export class JobController {
 }</code></pre>
 
 <!-- 5. SERVICE DESIGN -->
-<h1 id="section-5">5. Service Design</h1>
-<p>Services contain business logic. Located in <code>libs/recr-core/src/services/</code>.</p>
+<h1 id="section-5">5. Thiết kế Service</h1>
+<p>Services chứa logic nghiệp vụ. Nằm trong <code>libs/recr-core/src/services/</code>.</p>
 
-<h2>5.1 Service List</h2>
+<h2>5.1 Danh sách Service</h2>
 <table>
-  <tr><th>Service</th><th>Responsibility</th><th>Dependencies</th></tr>
-  <tr><td>JobService</td><td>Job CRUD, status management, search</td><td>JobRepository, EventEmitter</td></tr>
-  <tr><td>ApplicationService</td><td>Application submission, status workflow, resume linking and frozen resume access</td><td>ApplicationRepository, JobService, EventEmitter, FileService (FILE)</td></tr>
-  <tr><td>InterviewService</td><td>Interview scheduling, conflict detection</td><td>InterviewRepository, ApplicationService</td></tr>
-  <tr><td>EvaluationService</td><td>Evaluation scoring, aggregation</td><td>EvaluationRepository, InterviewRepository</td></tr>
-  <tr><td>ProfileService</td><td>Profile update (all roles), resume management (upload, list, delete via FILE module)</td><td>UserRepository, CandidateRepository, HrProfileRepository, EmployerRepository, FileService (FILE)</td></tr>
-  <tr><td>SubscriptionService</td><td>Plan management, purchase, renewal, validation</td><td>SubscriptionRepository, PaymentService</td></tr>
-  <tr><td>ReviewService</td><td>Job reviews, candidate reviews, rating aggregation</td><td>ReviewRepository, JobRepository</td></tr>
-  <tr><td>InviteService</td><td>Invitation lifecycle: token generation, validation, status management, event publishing</td><td>InviteRepository, EventEmitter</td></tr>
+  <tr><th>Service</th><th>Trách nhiệm</th><th>Phụ thuộc</th></tr>
+  <tr><td>JobService</td><td>CRUD việc làm, quản lý trạng thái, tìm kiếm</td><td>JobRepository, EventEmitter</td></tr>
+  <tr><td>ApplicationService</td><td>Nộp hồ sơ, luồng trạng thái, liên kết CV và truy cập CV đã đóng băng</td><td>ApplicationRepository, JobService, EventEmitter, FileService (FILE)</td></tr>
+  <tr><td>InterviewService</td><td>Lên lịch phỏng vấn, phát hiện xung đột</td><td>InterviewRepository, ApplicationService</td></tr>
+  <tr><td>EvaluationService</td><td>Chấm điểm đánh giá, tổng hợp</td><td>EvaluationRepository, InterviewRepository</td></tr>
+  <tr><td>ProfileService</td><td>Cập nhật hồ sơ (tất cả vai trò), quản lý CV (tải lên, liệt kê, xóa thông qua module FILE)</td><td>UserRepository, CandidateRepository, HrProfileRepository, EmployerRepository, FileService (FILE)</td></tr>
+  <tr><td>SubscriptionService</td><td>Quản lý gói, mua, gia hạn, xác thực</td><td>SubscriptionRepository, PaymentService</td></tr>
+  <tr><td>ReviewService</td><td>Đánh giá việc làm, đánh giá ứng viên, tổng hợp điểm đánh giá</td><td>ReviewRepository, JobRepository</td></tr>
+  <tr><td>InviteService</td><td>Vòng đời lời mời: tạo token, xác thực, quản lý trạng thái, phát hành sự kiện (Triển khai bởi Module AUTH)</td><td>InviteRepository, EventEmitter</td></tr>
 </table>
 
-<h2>5.2 Service Example</h2>
+<h2>5.2 Ví dụ Service</h2>
 <pre><code>// libs/recr-core/src/services/job.service.ts
 @Injectable()
 export class JobService {
@@ -363,23 +363,23 @@ export class JobService {
 }</code></pre>
 
 <!-- 6. WORKER DESIGN -->
-<h1 id="section-6">6. Worker Design</h1>
-<p>Workers consume messages from RabbitMQ for async processing. Located in <code>apps/recr-worker/src/consumers/</code>.</p>
+<h1 id="section-6">6. Thiết kế Worker</h1>
+<p>Workers tiêu thụ tin nhắn từ RabbitMQ để xử lý bất đồng bộ. Nằm trong <code>apps/recr-worker/src/consumers/</code>.</p>
 
-<h2>6.1 Worker List</h2>
+<h2>6.1 Danh sách Worker</h2>
 <table>
-  <tr><th>Worker (Consumer)</th><th>Queue</th><th>Purpose</th><th>Events Handled</th></tr>
-  <tr><td>JobConsumer</td><td><code>recr.job.events</code></td><td>Job-related background tasks</td><td>job.created, job.submitted_for_approval</td></tr>
-  <tr><td>ApplicationConsumer</td><td><code>recr.application.events</code></td><td>Application notifications</td><td>application.submitted, application.status_changed</td></tr>
-  <tr><td>InterviewConsumer</td><td><code>recr.interview.events</code></td><td>Interview notifications</td><td>interview.scheduled, interview.completed</td></tr>
-  <tr><td>SubscriptionConsumer</td><td><code>recr.subscription.events</code></td><td>Subscription expiry checks</td><td>subscription.purchased, subscription.expiring</td></tr>
-  <tr><td>ReviewConsumer</td><td><code>recr.review.events</code></td><td>Review aggregation, notifications</td><td>review.submitted</td></tr>
-  <tr><td>NotificationConsumer</td><td><code>notification.events</code></td><td>Email, push notifications</td><td>notification.send</td></tr>
-  <tr><td>FileConsumer</td><td><code>file.events</code></td><td>FILE module event handling (inbound)</td><td>file.deleted</td></tr>
-  <tr><td>InviteConsumer</td><td><code>recr.invitation.events</code></td><td>Invitation email notifications</td><td>invitation.created, invitation.accepted, invitation.revoked, invitation.resent</td></tr>
+  <tr><th>Worker (Trình xử lý)</th><th>Hàng đợi</th><th>Mục đích</th><th>Sự kiện xử lý</th></tr>
+  <tr><td>JobConsumer</td><td><code>recr.job.events</code></td><td>Công việc nền liên quan đến việc làm</td><td>job.created, job.submitted_for_approval</td></tr>
+  <tr><td>ApplicationConsumer</td><td><code>recr.application.events</code></td><td>Thông báo hồ sơ</td><td>application.submitted, application.status_changed</td></tr>
+  <tr><td>InterviewConsumer</td><td><code>recr.interview.events</code></td><td>Thông báo phỏng vấn</td><td>interview.scheduled, interview.completed</td></tr>
+  <tr><td>SubscriptionConsumer</td><td><code>recr.subscription.events</code></td><td>Kiểm tra hết hạn gói dịch vụ</td><td>subscription.purchased, subscription.expiring</td></tr>
+  <tr><td>ReviewConsumer</td><td><code>recr.review.events</code></td><td>Tổng hợp đánh giá, thông báo</td><td>review.submitted</td></tr>
+  <tr><td>NotificationConsumer</td><td><code>notification.events</code></td><td>Email, thông báo đẩy</td><td>notification.send</td></tr>
+  <tr><td>FileConsumer</td><td><code>file.events</code></td><td>Xử lý sự kiện module FILE (đầu vào)</td><td>file.deleted</td></tr>
+  <tr><td>InviteConsumer</td><td><code>recr.invitation.events</code></td><td>Thông báo email lời mời (Triển khai bởi Module AUTH)</td><td>invitation.created, invitation.accepted, invitation.revoked, invitation.resent</td></tr>
 </table>
 
-<h2>6.2 Worker Example</h2>
+<h2>6.2 Ví dụ Worker</h2>
 <pre><code>// apps/recr-worker/src/consumers/job.consumer.ts
 @RabbitMQConsumer('recr.job.events')
 export class JobConsumer {
@@ -420,9 +420,9 @@ export class JobConsumer {
 }</code></pre>
 
 <!-- 7. EVENT PROCESSING -->
-<h1 id="section-7">7. Event Processing</h1>
+<h1 id="section-7">7. Xử lý Sự kiện</h1>
 
-<h2>7.1 Event Flow</h2>
+<h2>7.1 luồng Sự kiện</h2>
 <pre><code>┌─────────────────────────────────────────────────────────────────┐
 │                        EVENT FLOW                               │
 ├─────────────────────────────────────────────────────────────────┤
@@ -435,9 +435,9 @@ export class JobConsumer {
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘</code></pre>
 
-<h2>7.2 Event Definitions</h2>
+<h2>7.2 Định nghĩa Sự kiện</h2>
 <table>
-  <tr><th>Event</th><th>Publisher</th><th>Consumer</th><th>Payload</th></tr>
+  <tr><th>Sự kiện</th><th>Người phát</th><th>Người tiêu thụ</th><th>Dữ liệu</th></tr>
   <tr><td><code>job.created</code></td><td>JobService</td><td>JobConsumer</td><td>{ jobId, createdBy, title }</td></tr>
   <tr><td><code>job.submitted_for_approval</code></td><td>JobService</td><td>JobConsumer</td><td>{ jobId, title, createdBy }</td></tr>
   <tr><td><code>application.submitted</code></td><td>ApplicationService</td><td>ApplicationConsumer</td><td>{ applicationId, jobId, candidateId }</td></tr>
@@ -446,13 +446,9 @@ export class JobConsumer {
   <tr><td><code>subscription.purchased</code></td><td>SubscriptionService</td><td>SubscriptionConsumer</td><td>{ userId, planId, amount }</td></tr>
   <tr><td><code>subscription.expiring</code></td><td>CronJob</td><td>SubscriptionConsumer</td><td>{ userId, subscriptionId, expiresAt }</td></tr>
   <tr><td><code>review.submitted</code></td><td>ReviewService</td><td>ReviewConsumer</td><td>{ reviewId, type, targetId }</td></tr>
-  <tr><td><code>invitation.created</code></td><td>InviteService</td><td>InviteConsumer</td><td>{ invitationId, email, role, inviteUrl, expiredAt }</td></tr>
-  <tr><td><code>invitation.accepted</code></td><td>InviteService</td><td>InviteConsumer</td><td>{ invitationId, email, role, employerId, userId }</td></tr>
-  <tr><td><code>invitation.revoked</code></td><td>InviteService</td><td>InviteConsumer</td><td>{ invitationId, email, role, revokedBy }</td></tr>
-  <tr><td><code>invitation.resent</code></td><td>InviteService</td><td>InviteConsumer</td><td>{ invitationId, email, role, inviteUrl, expiredAt }</td></tr>
 </table>
 
-<h2>7.3 Event Emitter Example</h2>
+<h2>7.3 Ví dụ EventEmitter</h2>
 <pre><code>// libs/recr-core/src/events/application-events.ts
 export interface ApplicationSubmittedEvent {
   applicationId: string;
@@ -483,7 +479,7 @@ this.eventEmitter.emit('application.submitted', {
   timestamp: new Date(),
 } satisfies ApplicationSubmittedEvent);</code></pre>
 
-<h2>7.4 RabbitMQ Configuration</h2>
+<h2>7.4 Cấu hình RabbitMQ</h2>
 <pre><code>// apps/recr-worker/src/worker.module.ts
 @Module({
   imports: [
@@ -508,35 +504,35 @@ this.eventEmitter.emit('application.submitted', {
 export class WorkerModule {}</code></pre>
 
 <!-- 8. CROSS-MODULE INTEGRATION -->
-<h1 id="section-8">8. Cross-Module Integration</h1>
+<h1 id="section-8">8. Tích hợp Cross-Module</h1>
 
-<h2>8.1 FILE Module Integration</h2>
-<p>The RECR module depends on the FILE module for all file storage operations. RECR never directly uploads files to object storage; instead, it delegates to the FILE module via API calls.</p>
+<h2>8.1 Tích hợp Module FILE</h2>
+<p>Module RECR phụ thuộc vào module FILE cho tất cả các thao tác lưu trữ file. RECR không bao giờ tải file trực tiếp lên object storage; thay vào đó, nó ủy quyền cho module FILE thông qua các lệnh gọi API.</p>
 
-<h3>Integration Points</h3>
+<h3>Điểm tích hợp</h3>
 <table class="trace-table">
-  <tr><th>Operation</th><th>RECR Component</th><th>FILE Module API</th><th>Description</th></tr>
-  <tr><td>Upload Resume</td><td>ProfileService</td><td>FILE presigned upload URL</td><td>Candidate uploads resume via presigned URL; RECR stores file_id in recr_candidate_resumes</td></tr>
-  <tr><td>List Resumes</td><td>ProfileService</td><td>FILE metadata API</td><td>RECR retrieves file metadata (name, type, size) from FILE module</td></tr>
-  <tr><td>Delete Resume</td><td>ProfileService</td><td>FILE delete API</td><td>RECR calls FILE to delete file, then removes record from recr_candidate_resumes</td></tr>
-  <tr><td>Validate Resume</td><td>ApplicationService</td><td>FILE metadata API</td><td>RECR validates file_id exists and is RESUME category before linking to application</td></tr>
-  <tr><td>Download Resume</td><td>ApplicationService</td><td>FILE presigned download URL</td><td>RECR generates time-limited presigned URL for viewing/downloading candidate CV</td></tr>
+  <tr><th>Thao tác</th><th>Thành phần RECR</th><th>API Module FILE</th><th>Mô tả</th></tr>
+  <tr><td>Tải lên CV</td><td>ProfileService</td><td>URL tải lên presigned của FILE</td><td>Ứng viên tải CV lên thông qua presigned URL; RECR lưu file_id trong recr_candidate_resumes</td></tr>
+  <tr><td>Liệt kê CV</td><td>ProfileService</td><td>API metadata của FILE</td><td>RECR lấy metadata file (tên, loại, kích thước) từ module FILE</td></tr>
+  <tr><td>Xóa CV</td><td>ProfileService</td><td>API xóa của FILE</td><td>RECR gọi FILE để xóa file, sau đó xóa bản ghi trong recr_candidate_resumes</td></tr>
+  <tr><td>Xác thực CV</td><td>ApplicationService</td><td>API metadata của FILE</td><td>RECR xác thực file_id tồn tại và thuộc danh mục RESUME trước khi liên kết với hồ sơ</td></tr>
+  <tr><td>Tải CV</td><td>ApplicationService</td><td>URL tải presigned của FILE</td><td>RECR tạo presigned URL có thời hạn để xem/tải CV ứng viên</td></tr>
 </table>
 
-<h3>Event Handling</h3>
+<h3>Xử lý sự kiện</h3>
 <table class="trace-table">
-  <tr><th>Event</th><th>Direction</th><th>Handler</th><th>Action</th></tr>
-  <tr><td><code>file.deleted</code></td><td>Inbound (from FILE)</td><td>FileConsumer (recr-worker)</td><td>Clean up references in recr_candidate_resumes and recr_applications when a file is deleted from FILE module</td></tr>
+  <tr><th>Sự kiện</th><th>Hướng</th><th>Trình xử lý</th><th>Hành động</th></tr>
+  <tr><td><code>file.deleted</code></td><td>Đầu vào (từ FILE)</td><td>FileConsumer (recr-worker)</td><td>Dọn dẹp tham chiếu trong recr_candidate_resumes và recr_applications khi file bị xóa khỏi module FILE</td></tr>
 </table>
 
-<h3>File Path Convention</h3>
+<h3>Quy ước đường dẫn File</h3>
 <pre><code>// FILE module storage path for candidate resumes
 {candidate_user_id}/resumes/{uuid}.{extension}
 
 // Example:
 101/resumes/550e8400-e29b-41d4-a716-446655440000.pdf</code></pre>
 
-<h3>Code Example</h3>
+<h3>Ví dụ mã</h3>
 <pre><code>// libs/recr-core/src/services/profile.service.ts
 @Injectable()
 export class ProfileService {
@@ -578,7 +574,7 @@ export class ProfileService {
   }
 }</code></pre>
 
-<h2>8.2 FileConsumer (Inbound Event Handler)</h2>
+<h2>8.2 FileConsumer (Trình xử lý sự kiện đầu vào)</h2>
 <pre><code>// apps/recr-worker/src/consumers/file.consumer.ts
 @RabbitMQConsumer('file.events')
 export class FileConsumer {
@@ -606,10 +602,10 @@ export class FileConsumer {
 }</code></pre>
 
 <!-- 9. OPENSEARCH INTEGRATION -->
-<h1 id="section-9">9. OpenSearch Integration</h1>
+<h1 id="section-9">9. Tích hợp OpenSearch</h1>
 
-<h2>8.1 Architecture Overview</h2>
-<p>The RECR module uses OpenSearch for analytics and <strong>OpenSearch Dashboards</strong> for visualization. Events are logged via RabbitMQ consumers and indexed in OpenSearch. Users access dashboards directly via OpenSearch Dashboards UI.</p>
+<h2>9.1 Tổng quan Kiến trúc</h2>
+<p>Module RECR sử dụng OpenSearch cho phân tích và <strong>OpenSearch Dashboards</strong> để trực quan hóa. Các sự kiện được ghi lại thông qua RabbitMQ consumers và được index trong OpenSearch. Người dùng truy cập dashboard trực tiếp thông qua giao diện OpenSearch Dashboards.</p>
 <pre><code>┌─────────────────────────────────────────────────────────────────┐
 │                    OPENSEARCH ARCHITECTURE                       │
 ├─────────────────────────────────────────────────────────────────┤
@@ -628,27 +624,27 @@ export class FileConsumer {
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘</code></pre>
 
-<h2>8.2 Why OpenSearch Dashboards?</h2>
+<h2>9.2 Tại sao chọn OpenSearch Dashboards?</h2>
 <table>
-  <tr><th>Feature</th><th>OpenSearch Dashboards</th><th>Custom Dashboard</th></tr>
-  <tr><td>Setup</td><td>Built-in with OpenSearch</td><td>Requires frontend development</td></tr>
-  <tr><td>Visualization</td><td>Charts, graphs, maps out-of-the-box</td><td>Must build custom charts</td></tr>
-  <tr><td>Filters</td><td>Time range, field filters built-in</td><td>Must implement custom filters</td></tr>
-  <tr><td>Aggregations</td><td>Visual aggregation builder</td><td>Must write aggregation queries</td></tr>
-  <tr><td>Sharing</td><td>Share dashboards via URL</td><td>Must implement sharing</td></tr>
-  <tr><td>Cost</td><td>Free with OpenSearch</td><td>Development time cost</td></tr>
+  <tr><th>Tính năng</th><th>OpenSearch Dashboards</th><th>Dashboard Tùy chỉnh</th></tr>
+  <tr><td>Cài đặt</td><td>Sẵn sàng cùng OpenSearch</td><td>Cần phát triển frontend</td></tr>
+  <tr><td>Trực quan hóa</td><td>Biểu đồ, đồ thị, bản đồ có sẵn</td><td>Phải tự xây dựng biểu đồ</td></tr>
+  <tr><td>Bộ lọc</td><td>Bộ lọc khoảng thời gian, trường có sẵn</td><td>Phát triển bộ lọc tùy chỉnh</td></tr>
+  <tr><td>Tổng hợp</td><td>Công cụ tổng hợp trực quan</td><td>Phải viết truy vấn tổng hợp</td></tr>
+  <tr><td>Chia sẻ</td><td>Chia sẻ dashboard qua URL</td><td>Phát triển tính năng chia sẻ</td></tr>
+  <tr><td>Chi phí</td><td>Miễn phí với OpenSearch</td><td>Chi phí thời gian phát triển</td></tr>
 </table>
 
-<h2>8.3 OpenSearch Indices</h2>
+<h2>9.3 Chỉ mục OpenSearch</h2>
 <table>
-  <tr><th>Index</th><th>Purpose</th><th>Fields</th></tr>
-  <tr><td><code>recr-user-events</code></td><td>User registration and login events</td><td>userId, email, role, action, timestamp, ipAddress, userAgent</td></tr>
-  <tr><td><code>recr-job-events</code></td><td>Job-related events</td><td>jobId, createdBy, action, title, status, timestamp</td></tr>
-  <tr><td><code>recr-application-events</code></td><td>Application events</td><td>applicationId, candidateId, jobId, action, status, timestamp</td></tr>
-  <tr><td><code>recr-subscription-events</code></td><td>Subscription events</td><td>userId, planId, action, amount, timestamp</td></tr>
+  <tr><th>Chỉ mục</th><th>Mục đích</th><th>Các trường</th></tr>
+  <tr><td><code>recr-user-events</code></td><td>Sự kiện đăng ký và đăng nhập</td><td>userId, email, role, action, timestamp, ipAddress, userAgent</td></tr>
+  <tr><td><code>recr-job-events</code></td><td>Sự kiện liên quan đến việc làm</td><td>jobId, createdBy, action, title, status, timestamp</td></tr>
+  <tr><td><code>recr-application-events</code></td><td>Sự kiện hồ sơ</td><td>applicationId, candidateId, jobId, action, status, timestamp</td></tr>
+  <tr><td><code>recr-subscription-events</code></td><td>Sự kiện gói dịch vụ</td><td>userId, planId, action, amount, timestamp</td></tr>
 </table>
 
-<h2>8.4 Event Schema</h2>
+<h2>9.4 Schema Sự kiện</h2>
 <pre><code>// libs/recr-core/src/analytics/opensearch.schema.ts
 export interface UserEvent {
   eventId: string;
@@ -682,7 +678,7 @@ export interface ApplicationEvent {
   timestamp: Date;
 }</code></pre>
 
-<h2>8.5 OpenSearch Client</h2>
+<h2>9.5 Client OpenSearch</h2>
 <pre><code>// libs/recr-core/src/analytics/opensearch.client.ts
 import { Client } from '@opensearch-project/opensearch';
 
@@ -711,28 +707,28 @@ export class OpenSearchClient {
   }
 }</code></pre>
 
-<h2>8.6 Pre-built Dashboards</h2>
-<p>OpenSearch Dashboards provides the following pre-built visualizations:</p>
+<h2>9.6 Dashboard có sẵn</h2>
+<p>OpenSearch Dashboards cung cấp các trực quan hóa có sẵn sau:</p>
 
-<h3>User Analytics Dashboard</h3>
+<h3>Dashboard Phân tích Người dùng</h3>
 <table>
-  <tr><th>Visualization</th><th>Type</th><th>Description</th></tr>
-  <tr><td>Total Users by Role</td><td>Pie Chart</td><td>Breakdown of users by role (Candidate, HR, Employer)</td></tr>
-  <tr><td>Registration Trend</td><td>Line Chart</td><td>Daily/weekly/monthly registration count</td></tr>
-  <tr><td>Active Users</td><td> Metric</td><td>Users logged in within last 7 days</td></tr>
-  <tr><td>User Growth</td><td>Bar Chart</td><td>Month-over-month growth rate</td></tr>
+  <tr><th>Trực quan hóa</th><th>Loại</th><th>Mô tả</th></tr>
+  <tr><td>Tổng số Người dùng theo Vai trò</td><td>Biểu đồ Tròn</td><td>Phân bổ người dùng theo vai trò (Ứng viên, HR, Nhà tuyển dụng)</td></tr>
+  <tr><td>Xu hướng Đăng ký</td><td>Biểu đồ Đường</td><td>Số lượng đăng ký theo ngày/tuần/tháng</td></tr>
+  <tr><td>Người dùng Hoạt động</td><td>Chỉ số</td><td>Người dùng đã đăng nhập trong 7 ngày qua</td></tr>
+  <tr><td>Tăng trưởng Người dùng</td><td>Biểu đồ Cột</td><td>Tỷ lệ tăng trưởng so với tháng trước</td></tr>
 </table>
 
-<h3>Login Analytics Dashboard</h3>
+<h3>Dashboard Phân tích Đăng nhập</h3>
 <table>
-  <tr><th>Visualization</th><th>Type</th><th>Description</th></tr>
-  <tr><td>Login Frequency</td><td>Line Chart</td><td>Logins per hour/day</td></tr>
-  <tr><td>Peak Login Times</td><td>Heatmap</td><td>Hours with highest login activity</td></tr>
-  <tr><td>Failed Logins</td><td> Metric</td><td>Count of failed login attempts</td></tr>
-  <tr><td>Login by Role</td><td>Bar Chart</td><td>Logins breakdown by user role</td></tr>
+  <tr><th>Trực quan hóa</th><th>Loại</th><th>Mô tả</th></tr>
+  <tr><td>Tần suất Đăng nhập</td><td>Biểu đồ Đường</td><td>Số lần đăng nhập theo giờ/ngày</td></tr>
+  <tr><td>Giờ cao điểm Đăng nhập</td><td>Bản đồ nhiệt</td><td>Các giờ có hoạt động đăng nhập cao nhất</td></tr>
+  <tr><td>Đăng nhập Thất bại</td><td>Chỉ số</td><td>Số lần thử đăng nhập thất bại</td></tr>
+  <tr><td>Đăng nhập theo Vai trò</td><td>Biểu đồ Cột</td><td>Phân bổ đăng nhập theo vai trò người dùng</td></tr>
 </table>
 
-<h2>8.7 Dashboard Access</h2>
+<h2>9.7 Truy cập Dashboard</h2>
 <pre><code># OpenSearch Dashboards URL
 http://opensearch-dashboards:5601
 
@@ -745,9 +741,9 @@ http://opensearch-dashboards:5601/app/dashboards#/view/recr-user-analytics
 http://opensearch-dashboards:5601/app/dashboards#/view/recr-login-analytics</code></pre>
 
 <!-- 10. DATA ARCHITECTURE -->
-<h1 id="section-10">10. Data Architecture</h1>
+<h1 id="section-10">10. Kiến trúc Dữ liệu</h1>
 
-<h2>10.1 Drizzle Schema Structure</h2>
+<h2>10.1 Cấu trúc Schema Drizzle</h2>
 <pre><code>// libs/recr-core/src/entities/candidate-resume.schema.ts
 import { pgTable, bigserial, varchar, boolean, timestamp, uuid } from 'drizzle-orm/pg-core';
 
@@ -797,7 +793,7 @@ export const recrJobs = pgTable('recr_jobs', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });</code></pre>
 
-<h2>10.2 Repository Pattern</h2>
+<h2>10.2 Mẫu Repository</h2>
 <pre><code>// libs/recr-core/src/repositories/job.repository.ts
 @Injectable()
 export class JobRepository {
@@ -827,15 +823,15 @@ export class JobRepository {
 }</code></pre>
 
 <!-- 11. SECURITY DESIGN -->
-<h1 id="section-11">11. Security Design</h1>
+<h1 id="section-11">11. Thiết kế Bảo mật</h1>
 
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
-  <tr><td><span class="req-id">NFR-005</span></td><td>Role-based access control</td><td>JWT role claim + NestJS Guards (@Roles decorator)</td></tr>
-  <tr><td><span class="req-id">FR-024</span></td><td>Subscription validation</td><td>Optional SubscriptionGuard for premium features</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Giải pháp Thiết kế</th><th>Triển khai</th></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>Kiểm soát truy cập dựa trên vai trò</td><td>JWT role claim + NestJS Guards (@Roles decorator)</td></tr>
+  <tr><td><span class="req-id">FR-024</span></td><td>Xác thực gói dịch vụ</td><td>SubscriptionGuard tùy chọn cho tính năng cao cấp</td></tr>
 </table>
 
-<h2>9.1 Guard Implementation</h2>
+<h2>11.1 Triển khai Guard</h2>
 <pre><code>// libs/shared/src/guards/roles.guard.ts
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -859,7 +855,7 @@ export class RolesGuard implements CanActivate {
 @Roles('employer')
 async createJob() { ... }</code></pre>
 
-<h2>9.2 Subscription Guard (Optional)</h2>
+<h2>11.2 Guard Gói dịch vụ (Tùy chọn)</h2>
 <pre><code>// libs/recr-core/src/subscription/subscription.guard.ts
 @Injectable()
 export class SubscriptionGuard implements CanActivate {
@@ -882,62 +878,62 @@ export class SubscriptionGuard implements CanActivate {
 }</code></pre>
 
 <!-- 12. TRACEABILITY -->
-<h1 id="section-12">12. Traceability Summary</h1>
+<h1 id="section-12">12. Tóm tắt Truy xuất nguồn gốc</h1>
 
 <table class="trace-table">
-  <tr><th>SRS Req ID</th><th>Requirement</th><th>Controller</th><th>Service</th><th>Worker</th></tr>
-  <tr><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a></td><td>User Registration</td><td>AuthController</td><td>AuthService (AUTH)</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-002"><span class="req-id">FR-002</span></a></td><td>Login</td><td>AuthController</td><td>AuthService (AUTH)</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-003"><span class="req-id">FR-003</span></a></td><td>Browse Jobs</td><td>JobController</td><td>JobService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-004"><span class="req-id">FR-004</span></a></td><td>Submit Application</td><td>ApplicationController</td><td>ApplicationService, FileService (FILE)</td><td>ApplicationConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-005"><span class="req-id">FR-005</span></a></td><td>View Application Status</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-006"><span class="req-id">FR-006</span></a></td><td>Update Profile</td><td>ProfileController</td><td>ProfileService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-007"><span class="req-id">FR-007</span></a></td><td>Upload Resume</td><td>ProfileController</td><td>ProfileService, FileService (FILE)</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a></td><td>Review Applications</td><td>ApplicationController</td><td>ApplicationService, FileService (FILE)</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-009"><span class="req-id">FR-009</span></a></td><td>Screen Candidates</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-010"><span class="req-id">FR-010</span></a></td><td>Schedule Interview</td><td>InterviewController</td><td>InterviewService</td><td>InterviewConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-011"><span class="req-id">FR-011</span></a></td><td>Evaluate Candidate</td><td>EvaluationController</td><td>EvaluationService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-012"><span class="req-id">FR-012</span></a></td><td>Reject Candidate</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-013"><span class="req-id">FR-013</span></a></td><td>Track Pipeline</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-014"><span class="req-id">FR-014</span></a></td><td>Generate Reports</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a></td><td>User creates organization</td><td>AuthController</td><td>AuthService (AUTH)</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-016"><span class="req-id">FR-016</span></a></td><td>Post Job (Employer)</td><td>JobController</td><td>JobService</td><td>JobConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-017"><span class="req-id">FR-017</span></a></td><td>Manage Job Listings</td><td>JobController</td><td>JobService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-018"><span class="req-id">FR-018</span></a></td><td>View Applicants</td><td>JobController</td><td>JobService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-019"><span class="req-id">FR-019</span></a></td><td>Approve Job Posting</td><td>JobController</td><td>JobService</td><td>JobConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-020"><span class="req-id">FR-020</span></a></td><td>View Analytics</td><td>JobController</td><td>JobService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a></td><td>Subscription Plans</td><td>SubscriptionController</td><td>SubscriptionService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-022"><span class="req-id">FR-022</span></a></td><td>Purchase Subscription</td><td>SubscriptionController</td><td>SubscriptionService</td><td>SubscriptionConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-023"><span class="req-id">FR-023</span></a></td><td>Subscription Access Control</td><td>-</td><td>SubscriptionGuard</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-024"><span class="req-id">FR-024</span></a></td><td>Subscription Validation</td><td>-</td><td>SubscriptionGuard</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-025"><span class="req-id">FR-025</span></a></td><td>Subscription Renewal</td><td>SubscriptionController</td><td>SubscriptionService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></td><td>Subscription History</td><td>SubscriptionController</td><td>SubscriptionService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-028"><span class="req-id">FR-028</span></a></td><td>HR Post Job</td><td>JobController</td><td>JobService</td><td>JobConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-029"><span class="req-id">FR-029</span></a></td><td>HR Manage Jobs</td><td>JobController</td><td>JobService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a></td><td>Job Review</td><td>ReviewController</td><td>ReviewService</td><td>ReviewConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td><td>Candidate Review</td><td>ReviewController</td><td>ReviewService</td><td>ReviewConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-032"><span class="req-id">FR-032</span></a></td><td>Update HR Profile</td><td>ProfileController</td><td>ProfileService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-033"><span class="req-id">FR-033</span></a></td><td>Update Employer Profile</td><td>ProfileController</td><td>ProfileService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-034"><span class="req-id">FR-034</span></a></td><td>User Registration Analytics</td><td>AnalyticsController</td><td>AnalyticsService</td><td>AnalyticsConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-035"><span class="req-id">FR-035</span></a></td><td>User Login Analytics</td><td>AnalyticsController</td><td>AnalyticsService</td><td>AnalyticsConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-036"><span class="req-id">FR-036</span></a></td><td>Dashboard View</td><td>AnalyticsController</td><td>AnalyticsService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-037"><span class="req-id">FR-037</span></a></td><td>Manage Candidate Resumes</td><td>ProfileController</td><td>ProfileService, FileService (FILE)</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-038"><span class="req-id">FR-038</span></a></td><td>Application Resume Linking</td><td>ApplicationController</td><td>ApplicationService, FileService (FILE)</td><td>-</td></tr>
-  <tr><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a></td><td>API Response Time</td><td>-</td><td>-</td><td>-</td></tr>
-  <tr><td><a href="srs.html#nfr-002"><span class="req-id">NFR-002</span></a></td><td>Application Processing</td><td>-</td><td>-</td><td>-</td></tr>
-  <tr><td><a href="srs.html#nfr-003"><span class="req-id">NFR-003</span></a></td><td>Concurrent Users</td><td>-</td><td>-</td><td>-</td></tr>
-  <tr><td><a href="srs.html#nfr-004"><span class="req-id">NFR-004</span></a></td><td>System Uptime</td><td>-</td><td>-</td><td>-</td></tr>
-  <tr><td><a href="srs.html#nfr-005"><span class="req-id">NFR-005</span></a></td><td>RBAC</td><td>All Controllers</td><td>-</td><td>-</td></tr>
-  <tr><td><a href="srs.html#nfr-006"><span class="req-id">NFR-006</span></a></td><td>Resume Storage</td><td>-</td><td>FileService (FILE module)</td><td>-</td></tr>
-  <tr><td><a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Job Search</td><td>JobController</td><td>JobService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-039"><span class="req-id">FR-039</span></a></td><td>Send Invitation</td><td>InviteController</td><td>InviteService</td><td>InviteConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-040"><span class="req-id">FR-040</span></a></td><td>Generate Token</td><td>-</td><td>InviteService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-041"><span class="req-id">FR-041</span></a></td><td>Send Email Event</td><td>-</td><td>InviteService</td><td>InviteConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-042"><span class="req-id">FR-042</span></a></td><td>Verify Token</td><td>InviteController</td><td>InviteService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-043"><span class="req-id">FR-043</span></a></td><td>Accept Invitation</td><td>InviteController</td><td>InviteService</td><td>InviteConsumer</td></tr>
-  <tr><td><a href="srs.html#fr-044"><span class="req-id">FR-044</span></a></td><td>Revoke Invitation</td><td>InviteController</td><td>InviteService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-045"><span class="req-id">FR-045</span></a></td><td>List Invitations</td><td>InviteController</td><td>InviteService</td><td>-</td></tr>
-  <tr><td><a href="srs.html#fr-046"><span class="req-id">FR-046</span></a></td><td>Resend Invitation</td><td>InviteController</td><td>InviteService</td><td>InviteConsumer</td></tr>
+  <tr><th>Mã yêu cầu SRS</th><th>Yêu cầu</th><th>Controller</th><th>Service</th><th>Worker</th></tr>
+  <tr><td><a href="srs.html#fr-001"><span class="req-id">FR-001</span></a></td><td>Đăng ký Người dùng</td><td>AuthController (AUTH module)</td><td>AuthService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-002"><span class="req-id">FR-002</span></a></td><td>Đăng nhập</td><td>AuthController (AUTH module)</td><td>AuthService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-003"><span class="req-id">FR-003</span></a></td><td>Duyệt Việc làm</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-004"><span class="req-id">FR-004</span></a></td><td>Nộp Hồ sơ</td><td>ApplicationController</td><td>ApplicationService, FileService (FILE)</td><td>ApplicationConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-005"><span class="req-id">FR-005</span></a></td><td>Xem Trạng thái Hồ sơ</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-006"><span class="req-id">FR-006</span></a></td><td>Cập nhật Hồ sơ</td><td>ProfileController</td><td>ProfileService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-007"><span class="req-id">FR-007</span></a></td><td>Tải lên CV</td><td>ProfileController</td><td>ProfileService, FileService (FILE)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-008"><span class="req-id">FR-008</span></a></td><td>Xem Hồ sơ</td><td>ApplicationController</td><td>ApplicationService, FileService (FILE)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-009"><span class="req-id">FR-009</span></a></td><td>Sơ tuyển Ứng viên</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-010"><span class="req-id">FR-010</span></a></td><td>Lên lịch Phỏng vấn</td><td>InterviewController</td><td>InterviewService</td><td>InterviewConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-011"><span class="req-id">FR-011</span></a></td><td>Đánh giá Ứng viên</td><td>EvaluationController</td><td>EvaluationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-012"><span class="req-id">FR-012</span></a></td><td>Từ chối Ứng viên</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-013"><span class="req-id">FR-013</span></a></td><td>Theo dõi Quy trình</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-014"><span class="req-id">FR-014</span></a></td><td>Tạo Báo cáo</td><td>ApplicationController</td><td>ApplicationService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-015"><span class="req-id">FR-015</span></a></td><td>Người dùng tạo tổ chức</td><td>AuthController (AUTH module)</td><td>AuthService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-016"><span class="req-id">FR-016</span></a></td><td>Đăng Tin tuyển dụng (Nhà tuyển dụng)</td><td>JobController</td><td>JobService</td><td>JobConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-017"><span class="req-id">FR-017</span></a></td><td>Quản lý Tin tuyển dụng</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-018"><span class="req-id">FR-018</span></a></td><td>Xem Người nộp đơn</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-019"><span class="req-id">FR-019</span></a></td><td>Duyệt Tin tuyển dụng</td><td>JobController</td><td>JobService</td><td>JobConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-020"><span class="req-id">FR-020</span></a></td><td>Xem Phân tích</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-021"><span class="req-id">FR-021</span></a></td><td>Gói Dịch vụ</td><td>SubscriptionController</td><td>SubscriptionService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-022"><span class="req-id">FR-022</span></a></td><td>Mua Gói dịch vụ</td><td>SubscriptionController</td><td>SubscriptionService</td><td>SubscriptionConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-023"><span class="req-id">FR-023</span></a></td><td>Kiểm soát Truy cập Gói dịch vụ</td><td>-</td><td>SubscriptionGuard</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-024"><span class="req-id">FR-024</span></a></td><td>Xác thực Gói dịch vụ</td><td>-</td><td>SubscriptionGuard</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-025"><span class="req-id">FR-025</span></a></td><td>Gia hạn Gói dịch vụ</td><td>SubscriptionController</td><td>SubscriptionService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-026"><span class="req-id">FR-026</span></a></td><td>Lịch sử Gói dịch vụ</td><td>SubscriptionController</td><td>SubscriptionService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-028"><span class="req-id">FR-028</span></a></td><td>HR Đăng Tin</td><td>JobController</td><td>JobService</td><td>JobConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-029"><span class="req-id">FR-029</span></a></td><td>HR Quản lý Tin</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a></td><td>Đánh giá Việc làm</td><td>ReviewController</td><td>ReviewService</td><td>ReviewConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td><td>Đánh giá Ứng viên</td><td>ReviewController</td><td>ReviewService</td><td>ReviewConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-032"><span class="req-id">FR-032</span></a></td><td>Cập nhật Hồ sơ HR</td><td>ProfileController</td><td>ProfileService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-033"><span class="req-id">FR-033</span></a></td><td>Cập nhật Hồ sơ Nhà tuyển dụng</td><td>ProfileController</td><td>ProfileService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-034"><span class="req-id">FR-034</span></a></td><td>Phân tích Đăng ký Người dùng</td><td>AnalyticsController</td><td>AnalyticsService</td><td>AnalyticsConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-035"><span class="req-id">FR-035</span></a></td><td>Phân tích Đăng nhập Người dùng</td><td>AnalyticsController</td><td>AnalyticsService</td><td>AnalyticsConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-036"><span class="req-id">FR-036</span></a></td><td>Xem Dashboard</td><td>AnalyticsController</td><td>AnalyticsService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-037"><span class="req-id">FR-037</span></a></td><td>Quản lý CV Ứng viên</td><td>ProfileController</td><td>ProfileService, FileService (FILE)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-038"><span class="req-id">FR-038</span></a></td><td>Liên kết CV Hồ sơ</td><td>ApplicationController</td><td>ApplicationService, FileService (FILE)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a></td><td>Thời gian Phản hồi API</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-002"><span class="req-id">NFR-002</span></a></td><td>Xử lý Hồ sơ</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-003"><span class="req-id">NFR-003</span></a></td><td>Người dùng Đồng thời</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-004"><span class="req-id">NFR-004</span></a></td><td>Thời gian Hoạt động Hệ thống</td><td>-</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-005"><span class="req-id">NFR-005</span></a></td><td>RBAC</td><td>Tất cả Controllers</td><td>-</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-006"><span class="req-id">NFR-006</span></a></td><td>Lưu trữ CV</td><td>-</td><td>FileService (module FILE)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Tìm kiếm Việc làm</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-039"><span class="req-id">FR-039</span></a></td><td>Gửi Lời mời</td><td>InviteController (AUTH module)</td><td>InviteService (AUTH)</td><td>InviteConsumer (AUTH)</td></tr>
+  <tr><td><a href="srs.html#fr-040"><span class="req-id">FR-040</span></a></td><td>Tạo Token</td><td>-</td><td>InviteService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-041"><span class="req-id">FR-041</span></a></td><td>Gửi sự kiện Email</td><td>-</td><td>InviteService (AUTH)</td><td>InviteConsumer (AUTH)</td></tr>
+  <tr><td><a href="srs.html#fr-042"><span class="req-id">FR-042</span></a></td><td>Xác minh Token</td><td>InviteController (AUTH module)</td><td>InviteService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-043"><span class="req-id">FR-043</span></a></td><td>Chấp nhận Lời mời</td><td>InviteController (AUTH module)</td><td>InviteService (AUTH)</td><td>InviteConsumer (AUTH)</td></tr>
+  <tr><td><a href="srs.html#fr-044"><span class="req-id">FR-044</span></a></td><td>Thu hồi Lời mời</td><td>InviteController (AUTH module)</td><td>InviteService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-045"><span class="req-id">FR-045</span></a></td><td>Liệt kê Lời mời</td><td>InviteController (AUTH module)</td><td>InviteService (AUTH)</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-046"><span class="req-id">FR-046</span></a></td><td>Gửi lại Lời mời</td><td>InviteController (AUTH module)</td><td>InviteService (AUTH)</td><td>InviteConsumer (AUTH)</td></tr>
 </table>
 
 </body>

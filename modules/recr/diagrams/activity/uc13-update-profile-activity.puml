@@ -1,0 +1,56 @@
+@startuml
+' UC-13: Cập nhật hồ sơ - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-13: Cập nhật hồ sơ (Tất cả Vai trò)
+
+start
+:Điều hướng đến Trang Hồ sơ;
+
+:Tải Dữ liệu Hồ sơ Hiện tại;
+
+:Hiển thị Form Hồ sơ;
+
+:Chỉnh sửa các trường Hồ sơ;
+note right
+  Tất cả Vai trò:
+  - Họ tên, Số điện thoại, Ảnh đại diện
+
+  Ứng viên:
+  - CV, Kỹ năng, Kinh nghiệm
+  - Mức lương mong muốn
+
+  HR:
+  - Phòng ban, Chức vụ
+
+  Nhà tuyển dụng:
+  - Tên Công ty, Website
+  - Mô tả, Ngành nghề, Quy mô
+end note
+
+:Nộp Thay đổi;
+
+:Xác thực Dữ liệu đầu vào;
+
+if (Dữ liệu đầu vào hợp lệ?) then (có)
+  :Cập nhật bản ghi Hồ sơ;
+
+  :Trả về Phản hồi Thành công;
+
+  :Hiển thị Xác nhận;
+
+else (không)
+  :Hiển thị lỗi Xác thực;
+
+  :Quay lại Form;
+
+endif
+
+stop
+@enduml

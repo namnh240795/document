@@ -1,0 +1,58 @@
+@startuml
+' UC-06: Xem hồ sơ - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-06: Xem hồ sơ (HR)
+
+start
+:Đăng nhập với tư cách HR;
+
+:Truy cập Bảng điều khiển Hồ sơ;
+
+:Xem tất cả Hồ sơ;
+
+:Áp dụng Bộ lọc;
+
+if (Lọc theo Việc làm?) then (có)
+  :Chọn vị trí Việc làm;
+endif
+
+if (Lọc theo Trạng thái?) then (có)
+  :Chọn Trạng thái;
+endif
+
+:Tìm kiếm Hồ sơ;
+
+:Truy vấn Hồ sơ;
+
+:Trả về Kết quả lọc;
+
+:Xem Danh sách Hồ sơ;
+
+:Chọn Hồ sơ;
+
+:Xem Hồ sơ Ứng viên;
+
+:Xem CV;
+
+:Xem Thư xin việc;
+
+if (Đạt yêu cầu?) then (có)
+  :Chuyển sang Lọc;
+
+  :Cập nhật Trạng thái;
+
+else (không)
+  :Từ chối Hồ sơ;
+
+  :Thêm Lý do Từ chối;
+endif
+
+stop
+@enduml

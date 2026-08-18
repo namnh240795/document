@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
-' Recruitment System - Component Diagram
-' System architecture
+' Hệ thống Tuyển dụng - Sơ đồ Thành phần
+' Kiến trúc hệ thống
 ' ============================================================
 
 skinparam component {
@@ -16,56 +16,56 @@ skinparam package {
   BorderColor #666666
 }
 
-title Recruitment System - Component Diagram
+title Hệ thống Tuyển dụng - Sơ đồ Thành phần
 
-' --- External Users ---
-actor "Candidate" as candidate
-actor "Recruiter" as recruiter
-actor "HR Manager" as hr
-actor "Interviewer" as interviewer
+' --- Người dùng bên ngoài ---
+actor "Ứng viên" as candidate
+actor "Nhà tuyển dụng" as recruiter
+actor "Quản lý HR" as hr
+actor "Phỏng vấn viên" as interviewer
 
-' --- Client Layer ---
-package "Client Layer" {
-  [Career Portal] as portal
-  [Recruitment Dashboard] as dashboard
-  [Interviewer Portal] as interviewPortal
+' --- Tầng Client ---
+package "Tầng Client" {
+  [Cổng việc làm] as portal
+  [Bảng điều khiển Tuyển dụng] as dashboard
+  [Cổng Phỏng vấn viên] as interviewPortal
 }
 
-' --- API Layer ---
-package "API Layer" {
+' --- Tầng API ---
+package "Tầng API" {
   [API Gateway] as gw
-  [Load Balancer] as lb
+  [Bộ cân tải] as lb
 }
 
-' --- Service Layer ---
-package "Service Layer" {
-  [Auth Service] as auth
-  [Recruitment Service] as recr
-  [Job Service] as job
-  [Candidate Service] as candidateSvc
-  [Interview Service] as interview
-  [Offer Service] as offer
-  [Notification Service] as notif
+' --- Tầng Dịch vụ ---
+package "Tầng Dịch vụ" {
+  [Dịch vụ Xác thực] as auth
+  [Dịch vụ Tuyển dụng] as recr
+  [Dịch vụ Việc làm] as job
+  [Dịch vụ Ứng viên] as candidateSvc
+  [Dịch vụ Phỏng vấn] as interview
+  [Dịch vụ Đề nghị] as offer
+  [Dịch vụ Thông báo] as notif
 }
 
-' --- Data Layer ---
-package "Data Layer" {
-  database "Recruitment DB\n(PostgreSQL)" as recrDB
-  database "Auth DB\n(PostgreSQL)" as authDB
-  database "Cache\n(Redis)" as cache
-  queue "Message Queue\n(RabbitMQ)" as mq
-  [Search Engine\n(Elasticsearch)] as search
+' --- Tầng Dữ liệu ---
+package "Tầng Dữ liệu" {
+  database "CSDL Tuyển dụng\n(PostgreSQL)" as recrDB
+  database "CSDL Xác thực\n(PostgreSQL)" as authDB
+  database "Bộ nhớ đệm\n(Redis)" as cache
+  queue "Hàng đợi Thông báo\n(RabbitMQ)" as mq
+  [Công cụ Tìm kiếm\n(Elasticsearch)] as search
 }
 
-' --- External Services ---
-package "External Services" {
-  [Email Service\n(SendGrid)] as email
-  [SMS Service] as sms
-  [Calendar Integration\n(Google/Outlook)] as calendar
-  [Resume Parser] as parser
+' --- Dịch vụ Bên ngoài ---
+package "Dịch vụ Bên ngoài" {
+  [Dịch vụ Email\n(SendGrid)] as email
+  [Dịch vụ SMS] as sms
+  [Tích hợp Lịch\n(Google/Outlook)] as calendar
+  [Trình phân tích CV] as parser
 }
 
-' --- Relationships ---
+' --- Quan hệ ---
 candidate --> portal
 recruiter --> dashboard
 hr --> dashboard

@@ -1,8 +1,8 @@
 @startuml
 ' ============================================================
-' Recruitment Module - Entity Relationship Diagram
-' All tables: recr_<table_name>
-' Roles: Candidate, HR, Employer
+' Module Tuyển dụng - Sơ đồ Quan hệ Thực thể
+' Tất cả các bảng: recr_<tên_bảng>
+' Vai trò: Ứng viên, HR, Nhà tuyển dụng
 ' ============================================================
 
 skinparam class {
@@ -16,14 +16,14 @@ skinparam package {
   BorderColor #666666
 }
 
-title Recruitment System - Entity Relationship Diagram
+title Hệ thống Tuyển dụng - Sơ đồ Quan hệ Thực thể
 
 ' ============================================================
-' MODULE: Recruitment - Users & Authentication
-' Handles: candidate accounts, employer accounts, HR accounts
-' Resolves: FR-001, FR-002, FR-003
+' MODULE: Tuyển dụng - Người dùng & Xác thực
+' Xử lý: tài khoản ứng viên, tài khoản nhà tuyển dụng, tài khoản HR
+' Giải quyết: FR-001, FR-002, FR-003
 ' ============================================================
-package "Recruitment Users" #E8F4E8 {
+package "Người dùng Tuyển dụng" #E8F4E8 {
   entity "recr_users" as users {
     * id : bigint <<PK>>
     --
@@ -74,11 +74,11 @@ package "Recruitment Users" #E8F4E8 {
 }
 
 ' ============================================================
-' MODULE: Recruitment - Jobs
-' Handles: job postings, requirements
-' Resolves: FR-004, FR-005, FR-006
+' MODULE: Tuyển dụng - Việc làm
+' Xử lý: tin tuyển dụng, yêu cầu
+' Giải quyết: FR-004, FR-005, FR-006
 ' ============================================================
-package "Recruitment Jobs" #E8E8FD {
+package "Việc làm Tuyển dụng" #E8E8FD {
   entity "recr_jobs" as jobs {
     * id : bigint <<PK>>
     --
@@ -109,11 +109,11 @@ package "Recruitment Jobs" #E8E8FD {
 }
 
 ' ============================================================
-' MODULE: Recruitment - Applications
-' Handles: job applications
-' Resolves: FR-007, FR-008, FR-009
+' MODULE: Tuyển dụng - Hồ sơ
+' Xử lý: đơn ứng tuyển
+' Giải quyết: FR-007, FR-008, FR-009
 ' ============================================================
-package "Recruitment Applications" #FDE8E8 {
+package "Hồ sơ Tuyển dụng" #FDE8E8 {
   entity "recr_applications" as applications {
     * id : bigint <<PK>>
     --
@@ -127,11 +127,11 @@ package "Recruitment Applications" #FDE8E8 {
 }
 
 ' ============================================================
-' MODULE: Recruitment - Interviews
-' Handles: interview scheduling and evaluations
-' Resolves: FR-010, FR-011, FR-012
+' MODULE: Tuyển dụng - Phỏng vấn
+' Xử lý: lịch phỏng vấn và đánh giá
+' Giải quyết: FR-010, FR-011, FR-012
 ' ============================================================
-package "Recruitment Interviews" #FFF3E0 {
+package "Phỏng vấn Tuyển dụng" #FFF3E0 {
   entity "recr_interviews" as interviews {
     * id : bigint <<PK>>
     --
@@ -162,11 +162,11 @@ package "Recruitment Interviews" #FFF3E0 {
 }
 
 ' ============================================================
-' MODULE: Recruitment - Offers
-' Handles: job offers
-' Resolves: FR-013, FR-014
+' MODULE: Tuyển dụng - Đề nghị
+' Xử lý: đề nghị việc làm
+' Giải quyết: FR-013, FR-014
 ' ============================================================
-package "Recruitment Offers" #E0F7FA {
+package "Đề nghị Tuyển dụng" #E0F7FA {
   entity "recr_offers" as offers {
     * id : bigint <<PK>>
     --
@@ -183,10 +183,10 @@ package "Recruitment Offers" #E0F7FA {
 }
 
 ' ============================================================
-' MODULE: Auth (Reference)
-' Resolves: FR-001 (User Registration)
+' MODULE: Xác thực (Tham chiếu)
+' Giải quyết: FR-001 (Đăng ký người dùng)
 ' ============================================================
-package "Auth Module (Reference)" #F3E5F5 {
+package "Module Xác thực (Tham chiếu)" #F3E5F5 {
   entity "auth_users" as auth_users {
     * id : bigint <<PK>>
     --
@@ -198,32 +198,32 @@ package "Auth Module (Reference)" #F3E5F5 {
 }
 
 ' ============================================================
-' RELATIONSHIPS
+' QUAN HỆ
 ' ============================================================
 
-' --- Users ---
-users ||--o| candidates : "is candidate"
-users ||--o| employers : "is employer"
-users ||--o| hr_profiles : "is HR"
+' --- Người dùng ---
+users ||--o| candidates : "là ứng viên"
+users ||--o| employers : "là nhà tuyển dụng"
+users ||--o| hr_profiles : "là HR"
 
-' --- Jobs ---
-employers ||--o{ jobs : "posts"
-users ||--o{ jobs : "approved by"
-jobs ||--o{ job_requirements : "has"
+' --- Việc làm ---
+employers ||--o{ jobs : "đăng tin"
+users ||--o{ jobs : "phê duyệt bởi"
+jobs ||--o{ job_requirements : "có"
 
-' --- Applications ---
-jobs ||--o{ applications : "has"
-candidates ||--o{ applications : "submits"
+' --- Hồ sơ ---
+jobs ||--o{ applications : "có"
+candidates ||--o{ applications : "nộp"
 
-' --- Interviews ---
-applications ||--o{ interviews : "schedules"
-users ||--o{ interviews : "conducts"
+' --- Phỏng vấn ---
+applications ||--o{ interviews : "lên lịch"
+users ||--o{ interviews : "tiến hành"
 
-' --- Evaluations ---
-interviews ||--o{ evaluations : "has"
-users ||--o{ evaluations : "evaluated by"
+' --- Đánh giá ---
+interviews ||--o{ evaluations : "có"
+users ||--o{ evaluations : "đánh giá bởi"
 
-' --- Offers ---
-applications ||--o{ offers : "may receive"
+' --- Đề nghị ---
+applications ||--o{ offers : "có thể nhận"
 
 @enduml

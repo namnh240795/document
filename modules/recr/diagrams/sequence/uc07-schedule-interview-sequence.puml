@@ -1,0 +1,81 @@
+@startuml
+' UC-07: Phỏng vấn - Sơ đồ Chuỗi
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-07: Phỏng vấn
+
+actor "HR" as HR
+participant "Bảng điều khiển" as FE
+participant "API Gateway" as GW
+participant "Dịch vụ Tuyển dụng" as RS
+participant "Dịch vụ Thông báo" as NS
+participant "Calendar API" as Cal
+database "CSDL Tuyển dụng" as DB
+
+== Bước 1: Chọn Ứng viên ==
+
+HR -> FE : Truy cập hồ sơ
+activate FE
+
+FE -> GW : GET /recr/hr/applications/:id
+activate GW
+GW --> FE : Chi tiết hồ sơ
+deactivate GW
+
+HR -> FE : Chọn để phỏng vấn
+FE -> GW : POST /recr/hr/interviews
+activate GW
+
+GW -> RS : Xác thực & Xử lý
+activate RS
+
+== Bước 2: Xác thực Lịch ==
+
+RS -> DB : Kiểm tra thời gian trống của phỏng vấn viên
+activate DB
+DB --> RS : Có trống
+deactivate DB
+
+RS -> DB : Tạo bản ghi phỏng vấn
+activate DB
+DB --> RS : Phỏng vấn đã tạo
+deactivate DB
+
+RS -> DB : Cập nhật trạng thái hồ sơ
+activate DB
+DB --> RS : Trạng thái đã cập nhật
+deactivate DB
+
+== Bước 3: Gửi Thông báo ==
+
+RS -> Cal : Tạo sự kiện lịch
+activate Cal
+Cal --> RS : Sự kiện đã tạo
+deactivate Cal
+
+RS -> NS : Đăng interview.scheduled
+activate NS
+
+NS -> NS : Thông báo ứng viên (email)
+NS -> NS : Thông báo phỏng vấn viên (email)
+NS --> RS : Xong
+deactivate NS
+
+== Bước 4: Phản hồi ==
+
+RS --> GW : 201 Created
+deactivate RS
+
+GW --> FE : Phỏng vấn đã lên lịch
+deactivate GW
+
+FE --> HR : Thông báo thành công
+deactivate FE
+
+@enduml

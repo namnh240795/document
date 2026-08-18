@@ -1,0 +1,73 @@
+@startuml
+' UC-09: Đăng tin tuyển dụng - Sơ đồ Chuỗi
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-09: Đăng tin tuyển dụng
+
+actor "Nhà tuyển dụng" as Emp
+participant "Bảng điều khiển" as FE
+participant "API Gateway" as GW
+participant "Dịch vụ Tuyển dụng" as RS
+participant "Dịch vụ Thông báo" as NS
+database "CSDL Tuyển dụng" as DB
+
+== Bước 1: Tạo Việc làm ==
+
+Emp -> FE : Đăng nhập
+activate FE
+
+FE -> GW : POST /auth/login
+activate GW
+GW --> FE : JWT Token
+deactivate GW
+
+Emp -> FE : Tạo tin tuyển dụng
+FE -> GW : POST /recr/employer/jobs
+activate GW
+
+GW -> RS : Xác thực & Xử lý
+activate RS
+
+RS -> DB : Tạo bản ghi việc làm (bản nháp)
+activate DB
+DB --> RS : Việc làm đã tạo
+deactivate DB
+
+== Bước 2: Gửi để Phê duyệt ==
+
+Emp -> FE : Gửi để phê duyệt
+FE -> GW : PATCH /recr/employer/jobs/:id/submit
+activate GW
+
+GW -> RS : Xử lý việc gửi
+activate RS
+
+RS -> DB : Cập nhật trạng thái thành "pending_approval"
+activate DB
+DB --> RS : Trạng thái đã cập nhật
+deactivate DB
+
+RS -> NS : Đăng job.submitted_for_approval
+activate NS
+NS -> NS : Thông báo HR
+NS --> RS : Xong
+deactivate NS
+
+== Bước 3: Phản hồi ==
+
+RS --> GW : 200 OK
+deactivate RS
+
+GW --> FE : Việc làm đã gửi
+deactivate GW
+
+FE --> Emp : Đang chờ phê duyệt
+deactivate FE
+
+@enduml

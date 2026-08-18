@@ -1,0 +1,61 @@
+@startuml
+' UC-01: Tìm việc - Sơ đồ Chuỗi
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-01: Tìm việc
+
+actor "Ứng viên" as Cand
+participant "Cổng việc làm" as FE
+participant "API Gateway" as GW
+participant "Dịch vụ Tuyển dụng" as RS
+database "CSDL Tuyển dụng" as DB
+database "Chỉ mục Tìm kiếm" as ES
+
+== Bước 1: Tải Danh sách Việc làm ==
+
+Cand -> FE : Truy cập danh sách việc làm
+activate FE
+
+FE -> GW : GET /recr/jobs
+activate GW
+
+GW -> RS : Lấy danh sách việc làm
+activate RS
+
+RS -> ES : Tìm kiếm việc làm (full-text)
+activate ES
+ES --> RS : Kết quả tìm kiếm
+deactivate ES
+
+RS -> DB : Lấy chi tiết việc làm
+activate DB
+DB --> RS : Dữ liệu việc làm
+deactivate DB
+
+RS --> GW : Danh sách việc làm
+deactivate RS
+
+GW --> FE : Phản hồi việc làm
+deactivate GW
+
+FE --> Cand : Hiển thị việc làm
+deactivate FE
+
+== Bước 2: Xem Chi tiết Việc làm ==
+
+Cand -> FE : Chọn việc làm
+FE -> GW : GET /recr/jobs/:id
+activate GW
+GW --> FE : Chi tiết việc làm
+deactivate GW
+
+FE --> Cand : Hiển thị chi tiết việc làm
+deactivate FE
+
+@enduml

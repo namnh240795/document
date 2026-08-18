@@ -1,5 +1,5 @@
 @startuml
-' UC-12: Send Offer - Activity Diagram
+' UC-12: Gửi đề nghị - Sơ đồ Hoạt động
 skinparam activity {
   BackgroundColor #F8F8F8
   BorderColor #333333
@@ -8,46 +8,46 @@ skinparam activity {
   DiamondBorderColor #333333
 }
 
-title UC-12: Send Offer (HR)
+title UC-12: Gửi đề nghị (HR)
 
 start
-:Login as HR;
+:Đăng nhập với tư cách HR;
 
-:Access Candidate Application;
+:Truy cập Hồ sơ Ứng viên;
 
-:Review Evaluation Scores;
+:Xem Điểm đánh giá;
 
-:Review Interview Feedback;
+:Xem Phản hồi Phỏng vấn;
 
-:Create Offer Letter;
+:Tạo Thư đề nghị;
 
-:Enter Salary & Benefits;
+:Nhập Lương & Phúc lợi;
 
-:Enter Start Date;
+:Nhập Ngày bắt đầu;
 
-:Review Offer Details;
+:Xem Chi tiết Đề nghị;
 
-:Send Offer;
+:Gửi Đề nghị;
 
-:Validate Offer;
+:Xác thực Đề nghị;
 
-if (Valid Offer?) then (yes)
-  :Create Offer Record;
+if (Đề nghị hợp lệ?) then (có)
+  :Tạo bản ghi Đề nghị;
 
-  :Update Application Status;
+  :Cập nhật Trạng thái Hồ sơ;
 
-  :Generate Offer Document;
+  :Tạo Tài liệu Đề nghị;
 
-  :Send Offer Email to Candidate;
+  :Gửi email Đề nghị cho Ứng viên;
 
-  :Show Success Message;
+  :Hiển thị thông báo Thành công;
 
-  :Track Offer Status;
+  :Theo dõi Trạng thái Đề nghị;
 
-else (no)
-  :Return Validation Error;
+else (không)
+  :Trả về lỗi Xác thực;
 
-  :Show Error Details;
+  :Hiển thị Chi tiết lỗi;
 endif
 
 stop

@@ -1,0 +1,58 @@
+@startuml
+' UC-08: Đánh giá ứng viên - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-08: Đánh giá ứng viên (HR)
+
+start
+:Đăng nhập với tư cách HR;
+
+:Truy cập Chi tiết Phỏng vấn;
+
+:Xem Hồ sơ Ứng viên;
+
+:Xem CV;
+
+:Tiến hành Phỏng vấn;
+
+:Nhập Điểm đánh giá;
+
+:Điểm Kỹ thuật (1-10);
+
+:Điểm Giao tiếp (1-10);
+
+:Điểm Phù hợp Văn hóa (1-10);
+
+:Điểm Tổng hợp (1-10);
+
+:Chọn Đề xuất;
+
+:Thêm Nhận xét;
+
+:Nộp Đánh giá;
+
+:Xác thực Đánh giá;
+
+if (Đánh giá hợp lệ?) then (có)
+  :Lưu bản ghi Đánh giá;
+
+  :Cập nhật Trạng thái Phỏng vấn;
+
+  :Thông báo Nhóm HR;
+
+  :Xem Tóm tắt Đánh giá;
+
+else (không)
+  :Trả về lỗi Xác thực;
+
+  :Hiển thị Chi tiết lỗi;
+endif
+
+stop
+@enduml

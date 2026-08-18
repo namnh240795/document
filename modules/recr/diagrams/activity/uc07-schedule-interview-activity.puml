@@ -1,0 +1,65 @@
+@startuml
+' UC-07: Phỏng vấn - Sơ đồ Hoạt động
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-07: Phỏng vấn (HR)
+
+start
+:Đăng nhập với tư cách HR;
+
+:Truy cập Chi tiết Hồ sơ;
+
+:Xem Hồ sơ Ứng viên;
+
+:Chọn Ứng viên để Phỏng vấn;
+
+:Chọn Phỏng vấn viên;
+
+:Chọn Ngày & Giờ;
+
+:Nhập Địa điểm/Link Meeting;
+
+:Thêm Ghi chú Phỏng vấn;
+
+:Lên lịch Phỏng vấn;
+
+:Xác lịch;
+
+if (Lịch hợp lệ?) then (có)
+  :Kiểm tra Thời gian trống của Phỏng vấn viên;
+
+  if (Có trống?) then (có)
+    :Tạo bản ghi Phỏng vấn;
+
+    :Cập nhật Trạng thái Hồ sơ;
+
+    :Gửi Lời mời Lịch;
+
+    :Thông báo Ứng viên;
+
+    :Thông báo Phỏng vấn viên;
+
+    :Hiển thị thông báo Thành công;
+
+    :Xem các Phỏng vấn đã lên lịch;
+
+  else (không)
+    :Trả về "Phỏng vấn viên không trống";
+
+    :Hiển thị lỗi;
+  endif
+
+else (không)
+  :Trả về lỗi Xác thực;
+
+  :Hiển thị Chi tiết lỗi;
+endif
+
+stop
+@enduml

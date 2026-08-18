@@ -1,7 +1,7 @@
 @startuml
 ' ============================================================
-' Recruitment System - Architecture Overview (C4 Level 1)
-' High-level system context
+' Hệ thống Tuyển dụng - Tổng quan Kiến trúc (C4 Level 1)
+' Ngữ cảnh hệ thống cấp cao
 ' ============================================================
 
 skinparam actor {
@@ -21,42 +21,42 @@ skinparam cloud {
   BorderColor #333333
 }
 
-title Recruitment System - System Context Diagram (C4 Level 1)
+title Hệ thống Tuyển dụng - Sơ đồ Ngữ cảnh Hệ thống (C4 Level 1)
 
-' --- People ---
-actor "Candidate" as candidate
-actor "Recruiter" as recruiter
-actor "HR Manager" as hr
-actor "Interviewer" as interviewer
+' --- Người ---
+actor "Ứng viên" as candidate
+actor "Nhà tuyển dụng" as recruiter
+actor "Quản lý HR" as hr
+actor "Phỏng vấn viên" as interviewer
 
-' --- Our System ---
-cloud "Recruitment Platform" as system {
+' --- Hệ thống của chúng tôi ---
+cloud "Nền tảng Tuyển dụng" as system {
   package "Frontend" {
-    [Career Portal] as portal
-    [Recruitment Dashboard] as dashboard
+    [Cổng việc làm] as portal
+    [Bảng điều khiển Tuyển dụng] as dashboard
   }
 
-  package "Backend Services" {
+  package "Dịch vụ Backend" {
     [API Gateway] as gw
-    [Recruitment Core] as core
+    [Lõi Tuyển dụng] as core
   }
 
-  package "Data & Infrastructure" {
-    database "Primary Database" as db
-    database "Cache Layer" as cache
-    queue "Event Bus" as mq
-    [Search Engine] as search
+  package "Dữ liệu & Hạ tầng" {
+    database "CSDL Chính" as db
+    database "Tầng Bộ nhớ đệm" as cache
+    queue "Bus Sự kiện" as mq
+    [Công cụ Tìm kiếm] as search
   }
 }
 
-' --- External Systems ---
-cloud "Email Provider\n(SendGrid)" as email
-cloud "Calendar Service\n(Google/Outlook)" as calendar
-cloud "Resume Parser\n(AI Service)" as parser
-cloud "Monitoring\n(Datadog)" as monitoring
-cloud "HR System\n(Existing)" as hrSystem
+' --- Hệ thống bên ngoài ---
+cloud "Nhà cung cấp Email\n(SendGrid)" as email
+cloud "Dịch vụ Lịch\n(Google/Outlook)" as calendar
+cloud "Trình phân tích CV\n(Dịch vụ AI)" as parser
+cloud "Giám sát\n(Datadog)" as monitoring
+cloud "Hệ thống HR\n(Hiện có)" as hrSystem
 
-' --- Relationships ---
+' --- Quan hệ ---
 candidate --> portal
 recruiter --> dashboard
 hr --> dashboard
@@ -75,13 +75,13 @@ core --> search
 core ..> email : <<HTTPS>>
 core ..> calendar : <<API>>
 core ..> parser : <<API>>
-core ..> hrSystem : <<Integration>>
+core ..> hrSystem : <<Tích hợp>>
 
 core --> monitoring : metrics/logs
 
 note bottom of system
-  C4 Level 1: System Context
-  Shows actors and external system interactions
+  C4 Level 1: Ngữ cảnh Hệ thống
+  Hiển thị các actor và tương tác hệ thống bên ngoài
 end note
 
 @enduml

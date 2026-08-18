@@ -1,0 +1,78 @@
+@startuml
+' UC-06: Xem hồ sơ - Sơ đồ Chuỗi
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-06: Xem hồ sơ
+
+actor "HR" as HR
+participant "Bảng điều khiển" as FE
+participant "API Gateway" as GW
+participant "Dịch vụ Tuyển dụng" as RS
+database "CSDL Tuyển dụng" as DB
+
+== Bước 1: Tải Hồ sơ ==
+
+HR -> FE : Truy cập hồ sơ
+activate FE
+
+FE -> GW : GET /recr/hr/applications
+activate GW
+
+GW -> RS : Lấy danh sách hồ sơ
+activate RS
+
+RS -> DB : Truy vấn hồ sơ
+activate DB
+DB --> RS : Danh sách hồ sơ
+deactivate DB
+
+RS --> GW : Phản hồi hồ sơ
+deactivate RS
+
+GW --> FE : Hồ sơ
+deactivate GW
+
+FE --> HR : Hiển thị hồ sơ
+deactivate FE
+
+== Bước 2: Xem Hồ sơ ==
+
+HR -> FE : Chọn hồ sơ
+FE -> GW : GET /recr/hr/applications/:id
+activate GW
+GW --> FE : Chi tiết hồ sơ
+deactivate GW
+
+FE --> HR : Hiển thị chi tiết
+deactivate FE
+
+== Bước 3: Cập nhật Trạng thái ==
+
+HR -> FE : Cập nhật trạng thái
+FE -> GW : PATCH /recr/hr/applications/:id/status
+activate GW
+
+GW -> RS : Cập nhật trạng thái
+activate RS
+
+RS -> DB : Cập nhật trạng thái hồ sơ
+activate DB
+DB --> RS : Trạng thái đã cập nhật
+deactivate DB
+
+RS --> GW : 200 OK
+deactivate RS
+
+GW --> FE : Đã cập nhật
+deactivate GW
+
+FE --> HR : Trạng thái đã cập nhật
+deactivate FE
+
+@enduml
