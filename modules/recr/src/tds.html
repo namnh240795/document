@@ -102,6 +102,7 @@
   <tr><td>Reviews</td><td><a href="srs.html#fr-030"><span class="req-id">FR-030</span></a>, <a href="srs.html#fr-031"><span class="req-id">FR-031</span></a></td><td>Section 4, 5, 6</td></tr>
   <tr><td>Analytics</td><td><a href="srs.html#fr-034"><span class="req-id">FR-034</span></a> - <a href="srs.html#fr-036"><span class="req-id">FR-036</span></a></td><td>Section 8</td></tr>
   <tr><td>Non-Functional</td><td><a href="srs.html#nfr-001"><span class="req-id">NFR-001</span></a> - <a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Section 10</td></tr>
+  <tr><td>Invitation</td><td><a href="srs.html#fr-039"><span class="req-id">FR-039</span></a> - <a href="srs.html#fr-046"><span class="req-id">FR-046</span></a></td><td>Section 4, 5, 6, 7</td></tr>
 </table>
 
 <!-- 2. ARCHITECTURE -->
@@ -263,6 +264,7 @@ libs/
   <tr><td>ProfileController</td><td><code>/recr/candidate/profile</code>, <code>/recr/candidate/resume</code>, <code>/recr/candidate/resumes</code>, <code>/recr/hr/profile</code>, <code>/recr/employer/profile</code></td><td>Profile update (all roles), resume management (FILE module integration)</td><td>FR-006, FR-007, FR-032, FR-033, FR-037</td></tr>
   <tr><td>SubscriptionController</td><td><code>/recr/subscription</code></td><td>Plan listing, purchase, renewal</td><td>FR-021 - FR-026</td></tr>
   <tr><td>ReviewController</td><td><code>/recr/candidate/reviews</code>, <code>/recr/hr/reviews</code></td><td>Job reviews, candidate reviews</td><td>FR-030, FR-031</td></tr>
+  <tr><td>InviteController</td><td><code>/recr/invitations</code></td><td>Invitation send, verify, accept, revoke, resend</td><td>FR-039, FR-042, FR-043, FR-044, FR-045, FR-046</td></tr>
 </table>
 
 <h2>4.2 Controller Example</h2>
@@ -305,6 +307,7 @@ export class JobController {
   <tr><td>ProfileService</td><td>Profile update (all roles), resume management (upload, list, delete via FILE module)</td><td>UserRepository, CandidateRepository, HrProfileRepository, EmployerRepository, FileService (FILE)</td></tr>
   <tr><td>SubscriptionService</td><td>Plan management, purchase, renewal, validation</td><td>SubscriptionRepository, PaymentService</td></tr>
   <tr><td>ReviewService</td><td>Job reviews, candidate reviews, rating aggregation</td><td>ReviewRepository, JobRepository</td></tr>
+  <tr><td>InviteService</td><td>Invitation lifecycle: token generation, validation, status management, event publishing</td><td>InviteRepository, EventEmitter</td></tr>
 </table>
 
 <h2>5.2 Service Example</h2>
@@ -373,6 +376,7 @@ export class JobService {
   <tr><td>ReviewConsumer</td><td><code>recr.review.events</code></td><td>Review aggregation, notifications</td><td>review.submitted</td></tr>
   <tr><td>NotificationConsumer</td><td><code>notification.events</code></td><td>Email, push notifications</td><td>notification.send</td></tr>
   <tr><td>FileConsumer</td><td><code>file.events</code></td><td>FILE module event handling (inbound)</td><td>file.deleted</td></tr>
+  <tr><td>InviteConsumer</td><td><code>recr.invitation.events</code></td><td>Invitation email notifications</td><td>invitation.created, invitation.accepted, invitation.revoked, invitation.resent</td></tr>
 </table>
 
 <h2>6.2 Worker Example</h2>
@@ -442,6 +446,10 @@ export class JobConsumer {
   <tr><td><code>subscription.purchased</code></td><td>SubscriptionService</td><td>SubscriptionConsumer</td><td>{ userId, planId, amount }</td></tr>
   <tr><td><code>subscription.expiring</code></td><td>CronJob</td><td>SubscriptionConsumer</td><td>{ userId, subscriptionId, expiresAt }</td></tr>
   <tr><td><code>review.submitted</code></td><td>ReviewService</td><td>ReviewConsumer</td><td>{ reviewId, type, targetId }</td></tr>
+  <tr><td><code>invitation.created</code></td><td>InviteService</td><td>InviteConsumer</td><td>{ invitationId, email, role, inviteUrl, expiredAt }</td></tr>
+  <tr><td><code>invitation.accepted</code></td><td>InviteService</td><td>InviteConsumer</td><td>{ invitationId, email, role, employerId, userId }</td></tr>
+  <tr><td><code>invitation.revoked</code></td><td>InviteService</td><td>InviteConsumer</td><td>{ invitationId, email, role, revokedBy }</td></tr>
+  <tr><td><code>invitation.resent</code></td><td>InviteService</td><td>InviteConsumer</td><td>{ invitationId, email, role, inviteUrl, expiredAt }</td></tr>
 </table>
 
 <h2>7.3 Event Emitter Example</h2>
@@ -922,6 +930,14 @@ export class SubscriptionGuard implements CanActivate {
   <tr><td><a href="srs.html#nfr-005"><span class="req-id">NFR-005</span></a></td><td>RBAC</td><td>All Controllers</td><td>-</td><td>-</td></tr>
   <tr><td><a href="srs.html#nfr-006"><span class="req-id">NFR-006</span></a></td><td>Resume Storage</td><td>-</td><td>FileService (FILE module)</td><td>-</td></tr>
   <tr><td><a href="srs.html#nfr-007"><span class="req-id">NFR-007</span></a></td><td>Job Search</td><td>JobController</td><td>JobService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-039"><span class="req-id">FR-039</span></a></td><td>Send Invitation</td><td>InviteController</td><td>InviteService</td><td>InviteConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-040"><span class="req-id">FR-040</span></a></td><td>Generate Token</td><td>-</td><td>InviteService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-041"><span class="req-id">FR-041</span></a></td><td>Send Email Event</td><td>-</td><td>InviteService</td><td>InviteConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-042"><span class="req-id">FR-042</span></a></td><td>Verify Token</td><td>InviteController</td><td>InviteService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-043"><span class="req-id">FR-043</span></a></td><td>Accept Invitation</td><td>InviteController</td><td>InviteService</td><td>InviteConsumer</td></tr>
+  <tr><td><a href="srs.html#fr-044"><span class="req-id">FR-044</span></a></td><td>Revoke Invitation</td><td>InviteController</td><td>InviteService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-045"><span class="req-id">FR-045</span></a></td><td>List Invitations</td><td>InviteController</td><td>InviteService</td><td>-</td></tr>
+  <tr><td><a href="srs.html#fr-046"><span class="req-id">FR-046</span></a></td><td>Resend Invitation</td><td>InviteController</td><td>InviteService</td><td>InviteConsumer</td></tr>
 </table>
 
 </body>

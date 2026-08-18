@@ -80,6 +80,7 @@
   <tr><td><span class="req-id">FR-031</span> Candidate Reviews</td><td>recr_candidate_reviews table</td></tr>
   <tr><td><span class="req-id">FR-021, FR-022</span> Subscription Plans</td><td>recr_subscription_plans table</td></tr>
   <tr><td><span class="req-id">FR-023, FR-024</span> Subscription Access Control</td><td>recr_subscriptions table</td></tr>
+  <tr><td><span class="req-id">FR-039, FR-042, FR-043</span> Invitation Management</td><td>recr_invitations table</td></tr>
 </table>
 
 <h2>1.3 ERD Diagram</h2>
@@ -352,6 +353,30 @@ CREATE UNIQUE INDEX idx_recr_subscriptions_active ON recr_subscriptions(user_id)
   UNIQUE(interview_id, interviewer_id)
 );</code></pre>
 
+<h3>Table: <code>recr_invitations</code> - Invitation Management</h3>
+<p><strong>Description:</strong> Stores organization invitations with token-based verification. Invitations are sent by HR/Employer to candidates or other HR via email with a secure token.</p>
+<pre><code>CREATE TABLE recr_invitations (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email           VARCHAR(255) NOT NULL,
+  token_hash      VARCHAR(64) NOT NULL,
+  role            VARCHAR(50) NOT NULL,
+  inviter_id      UUID NOT NULL REFERENCES auth_users(id),
+  employer_id     UUID REFERENCES recr_employers(id),
+  status          VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACCEPTED', 'EXPIRED', 'REVOKED')),
+  expired_at      TIMESTAMP NOT NULL,
+  accepted_at     TIMESTAMP,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT recr_invitations_token_hash_unique UNIQUE (token_hash)
+);
+
+-- Indexes for invitation management
+CREATE INDEX idx_recr_invitations_email ON recr_invitations(email);
+CREATE INDEX idx_recr_invitations_token_hash ON recr_invitations(token_hash);
+CREATE INDEX idx_recr_invitations_status ON recr_invitations(status);
+CREATE INDEX idx_recr_invitations_inviter_id ON recr_invitations(inviter_id);
+CREATE INDEX idx_recr_invitations_employer_id ON recr_invitations(employer_id);</code></pre>
+
 <!-- 3. INDEXES -->
 <h1 id="section-3">3. Indexes</h1>
 
@@ -407,7 +432,14 @@ CREATE INDEX idx_recr_job_reviews_status ON recr_job_reviews(status);
 -- Candidate Reviews indexes
 CREATE INDEX idx_recr_candidate_reviews_candidate_id ON recr_candidate_reviews(candidate_id);
 CREATE INDEX idx_recr_candidate_reviews_interviewer_id ON recr_candidate_reviews(interviewer_id);
-CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(interview_id);</code></pre>
+CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(interview_id);
+
+-- Invitation indexes
+CREATE INDEX idx_recr_invitations_email ON recr_invitations(email);
+CREATE INDEX idx_recr_invitations_token_hash ON recr_invitations(token_hash);
+CREATE INDEX idx_recr_invitations_status ON recr_invitations(status);
+CREATE INDEX idx_recr_invitations_inviter_id ON recr_invitations(inviter_id);
+CREATE INDEX idx_recr_invitations_employer_id ON recr_invitations(employer_id);</code></pre>
 
 <!-- 4. MIGRATIONS -->
 <h1 id="section-4">4. Migrations</h1>
@@ -437,6 +469,7 @@ CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(i
   <tr><td>11</td><td>011_create_job_reviews.sql</td><td>Create recr_job_reviews table</td></tr>
   <tr><td>12</td><td>012_create_candidate_reviews.sql</td><td>Create recr_candidate_reviews table</td></tr>
   <tr><td>13</td><td>013_create_indexes.sql</td><td>Create all indexes</td></tr>
+  <tr><td>14</td><td>014_create_invitations.sql</td><td>Create recr_invitations table (INVITE feature)</td><td>auth_users, recr_employers</td></tr>
 </table>
 
 <!-- 5. DATA DICTIONARY -->
@@ -459,6 +492,7 @@ CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(i
   <tr><td>recr_subscription_history</td><td>Subscription change history</td><td>FR-026</td><td>2,000</td></tr>
   <tr><td>recr_job_reviews</td><td>Job reviews from candidates</td><td>FR-030</td><td>5,000</td></tr>
   <tr><td>recr_candidate_reviews</td><td>Candidate reviews from interviewers</td><td>FR-031</td><td>8,000</td></tr>
+  <tr><td>recr_invitations</td><td>Organization invitations with token-based verification</td><td>FR-039, FR-042, FR-043, FR-044, FR-045, FR-046</td><td>5,000</td></tr>
 </table>
 
 <!-- 6. BACKUP & RECOVERY -->

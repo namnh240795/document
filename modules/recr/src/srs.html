@@ -75,6 +75,10 @@
         <li><a href="#section-3-15">3.15 UC-15: Update Profile</a></li>
         <li><a href="#section-3-16">3.16 UC-16: View Dashboard</a></li>
         <li><a href="#section-3-18">3.17 UC-18: Manage Resumes</a></li>
+        <li><a href="#section-3-19">3.18 UC-19: Send Invitation</a></li>
+        <li><a href="#section-3-20">3.19 UC-20: Verify Invitation</a></li>
+        <li><a href="#section-3-21">3.20 UC-21: Accept Invitation</a></li>
+        <li><a href="#section-3-22">3.21 UC-22: Revoke/Resend Invitation</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Functional Requirements</a>
@@ -85,6 +89,7 @@
         <li><a href="#section-4-4">4.4 Subscription Requirements</a></li>
         <li><a href="#section-4-5">4.5 Review Requirements</a></li>
         <li><a href="#section-4-6">4.6 Analytics Requirements</a></li>
+        <li><a href="#section-4-7">4.7 Invitation Requirements</a></li>
       </ul>
     </li>
     <li><a href="#section-5">5. Data Model</a></li>
@@ -153,7 +158,7 @@
   <tr><td>Module Name</td><td>Recruitment</td></tr>
   <tr><td>Description</td><td>End-to-end recruitment management with two-level role system: system roles (user, super_admin) and org roles (Candidate, HR, Employer). Integrates with FILE module for secure resume storage via presigned URLs.</td></tr>
   <tr><td>Database</td><td>recr_db</td></tr>
-  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_candidate_resumes, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history, recr_job_reviews, recr_candidate_reviews</td></tr>
+  <tr><td>Tables</td><td>recr_users, recr_candidates, recr_candidate_resumes, recr_employers, recr_hr_profiles, recr_jobs, recr_applications, recr_interviews, recr_evaluations, recr_job_requirements, recr_subscription_plans, recr_subscriptions, recr_subscription_history, recr_job_reviews, recr_candidate_reviews, recr_invitations</td></tr>
   <tr><td>Tech Stack</td><td>Node.js, NestJS, PostgreSQL, Drizzle ORM, RabbitMQ, Elasticsearch</td></tr>
 </table>
 
@@ -795,6 +800,120 @@
   <li>4a. FILE module unavailable: System returns error "File service temporarily unavailable"</li>
 </ul>
 
+<h2 id="section-3-19">3.18 UC-19: Send Invitation</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-19</td></tr>
+  <tr><td>Name</td><td>Send Invitation</td></tr>
+  <tr><td>Actor</td><td>HR, Employer</td></tr>
+  <tr><td>Precondition</td><td>User is logged in with HR or Employer role</td></tr>
+  <tr><td>Postcondition</td><td>Invitation created, email sent via RabbitMQ</td></tr>
+  <tr><td>Trigger</td><td>HR/Employer clicks "Invite" button</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>HR/Employer navigates to invitation management page</li>
+  <li>HR/Employer enters recipient email address and selects organization role</li>
+  <li>System validates input (valid email, valid role)</li>
+  <li>System checks for duplicate pending invitation for the same email</li>
+  <li>System generates a secure random invitation token</li>
+  <li>System stores SHA-256 hash of the token in the database</li>
+  <li>System creates invitation record with status PENDING and expiry date</li>
+  <li>System emits <code>invitation.created</code> event to RabbitMQ for EMAIL module</li>
+  <li>System returns success response with invitation details</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>3a. Invalid input: System returns validation error with details</li>
+  <li>4a. Duplicate pending invitation: System returns error "A pending invitation already exists for this email"</li>
+</ul>
+
+<h2 id="section-3-20">3.19 UC-20: Verify Invitation</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-20</td></tr>
+  <tr><td>Name</td><td>Verify Invitation</td></tr>
+  <tr><td>Actor</td><td>Candidate (unauthenticated)</td></tr>
+  <tr><td>Precondition</td><td>User received invitation email</td></tr>
+  <tr><td>Postcondition</td><td>Invitation details returned for display</td></tr>
+  <tr><td>Trigger</td><td>Candidate clicks invitation link in email</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Candidate clicks the invitation link in the email</li>
+  <li>Frontend extracts the token from the URL</li>
+  <li>Frontend calls the verify endpoint with the raw token</li>
+  <li>System computes SHA-256 hash of the token and looks up the invitation record</li>
+  <li>System validates invitation status is PENDING</li>
+  <li>System validates invitation has not expired</li>
+  <li>System returns invitation details (email, organization name, role) for display</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>4a. Token not found: System returns error "Invalid invitation link"</li>
+  <li>5a. Invitation already accepted: System returns error "This invitation has already been accepted"</li>
+  <li>6a. Invitation expired: System returns error "This invitation has expired"</li>
+</ul>
+
+<h2 id="section-3-21">3.20 UC-21: Accept Invitation</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-21</td></tr>
+  <tr><td>Name</td><td>Accept Invitation</td></tr>
+  <tr><td>Actor</td><td>Candidate (authenticated)</td></tr>
+  <tr><td>Precondition</td><td>User is logged in, invitation is PENDING</td></tr>
+  <tr><td>Postcondition</td><td>Invitation accepted, AUTH module notified</td></tr>
+  <tr><td>Trigger</td><td>Candidate clicks "Accept Invitation" button</td></tr>
+</table>
+<p><strong>Main Flow:</strong></p>
+<ol>
+  <li>Candidate navigates to invitation page (after UC-20 verification)</li>
+  <li>Candidate reviews invitation details (organization, role)</li>
+  <li>Candidate fills in any required information</li>
+  <li>Candidate clicks "Accept Invitation"</li>
+  <li>System validates invitation is still PENDING</li>
+  <li>System updates invitation status to ACCEPTED</li>
+  <li>System emits <code>invitation.accepted</code> event to RabbitMQ for AUTH module</li>
+  <li>System assigns organization role to the user</li>
+  <li>System returns success response</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>5a. Invitation no longer PENDING: System returns error "This invitation is no longer valid"</li>
+</ul>
+
+<h2 id="section-3-22">3.21 UC-22: Revoke/Resend Invitation</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Use Case ID</td><td>UC-22</td></tr>
+  <tr><td>Name</td><td>Revoke/Resend Invitation</td></tr>
+  <tr><td>Actor</td><td>HR, Employer</td></tr>
+  <tr><td>Precondition</td><td>Invitation exists, user is inviter or admin</td></tr>
+  <tr><td>Postcondition</td><td>Invitation revoked or resent with new token</td></tr>
+  <tr><td>Trigger</td><td>HR/Employer clicks "Revoke" or "Resend" on invitation</td></tr>
+</table>
+<p><strong>Main Flow (Revoke):</strong></p>
+<ol>
+  <li>HR/Employer navigates to invitation list</li>
+  <li>HR/Employer selects an invitation and clicks "Revoke"</li>
+  <li>System validates invitation status is PENDING</li>
+  <li>System updates invitation status to REVOKED</li>
+  <li>System returns success response</li>
+</ol>
+<p><strong>Main Flow (Resend):</strong></p>
+<ol>
+  <li>HR/Employer navigates to invitation list</li>
+  <li>HR/Employer selects an invitation and clicks "Resend"</li>
+  <li>System generates a new secure random token</li>
+  <li>System stores new SHA-256 hash and updates expiry date</li>
+  <li>System emits <code>invitation.created</code> event to RabbitMQ for EMAIL module</li>
+  <li>System returns success response</li>
+</ol>
+<p><strong>Alternative Flows:</strong></p>
+<ul>
+  <li>3a. Invitation not PENDING: System returns error "Only pending invitations can be revoked"</li>
+</ul>
+
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Functional Requirements</h1>
 
@@ -1166,6 +1285,82 @@
   </tr>
 </table>
 
+<h2 id="section-4-7">4.7 Invitation Requirements</h2>
+<table class="trace-table">
+  <tr>
+    <th>Req ID</th>
+    <th>Module</th>
+    <th>Requirement</th>
+    <th>Use Case</th>
+    <th>Priority</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><span id="fr-039" class="req-id">FR-039</span></td>
+    <td>RECR</td>
+    <td>Send Invitation</td>
+    <td>UC-19</td>
+    <td>High</td>
+    <td>HR/Employer can send invitations to candidates or HR via email with assigned organization role</td>
+  </tr>
+  <tr>
+    <td><span id="fr-040" class="req-id">FR-040</span></td>
+    <td>RECR</td>
+    <td>Generate Invitation Token</td>
+    <td>UC-19</td>
+    <td>High</td>
+    <td>System generates secure random token, stores SHA-256 hash, includes raw token in invitation URL</td>
+  </tr>
+  <tr>
+    <td><span id="fr-041" class="req-id">FR-041</span></td>
+    <td>RECR</td>
+    <td>Send Invitation Email</td>
+    <td>UC-19</td>
+    <td>High</td>
+    <td>System emits RabbitMQ event to EMAIL module for sending invitation email</td>
+  </tr>
+  <tr>
+    <td><span id="fr-042" class="req-id">FR-042</span></td>
+    <td>RECR</td>
+    <td>Verify Invitation Token</td>
+    <td>UC-20</td>
+    <td>High</td>
+    <td>System validates invitation token on click, checking expiry and status</td>
+  </tr>
+  <tr>
+    <td><span id="fr-043" class="req-id">FR-043</span></td>
+    <td>RECR</td>
+    <td>Accept Invitation</td>
+    <td>UC-21</td>
+    <td>High</td>
+    <td>System updates invitation status to ACCEPTED and emits event for AUTH module</td>
+  </tr>
+  <tr>
+    <td><span id="fr-044" class="req-id">FR-044</span></td>
+    <td>RECR</td>
+    <td>Revoke Invitation</td>
+    <td>UC-22</td>
+    <td>Medium</td>
+    <td>HR/Employer can cancel a pending invitation</td>
+  </tr>
+  <tr>
+    <td><span id="fr-045" class="req-id">FR-045</span></td>
+    <td>RECR</td>
+    <td>List Invitations</td>
+    <td>UC-19</td>
+    <td>Medium</td>
+    <td>System allows viewing all invitations with filtering and pagination</td>
+  </tr>
+  <tr>
+    <td><span id="fr-046" class="req-id">FR-046</span></td>
+    <td>RECR</td>
+    <td>Resend Invitation</td>
+    <td>UC-22</td>
+    <td>Medium</td>
+    <td>System generates new token for expired or revoked invitations and resends email</td>
+  </tr>
+</table>
+
 <!-- 5. DATA MODEL -->
 <h1 id="section-5">5. Data Model</h1>
 
@@ -1198,6 +1393,7 @@
   <tr><td><span class="req-id">DR-011</span></td><td>recr_subscription_history</td><td>Subscription change history</td><td>FR-027</td></tr>
   <tr><td><span class="req-id">DR-012</span></td><td>recr_job_reviews</td><td>Job reviews from candidates</td><td>FR-030</td></tr>
   <tr><td><span class="req-id">DR-013</span></td><td>recr_candidate_reviews</td><td>Candidate reviews from interviewers</td><td>FR-031</td></tr>
+  <tr><td><span class="req-id">DR-014</span></td><td>recr_invitations</td><td>Invitation records with token-based verification</td><td>FR-039, FR-042, FR-043, FR-044</td></tr>
 </table>
 
 <!-- 6. API SPECIFICATION -->
@@ -1274,6 +1470,22 @@
   <tr><td>GET</td><td>/recr/subscription/history</td><td>View subscription history</td><td>FR-026</td></tr>
 </table>
 
+<h3>Invitation Endpoints</h3>
+<table class="trace-table">
+  <tr>
+    <th>Method</th>
+    <th>Path</th>
+    <th>Description</th>
+    <th>Requirement IDs</th>
+  </tr>
+  <tr><td>POST</td><td>/recr/invitations/send</td><td>Send invitation to candidate/HR</td><td>FR-039, FR-040, FR-041</td></tr>
+  <tr><td>GET</td><td>/recr/invitations/verify</td><td>Verify invitation token (Public)</td><td>FR-042</td></tr>
+  <tr><td>POST</td><td>/recr/invitations/accept</td><td>Accept invitation</td><td>FR-043</td></tr>
+  <tr><td>GET</td><td>/recr/invitations</td><td>List invitations</td><td>FR-045</td></tr>
+  <tr><td>DELETE</td><td>/recr/invitations/:id</td><td>Revoke invitation</td><td>FR-044</td></tr>
+  <tr><td>POST</td><td>/recr/invitations/:id/resend</td><td>Resend invitation</td><td>FR-046</td></tr>
+</table>
+
 <h3>Employer Endpoints</h3>
 <table class="trace-table">
   <tr>
@@ -1307,6 +1519,8 @@
   <tr><td>job.submitted_for_approval</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when HR/Employer submits job for approval</td></tr>
   <tr><td>subscription.purchased</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when user purchases subscription</td></tr>
   <tr><td>file.deleted</td><td>Inbound</td><td>RabbitMQ</td><td>Received from FILE module when a file is deleted; RECR cleans up references in recr_candidate_resumes and recr_applications</td></tr>
+  <tr><td>invitation.created</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when invitation is created</td></tr>
+  <tr><td>invitation.accepted</td><td>Outbound</td><td>RabbitMQ</td><td>Triggered when invitation is accepted</td></tr>
 </table>
 
 <!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
@@ -1416,6 +1630,14 @@
   <tr><td>FR-031</td><td>Candidate Review</td><td>HR</td><td>3.3</td><td>recr_candidate_reviews</td><td>POST /recr/hr/reviews/candidates</td></tr>
   <tr><td>FR-037</td><td>Manage Candidate Resumes</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>GET/POST/DELETE /recr/candidate/resumes</td></tr>
   <tr><td>FR-038</td><td>Application Resume Linking</td><td>Candidate</td><td>3.1</td><td>recr_applications, sys_files (FILE)</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
+  <tr><td>FR-039</td><td>Send Invitation</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>POST /recr/invitations/send</td></tr>
+  <tr><td>FR-040</td><td>Generate Token</td><td>System</td><td>3.18</td><td>recr_invitations</td><td>POST /recr/invitations/send</td></tr>
+  <tr><td>FR-041</td><td>Send Email Event</td><td>System</td><td>3.18</td><td>-</td><td>POST /recr/invitations/send (RabbitMQ)</td></tr>
+  <tr><td>FR-042</td><td>Verify Token</td><td>Candidate</td><td>3.19</td><td>recr_invitations</td><td>GET /recr/invitations/verify</td></tr>
+  <tr><td>FR-043</td><td>Accept Invitation</td><td>Candidate</td><td>3.20</td><td>recr_invitations</td><td>POST /recr/invitations/accept</td></tr>
+  <tr><td>FR-044</td><td>Revoke Invitation</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>DELETE /recr/invitations/:id</td></tr>
+  <tr><td>FR-045</td><td>List Invitations</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>GET /recr/invitations</td></tr>
+  <tr><td>FR-046</td><td>Resend Invitation</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>POST /recr/invitations/:id/resend</td></tr>
   <tr><td>NFR-001</td><td>API Response Time</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-002</td><td>Application Processing</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-003</td><td>Concurrent Users</td><td>All</td><td>6.1</td><td>-</td><td>-</td></tr>
