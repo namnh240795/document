@@ -3,6 +3,12 @@
 ' System Architecture - Authentication System
 ' ============================================================
 
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #666666
+  FontSize 14
+}
+
 skinparam component {
   BackgroundColor #FFFFFF
   BorderColor #333333
@@ -22,33 +28,21 @@ skinparam queue {
   FontSize 12
 }
 
-skinparam package {
-  BackgroundColor #FFFFFF
-  BorderColor #666666
-  FontSize 14
-}
-
 title System Architecture: Authentication System
 
 ' ============================================================
-' CLIENTS
+' LAYOUT
 ' ============================================================
-package "Clients" #F5F5F5 {
-  component "Web App\n(React/Next.js)" as web
-  component "Mobile App\n(React Native)" as mobile
+rectangle "Clients" as clients #F5F5F5 {
+  component "Web App" as web
+  component "Mobile App" as mobile
 }
 
-' ============================================================
-' GATEWAY
-' ============================================================
-package "API Gateway" #E3F2FD {
+rectangle "API Gateway" as gw #E3F2FD {
   component "NestJS Gateway" as gateway
 }
 
-' ============================================================
-' CORE SERVICES
-' ============================================================
-package "Core Services" #F5F5F5 {
+rectangle "Core Services" as services #F5F5F5 {
   component "AUTH" as auth
   component "SMS" as sms
   component "EMAIL" as email
@@ -57,60 +51,29 @@ package "Core Services" #F5F5F5 {
   component "LOG" as log
 }
 
-' ============================================================
-' MESSAGE BROKER
-' ============================================================
-package "Message Broker" #FFF3E0 {
+rectangle "Message Broker" as broker #FFF3E0 {
   queue "RabbitMQ" as mq
 }
 
-' ============================================================
-' DATA STORAGE
-' ============================================================
-package "Data Storage" #F5F5F5 {
-  database "auth_db" as pgAuth
-  database "sms_db" as pgSms
-  database "email_db" as pgEmail
-  database "recr_db" as pgRecr
-  database "wallet_db" as pgWallet
+rectangle "Data Storage" as storage #F5F5F5 {
+  database "PostgreSQL" as pg
   database "OpenSearch" as os
 }
 
-' ============================================================
-' EXTERNAL SERVICES
-' ============================================================
-package "External Services" #F3E5F5 {
+rectangle "External Services" as external #F3E5F5 {
   component "Twilio" as twilio
   component "SendGrid" as sendgrid
 }
 
 ' ============================================================
-' DATA FLOW
+' CONNECTIONS - Rectangle to Rectangle
 ' ============================================================
-web --> gateway
-mobile --> gateway
-
-gateway --> auth
-
-auth --> pgAuth
-sms --> pgSms
-email --> pgEmail
-recr --> pgRecr
-wallet --> pgWallet
-log --> os
-
-auth --> mq
-sms --> mq
-email --> mq
-recr --> mq
-wallet --> mq
-
-mq --> log
-
-sms --> twilio
-twilio --> sms
-
-email --> sendgrid
-sendgrid --> email
+clients -down-> gw : HTTPS
+gw -down-> services : REST API
+services -down-> storage : SQL
+services -right-> broker : Pub/Sub
+broker -left-> services : Pub/Sub
+services -down-> external : API
+external -up-> services : Webhooks
 
 @enduml
