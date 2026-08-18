@@ -1,28 +1,23 @@
 @startuml
 ' ============================================================
 ' System Architecture - Authentication System
-' Straight arrows, 3 bottom boxes on same row
 ' ============================================================
 
+!pragma layout smetana
 top to bottom direction
 
-skinparam linetype ortho
 skinparam defaultFontName "Arial"
 skinparam defaultFontSize 12
 
-skinparam rectangle {
-  RoundCorner 6
-  BorderColor #333333
-  FontSize 13
-  FontStyle bold
-  FontColor #000000
-}
+skinparam nodesep 40
+skinparam ranksep 50
 
 skinparam component {
   BackgroundColor #FFFFFF
   BorderColor #666666
   FontSize 11
   FontColor #000000
+  RoundCorner 6
 }
 
 skinparam database {
@@ -44,73 +39,57 @@ skinparam arrow {
   Thickness 2
 }
 
+skinparam linetype polyline
+
 title System Architecture
 
-' ============================================================
-' LAYER 1 - Clients
-' ============================================================
-rectangle "  Clients  " as clients #FFFFFF {
-  component "Web App" as web
-  component "Mobile App" as mobile
-}
+' Gateway
+component "API Gateway" as gw #FFD54F
 
-' ============================================================
-' LAYER 2 - Gateway
-' ============================================================
-rectangle "  API Gateway  " as gw #FFD54F {
-  component "NestJS Gateway" as gateway
-}
+' Core Services (Web App same layer)
+component "Web App" as web
+component "AUTH" as auth
+component "SMS" as sms
+component "EMAIL" as email
+component "RECR" as recr
+component "WALLET" as wallet
+component "LOG" as log
 
-' ============================================================
-' LAYER 3 - Core Services
-' ============================================================
-rectangle "  Core Services  " as services #FFFFFF {
-  component "AUTH" as auth
-  component "SMS" as sms
-  component "EMAIL" as email
-  component "RECR" as recr
-  component "WALLET" as wallet
-  component "LOG" as log
-}
+' Infrastructure
+database "PostgreSQL" as pg
+database "OpenSearch" as os
+component "Twilio" as twilio
+component "SendGrid" as sendgrid
+queue "RabbitMQ" as mq #FFD54F
 
-' ============================================================
-' LAYER 4 - Data Storage | External | Message Broker (same row)
-' ============================================================
-rectangle "  Data Storage  " as storage #FFFFFF {
-  database "PostgreSQL" as pg
-  database "OpenSearch" as os
-}
+' Gateway -> Services
+gw -down-> web
+gw -down-> auth
+gw -down-> sms
+gw -down-> email
+gw -down-> recr
+gw -down-> wallet
+gw -down-> log
 
-rectangle "  External Services  " as external #FFFFFF {
-  component "Twilio" as twilio
-  component "SendGrid" as sendgrid
-}
+' Services -> Infrastructure
+auth -down-> pg
+auth -down-> os
+sms -down-> twilio
+email -down-> sendgrid
+log -down-> mq
 
-rectangle "  Message Broker  " as broker #FFD54F {
-  queue "RabbitMQ" as mq
-}
+' Row alignment: services
+web -[hidden]right-> auth
+auth -[hidden]right-> sms
+sms -[hidden]right-> email
+email -[hidden]right-> recr
+recr -[hidden]right-> wallet
+wallet -[hidden]right-> log
 
-' ============================================================
-' LAYOUT FORCING
-' ============================================================
-' Vertical flow
-clients -[hidden]down-> gw
-gw -[hidden]down-> services
-
-' Force 3 boxes on same row, directly under services
-services -[hidden]down-> storage
-services -[hidden]down-> external
-services -[hidden]down-> broker
-storage -[hidden]right-> external
-external -[hidden]right-> broker
-
-' ============================================================
-' CONNECTIONS
-' ============================================================
-clients -down-> gw
-gw -down-> services
-services -down-> storage
-services -down-> broker
-services -down-> external
+' Row alignment: infrastructure
+pg -[hidden]right-> os
+os -[hidden]right-> twilio
+twilio -[hidden]right-> sendgrid
+sendgrid -[hidden]right-> mq
 
 @enduml
