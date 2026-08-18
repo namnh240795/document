@@ -29,12 +29,6 @@ skinparam package {
   FontSize 14
 }
 
-skinparam note {
-  BackgroundColor #FFFDE7
-  BorderColor #FFC107
-  FontSize 11
-}
-
 title System Architecture: Authentication System
 
 ' ============================================================
@@ -127,25 +121,25 @@ log --> os : REST API
 ' ============================================================
 ' DATA FLOW - Message Queue
 ' ============================================================
-auth --> mq : Publish\n- verification.requested\n- verification.email.requested\n- invitation.created\n- user.registered\n- auth.event.logged
+auth --> mq : Publish
 
-sms --> mq : Publish\n- sms.event.logged
+sms --> mq : Publish
 
-email --> mq : Publish\n- email.event.logged
+email --> mq : Publish
 
-recr --> mq : Publish\n- application.submitted\n- interview.scheduled\n- offer.sent\n- recr.event.logged
+recr --> mq : Publish
 
-wallet --> mq : Publish\n- wallet.event.logged
+wallet --> mq : Publish
 
-mq --> sms : Consume\n- verification.requested
+mq --> sms : Consume
 
-mq --> email : Consume\n- verification.email.requested\n- invitation.created
+mq --> email : Consume
 
-mq --> recr : Consume\n- wallet.payment.completed
+mq --> recr : Consume
 
-mq --> wallet : Consume\n- user.registered
+mq --> wallet : Consume
 
-mq --> log : Consume\n- auth.event.logged\n- sms.event.logged\n- email.event.logged\n- recr.event.logged\n- wallet.event.logged
+mq --> log : Consume
 
 ' ============================================================
 ' DATA FLOW - External
@@ -155,65 +149,5 @@ twilio --> sms : Delivery Webhook
 
 email --> sendgrid : Send Email\n(SendGrid/SMTP)
 sendgrid --> email : Delivery Webhook
-
-' ============================================================
-' NOTES
-' ============================================================
-note right of auth
-  AUTH Module:
-  - User CRUD
-  - JWT Tokens
-  - Role Management
-  - Verification Flow
-end note
-
-note right of sms
-  SMS Module:
-  - OTP Generation
-  - Twilio Integration
-  - Delivery Tracking
-  - Audit Logs
-end note
-
-note right of email
-  EMAIL Module:
-  - Email Delivery
-  - Template Management
-  - SendGrid/SMTP Integration
-  - Audit Trail
-end note
-
-note right of recr
-  RECR Module:
-  - Job Postings
-  - Candidate Applications
-  - Interview Scheduling
-  - Offer Management
-end note
-
-note right of wallet
-  WALLET Module:
-  - Electronic Wallets
-  - Deposits/Withdrawals
-  - Payment Processing
-  - Transaction History
-end note
-
-note right of log
-  LOG Module:
-  - Event Ingestion
-  - Full-text Search
-  - Analytics
-  - Real-time Monitoring
-end note
-
-note bottom of mq
-  RabbitMQ Queues:
-  - verification.sms (AUTH -> SMS)
-  - verification.email (AUTH -> EMAIL)
-  - invitation.email (AUTH -> EMAIL)
-  - wallet.events (AUTH -> WALLET)
-  - log.events (all services -> LOG)
-end note
 
 @enduml
