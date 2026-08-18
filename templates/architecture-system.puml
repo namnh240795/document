@@ -1,94 +1,99 @@
 @startuml
 ' ============================================================
 ' System Architecture - Authentication System
+' Clean layout with good contrast
 ' ============================================================
 
-!define ICONCOLOR #2196F3
-!define SERVCOLOR #1565C0
-!define DBCOLOR #2E7D32
-!define MQCOLOR #E65100
-!define EXTCOLOR #6A1B9A
-
-skinparam defaultFontName "Segoe UI"
+skinparam defaultFontName "Arial"
 skinparam defaultFontSize 12
 
 skinparam rectangle {
-  RoundCorner 10
-  BorderColor #BDBDBD
-  FontSize 14
+  RoundCorner 8
+  BorderColor #78909C
+  FontSize 13
   FontStyle bold
+  FontColor #263238
 }
 
 skinparam component {
-  BackgroundColor #FAFAFA
-  BorderColor #E0E0E0
-  ArrowColor #424242
+  BackgroundColor #FFFFFF
+  BorderColor #90A4AE
+  ArrowColor #37474F
   FontSize 11
+  FontColor #263238
 }
 
 skinparam database {
-  BackgroundColor #E8F5E9
-  BorderColor #4CAF50
+  BackgroundColor #C8E6C9
+  BorderColor #388E3C
   FontSize 11
+  FontColor #1B5E20
 }
 
 skinparam queue {
-  BackgroundColor #FFF3E0
-  BorderColor #FF9800
+  BackgroundColor #FFE0B2
+  BorderColor #EF6C00
   FontSize 11
+  FontColor #E65100
 }
 
 skinparam arrow {
-  Color #616161
+  Color #455A64
   Thickness 2
 }
 
 title System Architecture
 
 ' ============================================================
-' LAYOUT - Left to Right flow
+' LAYOUT
 ' ============================================================
 
 rectangle "  Clients  " as clients #E3F2FD {
-  component "Web App" as web
-  component "Mobile App" as mobile
+  component "Web App" as web #BBDEFB
+  component "Mobile App" as mobile #BBDEFB
 }
 
-rectangle "  API Gateway  " as gw #BBDEFB {
-  component "NestJS\nGateway" as gateway
+rectangle "  API Gateway  " as gw #90CAF9 {
+  component "NestJS Gateway" as gateway #42A5F5
 }
 
-rectangle "  Core Services  " as services #F5F5F5 {
-  component "AUTH" as auth #E3F2FD
-  component "SMS" as sms #E8F5E9
-  component "EMAIL" as email #FFF3E0
-  component "RECR" as recr #F3E5F5
-  component "WALLET" as wallet #E0F7FA
-  component "LOG" as log #FCE4EC
+rectangle "  Core Services  " as services #ECEFF1 {
+  component "AUTH" as auth #42A5F5
+  component "SMS" as sms #66BB6A
+  component "EMAIL" as email #FFA726
+  component "RECR" as recr #AB47BC
+  component "WALLET" as wallet #26C6DA
+  component "LOG" as log #EF5350
 }
 
-rectangle "  Message Broker  " as broker #FFF3E0 {
-  queue "RabbitMQ" as mq
+rectangle "  Message Broker  " as broker #FFE0B2 {
+  queue "RabbitMQ" as mq #FF9800
 }
 
-rectangle "  Data Storage  " as storage #F5F5F5 {
-  database "PostgreSQL" as pg #E8F5E9
-  database "OpenSearch" as os #F3E5F5
+rectangle "  Data Storage  " as storage #C8E6C9 {
+  database "PostgreSQL" as pg #4CAF50
+  database "OpenSearch" as os #9C27B0
 }
 
 rectangle "  External  " as external #F3E5F5 {
-  component "Twilio" as twilio #E8F5E9
-  component "SendGrid" as sendgrid #E3F2FD
+  component "Twilio" as twilio #26A69A
+  component "SendGrid" as sendgrid #42A5F5
 }
 
 ' ============================================================
-' CONNECTIONS
+' CONNECTIONS - Separate paths to avoid overlap
 ' ============================================================
+
+' Left side: Clients -> Gateway -> Services -> Storage (vertical)
 clients -down-> gw
 gw -down-> services
 services -down-> storage
+
+' Right side: Services <-> Broker (horizontal)
 services -right-> broker
 broker -left-> services
+
+' Bottom: Services <-> External (vertical, offset right)
 services -down-> external
 external -up-> services
 
