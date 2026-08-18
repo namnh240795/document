@@ -56,9 +56,15 @@ package "API Gateway" #E3F2FD {
 ' CORE SERVICES
 ' ============================================================
 package "Core Services" #F5F5F5 {
-  component "AUTH Service\n- User Registration\n- Login/Logout\n- Session Management\n- RBAC" as auth
+  component "AUTH Service\n- User Registration\n- Login/Logout\n- Session Management\n- RBAC\n- Invitations" as auth
 
   component "SMS Service\n- OTP Generation\n- SMS Delivery\n- Delivery Tracking" as sms
+
+  component "EMAIL Service\n- Email Delivery\n- Templating\n- Audit Trail" as email
+
+  component "RECR Service\n- Job Postings\n- Applications\n- Interviews\n- Offers" as recr
+
+  component "WALLET Service\n- Payments\n- Deposits\n- Withdrawals" as wallet
 
   component "LOG Service\n- Event Ingestion\n- Log Query\n- Analytics" as log
 }
@@ -67,16 +73,22 @@ package "Core Services" #F5F5F5 {
 ' MESSAGE BROKER
 ' ============================================================
 package "Message Broker" #FFF3E0 {
-  queue "RabbitMQ\n(log.events)" as mq
+  queue "RabbitMQ" as mq
 }
 
 ' ============================================================
 ' DATA STORAGE
 ' ============================================================
 package "Data Storage" #F5F5F5 {
-  database "PostgreSQL\nauth_db\n- users\n- sessions\n- roles" as pgAuth
+  database "PostgreSQL\nauth_db\n- users\n- sessions\n- roles\n- invitations" as pgAuth
 
   database "PostgreSQL\nsms_db\n- sms_logs" as pgSms
+
+  database "PostgreSQL\nemail_db\n- email_logs\n- templates" as pgEmail
+
+  database "PostgreSQL\nrecr_db\n- jobs\n- applications\n- interviews" as pgRecr
+
+  database "PostgreSQL\nwallet_db\n- wallets\n- transactions" as pgWallet
 
   database "OpenSearch\nlog-events\n- Full-text search\n- Analytics" as os
 }
@@ -86,6 +98,7 @@ package "Data Storage" #F5F5F5 {
 ' ============================================================
 package "External Services" #F3E5F5 {
   component "Twilio\n(SMS Provider)" as twilio
+  component "SendGrid/SMTP\n(Email Provider)" as sendgrid
 }
 
 ' ============================================================
@@ -96,6 +109,9 @@ mobile --> gateway : HTTPS
 
 gateway --> auth : REST API
 gateway --> sms : REST API
+gateway --> email : REST API
+gateway --> recr : REST API
+gateway --> wallet : REST API
 gateway --> log : REST API
 
 ' ============================================================
@@ -103,23 +119,42 @@ gateway --> log : REST API
 ' ============================================================
 auth --> pgAuth : SQL
 sms --> pgSms : SQL
+email --> pgEmail : SQL
+recr --> pgRecr : SQL
+wallet --> pgWallet : SQL
 log --> os : REST API
 
 ' ============================================================
 ' DATA FLOW - Message Queue
 ' ============================================================
-auth --> mq : Publish\n- verification.requested\n- verification.resent\n- auth.event.logged
+auth --> mq : Publish\n- verification.requested\n- verification.email.requested\n- invitation.created\n- user.registered\n- auth.event.logged
 
 sms --> mq : Publish\n- sms.event.logged
 
+email --> mq : Publish\n- email.event.logged
+
+recr --> mq : Publish\n- application.submitted\n- interview.scheduled\n- offer.sent\n- recr.event.logged
+
+wallet --> mq : Publish\n- wallet.event.logged
+
 mq --> sms : Consume\n- verification.requested
-mq --> log : Consume\n- auth.event.logged\n- sms.event.logged
+
+mq --> email : Consume\n- verification.email.requested\n- invitation.created
+
+mq --> recr : Consume\n- wallet.payment.completed
+
+mq --> wallet : Consume\n- user.registered
+
+mq --> log : Consume\n- auth.event.logged\n- sms.event.logged\n- email.event.logged\n- recr.event.logged\n- wallet.event.logged
 
 ' ============================================================
 ' DATA FLOW - External
 ' ============================================================
 sms --> twilio : Send SMS\n(Twilio API)
 twilio --> sms : Delivery Webhook
+
+email --> sendgrid : Send Email\n(SendGrid/SMTP)
+sendgrid --> email : Delivery Webhook
 
 ' ============================================================
 ' NOTES
@@ -140,6 +175,30 @@ note right of sms
   - Audit Logs
 end note
 
+note right of email
+  EMAIL Module:
+  - Email Delivery
+  - Template Management
+  - SendGrid/SMTP Integration
+  - Audit Trail
+end note
+
+note right of recr
+  RECR Module:
+  - Job Postings
+  - Candidate Applications
+  - Interview Scheduling
+  - Offer Management
+end note
+
+note right of wallet
+  WALLET Module:
+  - Electronic Wallets
+  - Deposits/Withdrawals
+  - Payment Processing
+  - Transaction History
+end note
+
 note right of log
   LOG Module:
   - Event Ingestion
@@ -150,8 +209,11 @@ end note
 
 note bottom of mq
   RabbitMQ Queues:
-  - log.events (all services)
   - verification.sms (AUTH -> SMS)
+  - verification.email (AUTH -> EMAIL)
+  - invitation.email (AUTH -> EMAIL)
+  - wallet.events (AUTH -> WALLET)
+  - log.events (all services -> LOG)
 end note
 
 @enduml
