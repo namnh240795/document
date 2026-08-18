@@ -111,7 +111,7 @@ external -[hidden]down-> broker
 clients -down-> gw
 gw -down-> services
 services -down-> storage
+services -down-> broker
 storage -down-> external
-external -down-> broker
 
 @enduml
