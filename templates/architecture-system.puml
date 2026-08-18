@@ -96,9 +96,11 @@ rectangle "  Message Broker  " as broker #FFD54F {
 ' Vertical flow
 clients -[hidden]down-> gw
 gw -[hidden]down-> services
-services -[hidden]down-> storage
 
-' Force 3 boxes on same row
+' Force 3 boxes on same row, directly under services
+services -[hidden]down-> storage
+services -[hidden]down-> external
+services -[hidden]down-> broker
 storage -[hidden]right-> external
 external -[hidden]right-> broker
 
