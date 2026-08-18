@@ -1,9 +1,12 @@
 @startuml
 ' ============================================================
 ' System Architecture - Authentication System
-' Grid layout: no arrow overlap
+' Top-down layout with straight arrows
 ' ============================================================
 
+top to bottom direction
+
+skinparam linetype ortho
 skinparam defaultFontName "Arial"
 skinparam defaultFontSize 12
 
