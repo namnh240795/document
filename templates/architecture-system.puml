@@ -108,10 +108,10 @@ external -[hidden]down-> broker
 ' ============================================================
 ' CONNECTIONS
 ' ============================================================
-clients -down-> gw : HTTPS
-gw -down-> services : REST API
-services -down-> storage : SQL
-storage -down-> external : API
-external -down-> broker : Pub/Sub
+clients -down-> gw
+gw -down-> services
+services -down-> storage
+storage -down-> external
+external -down-> broker
 
 @enduml
