@@ -1,7 +1,6 @@
 @startuml
 ' ============================================================
 ' System Architecture - Authentication System
-' Clear, well-organized with labels and data flow
 ' ============================================================
 
 skinparam component {
@@ -43,24 +42,19 @@ package "Clients" #F5F5F5 {
 ' GATEWAY
 ' ============================================================
 package "API Gateway" #E3F2FD {
-  component "NestJS Gateway\n- Rate Limiting\n- JWT Validation\n- Request Routing" as gateway
+  component "NestJS Gateway" as gateway
 }
 
 ' ============================================================
 ' CORE SERVICES
 ' ============================================================
 package "Core Services" #F5F5F5 {
-  component "AUTH Service\n- User Registration\n- Login/Logout\n- Session Management\n- RBAC\n- Invitations" as auth
-
-  component "SMS Service\n- OTP Generation\n- SMS Delivery\n- Delivery Tracking" as sms
-
-  component "EMAIL Service\n- Email Delivery\n- Templating\n- Audit Trail" as email
-
-  component "RECR Service\n- Job Postings\n- Applications\n- Interviews\n- Offers" as recr
-
-  component "WALLET Service\n- Payments\n- Deposits\n- Withdrawals" as wallet
-
-  component "LOG Service\n- Event Ingestion\n- Log Query\n- Analytics" as log
+  component "AUTH" as auth
+  component "SMS" as sms
+  component "EMAIL" as email
+  component "RECR" as recr
+  component "WALLET" as wallet
+  component "LOG" as log
 }
 
 ' ============================================================
@@ -74,80 +68,49 @@ package "Message Broker" #FFF3E0 {
 ' DATA STORAGE
 ' ============================================================
 package "Data Storage" #F5F5F5 {
-  database "PostgreSQL\nauth_db\n- users\n- sessions\n- roles\n- invitations" as pgAuth
-
-  database "PostgreSQL\nsms_db\n- sms_logs" as pgSms
-
-  database "PostgreSQL\nemail_db\n- email_logs\n- templates" as pgEmail
-
-  database "PostgreSQL\nrecr_db\n- jobs\n- applications\n- interviews" as pgRecr
-
-  database "PostgreSQL\nwallet_db\n- wallets\n- transactions" as pgWallet
-
-  database "OpenSearch\nlog-events\n- Full-text search\n- Analytics" as os
+  database "auth_db" as pgAuth
+  database "sms_db" as pgSms
+  database "email_db" as pgEmail
+  database "recr_db" as pgRecr
+  database "wallet_db" as pgWallet
+  database "OpenSearch" as os
 }
 
 ' ============================================================
 ' EXTERNAL SERVICES
 ' ============================================================
 package "External Services" #F3E5F5 {
-  component "Twilio\n(SMS Provider)" as twilio
-  component "SendGrid/SMTP\n(Email Provider)" as sendgrid
+  component "Twilio" as twilio
+  component "SendGrid" as sendgrid
 }
 
 ' ============================================================
-' DATA FLOW - REST API
+' DATA FLOW
 ' ============================================================
-web --> gateway : HTTPS
-mobile --> gateway : HTTPS
+web --> gateway
+mobile --> gateway
 
-gateway --> auth : REST API
-gateway --> sms : REST API
-gateway --> email : REST API
-gateway --> recr : REST API
-gateway --> wallet : REST API
-gateway --> log : REST API
+gateway --> auth
 
-' ============================================================
-' DATA FLOW - Database
-' ============================================================
-auth --> pgAuth : SQL
-sms --> pgSms : SQL
-email --> pgEmail : SQL
-recr --> pgRecr : SQL
-wallet --> pgWallet : SQL
-log --> os : REST API
+auth --> pgAuth
+sms --> pgSms
+email --> pgEmail
+recr --> pgRecr
+wallet --> pgWallet
+log --> os
 
-' ============================================================
-' DATA FLOW - Message Queue
-' ============================================================
-auth --> mq : Publish
+auth --> mq
+sms --> mq
+email --> mq
+recr --> mq
+wallet --> mq
 
-sms --> mq : Publish
+mq --> log
 
-email --> mq : Publish
+sms --> twilio
+twilio --> sms
 
-recr --> mq : Publish
-
-wallet --> mq : Publish
-
-mq --> sms : Consume
-
-mq --> email : Consume
-
-mq --> recr : Consume
-
-mq --> wallet : Consume
-
-mq --> log : Consume
-
-' ============================================================
-' DATA FLOW - External
-' ============================================================
-sms --> twilio : Send SMS\n(Twilio API)
-twilio --> sms : Delivery Webhook
-
-email --> sendgrid : Send Email\n(SendGrid/SMTP)
-sendgrid --> email : Delivery Webhook
+email --> sendgrid
+sendgrid --> email
 
 @enduml
