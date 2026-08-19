@@ -843,19 +843,17 @@
 <p><strong>Luồng Chính:</strong></p>
 <ol>
   <li>Candidate xem chi tiết một job / hoặc HR mở danh sách ứng viên đã nộp cho 1 job</li>
-  <li>Hệ thống kiểm tra cache điểm matching (bảng <code>recr_match_scores</code>) — nếu đã tính và tags chưa đổi thì trả về ngay</li>
-  <li>Nếu chưa có/đã lỗi thời: hệ thống lấy danh sách tag của CV và tag của Job</li>
+  <li>Hệ thống lấy danh sách tag của CV và tag của Job</li>
   <li>Hệ thống tính điểm theo công thức trọng số (vd: required skill khớp = 70%, nice-to-have khớp = 20%, kinh nghiệm/trình độ phù hợp = 10%)</li>
-  <li>Hệ thống lưu điểm vào cache kèm breakdown (tag nào khớp, tag nào thiếu)</li>
+  <li>Hệ thống lưu kết quả vào <code>recr_match_scores</code> kèm breakdown (tag nào khớp, tag nào thiếu)</li>
   <li>Hệ thống hiển thị điểm % kèm chi tiết: "Khớp 8/10 kỹ năng yêu cầu, thiếu: Docker, Kubernetes"</li>
   <li>(HR) Danh sách người nộp đơn được sắp xếp mặc định theo điểm matching giảm dần</li>
 </ol>
 <p><strong>Luồng Thay thế:</strong></p>
 <ul>
-  <li>3a. CV hoặc Job chưa được AI phân tích xong (đang processing): hiển thị "Đang tính toán độ phù hợp..."</li>
-  <li>4a. Không có tag nào ở 1 trong 2 phía: điểm = 0%, hiển thị "Chưa đủ dữ liệu để so khớp"</li>
+  <li>2a. CV hoặc Job chưa được AI phân tích xong (đang processing): hiển thị "Đang tính toán độ phù hợp..."</li>
+  <li>3a. Không có tag nào ở 1 trong 2 phía: điểm = 0%, hiển thị "Chưa đủ dữ liệu để so khớp"</li>
 </ul>
-<p><strong>Trigger tính lại điểm:</strong> khi Candidate cập nhật CV (thêm/sửa skill) hoặc HR sửa lại tag của Job → invalidate cache, tính lại ở lần xem tiếp theo (lazy re-calculation, không tính hàng loạt ngay lập tức để tránh tải hệ thống).</p>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
@@ -1405,7 +1403,7 @@
   <tr><td><span class="req-id">DR-016</span></td><td>recr_resume_skills</td><td>Tags/skills được trích xuất từ CV bằng AI, kèm confidence score và trạng thái</td><td>FR-048</td></tr>
   <tr><td><span class="req-id">DR-017</span></td><td>recr_job_skills</td><td>Tags/skills yêu cầu cho JD, phân loại required/nice_to_have</td><td>FR-049</td></tr>
   <tr><td><span class="req-id">DR-018</span></td><td>recr_skills_taxonomy</td><td>Từ điển skill chuẩn hóa — master data cho matching</td><td>FR-051</td></tr>
-  <tr><td><span class="req-id">DR-019</span></td><td>recr_match_scores</td><td>Cache điểm matching giữa CV và Job kèm breakdown chi tiết</td><td>FR-050</td></tr>
+  <tr><td><span class="req-id">DR-019</span></td><td>recr_match_scores</td><td>Điểm matching giữa CV và Job kèm breakdown chi tiết</td><td>FR-050</td></tr>
 </table>
 
 <h2>5.3 Chi tiết Bảng — recr_webhook_configs</h2>
@@ -1687,11 +1685,10 @@
 <table>
   <tr><th>Bước</th><th>Thành phần</th><th>Giao thức</th><th>Mô tả</th></tr>
   <tr><td>1</td><td>RECR Service</td><td>HTTP</td><td>Nhận request xem job / danh sách ứng viên</td></tr>
-  <tr><td>2</td><td>RECR Service</td><td>PostgreSQL</td><td>Kiểm tra cache <code>recr_match_scores</code> (is_valid = true?)</td></tr>
-  <tr><td>3</td><td>RECR Service</td><td>PostgreSQL</td><td>Lấy tags từ <code>recr_resume_skills</code> + <code>recr_job_skills</code></td></tr>
-  <tr><td>4</td><td>RECR Service</td><td>Internal</td><td>Tính điểm theo trọng số: required (70%) + nice_to_have (20%) + experience (10%)</td></tr>
-  <tr><td>5</td><td>RECR Service</td><td>PostgreSQL</td><td>Lưu/cache điểm kèm breakdown (<code>recr_match_scores</code>)</td></tr>
-  <tr><td>6</td><td>RECR Service</td><td>HTTP</td><td>Trả về điểm % + chi tiết matched/missing skills</td></tr>
+  <tr><td>2</td><td>RECR Service</td><td>PostgreSQL</td><td>Lấy tags từ <code>recr_resume_skills</code> + <code>recr_job_skills</code></td></tr>
+  <tr><td>3</td><td>RECR Service</td><td>Internal</td><td>Tính điểm theo trọng số: required (70%) + nice_to_have (20%) + experience (10%)</td></tr>
+  <tr><td>4</td><td>RECR Service</td><td>PostgreSQL</td><td>Lưu kết quả vào <code>recr_match_scores</code> kèm breakdown</td></tr>
+  <tr><td>5</td><td>RECR Service</td><td>HTTP</td><td>Trả về điểm % + chi tiết matched/missing skills</td></tr>
 </table>
 
 <!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
