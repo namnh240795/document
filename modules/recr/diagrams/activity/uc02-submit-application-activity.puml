@@ -1,5 +1,6 @@
 @startuml
 ' UC-02: Nộp hồ sơ - Sơ đồ Hoạt động
+skinparam dpi 200
 skinparam activity {
   BackgroundColor #F8F8F8
   BorderColor #333333

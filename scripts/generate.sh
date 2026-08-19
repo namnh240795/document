@@ -75,6 +75,7 @@ generate_diagram() {
         -v "$out_dir:/output" \
         plantuml/plantuml:latest \
         -t"$FORMAT" \
+        -DPLANTUML_DPI=200 \
         -o /output \
         /input/*.puml
 
@@ -111,6 +112,7 @@ generate_module_diagram() {
         -v "$out_dir:/output" \
         plantuml/plantuml:latest \
         -t"$FORMAT" \
+        -DPLANTUML_DPI=200 \
         -o /output \
         /input/*.puml
 

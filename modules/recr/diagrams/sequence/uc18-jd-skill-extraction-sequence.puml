@@ -1,5 +1,6 @@
 @startuml uc18-jd-skill-extraction-sequence
 title UC-18: Trích xuất Skills từ JD bằng AI
+skinparam dpi 200
 skinparam backgroundColor white
 skinparam sequenceArrowThickness 2
 skinparam roundcorner 10

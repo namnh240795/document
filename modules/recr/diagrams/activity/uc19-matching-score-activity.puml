@@ -1,5 +1,6 @@
 @startuml uc19-matching-score-activity
 title UC-19: Tính điểm Matching Ứng viên - Việc làm
+skinparam dpi 200
 skinparam activityBackgroundColor #f8f9fa
 skinparam activityBorderColor #dee2e6
 skinparam activityFontColor #212529

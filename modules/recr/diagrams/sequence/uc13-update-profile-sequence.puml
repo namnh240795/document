@@ -1,5 +1,6 @@
 @startuml uc13-update-profile-sequence
 title UC-13: Cập nhật hồ sơ - Sơ đồ Chuỗi
+skinparam dpi 200
 
 actor "Người dùng" as User
 participant "API Gateway" as API

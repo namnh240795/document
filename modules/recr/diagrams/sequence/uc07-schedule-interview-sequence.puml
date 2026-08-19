@@ -1,5 +1,6 @@
 @startuml
 ' UC-07: Phỏng vấn - Sơ đồ Chuỗi
+skinparam dpi 200
 skinparam sequence {
   ArrowColor #333333
   ActorBorderColor #333333

@@ -1,5 +1,6 @@
 @startuml uc17-resume-skill-extraction-activity
 title UC-17: Trích xuất Tags/Skills từ CV bằng AI
+skinparam dpi 200
 skinparam activityBackgroundColor #f8f9fa
 skinparam activityBorderColor #dee2e6
 skinparam activityFontColor #212529

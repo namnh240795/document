@@ -1,5 +1,6 @@
 @startuml
 ' UC-03: Xem trạng thái hồ sơ - Sơ đồ Chuỗi
+skinparam dpi 200
 skinparam sequence {
   ArrowColor #333333
   ActorBorderColor #333333

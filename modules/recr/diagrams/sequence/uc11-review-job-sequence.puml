@@ -1,5 +1,6 @@
 @startuml uc11-review-job-sequence
 title UC-11: Đánh giá Việc làm - Sơ đồ Chuỗi
+skinparam dpi 200
 
 actor "Ứng viên" as Candidate
 participant "API Gateway" as API

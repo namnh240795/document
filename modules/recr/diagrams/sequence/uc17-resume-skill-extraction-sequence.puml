@@ -1,5 +1,6 @@
 @startuml uc17-resume-skill-extraction-sequence
 title UC-17: Trích xuất Skills từ CV bằng AI
+skinparam dpi 200
 skinparam backgroundColor white
 skinparam sequenceArrowThickness 2
 skinparam roundcorner 10

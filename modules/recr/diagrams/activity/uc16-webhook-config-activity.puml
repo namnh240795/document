@@ -1,5 +1,6 @@
 @startuml uc16-webhook-config-activity
 title UC-16: Cấu hình Webhook Cá nhân
+skinparam dpi 200
 skinparam activityBackgroundColor #f8f9fa
 skinparam activityBorderColor #dee2e6
 skinparam activityFontColor #212529

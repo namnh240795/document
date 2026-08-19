@@ -1,5 +1,6 @@
 @startuml uc19-matching-score-sequence
 title UC-19: Tính điểm Matching Ứng viên - Việc làm
+skinparam dpi 200
 skinparam backgroundColor white
 skinparam sequenceArrowThickness 2
 skinparam roundcorner 10

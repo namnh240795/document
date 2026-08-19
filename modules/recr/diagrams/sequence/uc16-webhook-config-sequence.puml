@@ -1,5 +1,6 @@
 @startuml uc16-webhook-config-sequence
 title UC-16: Cấu hình Webhook Cá nhân
+skinparam dpi 200
 skinparam sequenceArrowColor #495057
 skinparam sequenceLifeLineBorderColor #dee2e6
 skinparam sequenceParticipantBackgroundColor #f8f9fa

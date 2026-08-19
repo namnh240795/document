@@ -1,5 +1,6 @@
 @startuml uc12-review-candidate-sequence
 title UC-12: Đánh giá Ứng viên - Sơ đồ Chuỗi
+skinparam dpi 200
 
 actor "Phỏng vấn viên" as Interviewer
 participant "API Gateway" as API
