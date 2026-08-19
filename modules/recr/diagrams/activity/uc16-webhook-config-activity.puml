@@ -1,0 +1,41 @@
+@startuml uc16-webhook-config-activity
+title UC-16: Cấu hình Webhook Cá nhân
+skinparam activityBackgroundColor #f8f9fa
+skinparam activityBorderColor #dee2e6
+skinparam activityFontColor #212529
+skinparam activityDiamondBackgroundColor #fff3cd
+skinparam activityDiamondBorderColor #ffc107
+skinparam arrowColor #6c757d
+
+start
+
+:Người dùng điều hướng đến\ntrang Cài đặt > Webhook;
+
+:Nhập URL webhook (endpoint đích);
+
+:Chọn các sự kiện muốn nhận\n(Mặc định: application.submitted);
+
+:Bật công tắc "Kích hoạt Webhook";
+
+if (Định dạng URL hợp lệ\nvà phải HTTPS?) then (Không)
+  :Hiển thị lỗi xác thực URL;
+  stop
+else (Có)
+endif
+
+:Hệ thống gửi sự kiện test\n(webhook.test) đến URL;
+
+if (Endpoint phản hồi 2xx?) then (Không)
+  :Lưu cấu hình ở trạng thái\n"Chưa xác minh";
+  :Cảnh báo người dùng\nWebhook chưa được kích hoạt;
+  stop
+else (Có)
+endif
+
+:Lưu cấu hình webhook\ncho người dùng;
+
+:Hiển thị thông báo thành công\nkèm trạng thái "Đang hoạt động";
+
+stop
+
+@enduml

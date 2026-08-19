@@ -1,0 +1,56 @@
+@startuml uc16-webhook-config-sequence
+title UC-16: Cấu hình Webhook Cá nhân
+skinparam sequenceArrowColor #495057
+skinparam sequenceLifeLineBorderColor #dee2e6
+skinparam sequenceParticipantBackgroundColor #f8f9fa
+skinparam sequenceParticipantBorderColor #dee2e6
+
+actor "Người dùng\n(HR/Employer)" as User
+participant "Web UI" as UI
+participant "RECR Service" as RECR
+database "PostgreSQL" as DB
+participant "External URL" as External
+
+== Cấu hình Webhook ==
+
+User -> UI : Truy cập Cài đặt > Webhook
+UI --> User : Hiển thị form cấu hình
+
+User -> UI : Nhập URL webhook
+User -> UI : Chọn sự kiện\n(application.submitted)
+User -> UI : Bật "Kích hoạt Webhook"
+
+UI -> RECR : PUT /recr/settings/webhook\n{url, events, is_active}
+
+alt URL không hợp lệ (không HTTPS)
+  RECR --> UI : Lỗi: URL phải sử dụng HTTPS
+  UI --> User : Hiển thị lỗi xác thực
+else URL hợp lệ
+  RECR -> External : POST webhook.test\n(test payload)
+  alt Endpoint phản hồi 2xx
+    RECR -> DB : Lưu cấu hình\n(status: verified)
+    RECR --> UI : Thành công\n(status: active)
+    UI --> User : Thông báo thành công\n+ trạng thái "Đang hoạt động"
+  else Timeout hoặc lỗi 4xx/5xx
+    RECR -> DB : Lưu cấu hình\n(status: unverified)
+    RECR --> UI : Cảnh báo\nWebhook chưa được xác minh
+    UI --> User : Hiển thị cảnh báo\n+ trạng thái "Chưa xác minh"
+  end
+end
+
+== Xem / Tắt Webhook ==
+
+User -> UI : Xem cấu hình webhook
+UI -> RECR : GET /recr/settings/webhook
+RECR -> DB : Truy vấn cấu hình
+DB --> RECR : webhook config
+RECR --> UI : Trả về cấu hình
+UI --> User : Hiển thị URL,\ntrạng thái, sự kiện đã đăng ký
+
+User -> UI : Tắt "Kích hoạt Webhook"
+UI -> RECR : PUT /recr/settings/webhook\n{is_active: false}
+RECR -> DB : Cập nhật is_active = false
+RECR --> UI : Thành công
+UI --> User : Thông báo đã tắt webhook
+
+@enduml
