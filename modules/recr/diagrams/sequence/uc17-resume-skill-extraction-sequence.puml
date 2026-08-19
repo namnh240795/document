@@ -1,49 +1,57 @@
-@startuml uc17-resume-skill-extraction-sequence
-title UC-17: Trích xuất Skills từ CV bằng AI
+@startuml
+' UC-17: Trích xuất Skills từ CV - Sơ đồ Chuỗi
 skinparam dpi 200
-skinparam backgroundColor white
-skinparam sequenceArrowThickness 2
-skinparam roundcorner 10
-skinparam sequenceParticipantPadding 20
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-17: Trích xuất Skills từ CV
 
 actor "Candidate" as C
-participant "RECR\nService" as R
-participant "Resume\nWorker" as W
+participant "RECR Service" as R
+queue "RabbitMQ" as MQ
+participant "Resume Worker" as W
 participant "AI Service" as AI
 database "DB" as DB
 
 == Tải CV lên ==
 
-C -> R : Upload CV
+C -> R : POST /recr/candidate/resume
+activate R
 R -> DB : Lưu CV\n(status: pending)
-R -> R : publish resume.uploaded
-R --> C : Thành công
+activate DB
+DB --> R : OK
+deactivate DB
+R -> MQ : publish resume.uploaded
+R --> C : Thanh cong
+deactivate R
 
-== Trích xuất Skills (tự động) ==
+== Trích xuất Skills ==
 
-R -> W : consume\nresume.uploaded
-W -> DB : status = processing
-W -> W : Đọc nội dung CV\n(PDF/DOCX/OCR)
+MQ -> W : consume
+activate W
+W -> W : Doc noi dung CV
 
-alt CV không đọc được
+alt CV hop le
+  W -> AI : Goi AI trich xuat
+  activate AI
+  AI --> W : JSON skills
+  deactivate AI
+  W -> DB : Luu recr_resume_skills\n(status: analyzed)
+  activate DB
+  DB --> W : OK
+  deactivate DB
+  W --> C : Hien thi skills
+else CV khong doc duoc
   W -> DB : status = failed
-  W --> C : Báo Candidate\nnhập tay
-else CV hợp lệ
-  W -> AI : Gửi nội dung CV\n+ prompt trích xuất
-  alt AI lỗi (retry 3 lần)
-    W -> DB : status = failed
-  else AI thành công
-    AI --> W : JSON skills\n+ confidence
-    W -> W : Chuẩn hóa tags
-    W -> DB : Lưu recr_resume_skills\nstatus = analyzed
-    W --> C : Hiển thị skills\ntrên "Hồ sơ của tôi"
-  end
+  activate DB
+  DB --> W : OK
+  deactivate DB
 end
-
-== Candidate chỉnh sửa Skills ==
-
-C -> R : Cập nhật skill
-R -> DB : is_manual_override = true
-R --> C : Thành công
+deactivate W
 
 @enduml

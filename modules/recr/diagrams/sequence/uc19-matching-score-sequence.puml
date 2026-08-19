@@ -1,37 +1,49 @@
-@startuml uc19-matching-score-sequence
-title UC-19: Tính điểm Matching Ứng viên - Việc làm
-skinparam backgroundColor white
-skinparam sequenceArrowThickness 2
-skinparam roundcorner 10
+@startuml
+' UC-19: Tính điểm Matching - Sơ đồ Chuỗi
+skinparam dpi 200
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-19: Tính điểm Matching
 
 actor "Candidate" as C
 actor "HR" as HR
-participant "RECR\nService" as R
+participant "RECR Service" as R
 database "DB" as DB
 
-== Xem điểm Matching ==
+== Xem diem Matching ==
 
 alt Candidate xem job
-  C -> R : GET chi tiết job
-else HR xem danh sách ứng viên
-  HR -> R : GET danh sách applicants
+  C -> R : GET chi tiet job
+else HR xem danh sach
+  HR -> R : GET applicants
+end
+activate R
+
+R -> DB : Lay tags CV
+activate DB
+DB --> R : CV skills
+deactivate DB
+
+R -> DB : Lay tags Job
+activate DB
+DB --> R : Job skills
+deactivate DB
+
+alt Du du lieu
+  R -> R : Tinh diem
+  R -> DB : Luu recr_match_scores
+  activate DB
+  DB --> R : OK
+  deactivate DB
 end
 
-R -> DB : Lấy tags CV\n(recr_resume_skills)
-R -> DB : Lấy tags Job\n(recr_job_skills)
-
-alt CV hoặc Job chưa có tag
-  R --> C : "Chưa đủ dữ liệu\nde so khớp"
-else Đủ dữ liệu
-  R -> R : Tính điểm\nrequired=70%\nnice_to_have=20%\nexperience=10%
-  R -> DB : Lưu kết quả\nrecr_match_scores
-end
-
-R --> C : Điểm % + chi tiết\nmatched/missing skills
-
-alt HR xem danh sách
-  R -> R : Sắp xếp applicants\ntheo điểm giảm dần
-  R --> HR : Danh sách đã sắp xếp
-end
+R --> C : Diem % + chi tiet
+deactivate R
 
 @enduml

@@ -1,48 +1,42 @@
-@startuml uc18-jd-skill-extraction-activity
-title UC-18: Trích xuất Tags/Skills từ JD bằng AI
+@startuml
+' UC-18: Trích xuất Skills từ JD - Sơ đồ Hoạt động
 skinparam dpi 200
-skinparam activityBackgroundColor #f8f9fa
-skinparam activityBorderColor #dee2e6
-skinparam activityFontColor #212529
-skinparam activityDiamondBackgroundColor #fff3cd
-skinparam activityDiamondBorderColor #ffc107
-skinparam arrowColor #6c757d
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-18: Trích xuất Skills từ JD bằng AI
 
 start
 
-:HR/Employer nhập mô tả công việc\n+ yêu cầu (UC-09 bước 2-4);
+:Luu nhap tin tuyen dung;
 
-:Lưu nháp tin tuyển dụng;
-
-if (HR bấm "Gợiý Tags bằng AI"?) then (Có)
-  :Gửi job vào hàng đợi phân tích JD;
-else (Không — tự động)
-  :Hệ thống tự động\ngửi job vào hàng đợi;
+if (HR bam "Goi y Tags AI?" then (co))
+  :Gui job vao hang doi;
+else (tu dong)
+  :He thong tu dong gui;
 endif
 
-:Worker gọi AI với nội dung JD\n(tiêu đề, mô tả, yêu cầu);
+:Goi AI voi noi dung JD;
 
-if (AI phản hồi?) then (Lỗi/Thiếu thông tin)
-  if (JD quá ngắn?) then (Có)
-    :AI trả về danh sách rỗng\ncảnh báo HR bổ sung mô tả;
-    stop
-  else (Không)
-    :HR vẫn đăng tin bình thường\ntự nhập tag thủ công;
-    stop
-  endif
+if (AI loi / JD thieu info?) then (co)
+  :HR tu nhap tag thu cong;
+  stop
 endif
 
-:AI trả về danh sách skills\n(required + nice_to_have);
+:Chuan hoa tags;
 
-:Chuẩn hóa tag theo\ntừ điển skill chuẩn (taxonomy);
+:Luu recr_job_skills;
 
-:Lưu vào recr_job_skills;
+:Hien thi goi y cho HR;
 
-:Hiển thị gợi ý cho HR\ndạng chip có thể chọn/bỏ;
+:HR xac nhan / chinh sua;
 
-:HR xác nhận hoặc chỉnh sửa\ndanh sách tag;
-
-:Lưu lại và tiếp tục\nluồng gửi duyệt (UC-09);
+:Tiep tuc luong gui duyet;
 
 stop
 

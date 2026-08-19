@@ -1,57 +1,57 @@
-@startuml uc16-webhook-config-sequence
-title UC-16: Cấu hình Webhook Cá nhân
+@startuml
+' UC-16: Cấu hình Webhook Cá nhân - Sơ đồ Chuỗi
 skinparam dpi 200
-skinparam sequenceArrowColor #495057
-skinparam sequenceLifeLineBorderColor #dee2e6
-skinparam sequenceParticipantBackgroundColor #f8f9fa
-skinparam sequenceParticipantBorderColor #dee2e6
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
 
-actor "Người dùng\n(HR/Employer)" as User
-participant "Web UI" as UI
-participant "RECR Service" as RECR
+title UC-16: Cấu hình Webhook Cá nhân
+
+actor "Người dùng" as User
+participant "RECR Service" as R
 database "PostgreSQL" as DB
-participant "External URL" as External
+participant "External URL" as Ext
 
 == Cấu hình Webhook ==
 
-User -> UI : Truy cập Cài đặt > Webhook
-UI --> User : Hiển thị form cấu hình
+User -> R : PUT /recr/settings/webhook\n{url, events, is_active}
+activate R
 
-User -> UI : Nhập URL webhook
-User -> UI : Chọn sự kiện\n(application.submitted)
-User -> UI : Bật "Kích hoạt Webhook"
-
-UI -> RECR : PUT /recr/settings/webhook\n{url, events, is_active}
-
-alt URL không hợp lệ (không HTTPS)
-  RECR --> UI : Lỗi: URL phải sử dụng HTTPS
-  UI --> User : Hiển thị lỗi xác thực
+alt URL không hợp lệ
+  R --> User : Lỗi: URL phải HTTPS
 else URL hợp lệ
-  RECR -> External : POST webhook.test\n(test payload)
-  alt Endpoint phản hồi 2xx
-    RECR -> DB : Lưu cấu hình\n(status: verified)
-    RECR --> UI : Thành công\n(status: active)
-    UI --> User : Thông báo thành công\n+ trạng thái "Đang hoạt động"
-  else Timeout hoặc lỗi 4xx/5xx
-    RECR -> DB : Lưu cấu hình\n(status: unverified)
-    RECR --> UI : Cảnh báo\nWebhook chưa được xác minh
-    UI --> User : Hiển thị cảnh báo\n+ trạng thái "Chưa xác minh"
+  R -> Ext : POST webhook.test
+  activate Ext
+  alt Endpoint 2xx
+    R -> DB : Lưu cấu hình\n(status: verified)
+    activate DB
+    DB --> R : OK
+    deactivate DB
+    R --> User : Thành công\n(Dang hoat dong)
+  else Timeout/Lỗi
+    R -> DB : Lưu cấu hình\n(status: unverified)
+    activate DB
+    DB --> R : OK
+    deactivate DB
+    R --> User : Canh bao\n(chua xac minh)
   end
+  deactivate Ext
 end
+deactivate R
 
-== Xem / Tắt Webhook ==
+== Xem/Tắt Webhook ==
 
-User -> UI : Xem cấu hình webhook
-UI -> RECR : GET /recr/settings/webhook
-RECR -> DB : Truy vấn cấu hình
-DB --> RECR : webhook config
-RECR --> UI : Trả về cấu hình
-UI --> User : Hiển thị URL,\ntrạng thái, sự kiện đã đăng ký
-
-User -> UI : Tắt "Kích hoạt Webhook"
-UI -> RECR : PUT /recr/settings/webhook\n{is_active: false}
-RECR -> DB : Cập nhật is_active = false
-RECR --> UI : Thành công
-UI --> User : Thông báo đã tắt webhook
+User -> R : GET /recr/settings/webhook
+activate R
+R -> DB : Truy van
+activate DB
+DB --> R : Config
+deactivate DB
+R --> User : Hiển thị config
+deactivate R
 
 @enduml

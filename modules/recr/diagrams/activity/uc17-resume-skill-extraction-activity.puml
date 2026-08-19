@@ -1,52 +1,44 @@
-@startuml uc17-resume-skill-extraction-activity
-title UC-17: Trích xuất Tags/Skills từ CV bằng AI
+@startuml
+' UC-17: Trích xuất Skills từ CV - Sơ đồ Hoạt động
 skinparam dpi 200
-skinparam activityBackgroundColor #f8f9fa
-skinparam activityBorderColor #dee2e6
-skinparam activityFontColor #212529
-skinparam activityDiamondBackgroundColor #fff3cd
-skinparam activityDiamondBorderColor #ffc107
-skinparam arrowColor #6c757d
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-17: Trích xuất Skills từ CV bằng AI
 
 start
 
-:Nhận sự kiện resume.uploaded\n(sau khi CV lưu thành công vào FILE);
+:Nhận resume.uploaded;
 
-:Đưa job vào hàng đợi phân tích CV;
-:Cập nhật trạng thái CV = processing;
+:Đưa vào hàng đợi;
 
-:Worker lấy nội dung CV\nqua module FILE (presigned URL);
-
-if (CV có thể đọc được?\n(PDF/DOCX/text)) then (Không)
-  :Cập nhật trạng thái = failed;
-  :Thông báo Candidate\ntự nhập tay skills;
+if (CV đọc được?) then (không)
+  :Trạng thái: failed;
   stop
-else (Có)
 endif
 
-if (CV là ảnh scan?) then (Có)
-  :OCR trích xuất văn bản;
-else (Không)
-endif
+:Trích xuất văn bản\n(PDF/DOCX/OCR);
 
-:Worker gọi AI (LLM)\nvới prompt trích xuất skills;
+:Gọi AI trích xuất skills;
 
-if (AI service phản hồi?) then (Lỗi/Timeout)
-  :Retry tối đa 3 lần\nvới exponential backoff;
-  if (Vẫn lỗi sau 3 lần?) then (Có)
-    :Cập nhật trạng thái = failed;
+if (AI lỗi?) then (có)
+  :Retry 3 lần;
+  if (Vẫn lỗi?) then (có)
+    :Trạng thái: failed;
     stop
   endif
 endif
 
-:AI trả về JSON\ndanh sách skills + confidence score;
+:Chuẩn hóa tags;
 
-:Chuẩn hóa tags\n(map về từ điển skill chuẩn);
+:Lưu recr_resume_skills;
 
-:Lưu kết quả vào recr_resume_skills;
-:Cập nhật trạng thái CV = analyzed;
-
-:Candidate thấy danh sách skills\ntrên trang "Hồ sơ của tôi";
+:Candidate xem skills;
 
 stop
 

@@ -1,41 +1,41 @@
-@startuml uc16-webhook-config-activity
-title UC-16: Cấu hình Webhook Cá nhân
+@startuml
+' UC-16: Cấu hình Webhook Cá nhân - Sơ đồ Hoạt động
 skinparam dpi 200
-skinparam activityBackgroundColor #f8f9fa
-skinparam activityBorderColor #dee2e6
-skinparam activityFontColor #212529
-skinparam activityDiamondBackgroundColor #fff3cd
-skinparam activityDiamondBorderColor #ffc107
-skinparam arrowColor #6c757d
+skinparam activity {
+  BackgroundColor #F8F8F8
+  BorderColor #333333
+  ArrowColor #333333
+  DiamondBackgroundColor #FFCC00
+  DiamondBorderColor #333333
+}
+
+title UC-16: Cấu hình Webhook Cá nhân
 
 start
 
-:Người dùng điều hướng đến\ntrang Cài đặt > Webhook;
+:Truy cập Cài đặt > Webhook;
 
-:Nhập URL webhook (endpoint đích);
+:Nhập URL webhook;
 
-:Chọn các sự kiện muốn nhận\n(Mặc định: application.submitted);
+:Chọn sự kiện\n(application.submitted);
 
-:Bật công tắc "Kích hoạt Webhook";
+:Bật "Kích hoạt Webhook";
 
-if (Định dạng URL hợp lệ\nvà phải HTTPS?) then (Không)
-  :Hiển thị lỗi xác thực URL;
+if (URL hợp lệ HTTPS?) then (không)
+  :Lỗi xác thực URL;
   stop
-else (Có)
 endif
 
-:Hệ thống gửi sự kiện test\n(webhook.test) đến URL;
+:Gửi webhook.test;
 
-if (Endpoint phản hồi 2xx?) then (Không)
-  :Lưu cấu hình ở trạng thái\n"Chưa xác minh";
-  :Cảnh báo người dùng\nWebhook chưa được kích hoạt;
+if (Endpoint 2xx?) then (không)
+  :Trạng thái: Chưa xác minh;
   stop
-else (Có)
 endif
 
-:Lưu cấu hình webhook\ncho người dùng;
+:Lưu cấu hình webhook;
 
-:Hiển thị thông báo thành công\nkèm trạng thái "Đang hoạt động";
+:Thành công - Đang hoạt động;
 
 stop
 
