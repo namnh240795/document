@@ -1437,12 +1437,9 @@
   </tr>
   <tr><td><code>id</code></td><td>UUID</td><td>Khóa chính</td></tr>
   <tr><td><code>resume_id</code></td><td>UUID</td><td>FK đến <code>recr_candidate_resumes</code></td></tr>
-  <tr><td><code>candidate_id</code></td><td>UUID</td><td>FK đến <code>recr_candidates</code></td></tr>
-  <tr><td><code>skill_name</code></td><td>VARCHAR</td><td>Tên skill/tag (đã chuẩn hóa)</td></tr>
-  <tr><td><code>skill_category</code></td><td>ENUM</td><td>technical / soft / language / certification / education</td></tr>
+  <tr><td><code>skill_id</code></td><td>UUID</td><td>FK đến <code>recr_skills_taxonomy</code></td></tr>
   <tr><td><code>confidence_score</code></td><td>FLOAT</td><td>Điểm tin cậy từ AI (0.0 – 1.0)</td></tr>
-  <tr><td><code>years_experience</code></td><td>INTEGER</td><td>Số năm kinh nghiệm (nếu trích xuất được)</td></tr>
-  <tr><td><code>source</code></td><td>ENUM</td><td>ai_extracted / manual</td></tr>
+  <tr><td><code>source</code></td><td>ENUM</td><td>ai / manual</td></tr>
   <tr><td><code>is_manual_override</code></td><td>BOOLEAN</td><td>True nếu Candidate chỉnh sửa thủ công (không bị ghi đè)</td></tr>
   <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>Thời điểm tạo (audit)</td></tr>
   <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>Thời điểm cập nhật (audit)</td></tr>
@@ -1457,11 +1454,9 @@
   </tr>
   <tr><td><code>id</code></td><td>UUID</td><td>Khóa chính</td></tr>
   <tr><td><code>job_id</code></td><td>UUID</td><td>FK đến <code>recr_jobs</code></td></tr>
-  <tr><td><code>skill_name</code></td><td>VARCHAR</td><td>Tên skill/tag (đã chuẩn hóa)</td></tr>
-  <tr><td><code>skill_category</code></td><td>ENUM</td><td>technical / soft / language / certification / education</td></tr>
-  <tr><td><code>importance</code></td><td>ENUM</td><td>required / nice_to_have</td></tr>
-  <tr><td><code>min_years</code></td><td>INTEGER</td><td>Số năm kinh nghiệm tối thiểu (nếu có)</td></tr>
-  <tr><td><code>source</code></td><td>ENUM</td><td>ai_extracted / manual</td></tr>
+  <tr><td><code>skill_id</code></td><td>UUID</td><td>FK đến <code>recr_skills_taxonomy</code></td></tr>
+  <tr><td><code>requirement_level</code></td><td>ENUM</td><td>required / nice_to_have</td></tr>
+  <tr><td><code>source</code></td><td>ENUM</td><td>ai / manual</td></tr>
   <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>Thời điểm tạo (audit)</td></tr>
   <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>Thời điểm cập nhật (audit)</td></tr>
 </table>
@@ -1474,12 +1469,9 @@
     <th>Mô tả</th>
   </tr>
   <tr><td><code>id</code></td><td>UUID</td><td>Khóa chính</td></tr>
-  <tr><td><code>skill_name</code></td><td>VARCHAR</td><td>Tên chuẩn hóa (vd: "React", "Node.js")</td></tr>
-  <tr><td><code>aliases</code></td><td>JSON/ARRAY</td><td>Các tên gọi khác (vd: ["ReactJS", "React.js"])</td></tr>
-  <tr><td><code>category</code></td><td>ENUM</td><td>technical / soft / language / certification / education</td></tr>
-  <tr><td><code>parent_skill_id</code></td><td>UUID</td><td>FK self-ref — nhóm skill (vd: "JavaScript" là parent của "React", "Vue")</td></tr>
-  <tr><td><code>is_active</code></td><td>BOOLEAN</td><td>Có đang sử dụng không</td></tr>
-  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>Thời điểm tạo</td></tr>
+  <tr><td><code>name</code></td><td>VARCHAR</td><td>Tên chuẩn hóa (vd: "React", "Node.js")</td></tr>
+  <tr><td><code>category</code></td><td>ENUM</td><td>technical / soft / domain</td></tr>
+  <tr><td><code>aliases</code></td><td>JSON/ARRAY</td><td>Các tên gọi khác để chuẩn hóa (vd: ["ReactJS", "React.js"])</td></tr>
 </table>
 
 <h2>5.7 Chi tiết Bảng — recr_match_scores</h2>
@@ -1490,14 +1482,13 @@
     <th>Mô tả</th>
   </tr>
   <tr><td><code>id</code></td><td>UUID</td><td>Khóa chính</td></tr>
-  <tr><td><code>resume_id</code></td><td>UUID</td><td>FK đến <code>recr_candidate_resumes</code></td></tr>
+  <tr><td><code>candidate_id</code></td><td>UUID</td><td>FK đến <code>recr_candidates</code></td></tr>
   <tr><td><code>job_id</code></td><td>UUID</td><td>FK đến <code>recr_jobs</code></td></tr>
+  <tr><td><code>application_id</code></td><td>UUID</td><td>FK đến <code>recr_applications</code> (nếu có)</td></tr>
   <tr><td><code>score</code></td><td>INTEGER</td><td>Điểm matching (0-100)</td></tr>
   <tr><td><code>matched_skills</code></td><td>JSON/ARRAY</td><td>Skills khớp (vd: ["React", "TypeScript"])</td></tr>
   <tr><td><code>missing_skills</code></td><td>JSON/ARRAY</td><td>Skills thiếu (vd: ["Docker", "K8s"])</td></tr>
-  <tr><td><code>score_breakdown</code></td><td>JSON</td><td>Chi tiết trọng số: {required: 70, nice_to_have: 20, experience: 10}</td></tr>
-  <tr><td><code>computed_at</code></td><td>TIMESTAMP</td><td>Thời điểm tính điểm</td></tr>
-  <tr><td><code>is_valid</code></td><td>BOOLEAN</td><td>False khi tag thay đổi → cần tính lại</td></tr>
+  <tr><td><code>calculated_at</code></td><td>TIMESTAMP</td><td>Thời điểm tính điểm</td></tr>
 </table>
 
 <!-- 6. API SPECIFICATION -->
@@ -1535,10 +1526,10 @@
   <tr><td>GET</td><td>/recr/candidate/applications/:id/resume</td><td>Lấy URL tải xuống presigned cho hồ sơ ứng tuyển</td><td>FR-038</td></tr>
   <tr><td>POST</td><td>/recr/candidate/reviews/jobs</td><td>Đánh giá việc làm</td><td>FR-030</td></tr>
   <tr><td>GET</td><td>/recr/candidate/reviews/jobs/:jobId</td><td>Lấy đánh giá việc làm</td><td>FR-030</td></tr>
-  <tr><td>GET</td><td>/recr/candidate/resumes/:id/skills</td><td>Lấy danh sách skills của CV</td><td>FR-048</td></tr>
-  <tr><td>PATCH</td><td>/recr/candidate/resumes/:id/skills/:skillId</td><td>Cập nhật skill thủ công</td><td>FR-048</td></tr>
-  <tr><td>DELETE</td><td>/recr/candidate/resumes/:id/skills/:skillId</td><td>Xóa skill</td><td>FR-048</td></tr>
-  <tr><td>POST</td><td>/recr/candidate/resumes/:id/skills</td><td>Thêm skill thủ công</td><td>FR-048</td></tr>
+  <tr><td>POST</td><td>/recr/candidate/resumes/:id/analyze</td><td>Trigger phân tích lại CV bằng AI (thủ công)</td><td>FR-048</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/resumes/:id/skills</td><td>Lấy danh sách skill của 1 CV</td><td>FR-048</td></tr>
+  <tr><td>PATCH</td><td>/recr/candidate/resumes/:id/skills</td><td>Sửa/thêm/xóa skill thủ công</td><td>FR-048</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/jobs/:id/match-score</td><td>Xem điểm matching của Candidate hiện tại với 1 job</td><td>FR-050</td></tr>
 </table>
 
 <h3>Endpoint HR</h3>
@@ -1564,22 +1555,10 @@
   <tr><td>GET</td><td>/recr/settings/webhook</td><td>Lấy cấu hình webhook hiện tại</td><td>FR-047</td></tr>
   <tr><td>PUT</td><td>/recr/settings/webhook</td><td>Tạo/cập nhật URL + bật/tắt</td><td>FR-047</td></tr>
   <tr><td>POST</td><td>/recr/settings/webhook/test</td><td>Gửi sự kiện test xác minh URL</td><td>FR-047</td></tr>
-  <tr><td>GET</td><td>/recr/hr/jobs/:id/skills</td><td>Lấy danh sách skills của job</td><td>FR-049</td></tr>
-  <tr><td>PUT</td><td>/recr/hr/jobs/:id/skills</td><td>Cập nhật skills cho job (chọn/bỏ từ gợi ý AI)</td><td>FR-049</td></tr>
-  <tr><td>POST</td><td>/recr/hr/jobs/:id/skills/ai-suggest</td><td>Kích hoạt AI gợi ý skills cho JD</td><td>FR-049</td></tr>
-  <tr><td>GET</td><td>/recr/hr/jobs/:id/matching</td><td>Xem điểm matching của tất cả ứng viên</td><td>FR-050</td></tr>
-</table>
-
-<h3>Endpoint Matching (Candidate &amp; HR)</h3>
-<table class="trace-table">
-  <tr>
-    <th>Phương thức</th>
-    <th>Đường dẫn</th>
-    <th>Mô tả</th>
-    <th>Mã Yêu cầu</th>
-  </tr>
-  <tr><td>GET</td><td>/recr/matching/resume/:resumeId/job/:jobId</td><td>Lấy điểm matching cho 1 CV - Job pair</td><td>FR-050</td></tr>
-  <tr><td>GET</td><td>/recr/skills/taxonomy</td><td>Lấy từ điển skills chuẩn</td><td>FR-051</td></tr>
+  <tr><td>POST</td><td>/recr/hr/jobs/:id/analyze</td><td>Trigger AI gợi ý tag cho JD</td><td>FR-049</td></tr>
+  <tr><td>GET</td><td>/recr/hr/jobs/:id/skills</td><td>Xem danh sách skill yêu cầu của Job</td><td>FR-049</td></tr>
+  <tr><td>PATCH</td><td>/recr/hr/jobs/:id/skills</td><td>Sửa danh sách skill yêu cầu của Job</td><td>FR-049</td></tr>
+  <tr><td>GET</td><td>/recr/hr/jobs/:id/applicants?sort=match_score</td><td>Danh sách người nộp đơn kèm điểm matching, sắp theo độ phù hợp</td><td>FR-050</td></tr>
 </table>
 
 <h3>Endpoint Đăng ký (Tất cả Vai trò)</h3>
@@ -1651,6 +1630,9 @@
   <tr><td>file.deleted</td><td>Đi vào</td><td>Nhận từ module FILE khi tệp bị xóa; RECR dọn dẹp tham chiếu trong recr_candidate_resumes và recr_applications</td></tr>
   <tr><td>invitation.created</td><td>Đi ra</td><td>Được kích hoạt khi lời mời được tạo</td></tr>
   <tr><td>invitation.accepted</td><td>Đi ra</td><td>Được kích hoạt khi lời mời được chấp nhận</td></tr>
+  <tr><td>resume.analyzed</td><td>Đi ra</td><td>CV đã được AI phân tích xong, có skills</td></tr>
+  <tr><td>job.skills_suggested</td><td>Đi ra</td><td>JD đã được AI gợi ý tag xong</td></tr>
+  <tr><td>match.calculated</td><td>Đi ra</td><td>Điểm matching mới được tính cho 1 cặp CV-Job</td></tr>
 </table>
 
 <h3>7.2.2 Webhook Ngoài (HTTP POST — Tính năng mới)</h3>
@@ -1829,8 +1811,8 @@
   <tr><td>FR-046</td><td>Gửi lại Lời mời</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>POST /recr/invitations/:id/resend</td></tr>
   <tr><td>FR-047</td><td>Cấu hình Webhook</td><td>HR/Employer</td><td>3.16</td><td>recr_webhook_configs</td><td>GET/PUT /recr/settings/webhook, POST /recr/settings/webhook/test</td></tr>
   <tr><td>FR-048</td><td>Trích xuất Skills từ CV</td><td>Candidate / Hệ thống</td><td>3.17</td><td>recr_resume_skills</td><td>GET/POST/PATCH/DELETE /recr/candidate/resumes/:id/skills</td></tr>
-  <tr><td>FR-049</td><td>Trích xuất Skills từ JD</td><td>HR/Employer / Hệ thống</td><td>3.18</td><td>recr_job_skills, recr_skills_taxonomy</td><td>GET/PUT /recr/hr/jobs/:id/skills, POST /recr/hr/jobs/:id/skills/ai-suggest</td></tr>
-  <tr><td>FR-050</td><td>Tính điểm Matching</td><td>Hệ thống / HR / Candidate</td><td>3.19</td><td>recr_match_scores</td><td>GET /recr/matching/resume/:resumeId/job/:jobId, GET /recr/hr/jobs/:id/matching</td></tr>
+  <tr><td>FR-049</td><td>Trích xuất Skills từ JD</td><td>HR/Employer / Hệ thống</td><td>3.18</td><td>recr_job_skills, recr_skills_taxonomy</td><td>POST /recr/hr/jobs/:id/analyze, GET/PATCH /recr/hr/jobs/:id/skills</td></tr>
+  <tr><td>FR-050</td><td>Tính điểm Matching</td><td>Hệ thống / HR / Candidate</td><td>3.19</td><td>recr_match_scores</td><td>GET /recr/candidate/jobs/:id/match-score, GET /recr/hr/jobs/:id/applicants?sort=match_score</td></tr>
   <tr><td>FR-051</td><td>Từ điển Skills chuẩn</td><td>Hệ thống</td><td>3.17, 3.18</td><td>recr_skills_taxonomy</td><td>GET /recr/skills/taxonomy</td></tr>
   <tr><td>NFR-001</td><td>Thời gian Phản hồi API</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-002</td><td>Xử lý Hồ sơ</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
