@@ -1,58 +1,48 @@
 @startuml uc17-resume-skill-extraction-sequence
-title UC-17: Trích xuất Tags/Skills từ CV bằng AI
-skinparam sequenceArrowColor #495057
-skinparam sequenceLifeLineBorderColor #dee2e6
-skinparam sequenceParticipantBackgroundColor #f8f9fa
-skinparam sequenceParticipantBorderColor #dee2e6
+title UC-17: Trích xuất Skills từ CV bằng AI
+skinparam backgroundColor white
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam sequenceParticipantPadding 20
 
-actor "Candidate" as Candidate
-participant "RECR Service" as RECR
-queue "RabbitMQ\n(resume.uploaded)" as MQ
-participant "Resume Worker" as Worker
-participant "Module FILE" as FILE
-participant "AI Service\n(LLM)" as AI
-database "PostgreSQL" as DB
+actor "Candidate" as C
+participant "RECR\nService" as R
+participant "Resume\nWorker" as W
+participant "AI Service" as AI
+database "DB" as DB
 
-== Tải CV lên (UC-15) ==
+== Tải CV lên ==
 
-Candidate -> RECR : POST /recr/candidate/resume\n(upload CV file)
-RECR -> FILE : Lưu file CV
-FILE --> RECR : file_id
-RECR -> DB : INSERT recr_candidate_resumes\n(status: pending)
-RECR -> MQ : publish resume.uploaded\n{resume_id, file_id}
-RECR --> Candidate : Thành công\nCV đã tải lên
+C -> R : Upload CV
+R -> DB : Lưu CV\n(status: pending)
+R -> R : publish resume.uploaded
+R --> C : Thành công
 
-== Trích xuất Skills tự động ==
+== Trích xuất Skills (tự động) ==
 
-MQ -> Worker : consume resume.uploaded
-Worker -> DB : UPDATE status = processing
-Worker -> FILE : GET presigned URL\n(file_id)
-FILE --> Worker : presigned URL
-Worker -> Worker : Trích xuất văn bản\n(PDF/DOCX/OCR)
+R -> W : consume\nresume.uploaded
+W -> DB : status = processing
+W -> W : Đọc nội dung CV\n(PDF/DOCX/OCR)
 
 alt CV không đọc được
-  Worker -> DB : UPDATE status = failed
-  Worker -> RECR : publish resume.failed
-  RECR --> Candidate : Thông báo\ntự nhập tay skills
+  W -> DB : status = failed
+  W --> C : Báo Candidate\nnhập tay
 else CV hợp lệ
-  Worker -> AI : POST /analyze\n(prompt trích xuất skills)
-  alt AI timeout/lỗi
-    Worker -> Worker : Retry (tối đa 3 lần)
-    Worker -> DB : UPDATE status = failed
+  W -> AI : Gửi nội dung CV\n+ prompt trích xuất
+  alt AI lỗi (retry 3 lần)
+    W -> DB : status = failed
   else AI thành công
-    AI --> Worker : JSON skills\n[{name, category, confidence}]
-    Worker -> Worker : Chuẩn hóa tags\n(map từ điển skill chuẩn)
-    Worker -> DB : INSERT recr_resume_skills\n(source: ai_extracted)
-    Worker -> DB : UPDATE status = analyzed
-    Worker -> RECR : publish resume.analyzed
-    RECR --> Candidate : Danh sách skills\ncó trên "Hồ sơ của tôi"
+    AI --> W : JSON skills\n+ confidence
+    W -> W : Chuẩn hóa tags
+    W -> DB : Lưu recr_resume_skills\nstatus = analyzed
+    W --> C : Hiển thị skills\ntrên "Hồ sơ của tôi"
   end
 end
 
 == Candidate chỉnh sửa Skills ==
 
-Candidate -> RECR : PATCH /recr/candidate/resumes/:id/skills/:skillId\n{skill_name: "React"}
-RECR -> DB : UPDATE recr_resume_skills\nis_manual_override = true
-RECR --> Candidate : Cập nhật thành công
+C -> R : Cập nhật skill
+R -> DB : is_manual_override = true
+R --> C : Thành công
 
 @enduml
