@@ -73,7 +73,7 @@
         <li><a href="#section-3-13">3.13 UC-13: Cập nhật Hồ sơ</a></li>
         <li><a href="#section-3-14">3.14 UC-14: Xem Bảng Điều khiển</a></li>
         <li><a href="#section-3-15">3.15 UC-15: Quản lý Hồ sơ Xin việc</a></li>
-        <li><a href="#section-3-16">3.16 UC-16: Cấu hình Webhook Công ty</a></li>
+        <li><a href="#section-3-16">3.16 UC-16: Cấu hình Webhook Cá nhân</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Yêu cầu Chức năng</a>
@@ -709,31 +709,31 @@
   <li>4a. Module FILE không khả dụng: Hệ thống trả về lỗi "Dịch vụ tệp tạm thời không khả dụng"</li>
 </ul>
 
-<h2 id="section-3-16">3.16 UC-16: Cấu hình Webhook Công ty</h2>
+<h2 id="section-3-16">3.16 UC-16: Cấu hình Webhook Cá nhân</h2>
 <table>
   <tr><th>Trường</th><th>Mô tả</th></tr>
   <tr><td>Mã Trường hợp sử dụng</td><td>UC-16</td></tr>
-  <tr><td>Tên</td><td>Cấu hình Webhook Công ty</td></tr>
-  <tr><td>Diễn viên</td><td>HR (Admin tổ chức)</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>HR đã đăng nhập, có quyền quản trị tổ chức</td></tr>
+  <tr><td>Tên</td><td>Cấu hình Webhook Cá nhân</td></tr>
+  <tr><td>Diễn viên</td><td>HR / Employer</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập</td></tr>
   <tr><td>Điều kiện thành công</td><td>Webhook được lưu và kích hoạt/vô hiệu hóa thành công</td></tr>
-  <tr><td>Kích hoạt</td><td>HR truy cập "Cài đặt Công ty" &gt; "Tích hợp Webhook"</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng truy cập "Cài đặt" &gt; "Tích hợp Webhook"</td></tr>
 </table>
 <p><strong>Luồng Chính:</strong></p>
 <ol>
-  <li>HR điều hướng đến trang Cài đặt Công ty &gt; Webhook</li>
-  <li>HR nhập URL webhook (endpoint đích)</li>
-  <li>HR chọn các sự kiện muốn nhận. Mặc định chỉ có <code>application.submitted</code></li>
-  <li>HR bật công tắc "Kích hoạt Webhook"</li>
+  <li>Người dùng điều hướng đến trang Cài đặt &gt; Webhook</li>
+  <li>Người dùng nhập URL webhook (endpoint đích)</li>
+  <li>Người dùng chọn các sự kiện muốn nhận. Mặc định chỉ có <code>application.submitted</code></li>
+  <li>Người dùng bật công tắc "Kích hoạt Webhook"</li>
   <li>Hệ thống xác thực định dạng URL (phải là HTTPS)</li>
   <li>Hệ thống gửi một sự kiện test (<code>webhook.test</code>) đến URL để xác minh endpoint phản hồi 2xx</li>
-  <li>Hệ thống lưu cấu hình webhook cho tổ chức</li>
-  <li>HR thấy thông báo thành công kèm trạng thái "Đang hoạt động"</li>
+  <li>Hệ thống lưu cấu hình webhook cho người dùng</li>
+  <li>Người dùng thấy thông báo thành công kèm trạng thái "Đang hoạt động"</li>
 </ol>
 <p><strong>Luồng Thay thế:</strong></p>
 <ul>
   <li>5a. URL không hợp lệ hoặc không phải HTTPS: Hệ thống hiển thị lỗi xác thực</li>
-  <li>6a. Test webhook thất bại (timeout/lỗi 4xx-5xx): Hệ thống lưu cấu hình ở trạng thái "Chưa xác minh" và cảnh báo HR, không tự động kích hoạt</li>
+  <li>6a. Test webhook thất bại (timeout/lỗi 4xx-5xx): Hệ thống lưu cấu hình ở trạng thái "Chưa xác minh" và cảnh báo người dùng, không tự động kích hoạt</li>
 </ul>
 
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
@@ -919,7 +919,7 @@
     <td>Cấu hình Webhook</td>
     <td>UC-16</td>
     <td>Trung bình</td>
-    <td>HR có thể cấu hình một URL webhook đích và bật/tắt trạng thái gửi sự kiện cho tổ chức của mình. Mỗi tổ chức chỉ có một cấu hình webhook. Khi tắt (is_active = false), hệ thống ngừng gửi mọi sự kiện đến URL đó nhưng vẫn giữ lại cấu hình.</td>
+    <td>Người dùng (HR/Employer) có thể cấu hình một URL webhook đích và bật/tắt trạng thái gửi sự kiện. Mỗi người dùng chỉ có một cấu hình webhook. Khi tắt (is_active = false), hệ thống ngừng gửi mọi sự kiện đến URL đó nhưng vẫn giữ lại cấu hình.</td>
   </tr>
 </table>
 
@@ -1224,7 +1224,7 @@
   <tr><td><span class="req-id">DR-012</span></td><td>recr_job_reviews</td><td>Đánh giá việc làm từ ứng viên</td><td>FR-030</td></tr>
   <tr><td><span class="req-id">DR-013</span></td><td>recr_candidate_reviews</td><td>Đánh giá ứng viên từ người phỏng vấn</td><td>FR-031</td></tr>
   <tr><td><span class="req-id">DR-014</span></td><td>recr_invitations</td><td>Bản ghi lời mời với xác minh dựa trên token</td><td>FR-039, FR-042, FR-043, FR-044</td></tr>
-  <tr><td><span class="req-id">DR-015</span></td><td>recr_webhook_configs</td><td>Cấu hình webhook tổ chức — mỗi tổ chức có tối đa 1 cấu hình</td><td>FR-047</td></tr>
+  <tr><td><span class="req-id">DR-015</span></td><td>recr_webhook_configs</td><td>Cấu hình webhook cá nhân — mỗi người dùng có tối đa 1 cấu hình</td><td>FR-047</td></tr>
 </table>
 
 <h2>5.3 Chi tiết Bảng — recr_webhook_configs</h2>
@@ -1235,7 +1235,7 @@
     <th>Mô tả</th>
   </tr>
   <tr><td><code>id</code></td><td>UUID</td><td>Khóa chính</td></tr>
-  <tr><td><code>organization_id</code></td><td>UUID</td><td>FK đến tổ chức (1 tổ chức = 1 config)</td></tr>
+  <tr><td><code>user_id</code></td><td>UUID</td><td>FK đến người dùng (1 người dùng = 1 config)</td></tr>
   <tr><td><code>webhook_url</code></td><td>VARCHAR</td><td>URL đích, bắt buộc HTTPS</td></tr>
   <tr><td><code>is_active</code></td><td>BOOLEAN</td><td>Bật/tắt gửi webhook</td></tr>
   <tr><td><code>subscribed_events</code></td><td>JSON/ARRAY</td><td>Danh sách sự kiện đăng ký (vd: ["application.submitted"])</td></tr>
@@ -1304,9 +1304,9 @@
   <tr><td>GET</td><td>/recr/hr/jobs/:id/applicants</td><td>Xem người nộp đơn cho việc làm</td><td>FR-029</td></tr>
   <tr><td>POST</td><td>/recr/hr/reviews/candidates</td><td>Đánh giá ứng viên</td><td>FR-031</td></tr>
   <tr><td>GET</td><td>/recr/hr/reviews/candidates/:candidateId</td><td>Lấy đánh giá ứng viên</td><td>FR-031</td></tr>
-  <tr><td>GET</td><td>/recr/hr/settings/webhook</td><td>Lấy cấu hình webhook hiện tại</td><td>FR-047</td></tr>
-  <tr><td>PUT</td><td>/recr/hr/settings/webhook</td><td>Tạo/cập nhật URL + bật/tắt</td><td>FR-047</td></tr>
-  <tr><td>POST</td><td>/recr/hr/settings/webhook/test</td><td>Gửi sự kiện test xác minh URL</td><td>FR-047</td></tr>
+  <tr><td>GET</td><td>/recr/settings/webhook</td><td>Lấy cấu hình webhook hiện tại</td><td>FR-047</td></tr>
+  <tr><td>PUT</td><td>/recr/settings/webhook</td><td>Tạo/cập nhật URL + bật/tắt</td><td>FR-047</td></tr>
+  <tr><td>POST</td><td>/recr/settings/webhook/test</td><td>Gửi sự kiện test xác minh URL</td><td>FR-047</td></tr>
 </table>
 
 <h3>Endpoint Đăng ký (Tất cả Vai trò)</h3>
@@ -1381,7 +1381,7 @@
 </table>
 
 <h3>7.2.2 Webhook Ngoài (HTTP POST — Tính năng mới)</h3>
-<p>HR cấu hình URL đích để nhận sự kiện từ hệ thống ra bên ngoài (ATS, Slack, CRM...). Được ký bằng HMAC secret_key để xác thực nguồn gửi.</p>
+<p>Người dùng (HR/Employer) cấu hình URL đích để nhận sự kiện từ hệ thống ra bên ngoài (ATS, Slack, CRM...). Được ký bằng HMAC secret_key để xác thực nguồn gửi.</p>
 <table>
   <tr><th>Sự kiện</th><th>Mô tả</th><th>Ví dụ sử dụng</th></tr>
   <tr><td><code>application.submitted</code></td><td>Ứng viên nộp hồ sơ ứng tuyển</td><td>Push sang ATS / CRM</td></tr>
@@ -1399,9 +1399,9 @@
     <th>Method</th>
     <th>Mô tả</th>
   </tr>
-  <tr><td>/recr/hr/settings/webhook</td><td>GET</td><td>Lấy cấu hình webhook hiện tại</td></tr>
-  <tr><td>/recr/hr/settings/webhook</td><td>PUT</td><td>Tạo/cập nhật URL + bật/tắt</td></tr>
-  <tr><td>/recr/hr/settings/webhook/test</td><td>POST</td><td>Gửi sự kiện test xác minh URL</td></tr>
+  <tr><td>/recr/settings/webhook</td><td>GET</td><td>Lấy cấu hình webhook hiện tại</td></tr>
+  <tr><td>/recr/settings/webhook</td><td>PUT</td><td>Tạo/cập nhật URL + bật/tắt</td></tr>
+  <tr><td>/recr/settings/webhook/test</td><td>POST</td><td>Gửi sự kiện test xác minh URL</td></tr>
 </table>
 
 <!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
@@ -1519,7 +1519,7 @@
   <tr><td>FR-044</td><td>Thu hồi Lời mời</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>DELETE /recr/invitations/:id</td></tr>
   <tr><td>FR-045</td><td>Liệt kê Lời mời</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>GET /recr/invitations</td></tr>
   <tr><td>FR-046</td><td>Gửi lại Lời mời</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>POST /recr/invitations/:id/resend</td></tr>
-  <tr><td>FR-047</td><td>Cấu hình Webhook</td><td>HR</td><td>3.16</td><td>recr_webhook_configs</td><td>GET/PUT /recr/hr/settings/webhook, POST /recr/hr/settings/webhook/test</td></tr>
+  <tr><td>FR-047</td><td>Cấu hình Webhook</td><td>HR/Employer</td><td>3.16</td><td>recr_webhook_configs</td><td>GET/PUT /recr/settings/webhook, POST /recr/settings/webhook/test</td></tr>
   <tr><td>NFR-001</td><td>Thời gian Phản hồi API</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-002</td><td>Xử lý Hồ sơ</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-003</td><td>Người dùng Đồng thời</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
