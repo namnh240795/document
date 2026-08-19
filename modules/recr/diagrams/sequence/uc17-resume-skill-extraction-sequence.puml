@@ -30,26 +30,26 @@ activate DB
 DB --> R : OK
 deactivate DB
 R -> MQ : publish resume.uploaded
-R --> C : Thanh cong
+R --> C : Thành công
 deactivate R
 
 == Trích xuất Skills ==
 
 MQ -> W : consume
 activate W
-W -> W : Doc noi dung CV
+W -> W : Đọc nội dung CV
 
-alt CV hop le
-  W -> AI : Goi AI trich xuat
+alt CV hợp lệ
+  W -> AI : Gọi AI trích xuất
   activate AI
   AI --> W : JSON skills
   deactivate AI
-  W -> DB : Luu recr_resume_skills\n(status: analyzed)
+  W -> DB : Lưu recr_resume_skills\n(status: analyzed)
   activate DB
   DB --> W : OK
   deactivate DB
-  W --> C : Hien thi skills
-else CV khong doc duoc
+  W --> C : Hiển thị skills
+else CV không đọc được
   W -> DB : status = failed
   activate DB
   DB --> W : OK

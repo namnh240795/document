@@ -19,34 +19,34 @@ actor "HR" as HR
 participant "RECR Service" as R
 database "DB" as DB
 
-== Xem diem Matching ==
+== Xem điểm Matching ==
 
 alt Candidate xem job
-  C -> R : GET chi tiet job
-else HR xem danh sach
+  C -> R : GET chi tiết job
+else HR xem danh sách
   HR -> R : GET applicants
 end
 activate R
 
-R -> DB : Lay tags CV
+R -> DB : Lấy tags CV
 activate DB
 DB --> R : CV skills
 deactivate DB
 
-R -> DB : Lay tags Job
+R -> DB : Lấy tags Job
 activate DB
 DB --> R : Job skills
 deactivate DB
 
-alt Du du lieu
-  R -> R : Tinh diem
-  R -> DB : Luu recr_match_scores
+alt Đủ dữ liệu
+  R -> R : Tính điểm
+  R -> DB : Lưu recr_match_scores
   activate DB
   DB --> R : OK
   deactivate DB
 end
 
-R --> C : Diem % + chi tiet
+R --> C : Điểm % + chi tiết
 deactivate R
 
 @enduml

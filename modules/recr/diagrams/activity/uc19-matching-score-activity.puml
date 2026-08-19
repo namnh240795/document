@@ -16,35 +16,35 @@ title UC-19: Tính điểm Matching
 
 start
 
-:Xem chi tiet job / danh sach ung vien;
+:Xem chi tiết job / danh sách ứng viên;
 
-:Lay tags CV;
+:Lấy tags CV;
 
-if (CV co tag?) then (khong)
-  :Diem = 0%\n"Chua du du lieu";
+if (CV có tag?) then (không)
+  :Điểm = 0%\n"Chưa đủ dữ liệu";
   stop
 endif
 
-:Lay tags Job;
+:Lấy tags Job;
 
-if (Job co tag?) then (khong)
-  :Diem = 0%\n"Chua du du lieu";
+if (Job có tag?) then (không)
+  :Điểm = 0%\n"Chưa đủ dữ liệu";
   stop
 endif
 
-if (Dang processing?) then (co)
-  :Dang tinh toan...;
+if (Đang processing?) then (có)
+  :Đang tính toán...;
   stop
 endif
 
-:Tinh diem\n(required=70%\nnice_to_have=20%\nexperience=10%);
+:Tính điểm\n(required=70%\nnice_to_have=20%\nexperience=10%);
 
-:Luu recr_match_scores;
+:Lưu recr_match_scores;
 
-:Hien thi diem % + chi tiet;
+:Hiển thị điểm % + chi tiết;
 
-if (HR xem?) then (co)
-  :Sap xep theo diem giam dan;
+if (HR xem?) then (có)
+  :Sắp xếp theo điểm giảm dần;
 endif
 
 stop

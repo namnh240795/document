@@ -16,30 +16,30 @@ title UC-18: Trích xuất Skills từ JD bằng AI
 
 start
 
-:Luu nhap tin tuyen dung;
+:Lưu nháp tin tuyển dụng;
 
-if (HR bam "Goi y Tags AI?" then (co))
-  :Gui job vao hang doi;
-else (tu dong)
-  :He thong tu dong gui;
+if (HR bấm "Gợi ý Tags AI?" then (có))
+  :Gửi job vào hàng đợi;
+else (tự động)
+  :Hệ thống tự động gửi;
 endif
 
-:Goi AI voi noi dung JD;
+:Gọi AI với nội dung JD;
 
-if (AI loi / JD thieu info?) then (co)
-  :HR tu nhap tag thu cong;
+if (AI lỗi / JD thiếu info?) then (có)
+  :HR tự nhập tag thủ công;
   stop
 endif
 
-:Chuan hoa tags;
+:Chuẩn hóa tags;
 
-:Luu recr_job_skills;
+:Lưu recr_job_skills;
 
-:Hien thi goi y cho HR;
+:Hiển thị gợi ý cho HR;
 
-:HR xac nhan / chinh sua;
+:HR xác nhận / chỉnh sửa;
 
-:Tiep tuc luong gui duyet;
+:Tiếp tục luồng gửi duyệt;
 
 stop
 

@@ -77,6 +77,7 @@
         <li><a href="#section-3-17">3.17 UC-17: Trích xuất Tags/Skills từ CV bằng AI</a></li>
         <li><a href="#section-3-18">3.18 UC-18: Trích xuất Tags/Skills từ JD bằng AI</a></li>
         <li><a href="#section-3-19">3.19 UC-19: Tính điểm Matching Ứng viên - Việc làm</a></li>
+        <li><a href="#section-3-20">3.20 UC-20: Gợi ý Ứng viên Phù hợp cho Việc làm Mới</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Yêu cầu Chức năng</a>
@@ -867,6 +868,50 @@
   <div class="caption">Hình: Tích hợp Tính điểm Matching</div>
 </div>
 
+<h2 id="section-3-20">3.20 UC-20: Gợi ý Ứng viên Phù hợp cho Việc làm Mới</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-20</td></tr>
+  <tr><td>Tên</td><td>Gợi ý Ứng viên Phù hợp cho Việc làm Mới</td></tr>
+  <tr><td>Diễn viên</td><td>Hệ thống (tự động), HR (xem và hành động), Candidate (nhận thông báo mời)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Việc làm đã được duyệt và ở trạng thái "open" (UC-10); việc làm đã có skills từ UC-18; ứng viên đã bật <code>is_open_to_work = true</code> trên hồ sơ (FR-052)</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Danh sách ứng viên phù hợp và đang sẵn sàng được tạo, thông báo cho HR mà không gây trùng lặp/làm phiền ứng viên</td></tr>
+  <tr><td>Kích hoạt</td><td>Sự kiện nội bộ <code>job.approved</code></td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Hệ thống nhận sự kiện <code>job.approved</code>, đưa job vào hàng đợi xử lý gợi ý ứng viên</li>
+  <li>Worker lấy danh sách skill yêu cầu của việc làm từ <code>recr_job_skills</code>, giới hạn phạm vi ứng viên trong cùng tổ chức đăng job</li>
+  <li>Worker lọc sơ bộ ứng viên bằng truy vấn có ít nhất một skill trùng với việc làm (join <code>recr_resume_skills</code> với <code>recr_job_skills</code>), chỉ lấy ứng viên có <code>is_open_to_work = true</code> và không ở trạng thái "hired" cho việc làm khác trong tổ chức</li>
+  <li>Với từng ứng viên trong tập đã lọc, worker gọi lại hàm tính điểm phù hợp dùng chung với UC-19 (không viết thuật toán riêng)</li>
+  <li>Hệ thống lọc các ứng viên có điểm phù hợp trên ngưỡng cấu hình (mặc định 70%), sắp xếp giảm dần, lấy tối đa N ứng viên đầu (mặc định 20)</li>
+  <li>Hệ thống kiểm tra giới hạn tần suất: bỏ qua ứng viên đã nhận đủ số lời mời gợi ý tối đa từ tổ chức này trong khoảng thời gian cấu hình (mặc định tối đa 3 gợi ý/tuần/tổ chức)</li>
+  <li>Hệ thống lưu kết quả vào <code>recr_job_suggestions</code> với trạng thái "new"</li>
+  <li>Hệ thống gửi thông báo cho HR phụ trách: "N ứng viên phù hợp cho việc làm [tên việc làm]"</li>
+  <li>HR mở danh sách gợi ý, xem chi tiết điểm phù hợp và có thể gửi lời mời ứng tuyển trực tiếp (tái sử dụng luồng mời hiện có ở module Invitation)</li>
+</ol>
+<p><strong>Luồng Thay thế:</strong></p>
+<ul>
+  <li>3a. Không có ứng viên nào thỏa điều kiện lọc sơ bộ: hệ thống không tạo gợi ý, không gửi thông báo</li>
+  <li>5a. Không có ứng viên nào đạt ngưỡng điểm phù hợp: hệ thống ghi log, không gửi thông báo cho HR</li>
+  <li>6a. Ứng viên đã đạt giới hạn tần suất nhận gợi ý: ứng viên bị loại khỏi danh sách gợi ý cho job này, không tính là lỗi, tiếp tục xử lý các ứng viên còn lại</li>
+  <li>6b. Cùng một ứng viên phù hợp với nhiều job được duyệt gần nhau (trong cùng ngày, cùng tổ chức): hệ thống gộp thành một thông báo duy nhất cho ứng viên ("Có N vị trí phù hợp với bạn") thay vì gửi riêng lẻ từng job</li>
+  <li>9a. HR gửi lời mời cho ứng viên gợi ý: hệ thống cập nhật trạng thái gợi ý tương ứng thành "contacted"</li>
+  <li>9b. HR bỏ qua gợi ý: HR có thể đánh dấu "Bỏ qua", trạng thái chuyển thành "dismissed", không gợi ý lại ứng viên đó cho cùng việc làm</li>
+</ul>
+
+<h3>Sơ đồ Hoạt động</h3>
+<div class="diagram">
+  <img src="./images/activity/uc20-candidate-suggestion-activity.png" alt="Sơ đồ Hoạt động Gợi ý Ứng viên">
+  <div class="caption">Hình: Luồng Gợi ý Ứng viên Phù hợp cho Việc làm Mới</div>
+</div>
+
+<h3>Sơ đồ Chuỗi</h3>
+<div class="diagram">
+  <img src="./images/sequence/uc20-candidate-suggestion-sequence.png" alt="Sơ đồ Chuỗi Gợi ý Ứng viên">
+  <div class="caption">Hình: Tích hợp Gợi ý Ứng viên</div>
+</div>
+
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Yêu cầu Chức năng</h1>
 
@@ -995,6 +1040,22 @@
     <td>UC-17, UC-18</td>
     <td>Cao</td>
     <td>Bảng master <code>recr_skills_taxonomy</code> đảm bảo tag đồng nhất giữa CV và JD, hỗ trợ matching chính xác.</td>
+  </tr>
+  <tr>
+    <td><span id="fr-052" class="req-id">FR-052</span></td>
+    <td>RECR</td>
+    <td>Mở để tìm việc</td>
+    <td>UC-20</td>
+    <td>Trung bình</td>
+    <td>Candidate có thể bật/tắt <code>is_open_to_work</code> trên hồ sơ. Khi bật, ứng viên xuất hiện trong danh sách gợi ý cho HR.</td>
+  </tr>
+  <tr>
+    <td><span id="fr-053" class="req-id">FR-053</span></td>
+    <td>RECR</td>
+    <td>Gợi ý Ứng viên cho Job mới</td>
+    <td>UC-20</td>
+    <td>Cao</td>
+    <td>Hệ thống tự động gợi ý ứng viên phù hợp khi job được duyệt. Lọc theo skill trùng, điểm matching ≥ 70%, giới hạn tần suất 3 gợi ý/tuần/tổ chức. Lưu vào <code>recr_job_suggestions</code>.</td>
   </tr>
 </table>
 
@@ -1404,6 +1465,7 @@
   <tr><td><span class="req-id">DR-017</span></td><td>recr_job_skills</td><td>Tags/skills yêu cầu cho JD, phân loại required/nice_to_have</td><td>FR-049</td></tr>
   <tr><td><span class="req-id">DR-018</span></td><td>recr_skills_taxonomy</td><td>Từ điển skill chuẩn hóa — master data cho matching</td><td>FR-051</td></tr>
   <tr><td><span class="req-id">DR-019</span></td><td>recr_match_scores</td><td>Điểm matching giữa CV và Job kèm breakdown chi tiết</td><td>FR-050</td></tr>
+  <tr><td><span class="req-id">DR-020</span></td><td>recr_job_suggestions</td><td>Danh sách gợi ý ứng viên phù hợp cho job mới</td><td>FR-053</td></tr>
 </table>
 
 <h2>5.3 Chi tiết Bảng — recr_webhook_configs</h2>
@@ -1489,6 +1551,24 @@
   <tr><td><code>calculated_at</code></td><td>TIMESTAMP</td><td>Thời điểm tính điểm</td></tr>
 </table>
 
+<h2>5.8 Chi tiết Bảng — recr_job_suggestions</h2>
+<table class="trace-table">
+  <tr>
+    <th>Cột</th>
+    <th>Kiểu</th>
+    <th>Mô tả</th>
+  </tr>
+  <tr><td><code>id</code></td><td>UUID</td><td>Khóa chính</td></tr>
+  <tr><td><code>job_id</code></td><td>UUID</td><td>FK đến <code>recr_jobs</code></td></tr>
+  <tr><td><code>candidate_id</code></td><td>UUID</td><td>FK đến <code>recr_candidates</code></td></tr>
+  <tr><td><code>match_score</code></td><td>INTEGER</td><td>Điểm matching (0-100)</td></tr>
+  <tr><td><code>matched_skills</code></td><td>JSON/ARRAY</td><td>Skills khớp</td></tr>
+  <tr><td><code>missing_skills</code></td><td>JSON/ARRAY</td><td>Skills thiếu</td></tr>
+  <tr><td><code>status</code></td><td>ENUM</td><td>new / contacted / dismissed</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>Thời điểm tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>Thời điểm cập nhật</td></tr>
+</table>
+
 <!-- 6. API SPECIFICATION -->
 <h1 id="section-6">6. Đặc tả API</h1>
 
@@ -1557,6 +1637,19 @@
   <tr><td>GET</td><td>/recr/hr/jobs/:id/skills</td><td>Xem danh sách skill yêu cầu của Job</td><td>FR-049</td></tr>
   <tr><td>PATCH</td><td>/recr/hr/jobs/:id/skills</td><td>Sửa danh sách skill yêu cầu của Job</td><td>FR-049</td></tr>
   <tr><td>GET</td><td>/recr/hr/jobs/:id/applicants?sort=match_score</td><td>Danh sách người nộp đơn kèm điểm matching, sắp theo độ phù hợp</td><td>FR-050</td></tr>
+  <tr><td>GET</td><td>/recr/hr/jobs/:id/suggestions</td><td>Danh sách gợi ý ứng viên phù hợp cho job</td><td>FR-053</td></tr>
+  <tr><td>PATCH</td><td>/recr/hr/suggestions/:id</td><td>Cập nhật trạng thái gợi ý (contacted/dismissed)</td><td>FR-053</td></tr>
+</table>
+
+<h3>Endpoint Candidate — Open to Work</h3>
+<table class="trace-table">
+  <tr>
+    <th>Phương thức</th>
+    <th>Đường dẫn</th>
+    <th>Mô tả</th>
+    <th>Mã Yêu cầu</th>
+  </tr>
+  <tr><td>PATCH</td><td>/recr/candidate/profile/open-to-work</td><td>Bật/tắt trạng thái "Mở để tìm việc"</td><td>FR-052</td></tr>
 </table>
 
 <h3>Endpoint Đăng ký (Tất cả Vai trò)</h3>
@@ -1631,6 +1724,8 @@
   <tr><td>resume.analyzed</td><td>Đi ra</td><td>CV đã được AI phân tích xong, có skills</td></tr>
   <tr><td>job.skills_suggested</td><td>Đi ra</td><td>JD đã được AI gợi ý tag xong</td></tr>
   <tr><td>match.calculated</td><td>Đi ra</td><td>Điểm matching mới được tính cho 1 cặp CV-Job</td></tr>
+  <tr><td>job.approved</td><td>Đi ra</td><td>Việc làm được duyệt, kích hoạt gợi ý ứng viên phù hợp</td></tr>
+  <tr><td>candidate.suggested</td><td>Đi ra</td><td>Gợi ý ứng viên phù hợp đã được tạo cho job</td></tr>
 </table>
 
 <h3>7.2.2 Webhook Ngoài (HTTP POST — Tính năng mới)</h3>
@@ -1689,6 +1784,19 @@
   <tr><td>3</td><td>RECR Service</td><td>Internal</td><td>Tính điểm theo trọng số: required (70%) + nice_to_have (20%) + experience (10%)</td></tr>
   <tr><td>4</td><td>RECR Service</td><td>PostgreSQL</td><td>Lưu kết quả vào <code>recr_match_scores</code> kèm breakdown</td></tr>
   <tr><td>5</td><td>RECR Service</td><td>HTTP</td><td>Trả về điểm % + chi tiết matched/missing skills</td></tr>
+</table>
+
+<h2>7.7 Tích hợp Gợi ý Ứng viên (UC-20)</h2>
+<p>Luồng tự động khi job được duyệt:</p>
+<table>
+  <tr><th>Bước</th><th>Thành phần</th><th>Giao thức</th><th>Mô tả</th></tr>
+  <tr><td>1</td><td>RECR Service</td><td>RabbitMQ</td><td>Phát sự kiện <code>job.approved</code></td></tr>
+  <tr><td>2</td><td>Suggestion Worker</td><td>RabbitMQ</td><td>Nhận job, lấy <code>recr_job_skills</code></td></tr>
+  <tr><td>3</td><td>Suggestion Worker</td><td>PostgreSQL</td><td>Lọc ứng viên: skill trùng + <code>is_open_to_work = true</code> + chưa hired trong tổ chức</td></tr>
+  <tr><td>4</td><td>Suggestion Worker</td><td>Internal</td><td>Tính điểm matching (tái sử dụng UC-19)</td></tr>
+  <tr><td>5</td><td>Suggestion Worker</td><td>PostgreSQL</td><td>Lọc ngưỡng ≥ 70%, kiểm tra tần suất (3/tuần/tổ chức)</td></tr>
+  <tr><td>6</td><td>Suggestion Worker</td><td>PostgreSQL</td><td>Lưu <code>recr_job_suggestions</code> (status: new)</td></tr>
+  <tr><td>7</td><td>RECR Service</td><td>RabbitMQ</td><td>Gửi thông báo cho HR</td></tr>
 </table>
 
 <!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
@@ -1811,6 +1919,8 @@
   <tr><td>FR-049</td><td>Trích xuất Skills từ JD</td><td>HR/Employer / Hệ thống</td><td>3.18</td><td>recr_job_skills, recr_skills_taxonomy</td><td>POST /recr/hr/jobs/:id/analyze, GET/PATCH /recr/hr/jobs/:id/skills</td></tr>
   <tr><td>FR-050</td><td>Tính điểm Matching</td><td>Hệ thống / HR / Candidate</td><td>3.19</td><td>recr_match_scores</td><td>GET /recr/candidate/jobs/:id/match-score, GET /recr/hr/jobs/:id/applicants?sort=match_score</td></tr>
   <tr><td>FR-051</td><td>Từ điển Skills chuẩn</td><td>Hệ thống</td><td>3.17, 3.18</td><td>recr_skills_taxonomy</td><td>GET /recr/skills/taxonomy</td></tr>
+  <tr><td>FR-052</td><td>Mở để tìm việc</td><td>Candidate</td><td>3.20</td><td>recr_candidates</td><td>PATCH /recr/candidate/profile/open-to-work</td></tr>
+  <tr><td>FR-053</td><td>Gợi ý Ứng viên cho Job mới</td><td>Hệ thống / HR</td><td>3.20</td><td>recr_job_suggestions</td><td>GET /recr/hr/jobs/:id/suggestions, PATCH /recr/hr/suggestions/:id</td></tr>
   <tr><td>NFR-001</td><td>Thời gian Phản hồi API</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-002</td><td>Xử lý Hồ sơ</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-003</td><td>Người dùng Đồng thời</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>

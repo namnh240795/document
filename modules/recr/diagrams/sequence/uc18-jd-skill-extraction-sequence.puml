@@ -20,47 +20,47 @@ participant "JD Worker" as W
 participant "AI Service" as AI
 database "DB" as DB
 
-== Luu nhap JD ==
+== Lưu nháp JD ==
 
-HR -> R : Luu nhap JD
+HR -> R : Lưu nháp JD
 activate R
-R -> DB : Luu recr_jobs\n(status: draft)
+R -> DB : Lưu recr_jobs\n(status: draft)
 activate DB
 DB --> R : OK
 deactivate DB
 R -> R : publish job.draft_saved
-R --> HR : Da luu nhap
+R --> HR : Đã lưu nháp
 deactivate R
 
 == Trích xuất Skills ==
 
 R -> W : consume
 activate W
-W -> AI : Goi AI trich xuat
+W -> AI : Gọi AI trích xuất
 activate AI
 
-alt AI thanh cong
+alt AI thành công
   AI --> W : JSON skills
   deactivate AI
-  W -> DB : Luu recr_job_skills
+  W -> DB : Lưu recr_job_skills
   activate DB
   DB --> W : OK
   deactivate DB
-  W --> HR : Goi y skills
-else AI loi / JD thieu
-  W --> HR : Canh bao, tu nhap
+  W --> HR : Gợi ý skills
+else AI lỗi / JD thiếu
+  W --> HR : Cảnh báo, tự nhập
 end
 deactivate W
 
-== HR chinh sua ==
+== HR chỉnh sửa ==
 
-HR -> R : Cap nhat skills
+HR -> R : Cập nhật skills
 activate R
 R -> DB : UPDATE recr_job_skills
 activate DB
 DB --> R : OK
 deactivate DB
-R --> HR : Thanh cong
+R --> HR : Thành công
 deactivate R
 
 @enduml

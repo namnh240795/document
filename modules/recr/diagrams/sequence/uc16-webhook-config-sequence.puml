@@ -34,13 +34,13 @@ else URL hợp lệ
     activate DB
     DB --> R : OK
     deactivate DB
-    R --> User : Thành công\n(Dang hoat dong)
+    R --> User : Thành công\n(Đang hoạt động)
   else Timeout/Lỗi
     R -> DB : Lưu cấu hình\n(status: unverified)
     activate DB
     DB --> R : OK
     deactivate DB
-    R --> User : Canh bao\n(chua xac minh)
+    R --> User : Cảnh báo\n(chưa xác minh)
   end
   deactivate Ext
 end
@@ -50,7 +50,7 @@ deactivate R
 
 User -> R : GET /recr/settings/webhook
 activate R
-R -> DB : Truy van
+R -> DB : Truy vấn
 activate DB
 DB --> R : Config
 deactivate DB

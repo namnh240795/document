@@ -1,0 +1,91 @@
+@startuml
+' UC-20: Gợi ý Ứng viên Phù hợp - Sơ đồ Chuỗi
+skinparam dpi 150
+skinparam defaultFontSize 12
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-20: Gợi ý Ứng viên Phù hợp
+
+actor "HR" as HR
+participant "RECR Service" as R
+queue "RabbitMQ" as MQ
+participant "Suggestion\nWorker" as W
+database "DB" as DB
+participant "Notification" as N
+
+== Job duoc duyet ==
+
+R -> MQ : publish job.approved
+activate MQ
+MQ -> W : consume
+activate W
+
+W -> DB : Lay recr_job_skills
+activate DB
+DB --> W : Job skills
+deactivate DB
+
+W -> DB : Loc ung vien\n(skill trung + open_to_work)
+activate DB
+DB --> W : Candidates
+deactivate DB
+
+alt Khong co ung vien
+  W --> HR : Khong co goi y
+else Co ung vien
+  W -> W : Tinh diem matching\n(UC-19)
+  W -> DB : Loc nguong >= 70%\n+ Kiem tra tan suat
+  activate DB
+  DB --> W : Filtered candidates
+  deactivate DB
+  W -> DB : Luu recr_job_suggestions\n(status: new)
+  activate DB
+  DB --> W : OK
+  deactivate DB
+end
+deactivate W
+
+MQ -> N : Thong bao HR
+activate N
+N --> HR : "N ung vien phu hop"
+deactivate N
+deactivate MQ
+
+== HR xem goi y ==
+
+HR -> R : GET /recr/hr/jobs/:id/suggestions
+activate R
+R -> DB : Lay suggestions
+activate DB
+DB --> R : List
+deactivate DB
+R --> HR : Danh sach goi y
+deactivate R
+
+alt HR gui loi moi
+  HR -> R : PATCH status = contacted
+  activate R
+  R -> DB : Update
+  activate DB
+  DB --> R : OK
+  deactivate DB
+  R --> HR : OK
+  deactivate R
+else HR bo qua
+  HR -> R : PATCH status = dismissed
+  activate R
+  R -> DB : Update
+  activate DB
+  DB --> R : OK
+  deactivate DB
+  R --> HR : OK
+  deactivate R
+end
+
+@enduml
