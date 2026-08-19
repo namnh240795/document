@@ -1,6 +1,9 @@
 @startuml
 ' UC-17: Trích xuất Skills từ CV - Sơ đồ Chuỗi
-skinparam dpi 200
+skinparam dpi 150
+skinparam defaultFontSize 12
+skinparam nodesep 15
+skinparam ranksep 15
 skinparam sequence {
   ArrowColor #333333
   ActorBorderColor #333333
