@@ -1,0 +1,40 @@
+@startuml uc18-jd-skill-extraction-sequence
+title UC-18: Trích xuất Skills từ JD bằng AI
+skinparam backgroundColor white
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+
+actor "HR/Employer" as HR
+participant "RECR\nService" as R
+participant "JD Worker" as W
+participant "AI Service" as AI
+database "DB" as DB
+
+== Lưu nháp JD ==
+
+HR -> R : Nhập JD + yêu cầu\nlưu nháp
+R -> DB : Lưu recr_jobs\n(status: draft)
+R -> R : publish job.draft_saved
+R --> HR : Đã lưu nháp
+
+== Trích xuất Skills (tự động) ==
+
+R -> W : consume\njob.draft_saved
+W -> R : Lấy nội dung JD
+W -> AI : Gửi JD\n+ prompt trích xuất
+
+alt AI lỗi / JD quá ngắn
+  W --> HR : Cảnh báo,\nHR tự nhập tag
+else AI thành công
+  AI --> W : JSON skills\n{required, nice_to_have}
+  W -> DB : Chuẩn hóa qua taxonomy\nLưu recr_job_skills
+  W --> HR : Hiển thị gợi ý skills\ndạng chip
+end
+
+== HR chỉnh sửa Skills ==
+
+HR -> R : Chọn/bỏ/lưu skills
+R -> DB : UPDATE recr_job_skills
+R --> HR : Thành công\nTiếp tục gửi duyệt
+
+@enduml

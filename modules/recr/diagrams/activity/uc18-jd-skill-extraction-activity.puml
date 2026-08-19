@@ -1,0 +1,48 @@
+@startuml uc18-jd-skill-extraction-activity
+title UC-18: Trích xuất Tags/Skills từ JD bằng AI
+skinparam activityBackgroundColor #f8f9fa
+skinparam activityBorderColor #dee2e6
+skinparam activityFontColor #212529
+skinparam activityDiamondBackgroundColor #fff3cd
+skinparam activityDiamondBorderColor #ffc107
+skinparam arrowColor #6c757d
+
+start
+
+:HR/Employer nhập mô tả công việc\n+ yêu cầu (UC-09 bước 2-4);
+
+:Lưu nháp tin tuyển dụng;
+
+if (HR bấm "Gợiý Tags bằng AI"?) then (Có)
+  :Gửi job vào hàng đợi phân tích JD;
+else (Không — tự động)
+  :Hệ thống tự động\ngửi job vào hàng đợi;
+endif
+
+:Worker gọi AI với nội dung JD\n(tiêu đề, mô tả, yêu cầu);
+
+if (AI phản hồi?) then (Lỗi/Thiếu thông tin)
+  if (JD quá ngắn?) then (Có)
+    :AI trả về danh sách rỗng\ncảnh báo HR bổ sung mô tả;
+    stop
+  else (Không)
+    :HR vẫn đăng tin bình thường\ntự nhập tag thủ công;
+    stop
+  endif
+endif
+
+:AI trả về danh sách skills\n(required + nice_to_have);
+
+:Chuẩn hóa tag theo\ntừ điển skill chuẩn (taxonomy);
+
+:Lưu vào recr_job_skills;
+
+:Hiển thị gợi ý cho HR\ndạng chip có thể chọn/bỏ;
+
+:HR xác nhận hoặc chỉnh sửa\ndanh sách tag;
+
+:Lưu lại và tiếp tục\nluồng gửi duyệt (UC-09);
+
+stop
+
+@enduml
