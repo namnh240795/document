@@ -1,0 +1,52 @@
+@startuml uc17-resume-skill-extraction-activity
+title UC-17: Trích xuất Tags/Skills từ CV bằng AI
+skinparam activityBackgroundColor #f8f9fa
+skinparam activityBorderColor #dee2e6
+skinparam activityFontColor #212529
+skinparam activityDiamondBackgroundColor #fff3cd
+skinparam activityDiamondBorderColor #ffc107
+skinparam arrowColor #6c757d
+
+start
+
+:Nhận sự kiện resume.uploaded\n(sau khi CV lưu thành công vào FILE);
+
+:Đưa job vào hàng đợi phân tích CV;
+:Cập nhật trạng thái CV = processing;
+
+:Worker lấy nội dung CV\nqua module FILE (presigned URL);
+
+if (CV có thể đọc được?\n(PDF/DOCX/text)) then (Không)
+  :Cập nhật trạng thái = failed;
+  :Thông báo Candidate\ntự nhập tay skills;
+  stop
+else (Có)
+endif
+
+if (CV là ảnh scan?) then (Có)
+  :OCR trích xuất văn bản;
+else (Không)
+endif
+
+:Worker gọi AI (LLM)\nvới prompt trích xuất skills;
+
+if (AI service phản hồi?) then (Lỗi/Timeout)
+  :Retry tối đa 3 lần\nvới exponential backoff;
+  if (Vẫn lỗi sau 3 lần?) then (Có)
+    :Cập nhật trạng thái = failed;
+    stop
+  endif
+endif
+
+:AI trả về JSON\ndanh sách skills + confidence score;
+
+:Chuẩn hóa tags\n(map về từ điển skill chuẩn);
+
+:Lưu kết quả vào recr_resume_skills;
+:Cập nhật trạng thái CV = analyzed;
+
+:Candidate thấy danh sách skills\ntrên trang "Hồ sơ của tôi";
+
+stop
+
+@enduml

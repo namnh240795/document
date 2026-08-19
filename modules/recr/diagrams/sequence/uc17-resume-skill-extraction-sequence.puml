@@ -1,0 +1,58 @@
+@startuml uc17-resume-skill-extraction-sequence
+title UC-17: Trích xuất Tags/Skills từ CV bằng AI
+skinparam sequenceArrowColor #495057
+skinparam sequenceLifeLineBorderColor #dee2e6
+skinparam sequenceParticipantBackgroundColor #f8f9fa
+skinparam sequenceParticipantBorderColor #dee2e6
+
+actor "Candidate" as Candidate
+participant "RECR Service" as RECR
+queue "RabbitMQ\n(resume.uploaded)" as MQ
+participant "Resume Worker" as Worker
+participant "Module FILE" as FILE
+participant "AI Service\n(LLM)" as AI
+database "PostgreSQL" as DB
+
+== Tải CV lên (UC-15) ==
+
+Candidate -> RECR : POST /recr/candidate/resume\n(upload CV file)
+RECR -> FILE : Lưu file CV
+FILE --> RECR : file_id
+RECR -> DB : INSERT recr_candidate_resumes\n(status: pending)
+RECR -> MQ : publish resume.uploaded\n{resume_id, file_id}
+RECR --> Candidate : Thành công\nCV đã tải lên
+
+== Trích xuất Skills tự động ==
+
+MQ -> Worker : consume resume.uploaded
+Worker -> DB : UPDATE status = processing
+Worker -> FILE : GET presigned URL\n(file_id)
+FILE --> Worker : presigned URL
+Worker -> Worker : Trích xuất văn bản\n(PDF/DOCX/OCR)
+
+alt CV không đọc được
+  Worker -> DB : UPDATE status = failed
+  Worker -> RECR : publish resume.failed
+  RECR --> Candidate : Thông báo\ntự nhập tay skills
+else CV hợp lệ
+  Worker -> AI : POST /analyze\n(prompt trích xuất skills)
+  alt AI timeout/lỗi
+    Worker -> Worker : Retry (tối đa 3 lần)
+    Worker -> DB : UPDATE status = failed
+  else AI thành công
+    AI --> Worker : JSON skills\n[{name, category, confidence}]
+    Worker -> Worker : Chuẩn hóa tags\n(map từ điển skill chuẩn)
+    Worker -> DB : INSERT recr_resume_skills\n(source: ai_extracted)
+    Worker -> DB : UPDATE status = analyzed
+    Worker -> RECR : publish resume.analyzed
+    RECR --> Candidate : Danh sách skills\ncó trên "Hồ sơ của tôi"
+  end
+end
+
+== Candidate chỉnh sửa Skills ==
+
+Candidate -> RECR : PATCH /recr/candidate/resumes/:id/skills/:skillId\n{skill_name: "React"}
+RECR -> DB : UPDATE recr_resume_skills\nis_manual_override = true
+RECR --> Candidate : Cập nhật thành công
+
+@enduml

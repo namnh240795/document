@@ -74,6 +74,7 @@
         <li><a href="#section-3-14">3.14 UC-14: Xem Bảng Điều khiển</a></li>
         <li><a href="#section-3-15">3.15 UC-15: Quản lý Hồ sơ Xin việc</a></li>
         <li><a href="#section-3-16">3.16 UC-16: Cấu hình Webhook Cá nhân</a></li>
+        <li><a href="#section-3-17">3.17 UC-17: Trích xuất Tags/Skills từ CV bằng AI</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Yêu cầu Chức năng</a>
@@ -748,6 +749,46 @@
   <div class="caption">Hình: Tích hợp Cấu hình Webhook</div>
 </div>
 
+<h2 id="section-3-17">3.17 UC-17: Trích xuất Tags/Skills từ CV bằng AI</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-17</td></tr>
+  <tr><td>Tên</td><td>Trích xuất Tags/Skills từ CV bằng AI</td></tr>
+  <tr><td>Diễn viên</td><td>Hệ thống (kích hoạt tự động), Candidate (xem kết quả)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Candidate đã tải CV lên (UC-15)</td></tr>
+  <tr><td>Điều kiện thành công</td><td>CV được gắn danh sách skills/tags có độ tin cậy</td></tr>
+  <tr><td>Kích hoạt</td><td>Sự kiện <code>resume.uploaded</code> (nội bộ, sau UC-15 bước 6)</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Hệ thống nhận sự kiện <code>resume.uploaded</code> sau khi CV lưu thành công vào module FILE</li>
+  <li>Hệ thống đưa job xử lý vào hàng đợi (queue) phân tích CV, trạng thái CV = <code>processing</code></li>
+  <li>Worker lấy nội dung CV (qua module FILE, presigned URL) và trích xuất văn bản (OCR nếu ảnh scan)</li>
+  <li>Worker gọi AI (LLM) với prompt trích xuất: kỹ năng cứng, kỹ năng mềm, số năm kinh nghiệm, chức danh, trình độ học vấn</li>
+  <li>AI trả về danh sách skills/tags dạng có cấu trúc (JSON) kèm điểm tin cậy (confidence score) cho từng tag</li>
+  <li>Hệ thống chuẩn hóa tag (map về từ điển skill chuẩn — vd "ReactJS" và "React.js" → "React")</li>
+  <li>Hệ thống lưu kết quả vào <code>recr_resume_skills</code>, cập nhật trạng thái CV = <code>analyzed</code></li>
+  <li>Candidate thấy danh sách skill được gợi ý trên trang "Hồ sơ của tôi", có thể sửa/xóa/thêm thủ công</li>
+</ol>
+<p><strong>Luồng Thay thế:</strong></p>
+<ul>
+  <li>3a. CV là ảnh scan chất lượng thấp/không đọc được: trạng thái = <code>failed</code>, thông báo Candidate tự nhập tay</li>
+  <li>4a. AI service timeout/lỗi: retry tối đa 3 lần với backoff, sau đó chuyển <code>failed</code></li>
+  <li>8a. Candidate chỉnh sửa tag do AI gợi ý sai: hệ thống lưu <code>is_manual_override = true</code> cho tag đó (không bị ghi đè ở lần phân tích lại)</li>
+</ul>
+
+<h3>Sơ đồ Hoạt động</h3>
+<div class="diagram">
+  <img src="./images/activity/uc17-resume-skill-extraction-activity.png" alt="Sơ đồ Hoạt động Trích xuất Skills từ CV">
+  <div class="caption">Hình: Luồng Trích xuất Tags/Skills từ CV bằng AI</div>
+</div>
+
+<h3>Sơ đồ Chuỗi</h3>
+<div class="diagram">
+  <img src="./images/sequence/uc17-resume-skill-extraction-sequence.png" alt="Sơ đồ Chuỗi Trích xuất Skills từ CV">
+  <div class="caption">Hình: Tích hợp Trích xuất Skills từ CV</div>
+</div>
+
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Yêu cầu Chức năng</h1>
 
@@ -832,6 +873,14 @@
     <td>UC-04</td>
     <td>Cao</td>
     <td>Khi ứng viên nộp hồ sơ, hồ sơ được chọn được liên kết bằng cách sao chép <code>resume_file_id</code> vào bản ghi hồ sơ. Tham chiếu tệp này không thể thay đổi sau khi nộp (đóng băng tại thời điểm nộp).</td>
+  </tr>
+  <tr>
+    <td><span id="fr-048" class="req-id">FR-048</span></td>
+    <td>RECR</td>
+    <td>Trích xuất Skills từ CV</td>
+    <td>UC-17</td>
+    <td>Trung bình</td>
+    <td>Hệ thống tự động trích xuất kỹ năng, chức danh, trình độ học vấn từ CV sau khi tải lên. Kết quả được lưu vào <code>recr_resume_skills</code>. Candidate có thể chỉnh sửa/thêm/xóa tags thủ công (is_manual_override).</td>
   </tr>
 </table>
 
@@ -1237,6 +1286,7 @@
   <tr><td><span class="req-id">DR-013</span></td><td>recr_candidate_reviews</td><td>Đánh giá ứng viên từ người phỏng vấn</td><td>FR-031</td></tr>
   <tr><td><span class="req-id">DR-014</span></td><td>recr_invitations</td><td>Bản ghi lời mời với xác minh dựa trên token</td><td>FR-039, FR-042, FR-043, FR-044</td></tr>
   <tr><td><span class="req-id">DR-015</span></td><td>recr_webhook_configs</td><td>Cấu hình webhook cá nhân — mỗi người dùng có tối đa 1 cấu hình</td><td>FR-047</td></tr>
+  <tr><td><span class="req-id">DR-016</span></td><td>recr_resume_skills</td><td>Tags/skills được trích xuất từ CV bằng AI, kèm confidence score và trạng thái</td><td>FR-048</td></tr>
 </table>
 
 <h2>5.3 Chi tiết Bảng — recr_webhook_configs</h2>
@@ -1255,6 +1305,26 @@
   <tr><td><code>status</code></td><td>ENUM</td><td>verified / unverified / failed</td></tr>
   <tr><td><code>last_triggered_at</code></td><td>TIMESTAMP</td><td>Lần bắn gần nhất</td></tr>
   <tr><td><code>created_by</code></td><td>UUID</td><td>Người tạo (audit)</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>Thời điểm tạo (audit)</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>Thời điểm cập nhật (audit)</td></tr>
+</table>
+
+<h2>5.4 Chi tiết Bảng — recr_resume_skills</h2>
+<table class="trace-table">
+  <tr>
+    <th>Cột</th>
+    <th>Kiểu</th>
+    <th>Mô tả</th>
+  </tr>
+  <tr><td><code>id</code></td><td>UUID</td><td>Khóa chính</td></tr>
+  <tr><td><code>resume_id</code></td><td>UUID</td><td>FK đến <code>recr_candidate_resumes</code></td></tr>
+  <tr><td><code>candidate_id</code></td><td>UUID</td><td>FK đến <code>recr_candidates</code></td></tr>
+  <tr><td><code>skill_name</code></td><td>VARCHAR</td><td>Tên skill/tag (đã chuẩn hóa)</td></tr>
+  <tr><td><code>skill_category</code></td><td>ENUM</td><td>technical / soft / language / certification / education</td></tr>
+  <tr><td><code>confidence_score</code></td><td>FLOAT</td><td>Điểm tin cậy từ AI (0.0 – 1.0)</td></tr>
+  <tr><td><code>years_experience</code></td><td>INTEGER</td><td>Số năm kinh nghiệm (nếu trích xuất được)</td></tr>
+  <tr><td><code>source</code></td><td>ENUM</td><td>ai_extracted / manual</td></tr>
+  <tr><td><code>is_manual_override</code></td><td>BOOLEAN</td><td>True nếu Candidate chỉnh sửa thủ công (không bị ghi đè)</td></tr>
   <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>Thời điểm tạo (audit)</td></tr>
   <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>Thời điểm cập nhật (audit)</td></tr>
 </table>
@@ -1294,6 +1364,10 @@
   <tr><td>GET</td><td>/recr/candidate/applications/:id/resume</td><td>Lấy URL tải xuống presigned cho hồ sơ ứng tuyển</td><td>FR-038</td></tr>
   <tr><td>POST</td><td>/recr/candidate/reviews/jobs</td><td>Đánh giá việc làm</td><td>FR-030</td></tr>
   <tr><td>GET</td><td>/recr/candidate/reviews/jobs/:jobId</td><td>Lấy đánh giá việc làm</td><td>FR-030</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/resumes/:id/skills</td><td>Lấy danh sách skills của CV</td><td>FR-048</td></tr>
+  <tr><td>PATCH</td><td>/recr/candidate/resumes/:id/skills/:skillId</td><td>Cập nhật skill thủ công</td><td>FR-048</td></tr>
+  <tr><td>DELETE</td><td>/recr/candidate/resumes/:id/skills/:skillId</td><td>Xóa skill</td><td>FR-048</td></tr>
+  <tr><td>POST</td><td>/recr/candidate/resumes/:id/skills</td><td>Thêm skill thủ công</td><td>FR-048</td></tr>
 </table>
 
 <h3>Endpoint HR</h3>
@@ -1416,6 +1490,18 @@
   <tr><td>/recr/settings/webhook/test</td><td>POST</td><td>Gửi sự kiện test xác minh URL</td></tr>
 </table>
 
+<h2>7.4 Tích hợp AI Trích xuất Skills</h2>
+<p>Luồng xử lý tự động khi Candidate tải CV lên:</p>
+<table>
+  <tr><th>Bước</th><th>Thành phần</th><th>Giao thức</th><th>Mô tả</th></tr>
+  <tr><td>1</td><td>RECR Service</td><td>RabbitMQ</td><td>Phát sự kiện <code>resume.uploaded</code></td></tr>
+  <tr><td>2</td><td>Resume Worker</td><td>RabbitMQ</td><td>Nhận job, lấy CV qua module FILE (presigned URL)</td></tr>
+  <tr><td>3</td><td>Resume Worker</td><td>OCR / Text Extract</td><td>Trích xuất văn bản từ CV (PDF/DOCX/hình ảnh)</td></tr>
+  <tr><td>4</td><td>Resume Worker</td><td>HTTP (AI LLM)</td><td>Gọi AI service với prompt trích xuất skills</td></tr>
+  <tr><td>5</td><td>Resume Worker</td><td>PostgreSQL</td><td>Lưu kết quả vào <code>recr_resume_skills</code></td></tr>
+  <tr><td>6</td><td>RECR Service</td><td>RabbitMQ</td><td>Phát sự kiện <code>resume.analyzed</code> (thông báo Candidate)</td></tr>
+</table>
+
 <!-- 8. NON-FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-8">8. Yêu cầu Phi chức năng</h1>
 
@@ -1532,6 +1618,7 @@
   <tr><td>FR-045</td><td>Liệt kê Lời mời</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>GET /recr/invitations</td></tr>
   <tr><td>FR-046</td><td>Gửi lại Lời mời</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>POST /recr/invitations/:id/resend</td></tr>
   <tr><td>FR-047</td><td>Cấu hình Webhook</td><td>HR/Employer</td><td>3.16</td><td>recr_webhook_configs</td><td>GET/PUT /recr/settings/webhook, POST /recr/settings/webhook/test</td></tr>
+  <tr><td>FR-048</td><td>Trích xuất Skills từ CV</td><td>Candidate / Hệ thống</td><td>3.17</td><td>recr_resume_skills</td><td>GET/POST/PATCH/DELETE /recr/candidate/resumes/:id/skills</td></tr>
   <tr><td>NFR-001</td><td>Thời gian Phản hồi API</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-002</td><td>Xử lý Hồ sơ</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-003</td><td>Người dùng Đồng thời</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
