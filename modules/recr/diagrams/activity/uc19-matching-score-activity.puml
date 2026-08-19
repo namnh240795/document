@@ -1,6 +1,5 @@
 @startuml uc19-matching-score-activity
 title UC-19: Tính điểm Matching Ứng viên - Việc làm
-skinparam dpi 200
 skinparam activityBackgroundColor #f8f9fa
 skinparam activityBorderColor #dee2e6
 skinparam activityFontColor #212529
@@ -12,36 +11,29 @@ start
 
 :Candidate xem chi tiết job\nhoặc HR mở danh sách ứng viên;
 
-:Kiểm tra cache\nrecr_match_scores;
+:Lấy tags từ CV\n(recr_resume_skills);
 
-if (Cache hợp lệ?\n(is_valid = true)) then (Có)
-  :Trả về điểm từ cache;
-else (Không)
-  if (CV hoặc Job đang\nđang processing?) then (Có)
-    :Hiển thị\n"Đang tính toán độ phù hợp...";
-    stop
-  else (Không)
-  endif
-
-  :Lấy tags từ CV\n(recr_resume_skills);
-
-  if (CV có tag?) then (Không)
-    :Điểm = 0%\nHiển thị "Chưa đủ dữ liệu";
-    stop
-  endif
-
-  :Lấy tags từ Job\n(recr_job_skills);
-
-  if (Job có tag?) then (Không)
-    :Điểm = 0%\nHiển thị "Chưa đủ dữ liệu";
-    stop
-  endif
-
-  :Tính điểm theo công thức\n(required = 70%\n nice-to-have = 20%\n experience = 10%);
-
-  :Lưu điểm vào cache\nkèm breakdown;
-
+if (CV có tag?) then (Không)
+  :Điểm = 0%\nHiển thị "Chưa đủ dữ liệu";
+  stop
 endif
+
+:Lấy tags từ Job\n(recr_job_skills);
+
+if (Job có tag?) then (Không)
+  :Điểm = 0%\nHiển thị "Chưa đủ dữ liệu";
+  stop
+endif
+
+if (CV hoặc Job đang\nđang processing?) then (Có)
+  :Hiển thị\n"Đang tính toán độ phù hợp...";
+  stop
+else (Không)
+endif
+
+:Tính điểm theo công thức\n(required = 70%\n nice-to-have = 20%\n experience = 10%);
+
+:Lưu kết quả vào\nrecr_match_scores;
 
 :Hiển thị điểm %\nkèm chi tiết matched/missing;
 

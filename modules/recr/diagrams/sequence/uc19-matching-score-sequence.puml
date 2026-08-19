@@ -1,6 +1,5 @@
 @startuml uc19-matching-score-sequence
 title UC-19: Tính điểm Matching Ứng viên - Việc làm
-skinparam dpi 200
 skinparam backgroundColor white
 skinparam sequenceArrowThickness 2
 skinparam roundcorner 10
@@ -18,20 +17,14 @@ else HR xem danh sách ứng viên
   HR -> R : GET danh sách applicants
 end
 
-R -> DB : Kiểm tra cache\nrecr_match_scores
+R -> DB : Lấy tags CV\n(recr_resume_skills)
+R -> DB : Lấy tags Job\n(recr_job_skills)
 
-alt Cache hợp lệ (is_valid = true)
-  DB --> R : Trả điểm từ cache
-else Cache lỗi thời / chưa có
-  R -> DB : Lấy tags CV\n(recr_resume_skills)
-  R -> DB : Lấy tags Job\n(recr_job_skills)
-
-  alt CV hoặc Job chưa có tag
-    R --> C : "Chưa đủ dữ liệu\nde so khớp"
-  else Đủ dữ liệu
-    R -> R : Tính điểm\nrequired=70%\nnice_to_have=20%\nexperience=10%
-    R -> DB : Lưu cache\nrecr_match_scores\nis_valid = true
-  end
+alt CV hoặc Job chưa có tag
+  R --> C : "Chưa đủ dữ liệu\nde so khớp"
+else Đủ dữ liệu
+  R -> R : Tính điểm\nrequired=70%\nnice_to_have=20%\nexperience=10%
+  R -> DB : Lưu kết quả\nrecr_match_scores
 end
 
 R --> C : Điểm % + chi tiết\nmatched/missing skills
@@ -39,16 +32,6 @@ R --> C : Điểm % + chi tiết\nmatched/missing skills
 alt HR xem danh sách
   R -> R : Sắp xếp applicants\ntheo điểm giảm dần
   R --> HR : Danh sách đã sắp xếp
-end
-
-== Invalidate Cache ==
-
-alt CV thay đổi
-  C -> R : Cập nhật skills CV
-  R -> DB : UPDATE recr_match_scores\nis_valid = false
-else Job thay đổi
-  HR -> R : Sửa tag Job
-  R -> DB : UPDATE recr_match_scores\nis_valid = false
 end
 
 @enduml
