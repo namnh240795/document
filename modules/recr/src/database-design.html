@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <title>Thiết Kế Cơ Sở Dữ Liệu - Tuyển Dụng</title>
   <link rel="stylesheet" href="../style.css">
+  <style>
+    pre {
+      max-width: 100%;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+  </style>
 </head>
 <body>
 
@@ -83,7 +91,7 @@
   <tr><td><span class="req-id">FR-039, FR-042, FR-043</span> Quản Lý Lời Mời</td><td>Bảng recr_invitations</td></tr>
 </table>
 
-<h2>1.3 Sơ Đồ ERD</h2>
+<h2>1.4 Sơ Đồ ERD</h2>
 <div class="diagram">
   <img src="./images/erd/erd-recr.png" alt="Sơ Đồ ERD">
   <div class="caption">Hình 1: ERD Module Tuyển Dụng (3 Vai Trò)</div>
@@ -104,17 +112,17 @@
 
 <h2>2.2 Bảng</h2>
 
-<h3>Bảng: <code>recr_users</code> - Bảng Người Dùng Cơ Bản (Tất Cả Vai Trò)</h3>
+<!-- ===== recr_users ===== -->
+<h3>Bảng: <code>recr_users</code> — Bảng Người Dùng Cơ Bản</h3>
 <p><strong>Lưu ý:</strong> Xác thực người dùng (email, mật khẩu, vai trò) được xử lý bởi AUTH module. Bảng này chỉ lưu dữ liệu đặc thù của tuyển dụng và liên kết với auth_users qua user_id.</p>
 <table>
-  <tr><th>Cột</th><th>Kiểu</th><th>Có Thể Null</th><th>Giá Trị Mặc Định</th><th>Mô Tả</th></tr>
-  <tr><td>id</td><td>bigint</td><td>KHÔNG</td><td>nextval('recr_users_id_seq')</td><td>Khóa chính</td></tr>
-  <tr><td>user_id</td><td>bigint</td><td>KHÔNG</td><td>-</td><td>Khóa ngoại đến auth_users.id (UNIQUE)</td></tr>
-  <tr><td>avatar_url</td><td>varchar(500)</td><td>CÓ</td><td>-</td><td>URL ảnh đại diện</td></tr>
-  <tr><td>created_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian tạo</td></tr>
-  <tr><td>updated_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian cập nhật gần nhất</td></tr>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>user_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → auth_users.id (UNIQUE)</td></tr>
+  <tr><td><code>avatar_url</code></td><td>VARCHAR(500)</td><td>NULL</td><td>-</td><td>URL ảnh đại diện</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
 </table>
-
 <pre><code>CREATE TABLE recr_users (
   id          BIGSERIAL PRIMARY KEY,
   user_id     BIGINT NOT NULL UNIQUE REFERENCES auth_users(id),
@@ -123,12 +131,27 @@
   updated_at  TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
-<h3>Bảng: <code>recr_candidates</code> - Hồ Sơ Ứng Viên</h3>
-<p><strong>Lưu ý:</strong> Lưu trữ hồ sơ đã được chuyển sang FILE module. Cột <code>resume_url</code> đã bị không sử dụng nữa. Tham chiếu file hồ sơ bây giờ được lưu trong bảng <code>recr_candidate_resumes</code> qua <code>file_id</code> (UUID tham chiếu <code>sys_files.id</code> trong FILE module).</p>
+<!-- ===== recr_candidates ===== -->
+<h3>Bảng: <code>recr_candidates</code> — Hồ Sơ Ứng Viên</h3>
+<p><strong>Lưu ý:</strong> Cột <code>resume_url</code> đã ngưng sử dụng. Tham chiếu file hồ sơ được lưu trong <code>recr_candidate_resumes</code> qua <code>file_id</code> (UUID → sys_files.id trong FILE module).</p>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>user_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_users.id (UNIQUE)</td></tr>
+  <tr><td><code>resume_url</code></td><td>VARCHAR(500)</td><td>NULL</td><td>-</td><td><em>DEPRECATED</em> — dùng recr_candidate_resumes</td></tr>
+  <tr><td><code>linkedin_url</code></td><td>VARCHAR(300)</td><td>NULL</td><td>-</td><td>LinkedIn profile URL</td></tr>
+  <tr><td><code>skills</code></td><td>JSONB</td><td>NULL</td><td>'[]'</td><td>Danh sách kỹ năng</td></tr>
+  <tr><td><code>experience_years</code></td><td>INT</td><td>NULL</td><td>0</td><td>Số năm kinh nghiệm</td></tr>
+  <tr><td><code>current_company</code></td><td>VARCHAR(200)</td><td>NULL</td><td>-</td><td>Công ty hiện tại</td></tr>
+  <tr><td><code>expected_salary</code></td><td>DECIMAL(12,2)</td><td>NULL</td><td>-</td><td>Lương mong muốn (VND)</td></tr>
+  <tr><td><code>source</code></td><td>VARCHAR(20)</td><td>NULL</td><td>-</td><td>Nguồn: website, referral, linkedin, job_board, other</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_candidates (
   id               BIGSERIAL PRIMARY KEY,
   user_id          BIGINT NOT NULL UNIQUE REFERENCES recr_users(id),
-  resume_url       VARCHAR(500),              -- ĐÃ NGƯNG SỬ DỤNG: dùng recr_candidate_resumes thay thế
+  resume_url       VARCHAR(500),              -- DEPRECATED
   linkedin_url     VARCHAR(300),
   skills           JSONB DEFAULT '[]',
   experience_years INT DEFAULT 0,
@@ -139,8 +162,18 @@
   updated_at       TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
-<h3>Bảng: <code>recr_candidate_resumes</code> - Danh Sách Hồ Sơ Ứng Viên (Tích Hợp FILE Module)</h3>
-<p><strong>Mô Tả:</strong> Lưu các tham chiếu đến file hồ sơ ứng viên được quản lý bởi FILE module. Mỗi ứng viên có thể có nhiều hồ sơ. <code>file_id</code> tham chiếu <code>sys_files.id</code> trong cơ sở dữ liệu của FILE module.</p>
+<!-- ===== recr_candidate_resumes ===== -->
+<h3>Bảng: <code>recr_candidate_resumes</code> — Danh Sách Hồ Sơ Ứng Viên</h3>
+<p><strong>Mô Tả:</strong> Lưu các tham chiếu file hồ sơ ứng viên được quản lý bởi FILE module. Mỗi ứng viên có thể có nhiều hồ sơ. <code>file_id</code> tham chiếu <code>sys_files.id</code>.</p>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>UUID</td><td>NOT NULL</td><td>gen_random_uuid()</td><td>Khóa chính</td></tr>
+  <tr><td><code>candidate_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_candidates.id (CASCADE)</td></tr>
+  <tr><td><code>file_id</code></td><td>UUID</td><td>NOT NULL</td><td>-</td><td>FK → sys_files.id (FILE module, CASCADE)</td></tr>
+  <tr><td><code>is_primary</code></td><td>BOOLEAN</td><td>NOT NULL</td><td>FALSE</td><td>Hồ sơ chính</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_candidate_resumes (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   candidate_id    BIGINT NOT NULL REFERENCES recr_candidates(id) ON DELETE CASCADE,
@@ -150,12 +183,26 @@
   updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- Chỉ mục cho quản lý hồ sơ
 CREATE INDEX idx_recr_candidate_resumes_candidate_id ON recr_candidate_resumes(candidate_id);
 CREATE INDEX idx_recr_candidate_resumes_file_id ON recr_candidate_resumes(file_id);
 CREATE INDEX idx_recr_candidate_resumes_primary ON recr_candidate_resumes(candidate_id, is_primary) WHERE is_primary = TRUE;</code></pre>
 
-<h3>Bảng: <code>recr_employers</code> - Hồ Sơ Nhà Tuyển Dụng</h3>
+<!-- ===== recr_employers ===== -->
+<h3>Bảng: <code>recr_employers</code> — Hồ Sơ Nhà Tuyển Dụng</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>user_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_users.id (UNIQUE)</td></tr>
+  <tr><td><code>company_name</code></td><td>VARCHAR(200)</td><td>NOT NULL</td><td>-</td><td>Tên công ty</td></tr>
+  <tr><td><code>company_website</code></td><td>VARCHAR(300)</td><td>NULL</td><td>-</td><td>Website công ty</td></tr>
+  <tr><td><code>company_description</code></td><td>TEXT</td><td>NULL</td><td>-</td><td>Mô tả công ty</td></tr>
+  <tr><td><code>industry</code></td><td>VARCHAR(100)</td><td>NULL</td><td>-</td><td>Ngành nghề</td></tr>
+  <tr><td><code>company_size</code></td><td>VARCHAR(20)</td><td>NULL</td><td>-</td><td>Quy mô: 1-10, 11-50, 51-200, 201-500, 501-1000, 1000+</td></tr>
+  <tr><td><code>logo_url</code></td><td>VARCHAR(500)</td><td>NULL</td><td>-</td><td>URL logo</td></tr>
+  <tr><td><code>is_verified</code></td><td>BOOLEAN</td><td>NULL</td><td>false</td><td>Đã xác minh</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_employers (
   id                  BIGSERIAL PRIMARY KEY,
   user_id             BIGINT NOT NULL UNIQUE REFERENCES recr_users(id),
@@ -170,7 +217,17 @@ CREATE INDEX idx_recr_candidate_resumes_primary ON recr_candidate_resumes(candid
   updated_at          TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
-<h3>Bảng: <code>recr_hr_profiles</code> - Hồ Sơ HR</h3>
+<!-- ===== recr_hr_profiles ===== -->
+<h3>Bảng: <code>recr_hr_profiles</code> — Hồ Sơ HR</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>user_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_users.id (UNIQUE)</td></tr>
+  <tr><td><code>department</code></td><td>VARCHAR(100)</td><td>NULL</td><td>-</td><td>Phòng ban</td></tr>
+  <tr><td><code>position</code></td><td>VARCHAR(100)</td><td>NULL</td><td>-</td><td>Chức vụ</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_hr_profiles (
   id          BIGSERIAL PRIMARY KEY,
   user_id     BIGINT NOT NULL UNIQUE REFERENCES recr_users(id),
@@ -180,12 +237,31 @@ CREATE INDEX idx_recr_candidate_resumes_primary ON recr_candidate_resumes(candid
   updated_at  TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
-<h3>Bảng: <code>recr_jobs</code> - Tin Tuyển Dụng</h3>
-<p><strong>Lưu ý:</strong> Cả HR và Nhà Tuyển Dụng đều có thể tạo tin tuyển dụng. Trường <code>created_by</strong> ghi nhận ai đã tạo tin (HR hoặc Nhà Tuyển Dụng).</p>
+<!-- ===== recr_jobs ===== -->
+<h3>Bảng: <code>recr_jobs</code> — Tin Tuyển Dụng</h3>
+<p><strong>Lưu ý:</strong> Cả HR và Nhà Tuyển Dụng đều có thể tạo tin tuyển dụng. Trường <code>created_by</code> ghi nhận ai đã tạo tin.</p>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>employer_id</code></td><td>BIGINT</td><td>NULL</td><td>-</td><td>FK → recr_employers.id (NULL cho tin HR tạo)</td></tr>
+  <tr><td><code>created_by</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_users.id</td></tr>
+  <tr><td><code>title</code></td><td>VARCHAR(200)</td><td>NOT NULL</td><td>-</td><td>Tiêu đề tin tuyển dụng</td></tr>
+  <tr><td><code>description</code></td><td>TEXT</td><td>NULL</td><td>-</td><td>Mô tả công việc</td></tr>
+  <tr><td><code>department</code></td><td>VARCHAR(100)</td><td>NULL</td><td>-</td><td>Phòng ban</td></tr>
+  <tr><td><code>location</code></td><td>VARCHAR(200)</td><td>NULL</td><td>-</td><td>Địa điểm làm việc</td></tr>
+  <tr><td><code>salary_min</code></td><td>DECIMAL(12,2)</td><td>NULL</td><td>-</td><td>Lương tối thiểu (VND)</td></tr>
+  <tr><td><code>salary_max</code></td><td>DECIMAL(12,2)</td><td>NULL</td><td>-</td><td>Lương tối đa (VND)</td></tr>
+  <tr><td><code>employment_type</code></td><td>VARCHAR(20)</td><td>NOT NULL</td><td>-</td><td>full_time, part_time, contract, internship</td></tr>
+  <tr><td><code>status</code></td><td>VARCHAR(20)</td><td>NOT NULL</td><td>'draft'</td><td>draft, pending_approval, open, closed, archived</td></tr>
+  <tr><td><code>approved_by</code></td><td>BIGINT</td><td>NULL</td><td>-</td><td>FK → recr_users.id (người phê duyệt)</td></tr>
+  <tr><td><code>approved_at</code></td><td>TIMESTAMP</td><td>NULL</td><td>-</td><td>Thời gian phê duyệt</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_jobs (
   id              BIGSERIAL PRIMARY KEY,
-  employer_id     BIGINT REFERENCES recr_employers(id),  -- NULL cho tin do HR tạo
-  created_by      BIGINT NOT NULL REFERENCES recr_users(id),  -- user_id của HR hoặc Nhà Tuyển Dụng
+  employer_id     BIGINT REFERENCES recr_employers(id),
+  created_by      BIGINT NOT NULL REFERENCES recr_users(id),
   title           VARCHAR(200) NOT NULL,
   description     TEXT,
   department      VARCHAR(100),
@@ -200,13 +276,26 @@ CREATE INDEX idx_recr_candidate_resumes_primary ON recr_candidate_resumes(candid
   updated_at      TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
-<h3>Bảng: <code>recr_applications</code> - Hồ Sơ Ứng Tuyển</h3>
-<p><strong>Lưu ý:</strong> Cột <code>resume_file_id</code> lưu một bản sao khóa (không thay đổi) của tham chiếu file hồ sơ tại thời điểm nộp hồ sơ. Điều này đảm bảo hồ sơ mà HR/Nhà Tuyển Dụng xét duyệt là hồ sơ ứng viên đã nộp, dù ứng viên có cập nhật hoặc xóa hồ sơ gốc từ danh sách hồ sơ của họ sau đó.</p>
+<!-- ===== recr_applications ===== -->
+<h3>Bảng: <code>recr_applications</code> — Hồ Sơ Ứng Tuyển</h3>
+<p><strong>Lưu ý:</strong> <code>resume_file_id</code> lưu bản sao khóa tại thời điểm nộp — đảm bảo hồ sơ HR xét duyệt là hồ sơ ứng viên đã nộp.</p>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>job_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_jobs.id</td></tr>
+  <tr><td><code>candidate_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_candidates.id</td></tr>
+  <tr><td><code>resume_file_id</code></td><td>UUID</td><td>NULL</td><td>-</td><td>FK → sys_files.id (FILE module, đóng băng tại nộp)</td></tr>
+  <tr><td><code>cover_letter</code></td><td>TEXT</td><td>NULL</td><td>-</td><td>Thư xin việc</td></tr>
+  <tr><td><code>status</code></td><td>VARCHAR(20)</td><td>NOT NULL</td><td>'submitted'</td><td>submitted, screening, interview, offer, rejected, hired</td></tr>
+  <tr><td><code>applied_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian nộp</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
+<p><strong>Ràng buộc:</strong> UNIQUE(job_id, candidate_id) — Mỗi ứng viên chỉ nộp 1 lần cho 1 việc làm.</p>
 <pre><code>CREATE TABLE recr_applications (
   id              BIGSERIAL PRIMARY KEY,
   job_id          BIGINT NOT NULL REFERENCES recr_jobs(id),
   candidate_id    BIGINT NOT NULL REFERENCES recr_candidates(id),
-  resume_file_id  UUID REFERENCES sys_files(id),  -- Hồ sơ khóa tại thời điểm nộp (FILE module)
+  resume_file_id  UUID REFERENCES sys_files(id),
   cover_letter    TEXT,
   status          VARCHAR(20) NOT NULL DEFAULT 'submitted' CHECK (status IN ('submitted','screening','interview','offer','rejected','hired')),
   applied_at      TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -214,7 +303,21 @@ CREATE INDEX idx_recr_candidate_resumes_primary ON recr_candidate_resumes(candid
   UNIQUE(job_id, candidate_id)
 );</code></pre>
 
-<h3>Bảng: <code>recr_interviews</code> - Lịch Phỏng Vấn</h3>
+<!-- ===== recr_interviews ===== -->
+<h3>Bảng: <code>recr_interviews</code> — Lịch Phỏng Vấn</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>application_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_applications.id</td></tr>
+  <tr><td><code>interviewer_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_users.id</td></tr>
+  <tr><td><code>scheduled_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>-</td><td>Thời gian phỏng vấn</td></tr>
+  <tr><td><code>duration_minutes</code></td><td>INT</td><td>NULL</td><td>60</td><td>Thời lượng (phút)</td></tr>
+  <tr><td><code>location</code></td><td>VARCHAR(200)</td><td>NULL</td><td>-</td><td>Địa điểm</td></tr>
+  <tr><td><code>meeting_link</code></td><td>VARCHAR(500)</td><td>NULL</td><td>-</td><td>Link họp trực tuyến</td></tr>
+  <tr><td><code>status</code></td><td>VARCHAR(20)</td><td>NOT NULL</td><td>'scheduled'</td><td>scheduled, completed, cancelled, no_show</td></tr>
+  <tr><td><code>notes</code></td><td>TEXT</td><td>NULL</td><td>-</td><td>Ghi chú</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_interviews (
   id               BIGSERIAL PRIMARY KEY,
   application_id   BIGINT NOT NULL REFERENCES recr_applications(id),
@@ -228,7 +331,21 @@ CREATE INDEX idx_recr_candidate_resumes_primary ON recr_candidate_resumes(candid
   created_at       TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
-<h3>Bảng: <code>recr_evaluations</code> - Đánh Giá Phỏng Vấn</h3>
+<!-- ===== recr_evaluations ===== -->
+<h3>Bảng: <code>recr_evaluations</code> — Đánh Giá Phỏng Vấn</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>interview_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_interviews.id</td></tr>
+  <tr><td><code>evaluator_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_users.id</td></tr>
+  <tr><td><code>score</code></td><td>INT</td><td>NULL</td><td>-</td><td>Điểm tổng quát (1-10)</td></tr>
+  <tr><td><code>technical_score</code></td><td>INT</td><td>NULL</td><td>-</td><td>Điểm kỹ thuật (1-10)</td></tr>
+  <tr><td><code>communication_score</code></td><td>INT</td><td>NULL</td><td>-</td><td>Điểm giao tiếp (1-10)</td></tr>
+  <tr><td><code>cultural_fit_score</code></td><td>INT</td><td>NULL</td><td>-</td><td>Điểm phù hợp văn hóa (1-10)</td></tr>
+  <tr><td><code>recommendation</code></td><td>VARCHAR(20)</td><td>NULL</td><td>-</td><td>strong_yes, yes, neutral, no, strong_no</td></tr>
+  <tr><td><code>comments</code></td><td>TEXT</td><td>NULL</td><td>-</td><td>Nhận xét chi tiết</td></tr>
+  <tr><td><code>submitted_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian nộp</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_evaluations (
   id                     BIGSERIAL PRIMARY KEY,
   interview_id           BIGINT NOT NULL REFERENCES recr_interviews(id),
@@ -242,7 +359,17 @@ CREATE INDEX idx_recr_candidate_resumes_primary ON recr_candidate_resumes(candid
   submitted_at           TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
-<h3>Bảng: <code>recr_job_requirements</code> - Yêu Cầu Việc Làm</h3>
+<!-- ===== recr_job_requirements ===== -->
+<h3>Bảng: <code>recr_job_requirements</code> — Yêu Cầu Việc Làm</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>job_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_jobs.id</td></tr>
+  <tr><td><code>requirement_type</code></td><td>VARCHAR(20)</td><td>NOT NULL</td><td>-</td><td>skill, experience, education, certification</td></tr>
+  <tr><td><code>description</code></td><td>TEXT</td><td>NOT NULL</td><td>-</td><td>Mô tả yêu cầu</td></tr>
+  <tr><td><code>is_mandatory</code></td><td>BOOLEAN</td><td>NULL</td><td>true</td><td>Bắt buộc hay ưu tiên</td></tr>
+  <tr><td><code>sort_order</code></td><td>INT</td><td>NULL</td><td>0</td><td>Thứ tự hiển thị</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_job_requirements (
   id                BIGSERIAL PRIMARY KEY,
   job_id            BIGINT NOT NULL REFERENCES recr_jobs(id),
@@ -252,32 +379,61 @@ CREATE INDEX idx_recr_candidate_resumes_primary ON recr_candidate_resumes(candid
   sort_order        INT DEFAULT 0
 );</code></pre>
 
-<h3>Bảng: <code>recr_subscription_plans</code> - Gói Đăng Ký</h3>
-<p><strong>Mô Tả:</strong> Định nghĩa các gói đăng ký khả dụng với giá cả và giảm giá.</p>
+<!-- ===== recr_subscription_plans ===== -->
+<h3>Bảng: <code>recr_subscription_plans</code> — Gói Đăng Ký</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>name</code></td><td>VARCHAR(50)</td><td>NOT NULL</td><td>-</td><td>Tên định danh: 1_month, 6_months, 1_year (UNIQUE)</td></tr>
+  <tr><td><code>display_name</code></td><td>VARCHAR(100)</td><td>NOT NULL</td><td>-</td><td>Tên hiển thị</td></tr>
+  <tr><td><code>duration_months</code></td><td>INT</td><td>NOT NULL</td><td>-</td><td>Thời hạn (tháng)</td></tr>
+  <tr><td><code>base_price</code></td><td>DECIMAL(12,2)</td><td>NOT NULL</td><td>-</td><td>Giá trước giảm (VND)</td></tr>
+  <tr><td><code>discount_percent</code></td><td>INT</td><td>NULL</td><td>0</td><td>% giảm giá (0-100)</td></tr>
+  <tr><td><code>free_months</code></td><td>INT</td><td>NULL</td><td>0</td><td>Tháng miễn phí</td></tr>
+  <tr><td><code>final_price</code></td><td>DECIMAL(12,2)</td><td>NOT NULL</td><td>-</td><td>Giá sau giảm (VND)</td></tr>
+  <tr><td><code>is_active</code></td><td>BOOLEAN</td><td>NULL</td><td>true</td><td>Đang hoạt động</td></tr>
+  <tr><td><code>features</code></td><td>JSONB</td><td>NULL</td><td>'[]'</td><td>Tính năng theo vai trò</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_subscription_plans (
   id                BIGSERIAL PRIMARY KEY,
-  name              VARCHAR(50) NOT NULL UNIQUE,           -- '1_month', '6_months', '1_year'
-  display_name      VARCHAR(100) NOT NULL,                 -- '1 Month', '6 Months', '1 Year'
-  duration_months   INT NOT NULL,                          -- 1, 6, 12
-  base_price        DECIMAL(12,2) NOT NULL,                -- Giá trước giảm giá
+  name              VARCHAR(50) NOT NULL UNIQUE,
+  display_name      VARCHAR(100) NOT NULL,
+  duration_months   INT NOT NULL,
+  base_price        DECIMAL(12,2) NOT NULL,
   discount_percent  INT DEFAULT 0 CHECK (discount_percent >= 0 AND discount_percent <= 100),
-  free_months       INT DEFAULT 0,                         -- 0 cho 1tháng/6tháng, 2 cho 1năm
-  final_price       DECIMAL(12,2) NOT NULL,                -- Giá sau giảm giá
+  free_months       INT DEFAULT 0,
+  final_price       DECIMAL(12,2) NOT NULL,
   is_active         BOOLEAN DEFAULT true,
-  features          JSONB DEFAULT '[]',                    -- Danh sách tính năng đi kèm
+  features          JSONB DEFAULT '[]',
   created_at        TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at        TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
--- Dữ liệu mẫu cho các gói đăng ký
--- Tính năng theo vai trò: candidate_features, hr_features, employer_features
 INSERT INTO recr_subscription_plans (name, display_name, duration_months, base_price, discount_percent, free_months, final_price, features) VALUES
 ('1_month', '1 Month', 1, 500000, 0, 0, 500000, '{"candidate": ["priority_application", "profile_boost"], "hr": ["advanced_analytics"], "employer": ["featured_listing"]}'),
 ('6_months', '6 Months', 6, 3000000, 10, 0, 2700000, '{"candidate": ["priority_application", "profile_boost", "resume_review"], "hr": ["advanced_analytics", "priority_support"], "employer": ["featured_listing", "premium_analytics"]}'),
 ('1_year', '1 Year', 12, 6000000, 0, 2, 5000000, '{"candidate": ["priority_application", "profile_boost", "resume_review", "career_coaching"], "hr": ["advanced_analytics", "priority_support", "dedicated_account_manager"], "employer": ["featured_listing", "premium_analytics", "dedicated_account_manager"]}');</code></pre>
 
-<h3>Bảng: <code>recr_subscriptions</code> - Đăng Ký Người Dùng</h3>
-<p><strong>Mô Tả:</strong> Theo dõi đăng ký của người dùng và điều khiển truy cập.</p>
+<!-- ===== recr_subscriptions ===== -->
+<h3>Bảng: <code>recr_subscriptions</code> — Đăng Ký Người Dùng</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>user_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_users.id</td></tr>
+  <tr><td><code>plan_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_subscription_plans.id</td></tr>
+  <tr><td><code>status</code></td><td>VARCHAR(20)</td><td>NOT NULL</td><td>'active'</td><td>active, expired, cancelled, pending</td></tr>
+  <tr><td><code>start_date</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>-</td><td>Ngày bắt đầu</td></tr>
+  <tr><td><code>end_date</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>-</td><td>Ngày kết thúc</td></tr>
+  <tr><td><code>payment_amount</code></td><td>DECIMAL(12,2)</td><td>NOT NULL</td><td>-</td><td>Số tiền thanh toán (VND)</td></tr>
+  <tr><td><code>payment_method</code></td><td>VARCHAR(50)</td><td>NULL</td><td>-</td><td>credit_card, bank_transfer, e_wallet</td></tr>
+  <tr><td><code>payment_reference</code></td><td>VARCHAR(100)</td><td>NULL</td><td>-</td><td>Mã giao dịch</td></tr>
+  <tr><td><code>auto_renew</code></td><td>BOOLEAN</td><td>NULL</td><td>false</td><td>Tự động gia hạn</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
+<p><strong>Ràng buộc:</strong> CHECK (end_date &gt; start_date)</p>
 <pre><code>CREATE TABLE recr_subscriptions (
   id                BIGSERIAL PRIMARY KEY,
   user_id           BIGINT NOT NULL REFERENCES recr_users(id),
@@ -285,22 +441,33 @@ INSERT INTO recr_subscription_plans (name, display_name, duration_months, base_p
   status            VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active','expired','cancelled','pending')),
   start_date        TIMESTAMP NOT NULL,
   end_date          TIMESTAMP NOT NULL,
-  payment_amount    DECIMAL(12,2) NOT NULL,                -- Số tiền đã thanh toán
-  payment_method    VARCHAR(50),                           -- 'credit_card', 'bank_transfer', 'e_wallet'
-  payment_reference VARCHAR(100),                          -- Mã giao dịch
+  payment_amount    DECIMAL(12,2) NOT NULL,
+  payment_method    VARCHAR(50),
+  payment_reference VARCHAR(100),
   auto_renew        BOOLEAN DEFAULT false,
   created_at        TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at        TIMESTAMP NOT NULL DEFAULT NOW(),
   CHECK (end_date > start_date)
 );
 
--- Chỉ mục cho xác thực đăng ký
 CREATE INDEX idx_recr_subscriptions_user_id ON recr_subscriptions(user_id);
 CREATE INDEX idx_recr_subscriptions_status ON recr_subscriptions(status);
 CREATE UNIQUE INDEX idx_recr_subscriptions_active ON recr_subscriptions(user_id) WHERE status = 'active';</code></pre>
 
-<h3>Bảng: <code>recr_subscription_history</code> - Lịch Sử Đăng Ký</h3>
-<p><strong>Mô Tả:</strong> Ghi nhận tất cả các thay đổi đăng ký để theo dõi kiểm tra.</p>
+<!-- ===== recr_subscription_history ===== -->
+<h3>Bảng: <code>recr_subscription_history</code> — Lịch Sử Đăng Ký</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>subscription_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_subscriptions.id</td></tr>
+  <tr><td><code>action</code></td><td>VARCHAR(50)</td><td>NOT NULL</td><td>-</td><td>created, renewed, upgraded, cancelled, expired, payment_received</td></tr>
+  <tr><td><code>old_status</code></td><td>VARCHAR(20)</td><td>NULL</td><td>-</td><td>Trạng thái trước</td></tr>
+  <tr><td><code>new_status</code></td><td>VARCHAR(20)</td><td>NULL</td><td>-</td><td>Trạng thái sau</td></tr>
+  <tr><td><code>old_plan_id</code></td><td>BIGINT</td><td>NULL</td><td>-</td><td>Gói trước (FK → recr_subscription_plans.id)</td></tr>
+  <tr><td><code>new_plan_id</code></td><td>BIGINT</td><td>NULL</td><td>-</td><td>Gói sau (FK → recr_subscription_plans.id)</td></tr>
+  <tr><td><code>notes</code></td><td>TEXT</td><td>NULL</td><td>-</td><td>Ghi chú</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian ghi nhận</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_subscription_history (
   id                BIGSERIAL PRIMARY KEY,
   subscription_id   BIGINT NOT NULL REFERENCES recr_subscriptions(id),
@@ -313,8 +480,26 @@ CREATE UNIQUE INDEX idx_recr_subscriptions_active ON recr_subscriptions(user_id)
   created_at        TIMESTAMP NOT NULL DEFAULT NOW()
 );</code></pre>
 
-<h3>Bảng: <code>recr_job_reviews</code> - Đánh Giá Việc Làm</h3>
-<p><strong>Mô Tả:</strong> Đánh giá và nhận xét của ứng viên về những việc làm họ đã ứng tuyển.</p>
+<!-- ===== recr_job_reviews ===== -->
+<h3>Bảng: <code>recr_job_reviews</code> — Đánh Giá Việc Làm</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>job_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_jobs.id</td></tr>
+  <tr><td><code>user_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_users.id</td></tr>
+  <tr><td><code>overall_rating</code></td><td>INT</td><td>NOT NULL</td><td>-</td><td>Điểm tổng quát (1-5)</td></tr>
+  <tr><td><code>work_life_balance</code></td><td>INT</td><td>NULL</td><td>-</td><td>Cân bằng CV - cuộc sống (1-5)</td></tr>
+  <tr><td><code>compensation</code></td><td>INT</td><td>NULL</td><td>-</td><td>Lương thưởng (1-5)</td></tr>
+  <tr><td><code>career_growth</code></td><td>INT</td><td>NULL</td><td>-</td><td>Phát triển (1-5)</td></tr>
+  <tr><td><code>company_culture</code></td><td>INT</td><td>NULL</td><td>-</td><td>Văn hóa (1-5)</td></tr>
+  <tr><td><code>title</code></td><td>VARCHAR(200)</td><td>NOT NULL</td><td>-</td><td>Tiêu đề đánh giá</td></tr>
+  <tr><td><code>description</code></td><td>TEXT</td><td>NULL</td><td>-</td><td>Nội dung đánh giá</td></tr>
+  <tr><td><code>is_anonymous</code></td><td>BOOLEAN</td><td>NULL</td><td>false</td><td>Ẩn danh</td></tr>
+  <tr><td><code>status</code></td><td>VARCHAR(20)</td><td>NOT NULL</td><td>'pending'</td><td>pending, approved, rejected</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
+<p><strong>Ràng buộc:</strong> UNIQUE(job_id, user_id)</p>
 <pre><code>CREATE TABLE recr_job_reviews (
   id                BIGSERIAL PRIMARY KEY,
   job_id            BIGINT NOT NULL REFERENCES recr_jobs(id),
@@ -333,8 +518,26 @@ CREATE UNIQUE INDEX idx_recr_subscriptions_active ON recr_subscriptions(user_id)
   UNIQUE(job_id, user_id)
 );</code></pre>
 
-<h3>Bảng: <code>recr_candidate_reviews</code> - Đánh Giá Ứng Viên</h3>
-<p><strong>Mô Tả:</strong> Đánh giá của người phỏng vấn đối với ứng viên sau phỏng vấn.</p>
+<!-- ===== recr_candidate_reviews ===== -->
+<h3>Bảng: <code>recr_candidate_reviews</code> — Đánh Giá Ứng Viên</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>BIGSERIAL</td><td>NOT NULL</td><td>auto</td><td>Khóa chính</td></tr>
+  <tr><td><code>candidate_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_candidates.id</td></tr>
+  <tr><td><code>interviewer_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_users.id</td></tr>
+  <tr><td><code>interview_id</code></td><td>BIGINT</td><td>NOT NULL</td><td>-</td><td>FK → recr_interviews.id</td></tr>
+  <tr><td><code>technical_skills</code></td><td>INT</td><td>NULL</td><td>-</td><td>Kỹ thuật (1-5)</td></tr>
+  <tr><td><code>communication_skills</code></td><td>INT</td><td>NULL</td><td>-</td><td>Giao tiếp (1-5)</td></tr>
+  <tr><td><code>cultural_fit</code></td><td>INT</td><td>NULL</td><td>-</td><td>Phù hợp văn hóa (1-5)</td></tr>
+  <tr><td><code>problem_solving</code></td><td>INT</td><td>NULL</td><td>-</td><td>Giải quyết vấn đề (1-5)</td></tr>
+  <tr><td><code>team_collaboration</code></td><td>INT</td><td>NULL</td><td>-</td><td>Làm việc nhóm (1-5)</td></tr>
+  <tr><td><code>title</code></td><td>VARCHAR(200)</td><td>NOT NULL</td><td>-</td><td>Tiêu đề đánh giá</td></tr>
+  <tr><td><code>description</code></td><td>TEXT</td><td>NULL</td><td>-</td><td>Nội dung đánh giá</td></tr>
+  <tr><td><code>recommendation</code></td><td>VARCHAR(20)</td><td>NULL</td><td>-</td><td>strong_yes, yes, neutral, no, strong_no</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
+<p><strong>Ràng buộc:</strong> UNIQUE(interview_id, interviewer_id)</p>
 <pre><code>CREATE TABLE recr_candidate_reviews (
   id                  BIGSERIAL PRIMARY KEY,
   candidate_id        BIGINT NOT NULL REFERENCES recr_candidates(id),
@@ -353,8 +556,22 @@ CREATE UNIQUE INDEX idx_recr_subscriptions_active ON recr_subscriptions(user_id)
   UNIQUE(interview_id, interviewer_id)
 );</code></pre>
 
-<h3>Bảng: <code>recr_invitations</code> - Quản Lý Lời Mời</h3>
-<p><strong>Mô Tả:</strong> Lưu các lời mời tổ chức với xác thực dựa trên token. Lời mời được gửi bởi HR/Nhà Tuyển Dụng đến ứng viên hoặc HR khác qua email với token bảo mật.</p>
+<!-- ===== recr_invitations ===== -->
+<h3>Bảng: <code>recr_invitations</code> — Quản Lý Lời Mời</h3>
+<table>
+  <tr><th>Cột</th><th>Kiểu</th><th>Nullable</th><th>Default</th><th>Mô Tả</th></tr>
+  <tr><td><code>id</code></td><td>UUID</td><td>NOT NULL</td><td>gen_random_uuid()</td><td>Khóa chính</td></tr>
+  <tr><td><code>email</code></td><td>VARCHAR(255)</td><td>NOT NULL</td><td>-</td><td>Email người nhận</td></tr>
+  <tr><td><code>token_hash</code></td><td>VARCHAR(64)</td><td>NOT NULL</td><td>-</td><td>Hash token xác thực (UNIQUE)</td></tr>
+  <tr><td><code>role</code></td><td>VARCHAR(50)</td><td>NOT NULL</td><td>-</td><td>Vai trò được mời</td></tr>
+  <tr><td><code>inviter_id</code></td><td>UUID</td><td>NOT NULL</td><td>-</td><td>FK → auth_users.id (người gửi)</td></tr>
+  <tr><td><code>employer_id</code></td><td>UUID</td><td>NULL</td><td>-</td><td>FK → recr_employers.id</td></tr>
+  <tr><td><code>status</code></td><td>VARCHAR(20)</td><td>NOT NULL</td><td>'PENDING'</td><td>PENDING, ACCEPTED, EXPIRED, REVOKED</td></tr>
+  <tr><td><code>expired_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>-</td><td>Thời gian hết hạn</td></tr>
+  <tr><td><code>accepted_at</code></td><td>TIMESTAMP</td><td>NULL</td><td>-</td><td>Thời gian chấp nhận</td></tr>
+  <tr><td><code>created_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td><code>updated_at</code></td><td>TIMESTAMP</td><td>NOT NULL</td><td>NOW()</td><td>Thời gian cập nhật</td></tr>
+</table>
 <pre><code>CREATE TABLE recr_invitations (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email           VARCHAR(255) NOT NULL,
@@ -370,7 +587,6 @@ CREATE UNIQUE INDEX idx_recr_subscriptions_active ON recr_subscriptions(user_id)
   CONSTRAINT recr_invitations_token_hash_unique UNIQUE (token_hash)
 );
 
--- Chỉ mục cho quản lý lời mời
 CREATE INDEX idx_recr_invitations_email ON recr_invitations(email);
 CREATE INDEX idx_recr_invitations_token_hash ON recr_invitations(token_hash);
 CREATE INDEX idx_recr_invitations_status ON recr_invitations(status);
@@ -380,62 +596,58 @@ CREATE INDEX idx_recr_invitations_employer_id ON recr_invitations(employer_id);<
 <!-- 3. INDEXES -->
 <h1 id="section-3">3. Chỉ Mục (Indexes)</h1>
 
-<pre><code>-- Chỉ mục cho Users
-CREATE INDEX idx_recr_users_user_id ON recr_users(user_id);
+<h3>recr_users / recr_candidates</h3>
+<pre><code>CREATE INDEX idx_recr_users_user_id ON recr_users(user_id);
 
--- Chỉ mục cho Candidates
 CREATE INDEX idx_recr_candidates_user_id ON recr_candidates(user_id);
-CREATE INDEX idx_recr_candidates_skills ON recr_candidates USING GIN (skills);
+CREATE INDEX idx_recr_candidates_skills ON recr_candidates USING GIN (skills);</code></pre>
 
--- Chỉ mục cho Employers
-CREATE INDEX idx_recr_employers_user_id ON recr_employers(user_id);
-CREATE INDEX idx_recr_employers_company ON recr_employers(company_name);
+<h3>recr_employers</h3>
+<pre><code>CREATE INDEX idx_recr_employers_user_id ON recr_employers(user_id);
+CREATE INDEX idx_recr_employers_company ON recr_employers(company_name);</code></pre>
 
--- Chỉ mục cho Jobs
-CREATE INDEX idx_recr_jobs_employer_id ON recr_jobs(employer_id);
+<h3>recr_jobs</h3>
+<pre><code>CREATE INDEX idx_recr_jobs_employer_id ON recr_jobs(employer_id);
 CREATE INDEX idx_recr_jobs_created_by ON recr_jobs(created_by);
 CREATE INDEX idx_recr_jobs_status ON recr_jobs(status);
-CREATE INDEX idx_recr_jobs_location ON recr_jobs(location);
+CREATE INDEX idx_recr_jobs_location ON recr_jobs(location);</code></pre>
 
--- Chỉ mục cho Applications
-CREATE INDEX idx_recr_applications_job_id ON recr_applications(job_id);
+<h3>recr_applications</h3>
+<pre><code>CREATE INDEX idx_recr_applications_job_id ON recr_applications(job_id);
 CREATE INDEX idx_recr_applications_candidate_id ON recr_applications(candidate_id);
 CREATE INDEX idx_recr_applications_status ON recr_applications(status);
-CREATE INDEX idx_recr_applications_resume_file_id ON recr_applications(resume_file_id);
+CREATE INDEX idx_recr_applications_resume_file_id ON recr_applications(resume_file_id);</code></pre>
 
--- Chỉ mục cho Interviews
-CREATE INDEX idx_recr_interviews_application_id ON recr_interviews(application_id);
+<h3>recr_interviews / recr_evaluations</h3>
+<pre><code>CREATE INDEX idx_recr_interviews_application_id ON recr_interviews(application_id);
 CREATE INDEX idx_recr_interviews_interviewer_id ON recr_interviews(interviewer_id);
 CREATE INDEX idx_recr_interviews_scheduled_at ON recr_interviews(scheduled_at);
 
--- Chỉ mục cho Evaluations
-CREATE INDEX idx_recr_evaluations_interview_id ON recr_evaluations(interview_id);
+CREATE INDEX idx_recr_evaluations_interview_id ON recr_evaluations(interview_id);</code></pre>
 
--- Chỉ mục cho Subscription Plans
-CREATE INDEX idx_recr_subscription_plans_name ON recr_subscription_plans(name);
+<h3>recr_subscription_plans / recr_subscriptions</h3>
+<pre><code>CREATE INDEX idx_recr_subscription_plans_name ON recr_subscription_plans(name);
 CREATE INDEX idx_recr_subscription_plans_active ON recr_subscription_plans(is_active);
 
--- Chỉ mục cho Subscriptions
 CREATE INDEX idx_recr_subscriptions_plan_id ON recr_subscriptions(plan_id);
 CREATE INDEX idx_recr_subscriptions_end_date ON recr_subscriptions(end_date);
-CREATE INDEX idx_recr_subscriptions_user_status ON recr_subscriptions(user_id, status);
+CREATE INDEX idx_recr_subscriptions_user_status ON recr_subscriptions(user_id, status);</code></pre>
 
--- Chỉ mục cho Subscription History
-CREATE INDEX idx_recr_subscription_history_subscription_id ON recr_subscription_history(subscription_id);
-CREATE INDEX idx_recr_subscription_history_created_at ON recr_subscription_history(created_at);
+<h3>recr_subscription_history</h3>
+<pre><code>CREATE INDEX idx_recr_subscription_history_subscription_id ON recr_subscription_history(subscription_id);
+CREATE INDEX idx_recr_subscription_history_created_at ON recr_subscription_history(created_at);</code></pre>
 
--- Chỉ mục cho Job Reviews
-CREATE INDEX idx_recr_job_reviews_job_id ON recr_job_reviews(job_id);
+<h3>recr_job_reviews / recr_candidate_reviews</h3>
+<pre><code>CREATE INDEX idx_recr_job_reviews_job_id ON recr_job_reviews(job_id);
 CREATE INDEX idx_recr_job_reviews_user_id ON recr_job_reviews(user_id);
 CREATE INDEX idx_recr_job_reviews_status ON recr_job_reviews(status);
 
--- Chỉ mục cho Candidate Reviews
 CREATE INDEX idx_recr_candidate_reviews_candidate_id ON recr_candidate_reviews(candidate_id);
 CREATE INDEX idx_recr_candidate_reviews_interviewer_id ON recr_candidate_reviews(interviewer_id);
-CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(interview_id);
+CREATE INDEX idx_recr_candidate_reviews_interview_id ON recr_candidate_reviews(interview_id);</code></pre>
 
--- Chỉ mục cho Invitations
-CREATE INDEX idx_recr_invitations_email ON recr_invitations(email);
+<h3>recr_invitations</h3>
+<pre><code>CREATE INDEX idx_recr_invitations_email ON recr_invitations(email);
 CREATE INDEX idx_recr_invitations_token_hash ON recr_invitations(token_hash);
 CREATE INDEX idx_recr_invitations_status ON recr_invitations(status);
 CREATE INDEX idx_recr_invitations_inviter_id ON recr_invitations(inviter_id);
@@ -461,15 +673,15 @@ CREATE INDEX idx_recr_invitations_employer_id ON recr_invitations(employer_id);<
   <tr><td>4</td><td>004_create_hr_profiles.sql</td><td>Tạo bảng recr_hr_profiles</td></tr>
   <tr><td>5</td><td>005_create_jobs.sql</td><td>Tạo recr_jobs và recr_job_requirements</td></tr>
   <tr><td>6</td><td>006_create_applications.sql</td><td>Tạo bảng recr_applications</td></tr>
-  <tr><td>6a</td><td>006a_create_candidate_resumes.sql</td><td>Tạo bảng recr_candidate_resumes, thêm resume_file_id vào recr_applications (tích hợp FILE module)</td></tr>
+  <tr><td>6a</td><td>006a_create_candidate_resumes.sql</td><td>Tạo recr_candidate_resumes, thêm resume_file_id</td></tr>
   <tr><td>7</td><td>007_create_interviews.sql</td><td>Tạo bảng recr_interviews</td></tr>
   <tr><td>8</td><td>008_create_evaluations.sql</td><td>Tạo bảng recr_evaluations</td></tr>
-  <tr><td>9</td><td>009_create_subscription_plans.sql</td><td>Tạo bảng recr_subscription_plans và dữ liệu mẫu</td></tr>
-  <tr><td>10</td><td>010_create_subscriptions.sql</td><td>Tạo recr_subscriptions và recr_subscription_history</td></tr>
+  <tr><td>9</td><td>009_create_subscription_plans.sql</td><td>Tạo recr_subscription_plans + seed data</td></tr>
+  <tr><td>10</td><td>010_create_subscriptions.sql</td><td>Tạo recr_subscriptions + recr_subscription_history</td></tr>
   <tr><td>11</td><td>011_create_job_reviews.sql</td><td>Tạo bảng recr_job_reviews</td></tr>
   <tr><td>12</td><td>012_create_candidate_reviews.sql</td><td>Tạo bảng recr_candidate_reviews</td></tr>
   <tr><td>13</td><td>013_create_indexes.sql</td><td>Tạo tất cả chỉ mục</td></tr>
-  <tr><td>14</td><td>014_create_invitations.sql</td><td>Tạo bảng recr_invitations (tính năng INVITE)</td><td>auth_users, recr_employers</td></tr>
+  <tr><td>14</td><td>014_create_invitations.sql</td><td>Tạo bảng recr_invitations</td></tr>
 </table>
 
 <!-- 5. DATA DICTIONARY -->
@@ -479,20 +691,20 @@ CREATE INDEX idx_recr_invitations_employer_id ON recr_invitations(employer_id);<
   <tr><th>Bảng</th><th>Mô Tả</th><th>Giải Quyết</th><th>Dòng Dự Kiến (Năm 1)</th></tr>
   <tr><td>recr_users</td><td>Tài khoản người dùng (tất cả vai trò)</td><td>FR-001, FR-002, FR-015</td><td>15,000</td></tr>
   <tr><td>recr_candidates</td><td>Hồ sơ ứng viên</td><td>FR-006, FR-007</td><td>10,000</td></tr>
-  <tr><td>recr_candidate_resumes</td><td>Danh sách hồ sơ ứng viên (tham chiếu file_id của FILE module)</td><td>FR-007, FR-037, FR-038</td><td>20,000</td></tr>
+  <tr><td>recr_candidate_resumes</td><td>Danh sách hồ sơ ứng viên (FILE module)</td><td>FR-007, FR-037, FR-038</td><td>20,000</td></tr>
   <tr><td>recr_employers</td><td>Hồ sơ công ty nhà tuyển dụng</td><td>FR-015, FR-033</td><td>500</td></tr>
   <tr><td>recr_hr_profiles</td><td>Hồ sơ người dùng HR</td><td>FR-032</td><td>50</td></tr>
   <tr><td>recr_jobs</td><td>Tin tuyển dụng</td><td>FR-016, FR-017, FR-028, FR-029</td><td>2,000</td></tr>
-  <tr><td>recr_applications</td><td>Hồ sơ ứng tuyển với resume_file_id khóa</td><td>FR-004, FR-005, FR-038</td><td>25,000</td></tr>
+  <tr><td>recr_applications</td><td>Hồ sơ ứng tuyển</td><td>FR-004, FR-005, FR-038</td><td>25,000</td></tr>
   <tr><td>recr_interviews</td><td>Phiên phỏng vấn</td><td>FR-010</td><td>8,000</td></tr>
   <tr><td>recr_evaluations</td><td>Đánh giá phỏng vấn</td><td>FR-011</td><td>8,000</td></tr>
   <tr><td>recr_job_requirements</td><td>Yêu cầu việc làm</td><td>FR-016, FR-017</td><td>5,000</td></tr>
   <tr><td>recr_subscription_plans</td><td>Định nghĩa gói đăng ký</td><td>FR-021</td><td>3</td></tr>
   <tr><td>recr_subscriptions</td><td>Đăng ký người dùng</td><td>FR-022, FR-023, FR-024</td><td>500</td></tr>
   <tr><td>recr_subscription_history</td><td>Lịch sử thay đổi đăng ký</td><td>FR-026</td><td>2,000</td></tr>
-  <tr><td>recr_job_reviews</td><td>Đánh giá và nhận xét về việc làm từ ứng viên</td><td>FR-030</td><td>5,000</td></tr>
-  <tr><td>recr_candidate_reviews</td><td>Đánh giá và nhận xét ứng viên từ người phỏng vấn</td><td>FR-031</td><td>8,000</td></tr>
-  <tr><td>recr_invitations</td><td>Lời mời tổ chức với xác thực dựa trên token</td><td>FR-039, FR-042, FR-043, FR-044, FR-045, FR-046</td><td>5,000</td></tr>
+  <tr><td>recr_job_reviews</td><td>Đánh giá việc làm từ ứng viên</td><td>FR-030</td><td>5,000</td></tr>
+  <tr><td>recr_candidate_reviews</td><td>Đánh giá ứng viên từ người phỏng vấn</td><td>FR-031</td><td>8,000</td></tr>
+  <tr><td>recr_invitations</td><td>Lời mời với xác thực token</td><td>FR-039, FR-042, FR-043</td><td>5,000</td></tr>
 </table>
 
 <!-- 6. BACKUP & RECOVERY -->
