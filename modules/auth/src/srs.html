@@ -5,42 +5,15 @@
   <title>Đặc tả Yêu cầu Phần mềm - Xác thực (Better Auth)</title>
   <link rel="stylesheet" href="../style.css">
 </head>
-<body>
-
-<!-- LOGO HEADER -->
-<div class="logo-header">
-  <div class="logo-left">
-    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
-  </div>
-  <div class="logo-right">
-    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
-  </div>
-</div>
-
-<div class="back-link">
-  <a href="../index.html">&larr; Back to System Overviewlarr; Quay lại Tổng quan Hệ thống</a>
-</div>
-
-<!-- COVER PAGE -->
-<div class="cover">
-  <h1 id="page-title">Đặc tả Yêu cầu Phần mềm</h1>
-  <div class="subtitle">Module Xác thực</div>
-  <span class="module-badge">AUTH</span>
-  <table class="meta-table">
-    <tr><td>Phiên bản</td><td>1.0</td></tr>
-    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
-    <tr><td>Module</td><td>AUTH - Xác thực</td></tr>
-    <tr><td>Cơ sở dữ liệu</td><td>auth_db</td></tr>
-    <tr><td>Ngày</td><td>2026-08-05</td></tr>
-    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
-    <tr><td>Trạng thái</td><td>Bản nháp</td></tr>
-  </table>
-</div>
+<body class="with-sidebar-toc">
 
 <!-- TABLE OF CONTENTS -->
-<div class="toc">
-  <h2>Mục lục</h2>
-  <ul>
+<nav class="toc" id="toc" aria-label="Mục lục">
+  <div class="toc-header">
+    <h2>Mục lục</h2>
+    <button type="button" class="toc-toggle" aria-expanded="true" aria-controls="toc-nav" aria-label="Đóng mục lục">‹</button>
+  </div>
+  <ul id="toc-nav">
     <li><a href="#section-1">1. Giới thiệu</a>
       <ul>
         <li><a href="#section-1-1">1.1 Mục đích</a></li>
@@ -131,6 +104,38 @@
       </ul>
     </li>
   </ul>
+</nav>
+
+<div class="doc-main">
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Back to System Overviewlarr; Quay lại Tổng quan Hệ thống</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1 id="page-title">Đặc tả Yêu cầu Phần mềm</h1>
+  <div class="subtitle">Module Xác thực</div>
+  <span class="module-badge">AUTH</span>
+  <table class="meta-table">
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Xác thực</td></tr>
+    <tr><td>Module</td><td>AUTH - Xác thực</td></tr>
+    <tr><td>Cơ sở dữ liệu</td><td>auth_db</td></tr>
+    <tr><td>Ngày</td><td>2026-08-05</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>Trạng thái</td><td>Bản nháp</td></tr>
+  </table>
 </div>
 
 <!-- 1. INTRODUCTION -->
@@ -935,6 +940,31 @@
   <tr id="trace-fr-019"><td><span class="req-id">FR-019</span></td><td>Thu hồi Lời mời</td><td>auth_invitations</td><td>DELETE /organization/cancel-invitation</td></tr>
   <tr id="trace-fr-020"><td><span class="req-id">FR-020</span></td><td>Xác minh Token Lời mời</td><td>auth_invitations</td><td>GET /organization/verify-invitation</td></tr>
 </table>
+
+</div>
+
+<script>
+(function () {
+  var body = document.body
+  var btn = document.querySelector('.toc-toggle')
+  var key = 'auth-srs-toc-collapsed'
+  if (!btn) return
+
+  function apply(collapsed) {
+    body.classList.toggle('toc-collapsed', collapsed)
+    btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true')
+    btn.setAttribute('aria-label', collapsed ? 'Mở mục lục' : 'Đóng mục lục')
+    btn.textContent = collapsed ? '›' : '‹'
+  }
+
+  apply(localStorage.getItem(key) === '1')
+  btn.addEventListener('click', function () {
+    var collapsed = !body.classList.contains('toc-collapsed')
+    apply(collapsed)
+    localStorage.setItem(key, collapsed ? '1' : '0')
+  })
+})()
+</script>
 
 </body>
 </html>
