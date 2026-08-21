@@ -66,7 +66,7 @@ Cross-reference of `modules.yaml` features vs actual codebase. Last updated: 202
 
 | # | Document Feature | Status | Backend | Frontend | Notes |
 |---|-----------------|--------|---------|----------|-------|
-| 26 | Job Posting | ⚠️ | ⚠️ | ✅ | Create/update/submit exists, browse returns `{ jobs: [], total: 0 }` |
+| 26 | Job Posting | ✅ | ✅ | ✅ | Full CRUD: create/update/delete/submit-for-approval, public browse with filtering, employer job list |
 | 27 | Application Submission | ⚠️ | ⚠️ | ✅ | DB schema exists, apply endpoint returns stubs |
 | 28 | Interview Scheduling | ✅ | ✅ | ✅ | Schedule, update, cancel — fully working |
 | 29 | Offer Management | ⚠️ | ⚠️ | — | `recr_offers` table exists, no creation/update endpoints |
@@ -160,8 +160,8 @@ Cross-reference of `modules.yaml` features vs actual codebase. Last updated: 202
 
 | Category | ✅ Implemented | ⚠️ Partial | ❌ Not Implemented |
 |----------|---------------|------------|-------------------|
-| **15 Document Features** | 3 | 6 | **6** (entire WALLET module) |
-| **Backend Services** | 5 (auth, email, sms, log, recr-interviews) | 1 (recr — stubs) | **1** (wallet) |
+| **15 Document Features** | 4 | 5 | **6** (entire WALLET module) |
+| **Backend Services** | 5 (auth, email, sms, log, recr-jobs) | 1 (recr — other stubs) | **1** (wallet) |
 | **Frontend/UI** | 14 | — | — |
 | **Admin Panel** | 8 | — | — |
 | **Webhook Events** | 0 | 3 | **13** |
@@ -169,7 +169,7 @@ Cross-reference of `modules.yaml` features vs actual codebase. Last updated: 202
 ### Priority Gaps
 
 1. **WALLET module** — 6 features completely missing, needs new NestJS service + DB schema + frontend
-2. **Recruitment backend** — most endpoints return stub data, need real DB queries
+2. **Recruitment backend** — application submission, candidate/employer profiles, pipeline, reports, subscriptions still return stubs
 3. **Webhook events** — 13 out of 16 events not wired, services exist but don't publish/subscribe
 4. **Twilio integration** — SMS service sends to Discord only
 5. **Elasticsearch** — listed in tech stack for recruitment search, not connected
