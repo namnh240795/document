@@ -13,12 +13,12 @@
     <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
   </div>
   <div class="logo-right">
-    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+    <img src="../assets/gta-logo.png" alt="GTA" class="logo">
   </div>
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overviewlarr; Quay lại Tổng quan Hệ thống</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
@@ -60,7 +60,6 @@
         <li><a href="#fr-006">FR-006: Đặt lại Mật khẩu (Điện thoại)</a></li>
         <li><a href="#fr-007">FR-007: Đổi Mật khẩu</a></li>
         <li><a href="#fr-008">FR-008: Xác minh Email</a></li>
-        <li><a href="#fr-009">FR-009: Xác minh Số điện thoại</a></li>
         <li><a href="#fr-010">FR-010: Quản lý Người dùng</a></li>
         <li><a href="#fr-011">FR-011: Quản lý Vai trò</a></li>
         <li><a href="#fr-012">FR-012: Xác thực Xã hội</a></li>
@@ -76,16 +75,15 @@
     </li>
     <li><a href="#section-4">4. Trường hợp Sử dụng</a>
       <ul>
-        <li><a href="#section-4-0">4.0 Sơ đồ Trường hợp Sử dụng</a></li>
-        <li><a href="#uc-01">4.1 UC-01: Đăng ký Người dùng</a></li>
-        <li><a href="#uc-02">4.2 UC-02: Đăng nhập</a></li>
-        <li><a href="#uc-03">4.3 UC-03: Đăng xuất</a></li>
-        <li><a href="#uc-04">4.4 UC-04: Làm mới Token</a></li>
-        <li><a href="#uc-05">4.5 UC-05: Đặt lại Mật khẩu qua Email</a></li>
-        <li><a href="#uc-06">4.6 UC-06: Đặt lại Mật khẩu qua Điện thoại</a></li>
-        <li><a href="#uc-07">4.7 UC-07: Đổi Mật khẩu</a></li>
-        <li><a href="#uc-08">4.8 UC-08: Xác minh Email</a></li>
-        <li><a href="#uc-09">4.9 UC-09: Xác minh Số điện thoại</a></li>
+        <li><a href="#section-4-1">4.1 Sơ đồ Trường hợp Sử dụng</a></li>
+        <li><a href="#uc-01">4.2 UC-01: Đăng ký Người dùng</a></li>
+        <li><a href="#uc-02">4.3 UC-02: Đăng nhập</a></li>
+        <li><a href="#uc-03">4.4 UC-03: Đăng xuất</a></li>
+        <li><a href="#uc-04">4.5 UC-04: Làm mới Token</a></li>
+        <li><a href="#uc-05">4.6 UC-05: Đặt lại Mật khẩu qua Email</a></li>
+        <li><a href="#uc-06">4.7 UC-06: Đặt lại Mật khẩu qua Điện thoại</a></li>
+        <li><a href="#uc-07">4.8 UC-07: Đổi Mật khẩu</a></li>
+        <li><a href="#uc-08">4.9 UC-08: Xác minh Email</a></li>
         <li><a href="#uc-10">4.10 UC-10: Quản lý Người dùng</a></li>
         <li><a href="#uc-11">4.11 UC-11: Quản lý Vai trò</a></li>
         <li><a href="#uc-12">4.12 UC-12: Xác thực Xã hội</a></li>
@@ -99,14 +97,21 @@
         <li><a href="#uc-20">4.20 UC-20: Xác minh Token Lời mời</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">5. Yêu cầu Phi chức năng</a>
+    <li><a href="#section-5">5. Tích hợp</a>
+      <ul>
+        <li><a href="#section-5-1">5.1 Sơ đồ Tích hợp</a></li>
+        <li><a href="#section-5-2">5.2 Sự kiện RabbitMQ</a></li>
+        <li><a href="#section-5-3">5.3 Webhook Callback</a></li>
+      </ul>
+    </li>
+    <li><a href="#section-6">6. Yêu cầu Phi chức năng</a>
       <ul>
         <li><a href="#nfr-001">NFR-001: Hiệu suất</a></li>
         <li><a href="#nfr-002">NFR-002: Bảo mật</a></li>
         <li><a href="#nfr-003">NFR-003: Khả dụng</a></li>
       </ul>
     </li>
-    <li><a href="#section-6">6. Ma trận Truy xuất Nguồn gốc</a>
+    <li><a href="#section-7">7. Ma trận Truy xuất Nguồn gốc</a>
       <ul>
         <li><a href="#trace-fr-001">FR-001: Đăng ký Người dùng</a></li>
         <li><a href="#trace-fr-002">FR-002: Đăng nhập</a></li>
@@ -116,7 +121,6 @@
         <li><a href="#trace-fr-006">FR-006: Đặt lại Mật khẩu (Điện thoại)</a></li>
         <li><a href="#trace-fr-007">FR-007: Đổi Mật khẩu</a></li>
         <li><a href="#trace-fr-008">FR-008: Xác minh Email</a></li>
-        <li><a href="#trace-fr-009">FR-009: Xác minh Số điện thoại</a></li>
         <li><a href="#trace-fr-010">FR-010: Quản lý Người dùng</a></li>
         <li><a href="#trace-fr-011">FR-011: Quản lý Vai trò</a></li>
         <li><a href="#trace-fr-012">FR-012: Xác thực Xã hội</a></li>
@@ -137,7 +141,7 @@
 <h1 id="section-1">1. Giới thiệu</h1>
 
 <h2 id="section-1-1">1.1 Mục đích</h2>
-<p>This document defines the software requirements for the <strong>Authentication</strong> module of the Hệ thống Xác thực.</p>
+<p>Tài liệu này định nghĩa các yêu cầu phần mềm cho module <strong>Xác thực</strong> của Hệ thống Xác thực.</p>
 
 <h2 id="section-1-2">1.2 Phạm vi</h2>
 <p>Module Xác thực xử lý:</p>
@@ -145,7 +149,7 @@
   <li>Đăng ký người dùng bằng email hoặc số điện thoại + mật khẩu</li>
   <li>Đăng nhập bằng email hoặc số điện thoại + mật khẩu</li>
   <li>Quản lý phiên và token (access + refresh token)</li>
-  <li>Xác minh tài khoản qua email và SMS</li>
+  <li>Xác minh tài khoản qua email</li>
   <li>Đặt lại mật khẩu qua email hoặc số điện thoại/OTP</li>
   <li>Kiểm soát truy cập dựa trên vai trò (RBAC)</li>
   <li>Quản lý người dùng (admin CRUD)</li>
@@ -154,8 +158,8 @@
 <h2 id="section-1-3">1.3 Phụ thuộc Module</h2>
 <table>
   <tr><th>Module</th><th>Loại phụ thuộc</th><th>Mô tả</th></tr>
-  <tr><td>SMS</td><td>Async (RabbitMQ)</td><td>Gửi SMS xác minh qua module SMS</td></tr>
-  <tr><td>EMAIL</td><td>Async (RabbitMQ)</td><td>Gửi email xác minh/đặt lại qua module EMAIL</td></tr>
+  <tr><td>SMS</td><td>Async (RabbitMQ)</td><td>SMS queue worker chạy trong AUTH service, consume từ queue <code>password.reset.sms</code>, gọi SMS module để gửi OTP đặt lại mật khẩu</td></tr>
+  <tr><td>EMAIL</td><td>Async (RabbitMQ)</td><td>EMAIL queue worker chạy trong AUTH service, consume từ queue <code>verification.email</code>, <code>password.reset.email</code> và <code>invitation.email</code>, gọi EMAIL module để gửi email</td></tr>
   <tr><td>LOG</td><td>Async (RabbitMQ)</td><td>Gửi sự kiện xác thực đến module Logger</td></tr>
 </table>
 
@@ -177,7 +181,7 @@
   <tr><th>Khía cạnh</th><th>Value</th></tr>
   <tr><td>Module Code</td><td>AUTH</td></tr>
   <tr><td>Module Name</td><td>Authentication</td></tr>
-  <tr><td>Description</td><td>User accounts, login, roles, sessions, verification</td></tr>
+  <tr><td>Mô tả</td><td>Tài khoản người dùng, đăng nhập, vai trò, phiên, xác minh</td></tr>
   <tr><td>Cơ sở dữ liệu</td><td>auth_db</td></tr>
   <tr><td>Tables</td><td>auth_users, auth_sessions, auth_accounts, auth_verification, auth_roles, auth_user_roles, auth_organizations, auth_members, auth_teams, auth_team_members, auth_invitations</td></tr>
   <tr><td>Tech Stack</td><td>NestJS, Better Auth, Drizzle ORM, PostgreSQL</td></tr>
@@ -201,7 +205,7 @@
     <td>Đăng ký Người dùng</td>
     <td>UC-01</td>
     <td>Cao</td>
-    <td>Hệ thống cho phép người dùng đăng ký bằng email hoặc số điện thoại + mật khẩu + tên. Người dùng đăng ký nhận vai trò hệ thống <code>user</code> mặc định.</td>
+    <td>Hệ thống cho phép người dùng đăng ký bằng email + mật khẩu + tên. Người dùng đăng ký nhận vai trò hệ thống <code>user</code> mặc định. Sau khi tạo tài khoản, AUTH publish sự kiện <code>verification.email.requested</code> lên RabbitMQ (queue: <code>verification.email</code>). Email queue worker bên trong AUTH service consume sự kiện và gọi EMAIL module để gửi email xác minh.</td>
   </tr>
   <tr id="fr-002">
     <td><span class="req-id">FR-002</span></td>
@@ -232,23 +236,23 @@
     <td>AUTH</td>
     <td>Đặt lại Mật khẩu (Email)</td>
     <td>UC-05</td>
-    <td>Trung bình</td>
-    <td>Hệ thống gửi liên kết đặt lại mật khẩu đến email người dùng qua module EMAIL</td>
+    <td>Cao</td>
+    <td>Hệ thống gửi liên kết đặt lại mật khẩu đến email người dùng. AUTH publish sự kiện <code>password.reset.email.requested</code> lên RabbitMQ (queue: <code>password.reset.email</code>). Email queue worker trong AUTH consume và gọi EMAIL module để gửi email đặt lại.</td>
   </tr>
   <tr id="fr-006">
     <td><span class="req-id">FR-006</span></td>
     <td>AUTH</td>
     <td>Đặt lại Mật khẩu (Điện thoại)</td>
     <td>UC-06</td>
-    <td>Trung bình</td>
-    <td>Hệ thống gửi OTP đến số điện thoại người dùng để đặt lại mật khẩu</td>
+    <td>Cao</td>
+    <td>Hệ thống gửi OTP đặt lại mật khẩu đến số điện thoại người dùng. AUTH publish sự kiện <code>password.reset.sms.requested</code> lên RabbitMQ (queue: <code>password.reset.sms</code>). SMS queue worker trong AUTH consume và gọi SMS module để gửi OTP.</td>
   </tr>
   <tr id="fr-007">
     <td><span class="req-id">FR-007</span></td>
     <td>AUTH</td>
     <td>Đổi Mật khẩu</td>
     <td>UC-07</td>
-    <td>Trung bình</td>
+    <td>Cao</td>
     <td>Hệ thống cho phép người dùng đã xác thực đổi mật khẩu</td>
   </tr>
   <tr id="fr-008">
@@ -258,14 +262,6 @@
     <td>UC-08</td>
     <td>Cao</td>
     <td>Hệ thống gửi email xác minh qua module EMAIL và xác minh qua liên kết</td>
-  </tr>
-  <tr id="fr-009">
-    <td><span class="req-id">FR-009</span></td>
-    <td>AUTH</td>
-    <td>Xác minh Số điện thoại</td>
-    <td>UC-09</td>
-    <td>Cao</td>
-    <td>Hệ thống xác minh số điện thoại qua mã OTP</td>
   </tr>
   <tr id="fr-010">
     <td><span class="req-id">FR-010</span></td>
@@ -329,7 +325,7 @@
     <td>Quản lý Lời mời</td>
     <td>UC-17</td>
     <td>Cao</td>
-    <td>Hệ thống cho phép mời thành viên vào tổ chức qua email với xác minh dựa trên token.
+    <td>Hệ thống cho phép mời thành viên vào tổ chức qua email với xác minh dựa trên token. AUTH publish sự kiện <code>invitation.email.requested</code> lên RabbitMQ (queue: <code>invitation.email</code>). Email queue worker trong AUTH consume và gọi EMAIL module để gửi email lời mời.</td>
   </tr>
   <tr id="fr-018">
     <td><span class="req-id">FR-018</span></td>
@@ -337,7 +333,7 @@
     <td>Gửi lại Lời mời</td>
     <td>UC-18</td>
     <td>Trung bình</td>
-    <td>Hệ thống cho phép người mời gửi lại lời mời, tạo token mới và hủy token trước đó.
+    <td>Hệ thống cho phép người mời gửi lại lời mời, tạo token mới và hủy token trước đó. AUTH publish sự kiện <code>invitation.email.resent</code> lên RabbitMQ (queue: <code>invitation.email</code>).</td>
   </tr>
   <tr id="fr-019">
     <td><span class="req-id">FR-019</span></td>
@@ -345,7 +341,7 @@
     <td>Thu hồi Lời mời</td>
     <td>UC-19</td>
     <td>Trung bình</td>
-    <td>Hệ thống cho phép người mời (chủ sở hữu) thu hồi lời mời đang chờ.
+    <td>Hệ thống cho phép người mời (chủ sở hữu) thu hồi lời mời đang chờ.</td>
   </tr>
   <tr id="fr-020">
     <td><span class="req-id">FR-020</span></td>
@@ -353,27 +349,27 @@
     <td>Xác minh Token Lời mời</td>
     <td>UC-20</td>
     <td>Cao</td>
-    <td>Hệ thống cung cấp đầu nối công khai để xác minh tính hợp lệ của token lời mời.
+    <td>Hệ thống cung cấp đầu nối công khai để xác minh tính hợp lệ của token lời mời.</td>
   </tr>
 </table>
 
 <!-- 4. USE CASES -->
 <h1 id="section-4">4. Trường hợp Sử dụng</h1>
 
-<h2 id="section-4-0">4.0 Sơ đồ Trường hợp Sử dụng</h2>
+<h2 id="section-4-1">4.1 Sơ đồ Trường hợp Sử dụng</h2>
 <div class="diagram">
   <img src="./images/usecase/usecase-diagram.png" alt="Trường hợp Sử dụng Diagram">
   <div class="caption">Hình: Trường hợp Sử dụng Diagram</div>
 </div>
 
-<h2 id="uc-01">4.1 UC-01: Đăng ký Người dùng</h2>
+<h2 id="uc-01">4.2 UC-01: Đăng ký Người dùng</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Khách (chưa xác thực)</td></tr>
   <tr><td>Điều kiện tiên quyết</td><td>Người dùng chưa đăng nhập; user does not have an existing account</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Người dùng điều hướng đến trang đăng ký<br>2. Nhập tên, email và mật khẩu<br>3. Hệ thống kiểm tra dữ liệu đầu vào (email format, password strength)<br>4. Hệ thống tạo tài khoản người dùng with hashed password and assigns <code>user</code> system role<br>5. Hệ thống gửi email xác minh via EMAIL module<br>6. Hệ thống trả về phản hồi thành công with user ID and JWT token</td></tr>
-  <tr><td>Luồng Thay thế</td><td>3a. Email đã tồn tại → System returns 409 Conflict<br>3b. Mật khẩu quá yếu → System returns 400 Validation Error<br>5a. Verification service unavailable → Account created, verification queued</td></tr>
-  <tr><td>Hậu điều kiện</td><td>User account created with <code>user</code> role (unverified); verification email sent; JWT token issued</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Người dùng điều hướng đến trang đăng ký<br>2. Nhập tên, email và mật khẩu<br>3. Hệ thống kiểm tra dữ liệu đầu vào (email format, password strength)<br>4. Hệ thống tạo tài khoản người dùng with hashed password and assigns <code>user</code> system role<br>5. AUTH publish sự kiện <code>verification.email.requested</code> lên RabbitMQ (queue: <code>verification.email</code>)<br>6. Email queue worker (trong AUTH service) consume sự kiện và gọi EMAIL module để gửi email xác minh<br>7. Hệ thống trả về phản hồi thành công with user ID and JWT token</td></tr>
+  <tr><td>Luồng Thay thế</td><td>3a. Email đã tồn tại → Hệ thống trả về 409 Conflict<br>3b. Mật khẩu quá yếu → Hệ thống trả về 400 Lỗi Validation<br>6a. EMAIL module không khả dụng → Event vẫn được publish, worker retry exponential backoff (tối đa 5 lần); tài khoản vẫn được tạo</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Tài khoản người dùng đã tạo với vai trò <code>user</code> (chưa xác minh); sự kiện <code>verification.email.requested</code> đã publish lên RabbitMQ; email xác minh đã gửi qua EMAIL module; JWT token đã cấp</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-001</span></td></tr>
 </table>
 <p><strong>Các vai trò có thể tự đăng ký:</strong></p>
@@ -381,7 +377,7 @@
   <tr><th>Role</th><th>Mô tả</th></tr>
   <tr><td><code>user</code></td><td>Tài khoản người dùng tiêu chuẩn (mặc định). Người dùng có thể tạo tổ chức và nhận các vai trò cấp tổ chức (HR, Ứng viên, Nhà tuyển dụng).</td></tr>
 </table>
-<p><strong>Lưu ý:</strong> <code>super_admin</code> accounts cannot be self-registered. They must be created by an admin via <code>POST /admin/create-user</code>.</p>
+<p><strong>Lưu ý:</strong> Tài khoản <code>super_admin</code> không thể tự đăng ký. Chúng phải được tạo bởi admin qua <code>POST /admin/create-user</code>.</p>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
@@ -395,14 +391,14 @@
   <div class="caption">Hình: Đăng ký Người dùng Sequence Diagram</div>
 </div>
 
-<h2 id="uc-02">4.2 UC-02: Đăng nhập</h2>
+<h2 id="uc-02">4.3 UC-02: Đăng nhập</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Người dùng đã đăng ký</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>Người dùng có tài khoản đã đăng ký; account is active</td></tr>
-  <tr><td>Luồng Chính</td><td>1. User navigates to login page<br>2. Nhập email/phone and password<br>3. Hệ thống kiểm tra thông tin đăng nhập against database<br>4. Hệ thống tạo JWT access token (15min) and refresh token (7 days)<br>5. Hệ thống tạo phiên làm việc record<br>6. System returns tokens and user profile</td></tr>
-  <tr><td>Luồng Thay thế</td><td>3a. Thông tin đăng nhập không hợp lệ → System returns 401 Không được ủy quyền<br>3b. Tài khoản bị khóa → System returns 403 Forbidden<br>3c. Tài khoản không hoạt động → System returns 403 Forbidden</td></tr>
-  <tr><td>Hậu điều kiện</td><td>User is authenticated; session created; tokens issued</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng có tài khoản đã đăng ký; tài khoản đang hoạt động</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Người dùng điều hướng đến trang đăng nhập<br>2. Nhập email/phone và mật khẩu<br>3. Hệ thống kiểm tra thông tin đăng nhập trong database<br>4. Hệ thống tạo JWT access token (15 phút) và refresh token (7 ngày)<br>5. Hệ thống tạo bản ghi phiên làm việc<br>6. Hệ thống trả về token và thông tin người dùng</td></tr>
+  <tr><td>Luồng Thay thế</td><td>3a. Thông tin đăng nhập không hợp lệ → Hệ thống trả về 401 Unauthorized<br>3b. Tài khoản bị khóa → Hệ thống trả về 403 Forbidden<br>3c. Tài khoản không hoạt động → Hệ thống trả về 403 Forbidden</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Người dùng đã xác thực; phiên đã tạo; token đã cấp</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-002</span></td></tr>
 </table>
 
@@ -418,14 +414,14 @@
   <div class="caption">Hình: Đăng nhập Sequence Diagram</div>
 </div>
 
-<h2 id="uc-03">4.3 UC-03: Đăng xuất</h2>
+<h2 id="uc-03">4.4 UC-03: Đăng xuất</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập with valid session</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp logout button<br>2. System receives logout request with access token<br>3. Hệ thống hủy phiên làm việc hiện tại (deletes session record)<br>4. Hệ thống trả về phản hồi thành công</td></tr>
-  <tr><td>Luồng Thay thế</td><td>2a. Token hết hạn → Session already invalid, return success</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Session invalidated; tokens no longer valid</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập với phiên hợp lệ</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp nút đăng xuất<br>2. Hệ thống nhận yêu cầu đăng xuất với access token<br>3. Hệ thống hủy phiên làm việc hiện tại (xóa bản ghi phiên)<br>4. Hệ thống trả về phản hồi thành công</td></tr>
+  <tr><td>Luồng Thay thế</td><td>2a. Token hết hạn → Phiên đã không hợp lệ, trả về thành công</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Phiên đã hủy; token không còn hiệu lực</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-003</span></td></tr>
 </table>
 
@@ -441,14 +437,14 @@
   <div class="caption">Hình: Đăng xuất Sequence Diagram</div>
 </div>
 
-<h2 id="uc-04">4.4 UC-04: Làm mới Token</h2>
+<h2 id="uc-04">4.5 UC-04: Làm mới Token</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
-  <tr><td>Actor</td><td>Người dùng đã xác thực (token expired)</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>Người dùng có refresh token hợp lệ; access token expired</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Client phát hiện access token hết hạn<br>2. Client gửi refresh token to /auth/refresh<br>3. Hệ thống kiểm tra refresh token and session<br>4. Hệ thống tạo access token mới<br>5. System returns new access token</td></tr>
-  <tr><td>Luồng Thay thế</td><td>3a. Refresh token hết hạn → System returns 401, user must re-login<br>3b. Không tìm thấy phiên → System returns 401</td></tr>
-  <tr><td>Hậu điều kiện</td><td>New access token issued; session remains valid</td></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực (access token hết hạn)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng có refresh token hợp lệ; access token đã hết hạn</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Client phát hiện access token hết hạn<br>2. Client gửi refresh token đến /auth/refresh<br>3. Hệ thống kiểm tra refresh token và phiên<br>4. Hệ thống tạo access token mới<br>5. Hệ thống trả về access token mới</td></tr>
+  <tr><td>Luồng Thay thế</td><td>3a. Refresh token hết hạn → Hệ thống trả về 401, người dùng phải đăng nhập lại<br>3b. Không tìm thấy phiên → Hệ thống trả về 401</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Access token mới đã cấp; phiên vẫn hợp lệ</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-004</span></td></tr>
 </table>
 
@@ -464,83 +460,83 @@
   <div class="caption">Hình: Làm mới Token Sequence Diagram</div>
 </div>
 
-<h2 id="uc-05">4.5 UC-05: Đặt lại Mật khẩu qua Email</h2>
+<h2 id="uc-05">4.6 UC-05: Đặt lại Mật khẩu qua Email</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Người dùng đã đăng ký (forgot password)</td></tr>
   <tr><td>Điều kiện tiên quyết</td><td>Người dùng có email đã đăng ký; user is not logged in</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp "Forgot Password"<br>2. Nhập email address<br>3. Hệ thống tạo token đặt lại mật khẩu<br>4. Hệ thống gửi liên kết đặt lại via EMAIL module<br>5. User clicks link in email<br>6. Nhập mật khẩu mới<br>7. Hệ thống cập nhật mật khẩu<br>8. Hệ thống hủy tất cả phiên</td></tr>
-  <tr><td>Luồng Thay thế</td><td>2a. Không tìm thấy email → System returns success (don't reveal if email exists)<br>4a. Gửi email thất bại → System logs error, user can retry</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Mật khẩu đã cập nhật; all sessions invalidated</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp "Forgot Password"<br>2. Nhập email address<br>3. Hệ thống kiểm tra email tồn tại, tạo token đặt lại mật khẩu, lưu vào <code>auth_verification</code><br>4. AUTH publish sự kiện <code>password.reset.email.requested</code> lên RabbitMQ (queue: <code>password.reset.email</code>)<br>5. Email queue worker (trong AUTH) consume sự kiện và gọi EMAIL module để gửi email chứa liên kết đặt lại<br>6. User clicks link in email<br>7. Nhập mật khẩu mới<br>8. Hệ thống xác minh token, cập nhật mật khẩu<br>9. Hệ thống hủy tất cả phiên</td></tr>
+  <tr><td>Luồng Thay thế</td><td>2a. Không tìm thấy email → Hệ thống trả về success (không tiết lộ nếu email tồn tại)<br>5a. EMAIL module không khả dụng → Event vẫn được publish, worker retry exponential backoff (tối đa 5 lần); user có thể yêu cầu gửi lại<br>8a. Token hết hạn → Hệ thống trả về 400, user yêu cầu gửi lại<br>8b. Token không hợp lệ → Hệ thống trả về 400</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Mật khẩu đã cập nhật; all sessions invalidated; event <code>password.reset.email.requested</code> đã publish</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-005</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
-  <img src="./images/activity/password-reset-activity.png" alt="Password Reset Activity Diagram">
-  <div class="caption">Hình: Password Reset Activity Diagram</div>
+  <img src="./images/activity/password-reset-activity.png" alt="Đặt lại Mật khẩu Activity Diagram">
+  <div class="caption">Hình: Đặt lại Mật khẩu Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
-  <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
-  <div class="caption">Hình: Password Reset Sequence Diagram</div>
+  <img src="./images/sequence/password-reset-sequence.png" alt="Đặt lại Mật khẩu Sequence Diagram">
+  <div class="caption">Hình: Đặt lại Mật khẩu Sequence Diagram</div>
 </div>
 
-<h2 id="uc-06">4.6 UC-06: Đặt lại Mật khẩu qua Điện thoại</h2>
+<h2 id="uc-06">4.7 UC-06: Đặt lại Mật khẩu qua Điện thoại</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Người dùng đã đăng ký (forgot password)</td></tr>
   <tr><td>Điều kiện tiên quyết</td><td>Người dùng có số điện thoại đã đăng ký; user is not logged in</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp "Forgot Password"<br>2. Chọn tùy chọn điện thoại and enters phone number<br>3. Hệ thống tạo mã OTP<br>4. Hệ thống gửi OTP qua SMS module<br>5. Nhập OTP and new password<br>6. Hệ thống xác minh OTP<br>7. Hệ thống cập nhật mật khẩu<br>8. Hệ thống hủy tất cả phiên</td></tr>
-  <tr><td>Luồng Thay thế</td><td>2a. Không tìm thấy số điện thoại → System returns success (don't reveal if phone exists)<br>6a. OTP hết hạn → System returns 422, user can request new OTP<br>6b. OTP không hợp lệ → System returns 422</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Mật khẩu đã cập nhật; all sessions invalidated</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp "Forgot Password"<br>2. Chọn tùy chọn điện thoại và nhập số điện thoại<br>3. Hệ thống kiểm tra SĐT tồn tại, tạo mã OTP, lưu vào <code>auth_verification</code><br>4. AUTH publish sự kiện <code>password.reset.sms.requested</code> lên RabbitMQ (queue: <code>password.reset.sms</code>)<br>5. SMS queue worker (trong AUTH) consume sự kiện và gọi SMS module để gửi OTP<br>6. Nhập OTP và mật khẩu mới<br>7. Hệ thống xác minh OTP<br>8. Hệ thống cập nhật mật khẩu<br>9. Hệ thống hủy tất cả phiên</td></tr>
+  <tr><td>Luồng Thay thế</td><td>2a. Không tìm thấy số điện thoại → Hệ thống trả về success (không tiết lộ nếu SĐT tồn tại)<br>5a. SMS module không khả dụng → Event vẫn được publish, worker retry exponential backoff (tối đa 5 lần); user có thể yêu cầu gửi lại<br>7a. OTP hết hạn → Hệ thống trả về 422, user có thể yêu cầu OTP mới<br>7b. OTP không hợp lệ → Hệ thống trả về 422</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Mật khẩu đã cập nhật; all sessions invalidated; event <code>password.reset.sms.requested</code> đã publish</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-006</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
-  <img src="./images/activity/password-reset-activity.png" alt="Password Reset Activity Diagram">
-  <div class="caption">Hình: Password Reset via Phone Activity Diagram</div>
+  <img src="./images/activity/password-reset-activity.png" alt="Đặt lại Mật khẩu Activity Diagram">
+  <div class="caption">Hình: Đặt lại Mật khẩu qua Điện thoại Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
-  <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
-  <div class="caption">Hình: Password Reset via Phone Sequence Diagram</div>
+  <img src="./images/sequence/password-reset-sequence.png" alt="Đặt lại Mật khẩu Sequence Diagram">
+  <div class="caption">Hình: Đặt lại Mật khẩu qua Điện thoại Sequence Diagram</div>
 </div>
 
-<h2 id="uc-07">4.7 UC-07: Đổi Mật khẩu</h2>
+<h2 id="uc-07">4.8 UC-07: Đổi Mật khẩu</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
   <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập</td></tr>
-  <tr><td>Luồng Chính</td><td>1. User navigates to change password page<br>2. Nhập current password and new password<br>3. Hệ thống xác minh mật khẩu hiện tại<br>4. Hệ thống cập nhật mật khẩu<br>5. Hệ thống trả về phản hồi thành công</td></tr>
-  <tr><td>Luồng Thay thế</td><td>3a. Mật khẩu hiện tại không đúng → System returns 401<br>4a. Mật khẩu mới giống mật khẩu hiện tại → System returns 400</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Mật khẩu đã cập nhật; existing sessions remain valid</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Người dùng điều hướng đến trang đổi mật khẩu<br>2. Nhập mật khẩu hiện tại và mật khẩu mới<br>3. Hệ thống xác minh mật khẩu hiện tại<br>4. Hệ thống cập nhật mật khẩu<br>5. Hệ thống trả về phản hồi thành công</td></tr>
+  <tr><td>Luồng Thay thế</td><td>3a. Mật khẩu hiện tại không đúng → Hệ thống trả về 401<br>4a. Mật khẩu mới giống mật khẩu hiện tại → Hệ thống trả về 400</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Mật khẩu đã cập nhật; các phiên hiện tại vẫn hợp lệ</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-007</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/change-password-activity.png" alt="Đổi Mật khẩu Activity Diagram">
-  <div class="caption">Figure: Đổi Mật khẩu Activity Diagram</div>
+  <div class="caption">Hình: Đổi Mật khẩu Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/change-password-sequence.png" alt="Đổi Mật khẩu Sequence Diagram">
-  <div class="caption">Figure: Đổi Mật khẩu Sequence Diagram</div>
+  <div class="caption">Hình: Đổi Mật khẩu Sequence Diagram</div>
 </div>
 
-<h2 id="uc-08">4.8 UC-08: Xác minh Email</h2>
+<h2 id="uc-08">4.9 UC-08: Xác minh Email</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Người dùng đã đăng ký</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>User has registered email; email not yet verified</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Đăng ký hoặc yêu cầu xác minh<br>2. Hệ thống gửi email xác minh with link/token via EMAIL module<br>3. Người dùng nhấp verification link<br>4. Hệ thống xác minh token<br>5. Hệ thống đánh dấu email_verified = true<br>6. System returns success</td></tr>
-  <tr><td>Luồng Thay thế</td><td>4a. Token hết hạn → System returns 400, user can request new verification<br>4b. Token không hợp lệ → System returns 400</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Email đã xác minh; user can access email-based features</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng có email đã đăng ký; email chưa xác minh</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Đăng ký hoặc yêu cầu xác minh email<br>2. Hệ thống tạo mã xác minh (token/OTP), lưu vào <code>auth_verification</code><br>3. AUTH publish sự kiện <code>verification.email.requested</code> lên RabbitMQ (queue: <code>verification.email</code>)<br>4. Email queue worker (trong AUTH) consume sự kiện và gọi EMAIL module để gửi email xác minh<br>5. Người dùng nhấp verification link<br>6. Hệ thống xác minh token<br>7. Hệ thống đánh dấu <code>email_verified = true</code><br>8. Hệ thống trả về phản hồi thành công</td></tr>
+  <tr><td>Luồng Thay thế</td><td>4a. EMAIL module không khả dụng → Event vẫn được publish, worker retry exponential backoff (tối đa 5 lần); user có thể yêu cầu gửi lại<br>6a. Token hết hạn → Hệ thống trả về 400, user yêu cầu gửi lại<br>6b. Token không hợp lệ → Hệ thống trả về 400</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Email đã xác minh; event <code>verification.email.requested</code> đã publish</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-008</span></td></tr>
 </table>
 
@@ -556,96 +552,73 @@
   <div class="caption">Hình: Account Verification Sequence Diagram</div>
 </div>
 
-<h2 id="uc-09">4.9 UC-09: Xác minh Số điện thoại</h2>
-<table>
-  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
-  <tr><td>Actor</td><td>Người dùng đã đăng ký</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>User has registered phone; phone not yet verified</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Yêu cầu xác minh số điện thoại<br>2. Hệ thống gửi OTP qua SMS module<br>3. Nhập OTP code<br>4. Hệ thống xác minh OTP<br>5. Hệ thống đánh dấu phone_verified = true<br>6. System returns success</td></tr>
-  <tr><td>Luồng Thay thế</td><td>4a. OTP hết hạn → System returns 422, user can request new OTP<br>4b. OTP không hợp lệ → System returns 422</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Số điện thoại đã xác minh; user can access phone-based features</td></tr>
-  <tr><td>FR Liên quan</td><td><span class="req-id">FR-009</span></td></tr>
-</table>
-
-<h3>Sơ đồ Hoạt động</h3>
-<div class="diagram">
-  <img src="./images/activity/activity-diagram.png" alt="Verification Activity Diagram">
-  <div class="caption">Hình: Phone Verification Activity Diagram</div>
-</div>
-
-<h3>Sơ đồ Chuỗi</h3>
-<div class="diagram">
-  <img src="./images/sequence/sequence-diagram.png" alt="Verification Sequence Diagram">
-  <div class="caption">Hình: Phone Verification Sequence Diagram</div>
-</div>
-
 <h2 id="uc-10">4.10 UC-10: Quản lý Người dùng</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Admin</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập with admin role</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Admin điều hướng đến quản lý người dùng<br>2. Hiển thị danh sách người dùng (with pagination, search)<br>3. Xem chi tiết, cập nhật hoặc xóa người dùng<br>4. System performs requested operation<br>5. Hệ thống trả về phản hồi thành công</td></tr>
-  <tr><td>Luồng Thay thế</td><td>3a. Không tìm thấy người dùng → System returns 404<br>3b. Không được ủy quyền → System returns 403</td></tr>
-  <tr><td>Hậu điều kiện</td><td>User record updated or deleted</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập với vai trò admin</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Admin điều hướng đến quản lý người dùng<br>2. Hiển thị danh sách người dùng (có phân trang, tìm kiếm)<br>3. Xem chi tiết, cập nhật hoặc xóa người dùng<br>4. Hệ thống thực hiện thao tác yêu cầu<br>5. Hệ thống trả về phản hồi thành công</td></tr>
+  <tr><td>Luồng Thay thế</td><td>3a. Không tìm thấy người dùng → Hệ thống trả về 404<br>3b. Không được ủy quyền → Hệ thống trả về 403</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Bản ghi người dùng đã cập nhật hoặc xóa</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-010</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/manage-users-activity.png" alt="Quản lý Người dùng Activity Diagram">
-  <div class="caption">Figure: Quản lý Người dùng Activity Diagram</div>
+  <div class="caption">Hình: Quản lý Người dùng Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/manage-users-sequence.png" alt="Quản lý Người dùng Sequence Diagram">
-  <div class="caption">Figure: Quản lý Người dùng Sequence Diagram</div>
+  <div class="caption">Hình: Quản lý Người dùng Sequence Diagram</div>
 </div>
 
 <h2 id="uc-11">4.11 UC-11: Quản lý Vai trò</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Admin</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập with admin role</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Admin điều hướng đến quản lý vai trò<br>2. Hiển thị danh sách vai trò<br>3. Tạo vai trò mới, gán vai trò hoặc xóa vai trò<br>4. System performs requested operation<br>5. Hệ thống trả về phản hồi thành công</td></tr>
-  <tr><td>Luồng Thay thế</td><td>3a. Tên vai trò đã tồn tại → System returns 409<br>3b. Không tìm thấy người dùng → System returns 404</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Role created/assigned/removed; permissions updated</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập với vai trò admin</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Admin điều hướng đến quản lý vai trò<br>2. Hiển thị danh sách vai trò<br>3. Tạo vai trò mới, gán vai trò hoặc xóa vai trò<br>4. Hệ thống thực hiện thao tác yêu cầu<br>5. Hệ thống trả về phản hồi thành công</td></tr>
+  <tr><td>Luồng Thay thế</td><td>3a. Tên vai trò đã tồn tại → Hệ thống trả về 409<br>3b. Không tìm thấy người dùng → Hệ thống trả về 404</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Vai trò đã tạo/gán/xóa; quyền hạn đã cập nhật</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-011</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/manage-roles-activity.png" alt="Quản lý Vai trò Activity Diagram">
-  <div class="caption">Figure: Quản lý Vai trò Activity Diagram</div>
+  <div class="caption">Hình: Quản lý Vai trò Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/manage-roles-sequence.png" alt="Quản lý Vai trò Sequence Diagram">
-  <div class="caption">Figure: Quản lý Vai trò Sequence Diagram</div>
+  <div class="caption">Hình: Quản lý Vai trò Sequence Diagram</div>
 </div>
 
 <h2 id="uc-12">4.12 UC-12: Xác thực Xã hội</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
-  <tr><td>Actor</td><td>Guest or authenticated user</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>Nhà cung cấp xã hội đã cấu hình (Google, GitHub, etc.)</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp "Sign in with Google" (or other provider)<br>2. Hệ thống chuyển hướng đến OAuth page<br>3. Xác thực với nhà cung cấp<br>4. Nhà cung cấp chuyển hướng lại with authorization code<br>5. Đổi code lấy token<br>6. Tạo/liên kết tài khoản<br>7. System returns session tokens</td></tr>
-  <tr><td>Luồng Thay thế</td><td>6a. Email đã tồn tại → System links social account to existing user<br>6b. Nhà cung cấp không khả dụng → System returns 503</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Người dùng đã xác thực via social provider; session created</td></tr>
+  <tr><td>Actor</td><td>Khách hoặc người dùng đã xác thực</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Nhà cung cấp xã hội đã cấu hình (Google, GitHub, v.v.)</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp "Đăng nhập với Google" (hoặc nhà cung cấp khác)<br>2. Hệ thống chuyển hướng đến trang OAuth<br>3. Xác thực với nhà cung cấp<br>4. Nhà cung cấp chuyển hướng lại với authorization code<br>5. Đổi code lấy token<br>6. Tạo/liên kết tài khoản<br>7. Hệ thống trả về token phiên</td></tr>
+  <tr><td>Luồng Thay thế</td><td>6a. Email đã tồn tại → Hệ thống liên kết tài khoản xã hội với người dùng hiện có<br>6b. Nhà cung cấp không khả dụng → Hệ thống trả về 503</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Người dùng đã xác thực qua nhà cung cấp xã hội; phiên đã tạo</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-012</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/social-auth-activity.png" alt="Social Auth Activity Diagram">
-  <div class="caption">Figure: Xác thực Xã hội Activity Diagram</div>
+  <div class="caption">Hình: Xác thực Xã hội Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/social-auth-sequence.png" alt="Social Auth Sequence Diagram">
-  <div class="caption">Figure: Xác thực Xã hội Sequence Diagram</div>
+  <div class="caption">Hình: Xác thực Xã hội Sequence Diagram</div>
 </div>
 
 <h2 id="uc-13">4.13 UC-13: Quản lý Phiên làm việc</h2>
@@ -653,22 +626,22 @@
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
   <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Điều hướng đến cài đặt phiên<br>2. Hiển thị danh sách phiên đang hoạt động (device, IP, last active)<br>3. Thu hồi phiên cụ thể hoặc tất cả phiên khác<br>4. System invalidates selected sessions<br>5. System returns success</td></tr>
-  <tr><td>Luồng Thay thế</td><td>3a. Phiên đã hết hạn → System removes from list</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Các phiên đã chọn bị hủy; user remains logged in on current device</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Điều hướng đến cài đặt phiên<br>2. Hiển thị danh sách phiên đang hoạt động (thiết bị, IP, lần hoạt động cuối)<br>3. Thu hồi phiên cụ thể hoặc tất cả phiên khác<br>4. Hệ thống vô hiệu hóa các phiên đã chọn<br>5. Hệ thống trả về phản hồi thành công</td></tr>
+  <tr><td>Luồng Thay thế</td><td>3a. Phiên đã hết hạn → Hệ thống xóa khỏi danh sách</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Các phiên đã chọn bị hủy; người dùng vẫn đăng nhập trên thiết bị hiện tại</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-013</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/session-management-activity.png" alt="Quản lý Phiên làm việc Activity Diagram">
-  <div class="caption">Figure: Quản lý Phiên làm việc Activity Diagram</div>
+  <div class="caption">Hình: Quản lý Phiên làm việc Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/session-management-sequence.png" alt="Quản lý Phiên làm việc Sequence Diagram">
-  <div class="caption">Figure: Quản lý Phiên làm việc Sequence Diagram</div>
+  <div class="caption">Hình: Quản lý Phiên làm việc Sequence Diagram</div>
 </div>
 
 <h2 id="uc-14">4.14 UC-14: Khóa Tài khoản & Đăng nhập giả danh</h2>
@@ -676,182 +649,255 @@
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Admin</td></tr>
   <tr><td>Điều kiện tiên quyết</td><td>Admin đã đăng nhập với vai trò admin</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Admin điều hướng đến quản lý người dùng<br>2. Chọn người dùng để khóa/giả danh<br>3. For ban: Cung cấp lý do và thời hạn (tùy chọn) → Khóa người dùng, hủy tất cả phiên<br>4. For impersonate: Tạo phiên admin với tư cách người dùng<br>5. Dừng đăng nhập giả danh to return to admin session</td></tr>
-  <tr><td>Luồng Thay thế</td><td>3a. Người dùng đã bị khóa → System returns 409<br>4a. Không tìm thấy người dùng → System returns 404</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Người dùng bị khóa.*phiên bị thu hồi) or admin impersonating user</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Admin điều hướng đến quản lý người dùng<br>2. Chọn người dùng để khóa/giả danh<br>3. Khóa: Cung cấp lý do và thời hạn (tùy chọn) → Khóa người dùng, hủy tất cả phiên<br>4. Giả danh: Tạo phiên admin với tư cách người dùng<br>5. Dừng đăng nhập giả danh để quay lại phiên admin</td></tr>
+  <tr><td>Luồng Thay thế</td><td>3a. Người dùng đã bị khóa → Hệ thống trả về 409<br>4a. Không tìm thấy người dùng → Hệ thống trả về 404</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Người dùng bị khóa (phiên bị thu hồi) hoặc admin đang đăng nhập giả danh người dùng</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-014</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/ban-impersonate-activity.png" alt="Ban & Impersonate Activity Diagram">
-  <div class="caption">Figure: Khóa Tài khoản & Đăng nhập giả danh Activity Diagram</div>
+  <div class="caption">Hình: Khóa Tài khoản & Đăng nhập giả danh Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/ban-impersonate-sequence.png" alt="Ban & Impersonate Sequence Diagram">
-  <div class="caption">Figure: Khóa Tài khoản & Đăng nhập giả danh Sequence Diagram</div>
+  <div class="caption">Hình: Khóa Tài khoản & Đăng nhập giả danh Sequence Diagram</div>
 </div>
 
 <h2 id="uc-15">4.15 UC-15: Quản lý Tổ chức</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
-  <tr><td>Actor</td><td>Người dùng đã xác thực (owner/admin for role management)</td></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực (chủ sở hữu/admin cho quản lý vai trò)</td></tr>
   <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Tạo tổ chức với tên và slug<br>2. Kiểm tra slug duy nhất<br>3. Tạo tổ chức, người dùng trở thành chủ with <code>Employer</code> role<br>4. Cập nhật thông tin, quản lý thành viên<br>5. Gán vai trò tổ chức (HR, Candidate, Employer) to members<br>6. Tạo thêm vai trò tùy chỉnh with permissions<br>7. Xóa tổ chức</td></tr>
-  <tr><td>Luồng Thay thế</td><td>2a. Slug đã được sử dụng → System returns 409<br>5a. Quyền không hợp lệ → System returns 400<br>5b. Tên vai trò đã tồn tại → System returns 409<br>6a. Không được ủy quyền → System returns 403</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Tổ chức đã tạo/cập nhật/xóa; membership managed; organization roles (HR, Candidate, Employer) assigned</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Tạo tổ chức với tên và slug<br>2. Kiểm tra slug duy nhất<br>3. Tạo tổ chức, người dùng trở thành chủ với vai trò <code>Employer</code><br>4. Cập nhật thông tin, quản lý thành viên<br>5. Gán vai trò tổ chức (HR, Candidate, Employer) cho thành viên<br>6. Tạo thêm vai trò tùy chỉnh với quyền chi tiết<br>7. Xóa tổ chức</td></tr>
+  <tr><td>Luồng Thay thế</td><td>2a. Slug đã được sử dụng → Hệ thống trả về 409<br>5a. Quyền không hợp lệ → Hệ thống trả về 400<br>5b. Tên vai trò đã tồn tại → Hệ thống trả về 409<br>6a. Không được ủy quyền → Hệ thống trả về 403</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Tổ chức đã tạo/cập nhật/xóa; thành viên đã quản lý; vai trò tổ chức (HR, Candidate, Employer) đã gán</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-015</span></td></tr>
 </table>
 <p><strong>Vai trò Tổ chức:</strong></p>
 <p>Mỗi tổ chức có thể định nghĩa vai trò với quyền chi tiết.
 <table>
-  <tr><th>Standard Role</th><th>Mô tả</th></tr>
-  <tr><td><code>Employer</code></td><td>Chủ sở hữu tổ chức/admin. Manages company profile and job postings. Assigned automatically when creating an organization.</td></tr>
-  <tr><td><code>HR</code></td><td>Internal recruitment team. Manages hiring workflows, applications, and interviews.</td></tr>
-  <tr><td><code>Candidate</code></td><td>Job seekers. Browse jobs and submit applications within the organization.</td></tr>
+  <tr><th>Vai trò</th><th>Mô tả</th></tr>
+  <tr><td><code>Employer</code></td><td>Chủ sở hữu tổ chức/admin. Quản lý hồ sơ công ty và tin tuyển dụng. Được gán tự động khi tạo tổ chức.</td></tr>
+  <tr><td><code>HR</code></td><td>Nhóm tuyển dụng nội bộ. Quản lý quy trình tuyển dụng, đơn ứng tuyển và phỏng vấn.</td></tr>
+  <tr><td><code>Candidate</code></td><td>Người tìm việc. Duyệt tin và nộp đơn ứng tuyển trong tổ chức.</td></tr>
 </table>
 <p><strong>Quyền có sẵn:</strong></p>
 <table>
   <tr><th>Permission</th><th>Mô tả</th></tr>
-  <tr><td><code>member:read/update/delete</code></td><td>Manage organization members</td></tr>
-  <tr><td><code>job:read/create/update/delete</code></td><td>Manage job listings</td></tr>
-  <tr><td><code>application:read/update/delete</code></td><td>Manage applications</td></tr>
-  <tr><td><code>interview:read/create/update/delete</code></td><td>Manage interviews</td></tr>
-  <tr><td><code>report:read/create</code></td><td>View and generate reports</td></tr>
-  <tr><td><code>settings:read/update</code></td><td>Manage organization settings</td></tr>
+  <tr><td><code>member:read/update/delete</code></td><td>Quản lý thành viên tổ chức</td></tr>
+  <tr><td><code>job:read/create/update/delete</code></td><td>Quản lý tin tuyển dụng</td></tr>
+  <tr><td><code>application:read/update/delete</code></td><td>Quản lý đơn ứng tuyển</td></tr>
+  <tr><td><code>interview:read/create/update/delete</code></td><td>Quản lý phỏng vấn</td></tr>
+  <tr><td><code>report:read/create</code></td><td>Xem và tạo báo cáo</td></tr>
+  <tr><td><code>settings:read/update</code></td><td>Quản lý cài đặt tổ chức</td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/organization-activity.png" alt="Organization Activity Diagram">
-  <div class="caption">Figure: Quản lý Tổ chức Activity Diagram</div>
+  <div class="caption">Hình: Quản lý Tổ chức Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/organization-sequence.png" alt="Organization Sequence Diagram">
-  <div class="caption">Figure: Quản lý Tổ chức Sequence Diagram</div>
+  <div class="caption">Hình: Quản lý Tổ chức Sequence Diagram</div>
 </div>
 
 <h2 id="uc-16">4.16 UC-16: Quản lý Nhóm</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Admin tổ chức</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>User is admin/owner of an organization</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Tạo nhóm trong tổ chức<br>2. Thêm/xóa thành viên nhóm<br>3. Cập nhật tên nhóm hoặc xóa nhóm<br>4. System manages team membership and active team selection</td></tr>
-  <tr><td>Luồng Thay thế</td><td>1a. Tên nhóm đã tồn tại → System returns 409<br>2a. Người dùng không thuộc tổ chức → System returns 400</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Nhóm đã tạo/cập nhật/xóa; membership managed</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng là admin/chủ sở hữu tổ chức</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Tạo nhóm trong tổ chức<br>2. Thêm/xóa thành viên nhóm<br>3. Cập nhật tên nhóm hoặc xóa nhóm<br>4. Hệ thống quản lý thành viên nhóm và chọn nhóm đang hoạt động</td></tr>
+  <tr><td>Luồng Thay thế</td><td>1a. Tên nhóm đã tồn tại → Hệ thống trả về 409<br>2a. Người dùng không thuộc tổ chức → Hệ thống trả về 400</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Nhóm đã tạo/cập nhật/xóa; thành viên đã quản lý</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-016</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/team-activity.png" alt="Quản lý Nhóm Activity Diagram">
-  <div class="caption">Figure: Quản lý Nhóm Activity Diagram</div>
+  <div class="caption">Hình: Quản lý Nhóm Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/team-sequence.png" alt="Quản lý Nhóm Sequence Diagram">
-  <div class="caption">Figure: Quản lý Nhóm Sequence Diagram</div>
+  <div class="caption">Hình: Quản lý Nhóm Sequence Diagram</div>
 </div>
 
 <h2 id="uc-17">4.17 UC-17: Quản lý Lời mời</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
   <tr><td>Actor</td><td>Admin tổ chức / Người dùng được mời</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>Admin is logged in; invitee has email address</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Mời người dùng qua email với vai trò và nhóm (tùy chọn)<br>2. Hệ thống tạo token ngẫu nhiên (crypto.randomBytes(32)), computes SHA-256 hash<br>3. Chỉ lưu hash in auth_invitations (token_hash column)<br>4. Tạo URL lời mời: {FRONTEND_DOMAIN}/invitations/verify?token={raw_token}<br>5. Gửi email lời mời via EMAIL module with the invite URL<br>6. Nhận email, nhấp liên kết lời mời<br>7. Invitee's browser calls GET /organization/verify-invitation?token={raw_token} (public)<br>8. Hash token, tìm kiếm theo hash, returns validity status<br>9. Chấp nhận hoặc từ chối lời mời</td></tr>
-  <tr><td>Luồng Thay thế</td><td>2a. Lời mời đang chờ trùng lặp (same email + role) → System returns 409 Conflict<br>8a. Token hết hạn → System auto-updates status to EXPIRED, returns 410<br>8b. Lời mời đã được chấp nhận → System returns status "accepted"<br>8c. Lời mời đã thu hồi → System returns status "revoked"</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Lời mời đã gửi với token bảo mật; user added to organization (if accepted)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Admin đã đăng nhập; người được mời có email</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Mời người dùng qua email với vai trò và nhóm (tùy chọn)<br>2. Hệ thống tạo token ngẫu nhiên (<code>crypto.randomBytes(32)</code>), tính SHA-256 hash<br>3. Chỉ lưu hash vào <code>auth_invitations</code> (cột <code>token_hash</code>)<br>4. Tạo URL lời mời: <code>{FRONTEND_DOMAIN}/invitations/verify?token={raw_token}</code><br>5. AUTH publish sự kiện <code>invitation.email.requested</code> lên RabbitMQ (queue: <code>invitation.email</code>)<br>6. Email queue worker (trong AUTH) consume sự kiện và gọi EMAIL module để gửi email lời mời<br>7. Người được mời nhận email, nhấp liên kết<br>8. Frontend gọi <code>GET /organization/verify-invitation?token={raw_token}</code> (công khai)<br>9. Hệ thống hash token, tìm kiếm theo hash, trả về trạng thái<br>10. Chấp nhận hoặc từ chối lời mời</td></tr>
+  <tr><td>Luồng Thay thế</td><td>2a. Lời mời đang chờ trùng lặp (cùng email + role) → Hệ thống trả về 409 Conflict<br>6a. EMAIL module không khả dụng → Event vẫn được publish, worker retry exponential backoff (tối đa 5 lần)<br>9a. Token hết hạn → Hệ thống tự cập nhật thành EXPIRED, trả về 410<br>9b. Lời mời đã được chấp nhận → Hệ thống trả về trạng thái "accepted"<br>9c. Lời mời đã thu hồi → Hệ thống trả về trạng thái "revoked"</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Lời mời đã gửi với token bảo mật; user added to organization (if accepted); event <code>invitation.email.requested</code> đã publish</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-017</span>, <span class="req-id">FR-020</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/invitation-activity.png" alt="Invitation Activity Diagram">
-  <div class="caption">Figure: Quản lý Lời mời Activity Diagram</div>
+  <div class="caption">Hình: Quản lý Lời mời Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/invitation-sequence.png" alt="Invitation Sequence Diagram">
-  <div class="caption">Figure: Quản lý Lời mời Sequence Diagram</div>
+  <div class="caption">Hình: Quản lý Lời mời Sequence Diagram</div>
 </div>
 
 <h2 id="uc-18">4.18 UC-18: Gửi lại Lời mời</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
-  <tr><td>Actor</td><td>Admin tổ chức (original inviter)</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>Admin is logged in; invitation exists and is pending</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Chọn lời mời để gửi lại<br>2. Tạo token mới (token cũ bị hủy)<br>3. Đặt lại trạng thái thành ĐANG CHỜ, gia hạn by 72 hours<br>4. Gửi email lời mời mới via EMAIL module<br>5. Hệ thống trả về phản hồi thành công</td></tr>
-  <tr><td>Luồng Thay thế</td><td>1a. Lời mời đã được chấp nhận → System returns 409<br>1b. Invitation not found → System returns 404<br>1c. Người yêu cầu không phải người mời ban đầu → System returns 403</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Token mới đã tạo; old token invalidated; email sent</td></tr>
+  <tr><td>Actor</td><td>Admin tổ chức (người mời ban đầu)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Admin đã đăng nhập; lời mời tồn tại và đang chờ</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Chọn lời mời để gửi lại<br>2. Tạo token mới (token cũ bị hủy)<br>3. Đặt lại trạng thái thành ĐANG CHỜ, gia hạn 72 giờ<br>4. AUTH publish sự kiện <code>invitation.email.resent</code> lên RabbitMQ (queue: <code>invitation.email</code>)<br>5. Email queue worker (trong AUTH) consume sự kiện và gọi EMAIL module để gửi email lời mời mới<br>6. Hệ thống trả về phản hồi thành công</td></tr>
+  <tr><td>Luồng Thay thế</td><td>1a. Lời mời đã được chấp nhận → Hệ thống trả về 409<br>1b. Không tìm thấy lời mời → Hệ thống trả về 404<br>1c. Người yêu cầu không phải người mời ban đầu → Hệ thống trả về 403<br>5a. EMAIL module không khả dụng → Event vẫn được publish, worker retry exponential backoff (tối đa 5 lần)</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Token mới đã tạo; token cũ bị hủy; event <code>invitation.email.resent</code> đã publish</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-018</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/resend-invitation-activity.png" alt="Gửi lại Lời mời Activity Diagram">
-  <div class="caption">Figure: Gửi lại Lời mời Activity Diagram</div>
+  <div class="caption">Hình: Gửi lại Lời mời Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/resend-invitation-sequence.png" alt="Gửi lại Lời mời Sequence Diagram">
-  <div class="caption">Figure: Gửi lại Lời mời Sequence Diagram</div>
+  <div class="caption">Hình: Gửi lại Lời mời Sequence Diagram</div>
 </div>
 
 <h2 id="uc-19">4.19 UC-19: Thu hồi Lời mời</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
-  <tr><td>Actor</td><td>Admin tổ chức (original inviter)</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>Admin is logged in; invitation exists and is pending</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Chọn lời mời để thu hồi<br>2. Xác minh quyền sở hữu (only original inviter can revoke)<br>3. Cập nhật trạng thái thành ĐÃ THU HỒI<br>4. Gửi sự kiện invitation.revoked<br>5. Hệ thống trả về phản hồi thành công</td></tr>
-  <tr><td>Luồng Thay thế</td><td>2a. Lời mời đã được chấp nhận → System returns 409<br>2b. Lời mời đã thu hồi → System returns 409<br>2c. Người yêu cầu không phải người mời ban đầu → System returns 403</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Lời mời đã thu hồi; token no longer valid</td></tr>
+  <tr><td>Actor</td><td>Admin tổ chức (người mời ban đầu)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Admin đã đăng nhập; lời mời tồn tại và đang chờ</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Chọn lời mời để thu hồi<br>2. Xác minh quyền sở hữu (chỉ người mời ban đầu mới thu hồi được)<br>3. Cập nhật trạng thái thành ĐÃ THU HỒI<br>4. Gửi sự kiện invitation.revoked<br>5. Hệ thống trả về phản hồi thành công</td></tr>
+  <tr><td>Luồng Thay thế</td><td>2a. Lời mời đã được chấp nhận → Hệ thống trả về 409<br>2b. Lời mời đã thu hồi → Hệ thống trả về 409<br>2c. Người yêu cầu không phải người mời ban đầu → Hệ thống trả về 403</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Lời mời đã thu hồi; token không còn hiệu lực</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-019</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/revoke-invitation-activity.png" alt="Thu hồi Lời mời Activity Diagram">
-  <div class="caption">Figure: Thu hồi Lời mời Activity Diagram</div>
+  <div class="caption">Hình: Thu hồi Lời mời Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/revoke-invitation-sequence.png" alt="Thu hồi Lời mời Sequence Diagram">
-  <div class="caption">Figure: Thu hồi Lời mời Sequence Diagram</div>
+  <div class="caption">Hình: Thu hồi Lời mời Sequence Diagram</div>
 </div>
 
 <h2 id="uc-20">4.20 UC-20: Xác minh Token Lời mời</h2>
 <table>
   <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
-  <tr><td>Actor</td><td>Người dùng được mời (unauthenticated)</td></tr>
-  <tr><td>Điều kiện tiên quyết</td><td>User received invitation email with token URL</td></tr>
-  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp invitation link in email<br>2. Frontend gọi GET /organization/verify-invitation?token={raw_token}<br>3. Tính hash SHA-256 of token<br>4. Tìm kiếm lời mời theo token_hash<br>5. Kiểm tra trạng thái và thời hạn<br>6. Nếu hết hạn: tự động cập nhật thành EXPIRED<br>7. Trả về trạng thái hợp lệ và chi tiết lời mời</td></tr>
-  <tr><td>Luồng Thay thế</td><td>4a. Không tìm thấy token → System returns 404<br>4b. Đã chấp nhận → System returns { valid: false, reason: "accepted" }<br>4c. Expired → System returns { valid: false, reason: "expired" }<br>4d. Revoked → System returns { valid: false, reason: "revoked" }</td></tr>
-  <tr><td>Hậu điều kiện</td><td>Xác nhận token hợp lệ; user can proceed to accept/reject</td></tr>
+  <tr><td>Actor</td><td>Người dùng được mời (chưa xác thực)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng nhận email lời mời với URL chứa token</td></tr>
+  <tr><td>Luồng Chính</td><td>1. Người dùng nhấp liên kết lời mời trong email<br>2. Frontend gọi <code>GET /organization/verify-invitation?token={raw_token}</code><br>3. Tính hash SHA-256 của token<br>4. Tìm kiếm lời mời theo <code>token_hash</code><br>5. Kiểm tra trạng thái và thời hạn<br>6. Nếu hết hạn: tự động cập nhật thành EXPIRED<br>7. Trả về trạng thái hợp lệ và chi tiết lời mời</td></tr>
+  <tr><td>Luồng Thay thế</td><td>4a. Không tìm thấy token → Hệ thống trả về 404<br>4b. Đã chấp nhận → Hệ thống trả về { valid: false, reason: "accepted" }<br>4c. Đã hết hạn → Hệ thống trả về { valid: false, reason: "expired" }<br>4d. Đã thu hồi → Hệ thống trả về { valid: false, reason: "revoked" }</td></tr>
+  <tr><td>Hậu điều kiện</td><td>Xác nhận token hợp lệ; người dùng có thể tiến hành chấp nhận/từ chối</td></tr>
   <tr><td>FR Liên quan</td><td><span class="req-id">FR-020</span></td></tr>
 </table>
 
 <h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
   <img src="./images/activity/verify-invitation-token-activity.png" alt="Xác minh Token Lời mời Activity Diagram">
-  <div class="caption">Figure: Xác minh Token Lời mời Activity Diagram</div>
+  <div class="caption">Hình: Xác minh Token Lời mời Activity Diagram</div>
 </div>
 
 <h3>Sơ đồ Chuỗi</h3>
 <div class="diagram">
   <img src="./images/sequence/verify-invitation-token-sequence.png" alt="Xác minh Token Lời mời Sequence Diagram">
-  <div class="caption">Figure: Xác minh Token Lời mời Sequence Diagram</div>
+  <div class="caption">Hình: Xác minh Token Lời mời Sequence Diagram</div>
 </div>
 
-<!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-5">5. Yêu cầu Phi chức năng</h1>
+<!-- 5. INTEGRATION -->
+<h1 id="section-5">5. Tích hợp</h1>
+
+<h2 id="section-5-1">5.1 Sơ đồ Tích hợp</h2>
+<div class="diagram">
+  <img src="./images/sequence/registration-sequence.png" alt="Registration Integration Diagram">
+  <div class="caption">Hình: Luồng Tích hợp Đăng ký — AUTH → RabbitMQ → EMAIL</div>
+</div>
+
+<h2 id="section-5-2">5.2 Sự kiện RabbitMQ</h2>
+<table>
+  <tr><th>Sự kiện</th><th>Hướng</th><th>Hàng đợi</th><th>Mô tả</th></tr>
+  <tr>
+    <td><code>verification.email.requested</code></td>
+    <td>AUTH → RabbitMQ → AUTH worker</td>
+    <td><code>verification.email</code></td>
+    <td> publish khi người dùng đăng ký hoặc yêu cầu xác minh email. Email queue worker trong AUTH consume và gọi EMAIL module</td>
+  </tr>
+  <tr>
+    <td><code>verification.email.resent</code></td>
+    <td>AUTH → RabbitMQ → AUTH worker</td>
+    <td><code>verification.email</code></td>
+    <td> publish khi người dùng gửi lại xác minh email (rate-limited)</td>
+  </tr>
+  <tr>
+    <td><code>password.reset.email.requested</code></td>
+    <td>AUTH → RabbitMQ → AUTH worker</td>
+    <td><code>password.reset.email</code></td>
+    <td> publish khi người dùng yêu cầu đặt lại mật khẩu qua email. Email worker consume và gọi EMAIL module</td>
+  </tr>
+  <tr>
+    <td><code>password.reset.sms.requested</code></td>
+    <td>AUTH → RabbitMQ → AUTH worker</td>
+    <td><code>password.reset.sms</code></td>
+    <td> publish khi người dùng yêu cầu đặt lại mật khẩu qua SMS. SMS worker consume và gọi SMS module</td>
+  </tr>
+  <tr>
+    <td><code>auth.event.logged</code></td>
+    <td>AUTH → RabbitMQ</td>
+    <td><code>log.events</code></td>
+    <td>Gửi sự kiện xác thực (đăng nhập, đăng ký, v.v.) đến Logger</td>
+  </tr>
+  <tr>
+    <td><code>user.registered</code></td>
+    <td>AUTH → RabbitMQ</td>
+    <td><code>wallet.user</code></td>
+    <td> publish khi người dùng đăng ký mới, WALLET tạo ví</td>
+  </tr>
+  <tr>
+    <td><code>invitation.email.requested</code></td>
+    <td>AUTH → RabbitMQ → AUTH worker</td>
+    <td><code>invitation.email</code></td>
+    <td> publish khi admin mời thành viên vào tổ chức. Email worker consume và gọi EMAIL module</td>
+  </tr>
+  <tr>
+    <td><code>invitation.email.resent</code></td>
+    <td>AUTH → RabbitMQ → AUTH worker</td>
+    <td><code>invitation.email</code></td>
+    <td> publish khi admin gửi lại lời mời. Email worker consume và gọi EMAIL module</td>
+  </tr>
+</table>
+
+<h2 id="section-5-3">5.3 Webhook Callback</h2>
+<table>
+  <tr><th>Sự kiện</th><th>Hướng</th><th>Giao thức</th><th>Mô tả</th></tr>
+  <tr>
+    <td><code>verification.email.delivered</code></td>
+    <td>EMAIL → AUTH</td>
+    <td>HTTP Webhook</td>
+    <td>EMAIL callback xác nhận trạng thái giao email về AUTH</td>
+  </tr>
+</table>
+
+<!-- 6. NON-FUNCTIONAL REQUIREMENTS -->
+<h1 id="section-6">6. Yêu cầu Phi chức năng</h1>
 
 <table class="trace-table">
   <tr>
@@ -888,7 +934,7 @@
     <td><span class="req-id">NFR-005</span></td>
     <td>Bảo mật</td>
     <td>Giới hạn tốc độ</td>
-    <td>10 req/min for auth endpoints</td>
+    <td>10 req/min cho các endpoint xác thực</td>
   </tr>
   <tr id="nfr-006">
     <td><span class="req-id">NFR-006</span></td>
@@ -904,8 +950,8 @@
   </tr>
 </table>
 
-<!-- 6. TRACEABILITY -->
-<h1 id="section-6">6. Ma trận Truy xuất Nguồn gốc Yêu cầu</h1>
+<!-- 7. TRACEABILITY -->
+<h1 id="section-7">7. Ma trận Truy xuất Nguồn gốc Yêu cầu</h1>
 
 <table class="trace-table">
   <tr>
@@ -914,15 +960,14 @@
     <th>Bảng CSDL</th>
     <th>Đầu nối API</th>
   </tr>
-  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>Đăng ký Người dùng</td><td>auth_users, auth_accounts</td><td>POST /auth/register</td></tr>
+  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>Đăng ký Người dùng</td><td>auth_users, auth_accounts</td><td>POST /auth/register → RabbitMQ (<code>verification.email</code>) → EMAIL module</td></tr>
   <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>Đăng nhập</td><td>auth_users, auth_sessions</td><td>POST /auth/login</td></tr>
   <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>Đăng xuất</td><td>auth_sessions</td><td>POST /auth/logout</td></tr>
   <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Làm mới Token</td><td>auth_sessions</td><td>POST /auth/refresh</td></tr>
-  <tr id="trace-fr-005"><td><span class="req-id">FR-005</span></td><td>Đặt lại Mật khẩu (Email)</td><td>auth_verification</td><td>POST /auth/forgot-password</td></tr>
-  <tr id="trace-fr-006"><td><span class="req-id">FR-006</span></td><td>Đặt lại Mật khẩu (Điện thoại)</td><td>auth_verification</td><td>POST /auth/forgot-password-phone</td></tr>
+  <tr id="trace-fr-005"><td><span class="req-id">FR-005</span></td><td>Đặt lại Mật khẩu (Email)</td><td>auth_verification</td><td>POST /auth/forgot-password → RabbitMQ (<code>password.reset.email</code>) → Email Queue Worker → EMAIL module</td></tr>
+  <tr id="trace-fr-006"><td><span class="req-id">FR-006</span></td><td>Đặt lại Mật khẩu (Điện thoại)</td><td>auth_verification</td><td>POST /auth/forgot-password-phone → RabbitMQ (<code>password.reset.sms</code>) → SMS Queue Worker → SMS module</td></tr>
   <tr id="trace-fr-007"><td><span class="req-id">FR-007</span></td><td>Đổi Mật khẩu</td><td>auth_users</td><td>POST /auth/change-password</td></tr>
-  <tr id="trace-fr-008"><td><span class="req-id">FR-008</span></td><td>Xác minh Email</td><td>auth_verification, auth_users</td><td>GET /auth/verify-email</td></tr>
-  <tr id="trace-fr-009"><td><span class="req-id">FR-009</span></td><td>Xác minh Số điện thoại</td><td>auth_verification, auth_users</td><td>POST /auth/verify-phone</td></tr>
+  <tr id="trace-fr-008"><td><span class="req-id">FR-008</span></td><td>Xác minh Email</td><td>auth_verification, auth_users</td><td>POST /send-verification-email → RabbitMQ (<code>verification.email</code>) → Email Queue Worker → EMAIL module</td></tr>
   <tr id="trace-fr-010"><td><span class="req-id">FR-010</span></td><td>Quản lý Người dùng</td><td>auth_users</td><td>GET/PUT/DELETE /users/:id</td></tr>
   <tr id="trace-fr-011"><td><span class="req-id">FR-011</span></td><td>Quản lý Vai trò</td><td>auth_roles, auth_user_roles</td><td>POST /admin/set-role, POST /organization/create-role</td></tr>
   <tr id="trace-fr-012"><td><span class="req-id">FR-012</span></td><td>Xác thực Xã hội</td><td>auth_accounts</td><td>POST /sign-in/social, POST /link-social, POST /unlink-account</td></tr>
@@ -930,8 +975,8 @@
   <tr id="trace-fr-014"><td><span class="req-id">FR-014</span></td><td>Khóa Tài khoản & Đăng nhập giả danh</td><td>auth_users, auth_sessions</td><td>POST /admin/ban-user, POST /admin/impersonate-user</td></tr>
   <tr id="trace-fr-015"><td><span class="req-id">FR-015</span></td><td>Quản lý Tổ chức</td><td>auth_organizations, auth_members</td><td>POST /organization/create, GET /organization/list</td></tr>
   <tr id="trace-fr-016"><td><span class="req-id">FR-016</span></td><td>Quản lý Nhóm</td><td>auth_teams, auth_team_members</td><td>POST /organization/create-team, POST /organization/add-team-member</td></tr>
-  <tr id="trace-fr-017"><td><span class="req-id">FR-017</span></td><td>Quản lý Lời mời</td><td>auth_invitations</td><td>POST /organization/invite-member, POST /organization/accept-invitation</td></tr>
-  <tr id="trace-fr-018"><td><span class="req-id">FR-018</span></td><td>Gửi lại Lời mời</td><td>auth_invitations</td><td>POST /organization/resend-invitation</td></tr>
+  <tr id="trace-fr-017"><td><span class="req-id">FR-017</span></td><td>Quản lý Lời mời</td><td>auth_invitations</td><td>POST /organization/invite-member → RabbitMQ (<code>invitation.email</code>) → Email Queue Worker → EMAIL module</td></tr>
+  <tr id="trace-fr-018"><td><span class="req-id">FR-018</span></td><td>Gửi lại Lời mời</td><td>auth_invitations</td><td>POST /organization/resend-invitation → RabbitMQ (<code>invitation.email</code>) → Email Queue Worker → EMAIL module</td></tr>
   <tr id="trace-fr-019"><td><span class="req-id">FR-019</span></td><td>Thu hồi Lời mời</td><td>auth_invitations</td><td>DELETE /organization/cancel-invitation</td></tr>
   <tr id="trace-fr-020"><td><span class="req-id">FR-020</span></td><td>Xác minh Token Lời mời</td><td>auth_invitations</td><td>GET /organization/verify-invitation</td></tr>
 </table>

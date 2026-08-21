@@ -1,9 +1,6 @@
 @startuml
 ' UC-16: Cấu hình Webhook Cá nhân - Sơ đồ Hoạt động
-skinparam dpi 150
-skinparam defaultFontSize 12
-skinparam nodesep 15
-skinparam ranksep 15
+skinparam dpi 200
 skinparam activity {
   BackgroundColor #F8F8F8
   BorderColor #333333
@@ -20,25 +17,22 @@ start
 
 :Nhập URL webhook;
 
-:Chọn sự kiện\n(application.submitted);
+:Chọn sự kiện (application.submitted);
 
 :Bật "Kích hoạt Webhook";
 
-if (URL hợp lệ HTTPS?) then (không)
+if (URL hợp lệ HTTPS?) then (có)
+  :Gửi webhook.test;
+else (không)
   :Lỗi xác thực URL;
-  stop
 endif
 
-:Gửi webhook.test;
-
-if (Endpoint 2xx?) then (không)
+if (Endpoint 2xx?) then (có)
+  :Lưu cấu hình webhook;
+  :Thành công - Đang hoạt động;
+else (không)
   :Trạng thái: Chưa xác minh;
-  stop
 endif
-
-:Lưu cấu hình webhook;
-
-:Thành công - Đang hoạt động;
 
 stop
 

@@ -1,0 +1,104 @@
+@startuml
+' UC-21: Báo cáo & Thống kê Tương tác Ứng viên - Sơ đồ Chuỗi
+skinparam dpi 150
+skinparam defaultFontSize 12
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #333333
+  ParticipantBackgroundColor #F8F8F8
+  ParticipantBorderColor #333333
+}
+
+title UC-21: Báo cáo & Thống kê Tương tác Ứng viên
+
+actor "HR / Employer / Admin" as User
+participant "RECR Service" as R
+database "PostgreSQL" as DB
+database "Redis Cache" as Cache
+participant "Export Worker" as W
+
+== Truy cap bao cao ==
+
+User -> R : GET /recr/analytics/candidate-activity\n(filter: time_range, job, department, status)
+activate R
+
+R -> Cache : Kiem tra cache
+activate Cache
+alt Cache hit
+  Cache --> R : Cached data
+else Cache miss
+  Cache --> R : null
+  R -> DB : COUNT candidate_resumes\nWHERE created_at IN range
+  activate DB
+  DB --> R : New CV Uploads
+  deactivate DB
+
+  R -> DB : COUNT candidate_resumes\nWHERE updated_at > created_at IN range
+  activate DB
+  DB --> R : Updated CVs
+  deactivate DB
+
+  R -> DB : COUNT applications\nWHERE created_at IN range
+  activate DB
+  DB --> R : Total Applications
+  deactivate DB
+
+  R -> DB : COUNT applications\nWHERE status = 'offered'\n/ COUNT all * 100
+  activate DB
+  DB --> R : Success Rate
+  deactivate DB
+
+  R -> Cache : Luu cache (TTL 5 phut)
+  activate Cache
+  Cache --> R : OK
+  deactivate Cache
+end
+deactivate Cache
+
+R --> User : JSON response\n{kpi, charts, table}
+deactivate R
+
+== Xuất file Excel/CSV ==
+
+User -> R : GET /recr/analytics/export\n(format: xlsx/csv, filter: ...)
+activate R
+
+R -> DB : Query full dataset
+activate DB
+DB --> R : Raw data
+deactivate DB
+
+R -> W : Publish export.requested\n(queue: analytics.export)
+activate W
+W -> W : Generate file\n(max 10,000 rows)
+W -> R : Upload file\nreturn download URL
+deactivate W
+
+R --> User : { download_url, filename }
+deactivate R
+
+User -> User : Tai file
+
+== Thay đổi filter ==
+
+User -> R : GET /recr/analytics/candidate-activity\n(filter: new_time_range)
+activate R
+R -> Cache : Invalidate cache
+R -> DB : Query voi filter moi
+activate DB
+DB --> R : Updated data
+deactivate DB
+R --> User : Refreshed data
+deactivate R
+
+== Loi tai du lieu ==
+
+alt Database error
+  R --> User : 500 Internal Error\n"Khong the tai du lieu bao cao"
+  User -> R : Retry request
+else Khong co du lieu
+  R --> User : 200 OK\n{ data: [], message: "Khong co du lieu" }
+end
+
+@enduml

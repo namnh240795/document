@@ -1,9 +1,6 @@
 @startuml
 ' UC-18: Trích xuất Skills từ JD - Sơ đồ Hoạt động
-skinparam dpi 150
-skinparam defaultFontSize 12
-skinparam nodesep 15
-skinparam ranksep 15
+skinparam dpi 200
 skinparam activity {
   BackgroundColor #F8F8F8
   BorderColor #333333
@@ -18,7 +15,7 @@ start
 
 :Lưu nháp tin tuyển dụng;
 
-if (HR bấm "Gợi ý Tags AI?" then (có))
+if (HR bấm "Gợi ý Tags AI?" ) then (có)
   :Gửi job vào hàng đợi;
 else (tự động)
   :Hệ thống tự động gửi;
@@ -26,18 +23,14 @@ endif
 
 :Gọi AI với nội dung JD;
 
-if (AI lỗi / JD thiếu info?) then (có)
+if (AI lỗi / JD thiếu info?) then (không)
+  :Chuẩn hóa tags;
+  :Lưu recr_job_skills;
+  :Hiển thị gợi ý cho HR;
+  :HR xác nhận / chỉnh sửa;
+else (có)
   :HR tự nhập tag thủ công;
-  stop
 endif
-
-:Chuẩn hóa tags;
-
-:Lưu recr_job_skills;
-
-:Hiển thị gợi ý cho HR;
-
-:HR xác nhận / chỉnh sửa;
 
 :Tiếp tục luồng gửi duyệt;
 

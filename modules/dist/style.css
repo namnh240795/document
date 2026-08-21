@@ -40,6 +40,8 @@ body {
 .logo-header .logo {
   height: 50px;
   width: auto;
+  max-width: 200px;
+  object-fit: contain;
 }
 
 .logo-header .logo-left {

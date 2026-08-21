@@ -13,7 +13,7 @@
     <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
   </div>
   <div class="logo-right">
-    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+    <img src="../../assets/gta-logo.png" alt="GTA" class="logo">
   </div>
 </div>
 
@@ -248,29 +248,31 @@
   <tr><th>Sự kiện</th><th>Hướng</th><th>Giao thức</th><th>Mô tả</th></tr>
   <tr>
     <td>verification.email.requested</td>
-    <td>AUTH → EMAIL</td>
-    <td>RabbitMQ</td>
-    <td>Kích hoạt khi người dùng yêu cầu xác minh email</td>
+    <td>AUTH worker → EMAIL</td>
+    <td>HTTP API</td>
+    <td>AUTH's email queue worker gọi EMAIL API để gửi email xác minh khi người dùng đăng ký</td>
   </tr>
   <tr>
     <td>verification.email.resent</td>
-    <td>AUTH → EMAIL</td>
-    <td>RabbitMQ</td>
-    <td>Kích hoạt khi người dùng gửi lại xác minh email</td>
+    <td>AUTH worker → EMAIL</td>
+    <td>HTTP API</td>
+    <td>AUTH's email queue worker gọi EMAIL API để gửi lại email xác minh</td>
   </tr>
   <tr>
     <td>verification.email.delivered</td>
     <td>EMAIL → AUTH</td>
     <td>Webhook</td>
-    <td>Xác nhận trạng thái giao email cho AUTH</td>
+    <td>EMAIL callback xác nhận trạng thái giao email về AUTH</td>
   </tr>
   <tr>
     <td>email.event.logged</td>
     <td>EMAIL → LOG</td>
     <td>RabbitMQ</td>
-    <td>Ghi log sự kiện giao email vào Logger</td>
+    <td>EMAIL publish sự kiện giao email vào Logger</td>
   </tr>
 </table>
+
+<p><strong>Lưu ý Kiến trúc:</strong> Email queue worker chạy bên trong AUTH service (không phải service riêng). Worker consume từ RabbitMQ queue <code>verification.email</code> và gọi EMAIL module API để gửi email. EMAIL module chỉ cung cấp API gửi mail (templates, SendGrid/SMTP) — không có consumer riêng.</p>
 
 <!-- 7. NON-FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-7">7. Yêu cầu Phi chức năng</h1>

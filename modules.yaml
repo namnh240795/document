@@ -13,7 +13,7 @@ project:
 modules:
   - code: AUTH
     name: "Authentication"
-    description: "User accounts, login, roles, sessions, verification"
+    description: "User accounts, login, roles, sessions, verification. Runs email/SMS queue workers internally — consumes from RabbitMQ and calls EMAIL/SMS modules for delivery"
     database: auth_db
     tables:
       - auth_users
@@ -32,11 +32,19 @@ modules:
       - SMS
       - EMAIL
       - LOG
+    queue_workers:
+      - name: "Email Queue Worker"
+        queues: ["verification.email", "password.reset.email", "invitation.email"]
+        description: "Consume email events (verification, password reset, invitation), call EMAIL module to send emails"
+      - name: "SMS Queue Worker"
+        queues: ["password.reset.sms"]
+        description: "Consume password reset SMS events, call SMS module to send OTP"
     tech_stack:
       - NestJS
       - Better Auth
       - Drizzle ORM
       - PostgreSQL
+      - RabbitMQ (amqplib)
 
   - code: SMS
     name: "SMS Service"
@@ -54,7 +62,7 @@ modules:
 
   - code: EMAIL
     name: "Email Notification"
-    description: "Email notification delivery, templating, and audit trail"
+    description: "Email notification delivery, templating, and audit trail. Provides email sending API (templates, SendGrid/SMTP) — consumed by AUTH's email queue worker"
     database: email_db
     tables:
       - email_logs
@@ -63,7 +71,6 @@ modules:
       - NestJS
       - Drizzle ORM
       - PostgreSQL
-      - RabbitMQ
       - SendGrid/SMTP
 
   - code: RECR
@@ -225,43 +232,6 @@ features:
 # Modules communicate via webhook events
 # ============================================================
 webhooks:
-  - from: AUTH
-    to: SMS
-    event: verification.requested
-    protocol: RabbitMQ
-    description: "AUTH publishes when user requests account verification"
-    queue: verification.sms
-    payload:
-      user_id: uuid
-      phone: string
-      channel: "sms" | "email"
-      otp: string
-      verification_id: string
-
-  - from: AUTH
-    to: SMS
-    event: verification.resent
-    protocol: RabbitMQ
-    description: "AUTH publishes when user resends verification (rate-limited)"
-    queue: verification.sms
-    payload:
-      user_id: uuid
-      phone: string
-      channel: "sms" | "email"
-      otp: string
-      verification_id: string
-
-  - from: SMS
-    to: AUTH
-    event: verification.delivered
-    protocol: Webhook
-    description: "SMS confirms delivery status back to AUTH"
-    url: /api/webhooks/sms/delivered
-    payload:
-      verification_id: string
-      status: "delivered" | "failed"
-      provider_message_id: string
-      error_message: string | null
 
   # ============================================================
   # Logger Module Events (all services -> LOG)
@@ -340,6 +310,72 @@ webhooks:
       status: "delivered" | "failed"
       provider_message_id: string
       error_message: string | null
+
+  # ============================================================
+  # Password Reset Events (AUTH -> EMAIL, SMS)
+  # ============================================================
+
+  - from: AUTH
+    to: EMAIL
+    event: password.reset.email.requested
+    protocol: RabbitMQ
+    description: "AUTH publishes when user requests password reset via email"
+    queue: password.reset.email
+    payload:
+      user_id: uuid
+      email: string
+      reset_token: string
+      expires_at: iso8601
+      verification_id: string
+
+  - from: AUTH
+    to: SMS
+    event: password.reset.sms.requested
+    protocol: RabbitMQ
+    description: "AUTH publishes when user requests password reset via SMS"
+    queue: password.reset.sms
+    payload:
+      user_id: uuid
+      phone: string
+      otp: string
+      expires_at: iso8601
+      verification_id: string
+
+  # ============================================================
+  # Invitation Events (AUTH -> EMAIL)
+  # ============================================================
+
+  - from: AUTH
+    to: EMAIL
+    event: invitation.email.requested
+    protocol: RabbitMQ
+    description: "AUTH publishes when admin invites member to organization"
+    queue: invitation.email
+    payload:
+      event_id: uuid
+      inviter_email: string
+      invitee_email: string
+      organization_name: string
+      invite_url: string
+      role: string
+      expires_at: iso8601
+      invitation_id: string
+
+  - from: AUTH
+    to: EMAIL
+    event: invitation.email.resent
+    protocol: RabbitMQ
+    description: "AUTH publishes when admin resends invitation"
+    queue: invitation.email
+    payload:
+      event_id: uuid
+      inviter_email: string
+      invitee_email: string
+      organization_name: string
+      invite_url: string
+      role: string
+      expires_at: iso8601
+      invitation_id: string
 
   # ============================================================
   # Email Module Events (EMAIL -> LOG)

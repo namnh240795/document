@@ -1,9 +1,6 @@
 @startuml
 ' UC-20: Gợi ý Ứng viên Phù hợp - Sơ đồ Hoạt động
-skinparam dpi 150
-skinparam defaultFontSize 12
-skinparam nodesep 15
-skinparam ranksep 15
+skinparam dpi 200
 skinparam activity {
   BackgroundColor #F8F8F8
   BorderColor #333333
@@ -16,38 +13,32 @@ title UC-20: Gợi ý Ứng viên Phù hợp
 
 start
 
-:Nhan su kien job.approved;
+:Nhận sự kiện job.approved;
 
-:Lay danh sach skill\ntu recr_job_skills;
+:Lấy danh sách skill từ recr_job_skills;
 
-:Loc so bo ung vien\n(skill trung + is_open_to_work\n+ chua hired trong to chuc);
+:Lọc sơ bộ ứng viên (skill trùng + is_open_to_work + chưa hired trong tổ chức);
 
-if (Co ung vien?) then (khong)
-  :Khong tao goi y;
-  stop
+if (Có ứng viên?) then (có)
+  :Tính điểm matching (tái sử dụng UC-19);
+  :Lọc ngưỡng >= 70%;
+else (không)
+  :Không tạo gợi ý;
 endif
 
-:Tinh diem matching\n(tai su dung UC-19);
-
-:Loc nguong >= 70%;
-
-if (Co ung vien dat nguong?) then (khong)
-  :Ghi log, khong thong bao;
-  stop
+if (Có ứng viên đạt ngưỡng?) then (có)
+  :Kiểm tra giới hạn tần suất (3 lời mời/tuần/tổ chức);
+  :Lưu recr_job_suggestions (status: new);
+  :Thông báo cho HR "N ứng viên phù hợp";
+  :HR xem danh sách gợi ý;
+else (không)
+  :Ghi log, không thông báo;
 endif
 
-:Kiem tra gioi han tan suat\n(3 loi moi/tuan/to chuc);
-
-:Luu recr_job_suggestions\n(status: new);
-
-:Thong bao cho HR\n"N ung vien phu hop";
-
-:HR xem danh sach goi y;
-
-if (HR hanh dong?) then (gui loi moi)
-  :Cap nhat status = contacted;
-else (bo qua)
-  :Cap nhat status = dismissed;
+if (HR hành động?) then (gửi lời mời)
+  :Cập nhật status = contacted;
+else (bỏ qua)
+  :Cập nhật status = dismissed;
 endif
 
 stop

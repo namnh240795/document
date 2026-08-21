@@ -13,7 +13,7 @@
     <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
   </div>
   <div class="logo-right">
-    <img src="../assets/pvi-logo.png" alt="PVI" class="logo">
+    <img src="../assets/gta-logo.png" alt="GTA" class="logo">
   </div>
 </div>
 
@@ -75,12 +75,12 @@
 <h2 id="section-1-1">1.1 Yêu cầu được giải quyết</h2>
 <table class="trace-table">
   <tr><th>Yêu cầu SRS</th><th>Đầu nối API</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Đăng ký Người dùng</td><td>POST /sign-up/email, POST /sign-in/social</td></tr>
+  <tr><td><span class="req-id">FR-001</span> Đăng ký Người dùng</td><td>POST /sign-up/email → RabbitMQ (<code>verification.email</code>) → Email Queue Worker → EMAIL module</td></tr>
   <tr><td><span class="req-id">FR-002</span> Đăng nhập</td><td>POST /sign-in/email, POST /sign-in/social, POST /sign-in/username</td></tr>
   <tr><td><span class="req-id">FR-003</span> Đăng xuất</td><td>POST /sign-out</td></tr>
   <tr><td><span class="req-id">FR-004</span> Làm mới Token</td><td>POST /refresh-token</td></tr>
-  <tr><td><span class="req-id">FR-005</span> Đặt lại Mật khẩu (Email)</td><td>POST /request-password-reset, GET /reset-password/{token}</td></tr>
-  <tr><td><span class="req-id">FR-006</span> Đặt lại Mật khẩu (Số điện thoại)</td><td>POST /request-password-reset</td></tr>
+  <tr><td><span class="req-id">FR-005</span> Đặt lại Mật khẩu (Email)</td><td>POST /request-password-reset → RabbitMQ (<code>password.reset.email</code>) → Email Queue Worker → EMAIL module</td></tr>
+  <tr><td><span class="req-id">FR-006</span> Đặt lại Mật khẩu (Số điện thoại)</td><td>POST /request-password-reset → RabbitMQ (<code>password.reset.sms</code>) → SMS Queue Worker → SMS module</td></tr>
   <tr><td><span class="req-id">FR-007</span> Đổi Mật khẩu</td><td>POST /change-password</td></tr>
   <tr><td><span class="req-id">FR-008</span> Xác minh Email</td><td>GET /verify-email, POST /send-verification-email</td></tr>
   <tr><td><span class="req-id">FR-009</span> Xác minh Số điện thoại</td><td>POST /send-verification-sms (qua module SMS)</td></tr>
@@ -254,6 +254,7 @@
 <h3 id="fr-001">POST /sign-up/email <em>(Công khai)</em> <span class="req-id">FR-001</span></h3>
 <p>Đăng ký người dùng mới bằng email và mật khẩu. Người dùng được gán vai trò hệ thống <code>user</code> theo mặc định.</p>
 <p><strong>Lưu ý:</strong> Tài khoản <code>super_admin</code> không thể tự đăng ký. Chúng phải được tạo bởi admin qua <code>POST /admin/create-user</code>.</p>
+<p><strong>Xử lý Bất đồng bộ:</strong> Sau khi tạo tài khoản, hệ thống publish sự kiện <code>verification.email.requested</code> lên RabbitMQ (queue: <code>verification.email</code>). Email queue worker bên trong AUTH service consume sự kiện và gọi EMAIL module để gửi email xác minh. Quá trình gửi email diễn ra bất đồng bộ — không chặn response trả về cho client.</p>
 <p><strong>Yêu cầu:</strong></p>
 <pre><code>{
   "name": "John Doe",
@@ -281,6 +282,7 @@
     "updatedAt": "2026-08-05T10:30:00Z"
   }
 }</code></pre>
+<p><strong>Lưu ý:</strong> Response trả về ngay sau khi tạo tài khoản. Email xác minh được gửi bất đồng bộ qua RabbitMQ — có thể mất vài giây đến vài phút. Người dùng có thể yêu cầu gửi lại qua <code>POST /send-verification-email</code> nếu không nhận được.</p>
 <p><strong>Lỗi 400 — Vai trò không hợp lệ:</strong></p>
 <pre><code>{
   "message": "Role must be 'user'. super_admin accounts are created by admin."
@@ -411,22 +413,45 @@
 }</code></pre>
 
 <h3 id="fr-005">POST /request-password-reset <em>(Công khai)</em> <span class="req-id">FR-005</span></h3>
-<p>Yêu cầu đặt lại mật khẩu. Gửi liên kết đặt lại qua email.</p>
-<p><strong>Yêu cầu:</strong></p>
+<p>Yêu cầu đặt lại mật khẩu. Gửi liên kết đặt lại qua email (hoặc OTP qua SMS).</p>
+<p><strong>Xử lý Bất đồng bộ:</strong> Sau khi tạo reset token, hệ thống publish sự kiện <code>password.reset.email.requested</code> (hoặc <code>password.reset.sms.requested</code>) lên RabbitMQ. Email/SMS queue worker trong AUTH consume và gọi EMAIL/SMS module để gửi. Response trả về ngay — không chờ gửi xong.</p>
+<p><strong>Yêu cầu (Email):</strong></p>
 <pre><code>{
   "email": "john@example.com",
   "redirectTo": "http://localhost:3000/reset-password"
 }</code></pre>
+<p><strong>Yêu cầu (SMS):</strong></p>
+<pre><code>{
+  "phone": "+84901234567"
+}</code></pre>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "message": "If the email exists, a reset link has been sent"
+}</code></pre>
+<p><strong>Lưu ý:</strong> Response luôn trả về 200 với cùng message để không tiết lộ email/SĐT có tồn tại hay không.</p>
 
 <h3>GET /reset-password/{token} <em>(Công khai)</em></h3>
 <p>Callback đặt lại mật khẩu. Xác thực token đặt lại.</p>
 
 <h3>POST /reset-password <em>(Công khai)</em> <span class="req-id">FR-005</span></h3>
-<p>Hoàn tất đặt lại mật khẩu bằng token.</p>
-<p><strong>Yêu cầu:</strong></p>
+<p>Hoàn tất đặt lại mật khẩu bằng token (email) hoặc OTP (SMS).</p>
+<p><strong>Yêu cầu (Email — dùng token):</strong></p>
 <pre><code>{
   "token": "reset-token-abc",
   "newPassword": "newpassword123"
+}</code></pre>
+<p><strong>Yêu cầu (SMS — dùng OTP):</strong></p>
+<pre><code>{
+  "otp": "123456",
+  "newPassword": "newpassword123"
+}</code></pre>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "message": "Password reset successfully"
+}</code></pre>
+<p><strong>Lỗi 400 — Token/OTP không hợp lệ:</strong></p>
+<pre><code>{
+  "message": "Invalid or expired reset token"
 }</code></pre>
 
 <h3>POST /verify-password</h3>

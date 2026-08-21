@@ -13,7 +13,7 @@
     <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
   </div>
   <div class="logo-right">
-    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+    <img src="../../assets/gta-logo.png" alt="GTA" class="logo">
   </div>
 </div>
 
@@ -78,6 +78,7 @@
         <li><a href="#section-3-18">3.18 UC-18: Trích xuất Tags/Skills từ JD bằng AI</a></li>
         <li><a href="#section-3-19">3.19 UC-19: Tính điểm Matching Ứng viên - Việc làm</a></li>
         <li><a href="#section-3-20">3.20 UC-20: Gợi ý Ứng viên Phù hợp cho Việc làm Mới</a></li>
+        <li><a href="#section-3-21">3.21 UC-21: Báo cáo & Thống kê Tương tác Ứng viên</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Yêu cầu Chức năng</a>
@@ -912,6 +913,88 @@
   <div class="caption">Hình: Tích hợp Gợi ý Ứng viên</div>
 </div>
 
+<h2 id="section-3-21">3.21 UC-21: Báo cáo & Thống kê Tương tác Ứng viên</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-21</td></tr>
+  <tr><td>Tên</td><td>Báo cáo & Thống kê Tương tác Ứng viên (Candidate Activity & Application Analytics)</td></tr>
+  <tr><td>Diễn viên</td><td>Admin, HR Manager, Employer</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập với vai trò Admin, HR hoặc Employer trong tổ chức</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Hệ thống hiển thị báo cáo với các chỉ số KPI, biểu đồ và bảng số liệu</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng chọn menu "Báo cáo Tương tác Ứng viên"</td></tr>
+</table>
+
+<p><strong>Các chỉ số KPI cần thống kê:</strong></p>
+<table>
+  <tr><th>Chỉ số</th><th>Công thức</th><th>Mô tả</th></tr>
+  <tr><td>New CV Uploads</td><td><code>COUNT(recr_candidate_resumes) WHERE created_at IN range</code></td><td>Số lượt upload CV mới trong khoảng thời gian</td></tr>
+  <tr><td>Updated CVs</td><td><code>COUNT(recr_candidate_resumes) WHERE updated_at &gt; created_at IN range</code></td><td>Số lượng CV được cập nhật/chỉnh sửa</td></tr>
+  <tr><td>Total Job Applications</td><td><code>COUNT(recr_applications) WHERE created_at IN range</code></td><td>Số lượt ứng tuyển công việc</td></tr>
+  <tr><td>Application Success Rate</td><td><code>COUNT(applications WHERE status='offered') / COUNT(all applications) * 100</code></td><td>Tỷ lệ ứng tuyển thành công (được nhận offer)</td></tr>
+</table>
+
+<p><strong>Bộ lọc & Phân đoạn dữ liệu:</strong></p>
+<table>
+  <tr><th>Filter</th><th>Giá trị</th></tr>
+  <tr><td>Khoảng thời gian</td><td>Ngày / Tuần / Tháng / Tùy chọn (từ-đến)</td></tr>
+  <tr><td>Vị trí tuyển dụng</td><td>Job Title (dropdown)</td></tr>
+  <tr><td>Phòng ban / Chi nhánh</td><td>Department / Branch (dropdown)</td></tr>
+  <tr><td>Trạng thái ứng tuyển</td><td>pending, screening, interview, offered, rejected, withdrawn</td></tr>
+</table>
+
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Người dùng điều hướng đến trang "Báo cáo Tương tác Ứng viên"</li>
+  <li>Hệ thống hiển thị bộ lọc mặc định (30 ngày gần nhất, tất cả vị trí, tất cả phòng ban)</li>
+  <li>Hệ thống truy vấn database để lấy dữ liệu thô theo bộ lọc mặc định</li>
+  <li>Hệ thống tính toán các chỉ số KPI: New CV Uploads, Updated CVs, Total Job Applications, Application Success Rate</li>
+  <li>Hệ thống render biểu đồ (line chart theo thời gian, bar chart theo vị trí, pie chart theo trạng thái) và bảng số liệu chi tiết</li>
+  <li>Người dùng xem báo cáo, có thể hover để xem tooltip chi tiết</li>
+  <li>Người dùng thay đổi bộ lọc (thời gian, vị trí, phòng ban, trạng thái)</li>
+  <li>Hệ thống refresh dữ liệu và render lại biểu đồ/bảng với bộ lọc mới</li>
+</ol>
+
+<p><strong>Luồng Thay thế:</strong></p>
+<ul>
+  <li>6a. Xuất file Excel/CSV: Người dùng nhấn "Xuất file" → Hệ thống generate file với đầy đủ dữ liệu → Trả về download URL → Người dùng tải file</li>
+  <li>6b. Thay đổi khoảng thời gian: Người dùng chọn timeframe khác → Hệ thống query lại dữ liệu → Cập nhật biểu đồ và bảng</li>
+  <li>6c. So sánh kỳ: Người dùng chọn "So sánh với kỳ trước" → Hệ thống query dữ liệu kỳ trước → Hiển thị % thay đổi trên từng KPI</li>
+</ul>
+
+<p><strong>Luồng Ngoại lệ:</strong></p>
+<ul>
+  <li>3a. Không có dữ liệu trong khoảng thời gian chọn: Hệ thống hiển thị thông báo "Không có dữ liệu trong khoảng thời gian đã chọn" với gợi ý mở rộng khoảng thời gian</li>
+  <li>3b. Lỗi tải dữ liệu: Hệ thống hiển thị thông báo lỗi "Không thể tải dữ liệu báo cáo", cho phép nhấn nút tải lại (retry)</li>
+  <li>3c. Database quá tải: Hệ thống trả về dữ liệu từ cache (Redis) nếu có, nếu không hiển thị thông báo "Hệ thống đang bận, vui lòng thử lại sau"</li>
+</ul>
+
+<p><strong>Quy tắc Nghiệp vụ:</strong></p>
+<table>
+  <tr><th>Quy tắc</th><th>Chi tiết</th></tr>
+  <tr><td>Application Success Rate</td><td>Chỉ tính ứng viên có status = <code>offered</code>. Không tính <code>pending</code>, <code>screening</code>, <code>interview</code> đang chạy</td></tr>
+  <tr><td>Phân quyền xem</td><td>Employer: xem dữ liệu tổ chức mình. HR: xem dữ liệu phòng ban mình. Admin: xem toàn bộ hệ thống</td></tr>
+  <tr><td>Tần suất cập nhật</td><td>Dữ liệu cập nhật real-time cho Application. CV uploads cập nhật mỗi 5 phút (batch). Dashboard cache TTL = 5 phút</td></tr>
+  <tr><td>Khoảng thời gian tối đa</td><td>Không quá 12 tháng cho一次 query. Nếu chọn > 12 tháng, hệ thống cảnh báo và gợi ý chia kỳ</td></tr>
+  <tr><td>Xuất file</td><td>Giới hạn 10,000 dòng mỗi file. Nếu vượt quá, hệ thống cảnh báo và gợi ý thu hẹp bộ lọc</td></tr>
+</table>
+
+<p><strong>Yêu cầu Phi chức năng:</strong></p>
+<table>
+  <tr><th>Yêu cầu</th><th>Mục tiêu</th></tr>
+  <tr><td>Thời gian tải báo cáo</td><td>&lt; 3 giây (p95) cho dataset ≤ 100,000 records</td></tr>
+  <tr><td>Đồng thời</td><td>Hỗ trợ 50+ user xem báo cáo cùng lúc</td></tr>
+  <tr><td>Xuất file</td><td>Generate file &lt; 10 giây cho ≤ 10,000 dòng</td></tr>
+  <tr><td>Cache</td><td>Redis cache TTL 5 phút, invalidate khi có dữ liệu mới</td></tr>
+</table>
+
+<p><strong>FR Liên quan:</strong> <span class="req-id">FR-054</span>, <span class="req-id">FR-055</span>, <span class="req-id">FR-056</span></p>
+
+<h3>Sơ đồ Chuỗi</h3>
+<div class="diagram">
+  <img src="./images/sequence/uc21-candidate-analytics-sequence.png" alt="Sơ đồ Chuỗi UC-21">
+  <div class="caption">Hình: UC-21 Báo cáo & Thống kê Tương tác Ứng viên - Sơ đồ Chuỗi</div>
+</div>
+
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Yêu cầu Chức năng</h1>
 
@@ -982,7 +1065,7 @@
     <td>Ứng viên có thể tải lên và quản lý nhiều tệp hồ sơ (PDF/DOCX, tối đa 10MB mỗi tệp) qua module FILE. Tệp được lưu tại <code>{candidate_user_id}/resumes/{uuid}.pdf</code>. Metadata được lưu trong bảng <code>recr_candidate_resumes</code> với tham chiếu file_id đến <code>sys_files</code>.</td>
   </tr>
   <tr>
-    <td><span id="fr-037" class="req-id">FR-037</span></td>
+    <td><span id="fr-008" class="req-id">FR-008</span></td>
     <td>RECR</td>
     <td>Quản lý Hồ sơ Ứng viên</td>
     <td>UC-15</td>
@@ -990,7 +1073,7 @@
     <td>Ứng viên có thể liệt kê, tải lên, đặt chính và xóa hồ sơ từ danh sách hồ sơ. Xóa hồ sơ chỉ được phép khi hồ sơ chưa được liên kết với bất kỳ hồ sơ ứng tuyển nào.</td>
   </tr>
   <tr>
-    <td><span id="fr-038" class="req-id">FR-038</span></td>
+    <td><span id="fr-009" class="req-id">FR-009</span></td>
     <td>RECR</td>
     <td>Liên kết Hồ sơ Ứng tuyển</td>
     <td>UC-04</td>
@@ -998,7 +1081,7 @@
     <td>Khi ứng viên nộp hồ sơ, hồ sơ được chọn được liên kết bằng cách sao chép <code>resume_file_id</code> vào bản ghi hồ sơ. Tham chiếu tệp này không thể thay đổi sau khi nộp (đóng băng tại thời điểm nộp).</td>
   </tr>
   <tr>
-    <td><span id="fr-048" class="req-id">FR-048</span></td>
+    <td><span id="fr-010" class="req-id">FR-010</span></td>
     <td>RECR</td>
     <td>Trích xuất Skills từ CV</td>
     <td>UC-17</td>
@@ -1349,6 +1432,30 @@
     <td>Trung bình</td>
     <td>Hiển thị bảng điều khiển phân tích tổng hợp với biểu đồ và bộ lọc</td>
   </tr>
+  <tr>
+    <td><span id="fr-054" class="req-id">FR-054</span></td>
+    <td>RECR</td>
+    <td>Phân tích Tương tác Ứng viên</td>
+    <td>UC-21</td>
+    <td>Cao</td>
+    <td>Hệ thống thống kê số lượt upload CV mới (New CV Uploads), CV cập nhật (Updated CVs), lượt ứng tuyển (Total Job Applications) theo khoảng thời gian và bộ lọc (vị trí, phòng ban, trạng thái)</td>
+  </tr>
+  <tr>
+    <td><span id="fr-055" class="req-id">FR-055</span></td>
+    <td>RECR</td>
+    <td>Tỷ lệ Ứng tuyển Thành công</td>
+    <td>UC-21</td>
+    <td>Cao</td>
+    <td>Hệ thống tính và hiển thị tỷ lệ ứng tuyển thành công (Application Success Rate = offered / total * 100) với breakdown chi tiết theo giai đoạn tuyển dụng</td>
+  </tr>
+  <tr>
+    <td><span id="fr-056" class="req-id">FR-056</span></td>
+    <td>RECR</td>
+    <td>Xuất Báo cáo Ứng viên</td>
+    <td>UC-21</td>
+    <td>Trung bình</td>
+    <td>Hệ thống cho phép xuất báo cáo ra file Excel/CSV với đầy đủ dữ liệu KPI và chi tiết từng ứng viên. Giới hạn 10,000 dòng mỗi file</td>
+  </tr>
 </table>
 
 <h2 id="section-4-7">4.7 Yêu cầu Lời mời</h2>
@@ -1446,10 +1553,10 @@
   </tr>
   <tr><td><span class="req-id">DR-001</span></td><td>recr_users</td><td>Tài khoản người dùng với xác thực dựa trên vai trò</td><td>FR-001, FR-002, FR-016</td></tr>
   <tr><td><span class="req-id">DR-002</span></td><td>recr_candidates</td><td>Hồ sơ ứng viên với kỹ năng (resume_link được thay bằng tham chiếu file_id qua recr_candidate_resumes)</td><td>FR-006, FR-007</td></tr>
-  <tr><td><span class="req-id">DR-002a</span></td><td>recr_candidate_resumes</td><td>Danh sách hồ sơ ứng viên với tham chiếu file_id module FILE (hỗ trợ nhiều hồ sơ mỗi ứng viên)</td><td>FR-007, FR-037, FR-038</td></tr>
+  <tr><td><span class="req-id">DR-002a</span></td><td>recr_candidate_resumes</td><td>Danh sách hồ sơ ứng viên với tham chiếu file_id module FILE (hỗ trợ nhiều hồ sơ mỗi ứng viên)</td><td>FR-007, FR-008, FR-009</td></tr>
   <tr><td><span class="req-id">DR-003</span></td><td>recr_employers</td><td>Hồ sơ công ty nhà tuyển dụng</td><td>FR-016</td></tr>
   <tr><td><span class="req-id">DR-004</span></td><td>recr_jobs</td><td>Tin tuyển dụng với yêu cầu</td><td>FR-017, FR-018</td></tr>
-  <tr><td><span class="req-id">DR-005</span></td><td>recr_applications</td><td>Hồ sơ ứng tuyển liên kết ứng viên với việc làm, với tham chiếu resume_file_id đóng băng tới module FILE</td><td>FR-004, FR-005, FR-038</td></tr>
+  <tr><td><span class="req-id">DR-005</span></td><td>recr_applications</td><td>Hồ sơ ứng tuyển liên kết ứng viên với việc làm, với tham chiếu resume_file_id đóng băng tới module FILE</td><td>FR-004, FR-005, FR-009</td></tr>
   <tr><td><span class="req-id">DR-006</span></td><td>recr_interviews</td><td>Lên lịch và trạng thái phỏng vấn</td><td>FR-010</td></tr>
   <tr><td><span class="req-id">DR-007</span></td><td>recr_evaluations</td><td>Điểm đánh giá phỏng vấn</td><td>FR-011</td></tr>
   <tr><td><span class="req-id">DR-008</span></td><td>recr_hr_profiles</td><td>Hồ sơ người dùng HR</td><td>-</td></tr>
@@ -1461,7 +1568,7 @@
   <tr><td><span class="req-id">DR-013</span></td><td>recr_candidate_reviews</td><td>Đánh giá ứng viên từ người phỏng vấn</td><td>FR-031</td></tr>
   <tr><td><span class="req-id">DR-014</span></td><td>recr_invitations</td><td>Bản ghi lời mời với xác minh dựa trên token</td><td>FR-039, FR-042, FR-043, FR-044</td></tr>
   <tr><td><span class="req-id">DR-015</span></td><td>recr_webhook_configs</td><td>Cấu hình webhook cá nhân — mỗi người dùng có tối đa 1 cấu hình</td><td>FR-047</td></tr>
-  <tr><td><span class="req-id">DR-016</span></td><td>recr_resume_skills</td><td>Tags/skills được trích xuất từ CV bằng AI, kèm confidence score và trạng thái</td><td>FR-048</td></tr>
+  <tr><td><span class="req-id">DR-016</span></td><td>recr_resume_skills</td><td>Tags/skills được trích xuất từ CV bằng AI, kèm confidence score và trạng thái</td><td>FR-010</td></tr>
   <tr><td><span class="req-id">DR-017</span></td><td>recr_job_skills</td><td>Tags/skills yêu cầu cho JD, phân loại required/nice_to_have</td><td>FR-049</td></tr>
   <tr><td><span class="req-id">DR-018</span></td><td>recr_skills_taxonomy</td><td>Từ điển skill chuẩn hóa — master data cho matching</td><td>FR-051</td></tr>
   <tr><td><span class="req-id">DR-019</span></td><td>recr_match_scores</td><td>Điểm matching giữa CV và Job kèm breakdown chi tiết</td><td>FR-050</td></tr>
@@ -1595,18 +1702,18 @@
     <th>Mã Yêu cầu</th>
   </tr>
   <tr><td>GET</td><td>/recr/jobs</td><td>Duyệt tin tuyển dụng</td><td>FR-003</td></tr>
-  <tr><td>POST</td><td>/recr/applications</td><td>Nộp hồ sơ ứng tuyển</td><td>FR-004, FR-038</td></tr>
+  <tr><td>POST</td><td>/recr/applications</td><td>Nộp hồ sơ ứng tuyển</td><td>FR-004, FR-009</td></tr>
   <tr><td>GET</td><td>/recr/candidate/applications</td><td>Xem hồ sơ của tôi</td><td>FR-005</td></tr>
   <tr><td>PATCH</td><td>/recr/candidate/profile</td><td>Cập nhật hồ sơ</td><td>FR-006</td></tr>
-  <tr><td>POST</td><td>/recr/candidate/resume</td><td>Tải lên hồ sơ (qua module FILE)</td><td>FR-007, FR-037</td></tr>
-  <tr><td>GET</td><td>/recr/candidate/resumes</td><td>Liệt kê hồ sơ của tôi</td><td>FR-037</td></tr>
-  <tr><td>DELETE</td><td>/recr/candidate/resumes/:id</td><td>Xóa hồ sơ</td><td>FR-037</td></tr>
-  <tr><td>GET</td><td>/recr/candidate/applications/:id/resume</td><td>Lấy URL tải xuống presigned cho hồ sơ ứng tuyển</td><td>FR-038</td></tr>
+  <tr><td>POST</td><td>/recr/candidate/resume</td><td>Tải lên hồ sơ (qua module FILE)</td><td>FR-007, FR-008</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/resumes</td><td>Liệt kê hồ sơ của tôi</td><td>FR-008</td></tr>
+  <tr><td>DELETE</td><td>/recr/candidate/resumes/:id</td><td>Xóa hồ sơ</td><td>FR-008</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/applications/:id/resume</td><td>Lấy URL tải xuống presigned cho hồ sơ ứng tuyển</td><td>FR-009</td></tr>
   <tr><td>POST</td><td>/recr/candidate/reviews/jobs</td><td>Đánh giá việc làm</td><td>FR-030</td></tr>
   <tr><td>GET</td><td>/recr/candidate/reviews/jobs/:jobId</td><td>Lấy đánh giá việc làm</td><td>FR-030</td></tr>
-  <tr><td>POST</td><td>/recr/candidate/resumes/:id/analyze</td><td>Trigger phân tích lại CV bằng AI (thủ công)</td><td>FR-048</td></tr>
-  <tr><td>GET</td><td>/recr/candidate/resumes/:id/skills</td><td>Lấy danh sách skill của 1 CV</td><td>FR-048</td></tr>
-  <tr><td>PATCH</td><td>/recr/candidate/resumes/:id/skills</td><td>Sửa/thêm/xóa skill thủ công</td><td>FR-048</td></tr>
+  <tr><td>POST</td><td>/recr/candidate/resumes/:id/analyze</td><td>Trigger phân tích lại CV bằng AI (thủ công)</td><td>FR-010</td></tr>
+  <tr><td>GET</td><td>/recr/candidate/resumes/:id/skills</td><td>Lấy danh sách skill của 1 CV</td><td>FR-010</td></tr>
+  <tr><td>PATCH</td><td>/recr/candidate/resumes/:id/skills</td><td>Sửa/thêm/xóa skill thủ công</td><td>FR-010</td></tr>
   <tr><td>GET</td><td>/recr/candidate/jobs/:id/match-score</td><td>Xem điểm matching của Candidate hiện tại với 1 job</td><td>FR-050</td></tr>
 </table>
 
@@ -1904,8 +2011,8 @@
   <tr><td>FR-029</td><td>HR Quản lý Việc làm</td><td>HR</td><td>3.2</td><td>recr_jobs</td><td>GET/PATCH /recr/hr/jobs</td></tr>
   <tr><td>FR-030</td><td>Đánh giá Việc làm</td><td>Candidate</td><td>3.3</td><td>recr_job_reviews</td><td>POST /recr/candidate/reviews/jobs</td></tr>
   <tr><td>FR-031</td><td>Đánh giá Ứng viên</td><td>HR</td><td>3.3</td><td>recr_candidate_reviews</td><td>POST /recr/hr/reviews/candidates</td></tr>
-  <tr><td>FR-037</td><td>Quản lý Hồ sơ Ứng viên</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>GET/POST/DELETE /recr/candidate/resumes</td></tr>
-  <tr><td>FR-038</td><td>Liên kết Hồ sơ Ứng tuyển</td><td>Candidate</td><td>3.1</td><td>recr_applications, sys_files (FILE)</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
+  <tr><td>FR-008</td><td>Quản lý Hồ sơ Ứng viên</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>GET/POST/DELETE /recr/candidate/resumes</td></tr>
+  <tr><td>FR-009</td><td>Liên kết Hồ sơ Ứng tuyển</td><td>Candidate</td><td>3.1</td><td>recr_applications, sys_files (FILE)</td><td>POST /recr/applications, GET /recr/candidate/applications/:id/resume</td></tr>
   <tr><td>FR-039</td><td>Gửi Lời mời</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>POST /recr/invitations/send</td></tr>
   <tr><td>FR-040</td><td>Tạo Token</td><td>Hệ thống</td><td>3.18</td><td>recr_invitations</td><td>POST /recr/invitations/send</td></tr>
   <tr><td>FR-041</td><td>Gửi Sự kiện Email</td><td>Hệ thống</td><td>3.18</td><td>-</td><td>POST /recr/invitations/send (RabbitMQ)</td></tr>
@@ -1915,12 +2022,15 @@
   <tr><td>FR-045</td><td>Liệt kê Lời mời</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>GET /recr/invitations</td></tr>
   <tr><td>FR-046</td><td>Gửi lại Lời mời</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>POST /recr/invitations/:id/resend</td></tr>
   <tr><td>FR-047</td><td>Cấu hình Webhook</td><td>HR/Employer</td><td>3.16</td><td>recr_webhook_configs</td><td>GET/PUT /recr/settings/webhook, POST /recr/settings/webhook/test</td></tr>
-  <tr><td>FR-048</td><td>Trích xuất Skills từ CV</td><td>Candidate / Hệ thống</td><td>3.17</td><td>recr_resume_skills</td><td>GET/POST/PATCH/DELETE /recr/candidate/resumes/:id/skills</td></tr>
+  <tr><td>FR-010</td><td>Trích xuất Skills từ CV</td><td>Candidate / Hệ thống</td><td>3.17</td><td>recr_resume_skills</td><td>GET/POST/PATCH/DELETE /recr/candidate/resumes/:id/skills</td></tr>
   <tr><td>FR-049</td><td>Trích xuất Skills từ JD</td><td>HR/Employer / Hệ thống</td><td>3.18</td><td>recr_job_skills, recr_skills_taxonomy</td><td>POST /recr/hr/jobs/:id/analyze, GET/PATCH /recr/hr/jobs/:id/skills</td></tr>
   <tr><td>FR-050</td><td>Tính điểm Matching</td><td>Hệ thống / HR / Candidate</td><td>3.19</td><td>recr_match_scores</td><td>GET /recr/candidate/jobs/:id/match-score, GET /recr/hr/jobs/:id/applicants?sort=match_score</td></tr>
   <tr><td>FR-051</td><td>Từ điển Skills chuẩn</td><td>Hệ thống</td><td>3.17, 3.18</td><td>recr_skills_taxonomy</td><td>GET /recr/skills/taxonomy</td></tr>
   <tr><td>FR-052</td><td>Mở để tìm việc</td><td>Candidate</td><td>3.20</td><td>recr_candidates</td><td>PATCH /recr/candidate/profile/open-to-work</td></tr>
   <tr><td>FR-053</td><td>Gợi ý Ứng viên cho Job mới</td><td>Hệ thống / HR</td><td>3.20</td><td>recr_job_suggestions</td><td>GET /recr/hr/jobs/:id/suggestions, PATCH /recr/hr/suggestions/:id</td></tr>
+  <tr><td>FR-054</td><td>Phân tích Tương tác Ứng viên</td><td>Admin, HR, Employer</td><td>3.21</td><td>recr_candidate_resumes, recr_applications</td><td>GET /recr/analytics/candidate-activity</td></tr>
+  <tr><td>FR-055</td><td>Tỷ lệ Ứng tuyển Thành công</td><td>Admin, HR, Employer</td><td>3.21</td><td>recr_applications</td><td>GET /recr/analytics/application-success-rate</td></tr>
+  <tr><td>FR-056</td><td>Xuất Báo cáo Ứng viên</td><td>Admin, HR, Employer</td><td>3.21</td><td>recr_candidate_resumes, recr_applications</td><td>GET /recr/analytics/export</td></tr>
   <tr><td>NFR-001</td><td>Thời gian Phản hồi API</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-002</td><td>Xử lý Hồ sơ</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>
   <tr><td>NFR-003</td><td>Người dùng Đồng thời</td><td>Tất cả</td><td>6.1</td><td>-</td><td>-</td></tr>

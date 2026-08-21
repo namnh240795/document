@@ -13,7 +13,7 @@
     <img src="../../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
   </div>
   <div class="logo-right">
-    <img src="../../assets/pvi-logo.png" alt="PVI" class="logo">
+    <img src="../../assets/gta-logo.png" alt="GTA" class="logo">
   </div>
 </div>
 
@@ -186,6 +186,8 @@
   <tr><td>OrganizationsController</td><td>CRUD tổ chức, thành viên, vai trò</td><td><span class="req-id">FR-015</span></td></tr>
   <tr><td>TeamsController</td><td>CRUD nhóm, quản lý thành viên</td><td><span class="req-id">FR-016</span></td></tr>
   <tr><td>InvitationsController</td><td>Mời, chấp nhận, từ chối, thu hồi, gửi lại, xác minh lời mời</td><td><span class="req-id">FR-017</span>, <span class="req-id">FR-018</span>, <span class="req-id">FR-019</span>, <span class="req-id">FR-020</span></td></tr>
+  <tr><td>Email Queue Worker</td><td>Consume RabbitMQ events (verification, password reset), gọi EMAIL module API</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-005</span>, <span class="req-id">FR-008</span></td></tr>
+  <tr><td>SMS Queue Worker</td><td>Consume RabbitMQ events (verification, password reset), gọi SMS module API</td><td><span class="req-id">FR-006</span>, <span class="req-id">FR-009</span></td></tr>
   <tr><td>AuthGuard</td><td>Xác minh JWT, bảo vệ tuyến đường</td><td><span class="req-id">NFR-004</span></td></tr>
 </table>
 
@@ -281,6 +283,34 @@
 </table>
 <p><strong>Lưu ý:</strong> Các vai trò cấp tổ chức (HR, Candidate, Employer) được định nghĩa theo từng tổ chức và gán cho thành viên thông qua hệ thống vai trò tổ chức. Chúng không phải là vai trò cấp hệ thống.</p>
 
+<h3>Luồng Email Xác minh qua RabbitMQ</h3>
+<p>Sau khi tạo tài khoản thành công, AUTH publish sự kiện lên RabbitMQ để gửi email xác minh. Email queue worker chạy bên trong AUTH service xử lý bất đồng bộ:</p>
+<table>
+  <tr><th>Bước</th><th>Thành phần</th><th>Hành động</th></tr>
+  <tr><td>1</td><td>AUTH Service</td><td>Tạo tài khoản người dùng, gán vai trò <code>user</code></td></tr>
+  <tr><td>2</td><td>AUTH Service</td><td>Generate mã xác minh (OTP/token), lưu vào <code>auth_verification</code></td></tr>
+  <tr><td>3</td><td>AUTH Service</td><td>Publish sự kiện <code>verification.email.requested</code> lên RabbitMQ (queue: <code>verification.email</code>)</td></tr>
+  <tr><td>4</td><td>Email Queue Worker (AUTH)</td><td>Consume sự kiện từ queue</td></tr>
+  <tr><td>5</td><td>Email Queue Worker (AUTH)</td><td>Gọi EMAIL module API để gửi email xác minh</td></tr>
+  <tr><td>6</td><td>EMAIL Module</td><td>Gửi email qua SendGrid/SMTP, lưu log vào <code>email_logs</code></td></tr>
+  <tr><td>7</td><td>EMAIL Module</td><td>Gửi webhook callback <code>verification.email.delivered</code> về AUTH</td></tr>
+</table>
+
+<p><strong>Event Payload:</strong></p>
+<pre><code>{
+  "user_id": "uuid",
+  "email": "user@example.com",
+  "channel": "email",
+  "otp": "123456",
+  "verification_id": "ver-uuid"
+}</code></pre>
+
+<p><strong>Xử lý lỗi:</strong></p>
+<ul>
+  <li>EMAIL module không khả dụng → Event vẫn được publish, worker retry với exponential backoff (tối đa 5 lần)</li>
+  <li>Gửi email thất bại → Ghi log lỗi, user có thể yêu cầu gửi lại qua <code>POST /send-verification-email</code></li>
+</ul>
+
 <h2>6.3 Luồng Đặt lại Mật khẩu</h2>
 
 <h3>Sơ đồ Hoạt động</h3>
@@ -294,6 +324,53 @@
   <img src="./images/sequence/password-reset-sequence.png" alt="Password Reset Sequence Diagram">
   <div class="caption">Hình 6: Luồng Tích hợp Đặt lại Mật khẩu</div>
 </div>
+
+<h3>Đặt lại Mật khẩu qua Email</h3>
+<p>Luồng đặt lại mật khẩu qua email sử dụng cùng kiến trúc event-driven với xác minh email:</p>
+<table>
+  <tr><th>Bước</th><th>Thành phần</th><th>Hành động</th></tr>
+  <tr><td>1</td><td>AUTH Service</td><td>Nhận yêu cầu từ <code>POST /request-password-reset</code></td></tr>
+  <tr><td>2</td><td>AUTH Service</td><td>Kiểm tra email tồn tại trong <code>auth_users</code> (không tiết lộ nếu email không tồn tại)</td></tr>
+  <tr><td>3</td><td>AUTH Service</td><td>Tạo reset token, lưu hash vào <code>auth_verification</code> với TTL 1 giờ</td></tr>
+  <tr><td>4</td><td>AUTH Service</td><td>Publish sự kiện <code>password.reset.email.requested</code> lên RabbitMQ (queue: <code>password.reset.email</code>)</td></tr>
+  <tr><td>5</td><td>Email Queue Worker (AUTH)</td><td>Consume sự kiện từ queue</td></tr>
+  <tr><td>6</td><td>Email Queue Worker (AUTH)</td><td>Gọi EMAIL module API để gửi email chứa liên kết đặt lại</td></tr>
+  <tr><td>7</td><td>EMAIL Module</td><td>Gửi email qua SendGrid/SMTP, lưu log vào <code>email_logs</code></td></tr>
+  <tr><td>8</td><td>Client</td><td>User nhấp link → <code>GET /reset-password/{token}</code> → Nhập mật khẩu mới</td></tr>
+  <tr><td>9</td><td>AUTH Service</td><td>Xác minh token, cập nhật mật khẩu trong <code>auth_users</code></td></tr>
+  <tr><td>10</td><td>AUTH Service</td><td>Hủy tất cả phiên của user trong <code>auth_sessions</code></td></tr>
+</table>
+
+<p><strong>Event Payload:</strong></p>
+<pre><code>{
+  "user_id": "uuid",
+  "email": "user@example.com",
+  "reset_token": "reset-token-abc",
+  "expires_at": "2026-08-05T11:30:00Z",
+  "verification_id": "ver-uuid"
+}</code></pre>
+
+<h3>Đặt lại Mật khẩu qua SMS</h3>
+<table>
+  <tr><th>Bước</th><th>Thành phần</th><th>Hành động</th></tr>
+  <tr><td>1</td><td>AUTH Service</td><td>Nhận yêu cầu từ <code>POST /request-password-reset</code> với phone number</td></tr>
+  <tr><td>2</td><td>AUTH Service</td><td>Kiểm tra SĐT tồn tại (không tiết lộ nếu SĐT không tồn tại)</td></tr>
+  <tr><td>3</td><td>AUTH Service</td><td>Tạo mã OTP (6 chữ số), lưu vào <code>auth_verification</code> với TTL 5 phút</td></tr>
+  <tr><td>4</td><td>AUTH Service</td><td>Publish sự kiện <code>password.reset.sms.requested</code> lên RabbitMQ (queue: <code>password.reset.sms</code>)</td></tr>
+  <tr><td>5</td><td>SMS Queue Worker (AUTH)</td><td>Consume sự kiện từ queue</td></tr>
+  <tr><td>6</td><td>SMS Queue Worker (AUTH)</td><td>Gọi SMS module API để gửi OTP</td></tr>
+  <tr><td>7</td><td>SMS Module</td><td>Gửi SMS qua Twilio, lưu log vào <code>sms_logs</code></td></tr>
+  <tr><td>8</td><td>Client</td><td>User nhập OTP + mật khẩu mới → <code>POST /reset-password</code></td></tr>
+  <tr><td>9</td><td>AUTH Service</td><td>Xác minh OTP, cập nhật mật khẩu</td></tr>
+  <tr><td>10</td><td>AUTH Service</td><td>Hủy tất cả phiên</td></tr>
+</table>
+
+<p><strong>Xử lý lỗi:</strong></p>
+<ul>
+  <li>EMAIL/SMS module không khả dụng → Event vẫn được publish, worker retry exponential backoff (tối đa 5 lần)</li>
+  <li>Gửi thất bại → User có thể yêu cầu gửi lại qua <code>POST /request-password-reset</code></li>
+  <li>Token/OTP hết hạn → System trả về 400, user yêu cầu gửi lại</li>
+</ul>
 
 <h2>6.4 Luồng Đăng xuất</h2>
 
@@ -386,12 +463,12 @@ PENDING → REVOKED → PENDING (qua gửi lại)</code></pre>
 
 <table class="trace-table">
   <tr><th>Mã Yêu cầu SRS</th><th>Yêu cầu</th><th>Phần TDS</th><th>Quyết định Thiết kế</th></tr>
-  <tr><td><span class="req-id">FR-001</span></td><td>Đăng ký Người dùng</td><td>3.2, 5.1</td><td>AuthController + POST /auth/register</td></tr>
+  <tr><td><span class="req-id">FR-001</span></td><td>Đăng ký Người dùng</td><td>3.2, 5.1, 6.2</td><td>AuthController + POST /auth/register → RabbitMQ (<code>verification.email</code>) → Email Queue Worker → EMAIL module</td></tr>
   <tr><td><span class="req-id">FR-002</span></td><td>Đăng nhập Người dùng</td><td>2.2, 5.1</td><td>Better Auth + JWT + POST /auth/login</td></tr>
   <tr><td><span class="req-id">FR-003</span></td><td>Đăng xuất</td><td>5.1</td><td>POST /auth/logout (xóa phiên)</td></tr>
   <tr><td><span class="req-id">FR-004</span></td><td>Làm mới Token</td><td>2.2, 5.1</td><td>JWT refresh + POST /auth/refresh</td></tr>
-  <tr><td><span class="req-id">FR-005</span></td><td>Đặt lại Mật khẩu (Email)</td><td>5.1</td><td>POST /auth/forgot-password</td></tr>
-  <tr><td><span class="req-id">FR-006</span></td><td>Đặt lại Mật khẩu (Điện thoại)</td><td>5.1</td><td>POST /auth/forgot-password-phone</td></tr>
+  <tr><td><span class="req-id">FR-005</span></td><td>Đặt lại Mật khẩu (Email)</td><td>5.1, 6.3</td><td>POST /auth/forgot-password → RabbitMQ (<code>password.reset.email</code>) → Email Queue Worker → EMAIL module</td></tr>
+  <tr><td><span class="req-id">FR-006</span></td><td>Đặt lại Mật khẩu (Điện thoại)</td><td>5.1, 6.3</td><td>POST /auth/forgot-password-phone → RabbitMQ (<code>password.reset.sms</code>) → SMS Queue Worker → SMS module</td></tr>
   <tr><td><span class="req-id">FR-007</span></td><td>Đổi Mật khẩu</td><td>5.1</td><td>POST /auth/change-password</td></tr>
   <tr><td><span class="req-id">FR-008</span></td><td>Xác minh Email</td><td>5.1</td><td>GET /auth/verify-email</td></tr>
   <tr><td><span class="req-id">FR-009</span></td><td>Xác minh Điện thoại</td><td>5.1</td><td>POST /auth/verify-phone</td></tr>

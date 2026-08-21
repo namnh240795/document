@@ -1,9 +1,6 @@
 @startuml
 ' UC-19: Tính điểm Matching - Sơ đồ Hoạt động
-skinparam dpi 150
-skinparam defaultFontSize 12
-skinparam nodesep 15
-skinparam ranksep 15
+skinparam dpi 200
 skinparam activity {
   BackgroundColor #F8F8F8
   BorderColor #333333
@@ -20,28 +17,23 @@ start
 
 :Lấy tags CV;
 
-if (CV có tag?) then (không)
-  :Điểm = 0%\n"Chưa đủ dữ liệu";
-  stop
+if (CV có tag?) then (có)
+  :Lấy tags Job;
+else (không)
+  :Điểm = 0% "Chưa đủ dữ liệu";
 endif
 
-:Lấy tags Job;
-
-if (Job có tag?) then (không)
-  :Điểm = 0%\n"Chưa đủ dữ liệu";
-  stop
+if (Job có tag?) then (có)
+  if (Đang processing?) then (không)
+    :Tính điểm (required=70% nice_to_have=20% experience=10%);
+    :Lưu recr_match_scores;
+    :Hiển thị điểm % + chi tiết;
+  else (có)
+    :Đang tính toán...;
+  endif
+else (không)
+  :Điểm = 0% "Chưa đủ dữ liệu";
 endif
-
-if (Đang processing?) then (có)
-  :Đang tính toán...;
-  stop
-endif
-
-:Tính điểm\n(required=70%\nnice_to_have=20%\nexperience=10%);
-
-:Lưu recr_match_scores;
-
-:Hiển thị điểm % + chi tiết;
 
 if (HR xem?) then (có)
   :Sắp xếp theo điểm giảm dần;

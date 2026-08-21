@@ -22,7 +22,7 @@
     <img src="assets/agiletech-logo.avif" alt="AgileTech" class="logo">
   </div>
   <div class="logo-right">
-    <img src="assets/pvi-logo.png" alt="PVI" class="logo">
+    <img src="assets/gta-logo.png" alt="PVI" class="logo">
   </div>
 </div>
 
@@ -30,7 +30,7 @@
   <h1>Tài liệu Hệ thống</h1>
   <div class="subtitle"> Authentication System</div>
   <table class="meta-table">
-    <tr><td>Ngày tạo</td><td>2026-08-20</td></tr>
+    <tr><td>Ngày tạo</td><td>2026-08-21</td></tr>
   </table>
 </div>
 
@@ -38,8 +38,8 @@
 <div class="modules-container">
 <div class="module-card">
   <h3><span class="module-badge" style="background:#4CAF50">AUTH</span>  Authentication</h3>
-  <p> User accounts  login  roles  sessions  verification</p>
-  <p>Database: <strong> auth_db</strong> | Tech: NestJS,Better Auth,Drizzle ORM,PostgreSQL</p>
+  <p> User accounts  login  roles  sessions  verification. Runs email/SMS queue workers internally — consumes from RabbitMQ and calls EMAIL/SMS modules for delivery</p>
+  <p>Database: <strong> auth_db</strong> | Tech: NestJS,Better Auth,Drizzle ORM,PostgreSQL,RabbitMQ (amqplib)</p>
   <div class="doc-links">
     <a href="auth/srs.html">SRS</a>
     <a href="auth/tds.html">TDS</a>
@@ -60,8 +60,8 @@
 </div>
 <div class="module-card">
   <h3><span class="module-badge" style="background:#FF9800">EMAIL</span>  Email Notification</h3>
-  <p> Email notification delivery  templating  and audit trail</p>
-  <p>Database: <strong> email_db</strong> | Tech: NestJS,Drizzle ORM,PostgreSQL,RabbitMQ,SendGrid/SMTP</p>
+  <p> Email notification delivery  templating  and audit trail. Provides email sending API (templates  SendGrid/SMTP) — consumed by AUTHs email queue worker</p>
+  <p>Database: <strong> email_db</strong> | Tech: NestJS,Drizzle ORM,PostgreSQL,SendGrid/SMTP</p>
   <div class="doc-links">
     <a href="email/srs.html">SRS</a>
     <a href="email/tds.html">TDS</a>
@@ -113,14 +113,15 @@
 <h1>Giao tiếp giữa các Module</h1>
 <table class="trace-table">
   <tr><th>Từ</th><th>Đến</th><th>Sự kiện</th><th>Giao thức</th><th>Mô tả</th></tr>
-  <tr><td>AUTH</td><td>SMS</td><td><code>verification.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when user requests account verification</td></tr>
-  <tr><td>AUTH</td><td>SMS</td><td><code>verification.resent</code></td><td>RabbitMQ</td><td>AUTH publishes when user resends verification (rate-limited)</td></tr>
-  <tr><td>SMS</td><td>AUTH</td><td><code>verification.delivered</code></td><td>Webhook</td><td>SMS confirms delivery status back to AUTH</td></tr>
   <tr><td>AUTH</td><td>LOG</td><td><code>auth.event.logged</code></td><td>RabbitMQ</td><td>AUTH publishes any auth event (login, logout, register, password change) to Logger</td></tr>
   <tr><td>SMS</td><td>LOG</td><td><code>sms.event.logged</code></td><td>RabbitMQ</td><td>SMS publishes delivery events (sent, delivered, failed) to Logger</td></tr>
   <tr><td>AUTH</td><td>EMAIL</td><td><code>verification.email.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when user requests email verification</td></tr>
   <tr><td>AUTH</td><td>EMAIL</td><td><code>verification.email.resent</code></td><td>RabbitMQ</td><td>AUTH publishes when user resends email verification (rate-limited)</td></tr>
   <tr><td>EMAIL</td><td>AUTH</td><td><code>verification.email.delivered</code></td><td>Webhook</td><td>EMAIL confirms delivery status back to AUTH</td></tr>
+  <tr><td>AUTH</td><td>EMAIL</td><td><code>password.reset.email.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when user requests password reset via email</td></tr>
+  <tr><td>AUTH</td><td>SMS</td><td><code>password.reset.sms.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when user requests password reset via SMS</td></tr>
+  <tr><td>AUTH</td><td>EMAIL</td><td><code>invitation.email.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when admin invites member to organization</td></tr>
+  <tr><td>AUTH</td><td>EMAIL</td><td><code>invitation.email.resent</code></td><td>RabbitMQ</td><td>AUTH publishes when admin resends invitation</td></tr>
   <tr><td>EMAIL</td><td>LOG</td><td><code>email.event.logged</code></td><td>RabbitMQ</td><td>EMAIL publishes email delivery events (sent, delivered, failed) to Logger</td></tr>
   <tr><td>RECR</td><td>EMAIL</td><td><code>application.submitted</code></td><td>RabbitMQ</td><td>RECR publishes when candidate submits application</td></tr>
   <tr><td>RECR</td><td>EMAIL</td><td><code>interview.scheduled</code></td><td>RabbitMQ</td><td>RECR publishes when interview is scheduled</td></tr>
