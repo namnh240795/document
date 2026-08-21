@@ -1,6 +1,6 @@
 # Implementation Status Checklist
 
-Cross-reference of `modules.yaml` features vs actual codebase. Last updated: 2026-08-20.
+Cross-reference of `modules.yaml` features vs actual codebase. Last updated: 2026-08-21.
 
 **Legend:**
 - ✅ Fully implemented and working
@@ -17,7 +17,7 @@ Cross-reference of `modules.yaml` features vs actual codebase. Last updated: 202
 | 2 | User Login | ✅ | ✅ | ✅ | Email/password + Google OAuth |
 | 3 | Phone Verification | ⚠️ | ⚠️ | — | SMS service exists, no Twilio — Discord webhook only |
 | 4 | Email Verification | ✅ | ✅ | ✅ | Verification code via email |
-| 5 | Password Reset | ⚠️ | ❌ | ⚠️ | Frontend modal exists, no backend endpoint |
+| 5 | Password Reset | ✅ | ✅ | ✅ | Email reset via Better Auth (`request-password-reset` / `reset-password`), RabbitMQ + `reset_password` template, sessions revoked. Phone OTP reset (FR-006) not implemented |
 | 6 | Organization Management | ✅ | ✅ | ✅ | Create, list, switch, roles |
 | 7 | Team Management | ✅ | ✅ | ✅ | CRUD within orgs |
 | 8 | Member Invitation | ✅ | ✅ | — | Invite with role assignment |
@@ -102,7 +102,7 @@ Cross-reference of `modules.yaml` features vs actual codebase. Last updated: 202
 | # | Feature | Status | Notes |
 |---|---------|--------|-------|
 | 47 | Job Listings (Public) | ✅ | Hero search, filters, sorting, tabs |
-| 48 | Login Page | ✅ | Email, Google OAuth, role selection |
+| 48 | Login Page | ✅ | Email, Google OAuth, role selection, forgot-password modal |
 | 49 | Registration Page | ✅ | Name, email, password, role |
 | 50 | Candidate Dashboard | ✅ | Stats, recent activity |
 | 51 | Applied Jobs View | ✅ | UI ready, depends on backend |
@@ -173,4 +173,4 @@ Cross-reference of `modules.yaml` features vs actual codebase. Last updated: 202
 3. **Webhook events** — 13 out of 16 events not wired, services exist but don't publish/subscribe
 4. **Twilio integration** — SMS service sends to Discord only
 5. **Elasticsearch** — listed in tech stack for recruitment search, not connected
-6. **Password Reset** — frontend modal exists, no backend flow
+6. **Password reset (phone)** — email reset is live; FR-006 OTP via SMS is not implemented
