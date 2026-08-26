@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thiết kế Cơ sở Dữ liệu - Quản lý Tệp tin (FILE)</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<!-- LOGO HEADER -->
+<div class="logo-header">
+  <div class="logo-left">
+    <img src="../assets/agiletech-logo.avif" alt="AgileTech" class="logo">
+  </div>
+  <div class="logo-right">
+    <img src="../assets/gta-logo.png" alt="GTA" class="logo">
+  </div>
+</div>
+
+<div class="back-link">
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
+</div>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>Tài liệu Thiết kế Cơ sở Dữ liệu</h1>
+  <div class="subtitle">Module Quản lý Tệp tin</div>
+  <span class="module-badge">FILE</span>
+  <table class="meta-table">
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Cổng Thông tin Tuyển dụng</td></tr>
+    <tr><td>Module</td><td>FILE - Quản lý Tệp tin</td></tr>
+    <tr><td>Cơ sở dữ liệu</td><td>file_db</td></tr>
+    <tr><td>ORM</td><td>Drizzle ORM</td></tr>
+    <tr><td>Ngày</td><td>2026-08-17</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Quản lý Tệp tin</a></td></tr>
+  </table>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Mục lục</h2>
+  <ul>
+    <li><a href="#section-1">1. Tổng quan</a></li>
+    <li><a href="#section-2">2. Thiết kế Schema</a></li>
+    <li><a href="#section-3">3. Chỉ mục</a></li>
+    <li><a href="#section-4">4. Di chuyển Dữ liệu</a></li>
+    <li><a href="#section-5">5. Từ điển Dữ liệu</a></li>
+  </ul>
+</div>
+
+<!-- 1. OVERVIEW -->
+<h1 id="section-1">1. Tổng quan</h1>
+
+<h2>1.1 Mục đích</h2>
+<p>Tài liệu này định nghĩa thiết kế cơ sở dữ liệu cho module <strong>Quản lý Tệp tin</strong> (cơ sở dữ liệu: <code>file_db</code>).</p>
+
+<h2>1.2 Yêu cầu được Giải quyết</h2>
+<table class="trace-table">
+  <tr><th>Yêu cầu SRS</th><th>Giải pháp Cơ sở dữ liệu</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Tải lên Tệp tin</td><td>Bảng sys_files (lưu trữ metadata)</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Tải xuống Tệp tin</td><td>Bảng sys_files (tra cứu file_path)</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Liệt kê Tệp tin</td><td>Bảng sys_files (truy vấn với chỉ mục)</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Xóa Tệp tin</td><td>Bảng sys_files (xóa mềm qua status/deleted_at)</td></tr>
+  <tr><td><span class="req-id">FR-008</span> Tạo Thư mục</td><td>Bảng sys_files (type=FOLDER, parent_folder_id)</td></tr>
+  <tr><td><span class="req-id">FR-014</span> Quản lý Quyền</td><td>Bảng sys_file_permissions</td></tr>
+  <tr><td><span class="req-id">FR-016</span> Theo dõi Sử dụng Lưu trữ</td><td>Bảng sys_storage_usage</td></tr>
+  <tr><td><span class="req-id">FR-017</span> Quản lý Hạn ngạch</td><td>Bảng sys_storage_quotas</td></tr>
+  <tr><td><span class="req-id">FR-018</span> Chính sách Lưu trữ</td><td>Bảng sys_storage_policies</td></tr>
+</table>
+
+<h2>1.3 Sơ đồ ERD</h2>
+<div class="diagram">
+  <img src="../images/erd/erd-file.png" alt="Sơ đồ ERD">
+  <div class="caption">Hình 1: ERD Quản lý Tệp tin</div>
+</div>
+
+<!-- 2. SCHEMA DESIGN -->
+<h1 id="section-2">2. Thiết kế Schema</h1>
+
+<h2>2.1 Chiến lược Cơ sở dữ liệu</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Quyết định</th></tr>
+  <tr><td>Cơ sở dữ liệu</td><td><code>file_db</code></td></tr>
+  <tr><td>Đặt tên bảng</td><td><code>sys_&lt;table_name&gt;</code></td></tr>
+  <tr><td>Khóa chính</td><td>UUID (qua gen_random_uuid())</td></tr>
+  <tr><td>Thời gian</td><td>created_at, updated_at với mặc định NOW()</td></tr>
+  <tr><td>Xóa mềm</td><td>Cột deleted_at (NULL = đang hoạt động)</td></tr>
+  <tr><td>Backend Lưu trữ</td><td>Local Filesystem (Multer + fs)</td></tr>
+</table>
+
+<h2>2.2 Metadata Tệp tin & Thư mục</h2>
+<table>
+  <tr><th>Cột</th><th>Loại</th><th>Cho phép NULL</th><th>Mặc định</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>uuid</td><td>KHÔNG</td><td>gen_random_uuid()</td><td>Khóa chính</td></tr>
+  <tr><td>employer_id</td><td>uuid</td><td>CÓ</td><td>NULL</td><td>FK đến sys_employers(id), SET NULL khi xóa</td></tr>
+  <tr><td>user_id</td><td>uuid</td><td>KHÔNG</td><td>-</td><td>FK đến auth_users(id), CASCADE khi xóa</td></tr>
+  <tr><td>parent_folder_id</td><td>uuid</td><td>CÓ</td><td>NULL</td><td>FK đến sys_files(id), thư mục cha (NULL = gốc)</td></tr>
+  <tr><td>type</td><td>varchar(10)</td><td>KHÔNG</td><td>'FILE'</td><td>Loại bản ghi: FILE hoặc FOLDER</td></tr>
+  <tr><td>original_name</td><td>varchar(500)</td><td>KHÔNG</td><td>-</td><td>Tên tệp tin gốc hoặc tên thư mục</td></tr>
+  <tr><td>file_path</td><td>varchar(1000)</td><td>CÓ</td><td>NULL</td><td>Đường dẫn tệp tin trên local filesystem (NULL cho thư mục)</td></tr>
+  <tr><td>mime_type</td><td>varchar(100)</td><td>CÓ</td><td>NULL</td><td>Loại MIME (NULL cho thư mục)</td></tr>
+  <tr><td>file_size</td><td>bigint</td><td>CÓ</td><td>0</td><td>Kích thước tệp tin bằng byte (0 cho thư mục)</td></tr>
+  <tr><td>category</td><td>varchar(50)</td><td>KHÔNG</td><td>'OTHER'</td><td>Phân loại danh mục tệp tin</td></tr>
+  <tr><td>is_public</td><td>boolean</td><td>KHÔNG</td><td>FALSE</td><td>Tệp tin có được truy cập công khai không</td></tr>
+  <tr><td>status</td><td>varchar(20)</td><td>KHÔNG</td><td>'ACTIVE'</td><td>Vòng đời trạng thái tệp tin</td></tr>
+  <tr><td>search_vector</td><td>tsvector</td><td>CÓ</td><td>NULL</td><td>Vector tìm kiếm toàn văn (chỉ tệp tin/thư mục)</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian cập nhật lần cuối</td></tr>
+  <tr><td>deleted_at</td><td>timestamp</td><td>CÓ</td><td>NULL</td><td>Thời gian xóa mềm (NULL = đang hoạt động)</td></tr>
+</table>
+
+<pre><code>CREATE TABLE sys_files (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  employer_id     UUID REFERENCES sys_employers(id) ON DELETE SET NULL,
+  user_id         UUID NOT NULL REFERENCES auth_users(id) ON DELETE CASCADE,
+  parent_folder_id UUID REFERENCES sys_files(id) ON DELETE SET NULL,
+  type            VARCHAR(10) NOT NULL DEFAULT 'FILE',
+  original_name   VARCHAR(500) NOT NULL,
+  file_path       VARCHAR(1000),
+  mime_type       VARCHAR(100),
+  file_size       BIGINT DEFAULT 0,
+  category        VARCHAR(50) NOT NULL DEFAULT 'OTHER',
+  is_public       BOOLEAN NOT NULL DEFAULT FALSE,
+  status          VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  search_vector   TSVECTOR,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  deleted_at      TIMESTAMP,
+  CONSTRAINT sys_files_type_check CHECK (type IN ('FILE', 'FOLDER')),
+  CONSTRAINT sys_files_category_check CHECK (category IN ('RESUME', 'AVATAR', 'COMPANY_DOC', 'JOB_ATTACHMENT', 'OTHER')),
+  CONSTRAINT sys_files_status_check CHECK (status IN ('TEMP', 'ACTIVE', 'DELETED', 'REPLACED'))
+);
+
+-- Thư mục: file_path, mime_type là NULL
+-- Tệp tin: file_path, mime_type không NULL</code></pre>
+
+<h2>2.3 Chiến lược Đường dẫn Lưu trữ</h2>
+<p>Các tệp tin được tổ chức trên local filesystem bằng cấu trúc thư mục phân cấp hỗ trợ đa tenancy và kiểm soát truy cập:</p>
+
+<table>
+  <tr><th>Ngữ cảnh</th><th>Mẫu</th><th>Ví dụ</th></tr>
+  <tr><td>Theo phạm vi Tổ chức</td><td><code>uploads/{user_id}/{category}/{uuid_filename}</code></td><td><code>uploads/user-123/RESUME/a1b2c3d4-resume.pdf</code></td></tr>
+  <tr><td>Người dùng cá nhân</td><td><code>uploads/{user_id}/{category}/{uuid_filename}</code></td><td><code>uploads/user-456/AVATAR/e5f6g7h8-photo.jpg</code></td></tr>
+</table>
+
+<p><strong>Các Thành phần Đường dẫn:</strong></p>
+<ul>
+  <li><strong>Thư mục gốc uploads/:</strong> Thư mục gốc lưu trữ tất cả tệp tin</li>
+  <li><strong>Tiền tố UUID:</strong> Tên tệp tin được tạo để ngăn chặn xung đột (ví dụ: <code>a1b2c3d4-resume.pdf</code>)</li>
+  <li><strong>Thư mục danh mục:</strong> Nhóm tệp tin theo mục đích (RESUME, AVATAR, v.v.)</li>
+  <li><strong>Thư mục Người dùng:</strong> Cách ly tệp tin theo từng user để kiểm soát truy cập</li>
+</ul>
+
+<h2>2.4 Giá trị Enum Danh mục</h2>
+<table>
+  <tr><th>Danh mục</th><th>Mô tả</th><th>Các loại MIME Thông thường</th><th>Kích thước Tối đa</th></tr>
+  <tr><td><code>RESUME</code></td><td>Tệp tin hồ sơ/CV của người dùng</td><td>application/pdf, application/msword</td><td>10 MB</td></tr>
+  <tr><td><code>AVATAR</code></td><td>Ảnh hồ sơ người dùng</td><td>image/jpeg, image/png, image/webp</td><td>5 MB</td></tr>
+  <tr><td><code>COMPANY_DOC</code></td><td>Tài liệu công ty (logo, chứng nhận)</td><td>image/*, application/pdf</td><td>10 MB</td></tr>
+  <tr><td><code>JOB_ATTACHMENT</code></td><td>Đính kèm bài tuyển dụng</td><td>application/pdf, application/msword, image/*</td><td>10 MB</td></tr>
+  <tr><td><code>OTHER</code></td><td>Tệp tin chung/khác</td><td>*</td><td>10 MB</td></tr>
+</table>
+
+<h2>2.5 Vòng đời Trạng thái</h2>
+<table>
+  <tr><th>Trạng thái</th><th>Mô tả</th><th>Chuyển đổi</th></tr>
+  <tr><td><code>TEMP</code></td><td>MultipartFile đã nhận, lưu vào filesystem</td><td>TEMP &rarr; ACTIVE (khi xác nhận), TEMP &rarr; DELETED (khi hết hạn/dọn dẹp)</td></tr>
+  <tr><td><code>ACTIVE</code></td><td>Đã xác nhận tải lên, tệp tin sẵn sàng sử dụng</td><td>ACTIVE &rarr; DELETED (khi người dùng/hệ thống xóa), ACTIVE &rarr; REPLACED (tải lên CV)</td></tr>
+  <tr><td><code>DELETED</code></td><td>Đã xóa mềm, đã xóa vật lý trên filesystem</td><td>DELETED &rarr; (trạng thái kết thúc, dọn dẹp vật lý bởi worker)</td></tr>
+  <tr><td><code>REPLACED</code></td><td>Đã thay thế bởi phiên bản mới hơn (tải lên CV)</td><td>REPLACED &rarr; (trạng thái kết thúc, dọn dẹp vật lý bởi worker)</td></tr>
+</table>
+
+<h2>2.6 Quyền truy cập Tệp tin</h2>
+<table>
+  <tr><th>Cột</th><th>Loại</th><th>Cho phép NULL</th><th>Mặc định</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>uuid</td><td>KHÔNG</td><td>gen_random_uuid()</td><td>Khóa chính</td></tr>
+  <tr><td>file_id</td><td>uuid</td><td>KHÔNG</td><td>-</td><td>FK đến sys_files(id), CASCADE khi xóa</td></tr>
+  <tr><td>user_id</td><td>uuid</td><td>CÓ</td><td>NULL</td><td>FK đến auth_users(id), quyền cấp người dùng</td></tr>
+  <tr><td>role</td><td>varchar(50)</td><td>CÓ</td><td>NULL</td><td>Quyền dựa trên vai trò (ADMIN, HR, MEMBER)</td></tr>
+  <tr><td>org_id</td><td>uuid</td><td>CÓ</td><td>NULL</td><td>Quyền trên toàn tổ chức</td></tr>
+  <tr><td>permission</td><td>varchar(20)</td><td>KHÔNG</td><td>-</td><td>Loại quyền: VIEW, DOWNLOAD, EDIT, DELETE</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian cập nhật lần cuối</td></tr>
+</table>
+
+<pre><code>CREATE TABLE sys_file_permissions (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  file_id         UUID NOT NULL REFERENCES sys_files(id) ON DELETE CASCADE,
+  user_id         UUID REFERENCES auth_users(id) ON DELETE CASCADE,
+  role            VARCHAR(50),
+  org_id          UUID,
+  permission      VARCHAR(20) NOT NULL,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT sys_file_permissions_permission_check CHECK (permission IN ('VIEW', 'DOWNLOAD', 'EDIT', 'DELETE')),
+  CONSTRAINT sys_file_permissions_target_check CHECK (
+    (user_id IS NOT NULL AND role IS NULL AND org_id IS NULL) OR
+    (user_id IS NULL AND role IS NOT NULL AND org_id IS NULL) OR
+    (user_id IS NULL AND role IS NULL AND org_id IS NOT NULL)
+  )
+);
+
+-- Một trong ba: user_id, role, hoặc org_id phải được đặt (không phải nhiều)</code></pre>
+
+<h2>2.7 Thống kê Sử dụng Lưu trữ</h2>
+<table>
+  <tr><th>Cột</th><th>Loại</th><th>Cho phép NULL</th><th>Mặc định</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>uuid</td><td>KHÔNG</td><td>gen_random_uuid()</td><td>Khóa chính</td></tr>
+  <tr><td>user_id</td><td>uuid</td><td>CÓ</td><td>NULL</td><td>FK đến auth_users(id), sử dụng cấp người dùng</td></tr>
+  <tr><td>org_id</td><td>uuid</td><td>CÓ</td><td>NULL</td><td>Sử dụng cấp tổ chức</td></tr>
+  <tr><td>total_size</td><td>bigint</td><td>KHÔNG</td><td>0</td><td>Tổng dung lượng lưu trữ đã sử dụng bằng byte</td></tr>
+  <tr><td>file_count</td><td>integer</td><td>KHÔNG</td><td>0</td><td>Số lượng tệp tin</td></tr>
+  <tr><td>last_calculated_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian tính toán lần cuối</td></tr>
+</table>
+
+<pre><code>CREATE TABLE sys_storage_usage (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id             UUID REFERENCES auth_users(id) ON DELETE CASCADE,
+  org_id              UUID,
+  total_size          BIGINT NOT NULL DEFAULT 0,
+  file_count          INTEGER NOT NULL DEFAULT 0,
+  last_calculated_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT sys_storage_usage_scope_check CHECK (
+    (user_id IS NOT NULL AND org_id IS NULL) OR
+    (user_id IS NULL AND org_id IS NOT NULL)
+  )
+);
+
+CREATE UNIQUE INDEX sys_storage_usage_user_idx ON sys_storage_usage(user_id) WHERE user_id IS NOT NULL;
+CREATE UNIQUE INDEX sys_storage_usage_org_idx ON sys_storage_usage(org_id) WHERE org_id IS NOT NULL;</code></pre>
+
+<h2>2.8 Hạn ngạch Lưu trữ</h2>
+<table>
+  <tr><th>Cột</th><th>Loại</th><th>Cho phép NULL</th><th>Mặc định</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>uuid</td><td>KHÔNG</td><td>gen_random_uuid()</td><td>Khóa chính</td></tr>
+  <tr><td>user_id</td><td>uuid</td><td>CÓ</td><td>NULL</td><td>FK đến auth_users(id), hạn ngạch cấp người dùng</td></tr>
+  <tr><td>org_id</td><td>uuid</td><td>CÓ</td><td>NULL</td><td>Hạn ngạch cấp tổ chức</td></tr>
+  <tr><td>max_total_size</td><td>bigint</td><td>KHÔNG</td><td>-</td><td>Tổng dung lượng tối đa bằng byte</td></tr>
+  <tr><td>max_file_count</td><td>integer</td><td>KHÔNG</td><td>-</td><td>Số lượng tệp tin tối đa</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian cập nhật lần cuối</td></tr>
+</table>
+
+<pre><code>CREATE TABLE sys_storage_quotas (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         UUID REFERENCES auth_users(id) ON DELETE CASCADE,
+  org_id          UUID,
+  max_total_size  BIGINT NOT NULL,
+  max_file_count  INTEGER NOT NULL,
+  created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT sys_storage_quotas_scope_check CHECK (
+    (user_id IS NOT NULL AND org_id IS NULL) OR
+    (user_id IS NULL AND org_id IS NOT NULL)
+  )
+);
+
+CREATE UNIQUE INDEX sys_storage_quotas_user_idx ON sys_storage_quotas(user_id) WHERE user_id IS NOT NULL;
+CREATE UNIQUE INDEX sys_storage_quotas_org_idx ON sys_storage_quotas(org_id) WHERE org_id IS NOT NULL;</code></pre>
+
+<h2>2.9 Chính sách Lưu trữ</h2>
+<table>
+  <tr><th>Cột</th><th>Loại</th><th>Cho phép NULL</th><th>Mặc định</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>uuid</td><td>KHÔNG</td><td>gen_random_uuid()</td><td>Khóa chính</td></tr>
+  <tr><td>category</td><td>varchar(50)</td><td>KHÔNG</td><td>-</td><td>Danh mục tệp tin (duy nhất)</td></tr>
+  <tr><td>allowed_mime_types</td><td>jsonb</td><td>KHÔNG</td><td>-</td><td>Mảng các loại MIME được phép</td></tr>
+  <tr><td>max_file_size</td><td>bigint</td><td>KHÔNG</td><td>-</td><td>Kích thước tệp tin tối đa bằng byte</td></tr>
+  <tr><td>retention_days</td><td>integer</td><td>CÓ</td><td>NULL</td><td>Thời gian lưu trữ bằng ngày (NULL = vĩnh viễn)</td></tr>
+  <tr><td>encryption_enabled</td><td>boolean</td><td>KHÔNG</td><td>FALSE</td><td>Bật mã hóa phía server</td></tr>
+  <tr><td>created_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian tạo</td></tr>
+  <tr><td>updated_at</td><td>timestamp</td><td>KHÔNG</td><td>NOW()</td><td>Thời gian cập nhật lần cuối</td></tr>
+</table>
+
+<pre><code>CREATE TABLE sys_storage_policies (
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  category            VARCHAR(50) NOT NULL UNIQUE,
+  allowed_mime_types  JSONB NOT NULL,
+  max_file_size       BIGINT NOT NULL,
+  retention_days      INTEGER,
+  encryption_enabled  BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at          TIMESTAMP NOT NULL DEFAULT NOW(),
+  updated_at          TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Chính sách mặc định
+INSERT INTO sys_storage_policies (category, allowed_mime_types, max_file_size) VALUES
+  ('RESUME', '["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]', 10485760),
+  ('AVATAR', '["image/jpeg", "image/png", "image/webp"]', 5242880),
+  ('COMPANY_DOC', '["image/*", "application/pdf"]', 10485760),
+  ('JOB_ATTACHMENT', '["application/pdf", "application/msword", "image/*"]', 10485760),
+  ('OTHER', '["*/*"]', 10485760);</code></pre>
+
+<!-- 3. INDEXES -->
+<h1 id="section-3">3. Chỉ mục</h1>
+
+<pre><code>-- sys_files
+CREATE INDEX sys_files_user_id_idx ON sys_files(user_id);
+CREATE INDEX sys_files_employer_id_idx ON sys_files(employer_id);
+CREATE INDEX sys_files_category_idx ON sys_files(category);
+CREATE INDEX sys_files_status_idx ON sys_files(status);
+CREATE INDEX sys_files_created_at_idx ON sys_files(created_at);
+CREATE INDEX sys_files_type_idx ON sys_files(type);
+CREATE INDEX sys_files_parent_folder_id_idx ON sys_files(parent_folder_id);
+
+-- Chỉ mục tổng hợp cho mẫu truy vấn phổ biến (liệt kê tệp tin đang hoạt động theo người dùng và danh mục)
+CREATE INDEX sys_files_user_category_status_idx ON sys_files(user_id, category, status);
+
+-- Chỉ mục tổng hợp cho truy vấn theo phạm vi nhà tuyển dụng
+CREATE INDEX sys_files_employer_category_status_idx ON sys_files(employer_id, category, status);
+
+-- Chỉ mục tổng hợp cho liệt kê thư mục (các mục con của một thư mục)
+CREATE INDEX sys_files_parent_folder_type_idx ON sys_files(parent_folder_id, type, status);
+
+-- Chỉ mục tìm kiếm toàn văn
+CREATE INDEX sys_files_search_idx ON sys_files USING gin(search_vector);
+
+-- Ràng buộc duy nhất trên file_path để ngăn trùng lặp (chỉ cho tệp tin)
+CREATE UNIQUE INDEX sys_files_file_path_unique ON sys_files(file_path) WHERE file_path IS NOT NULL;
+
+-- sys_file_permissions
+CREATE INDEX sys_file_permissions_file_id_idx ON sys_file_permissions(file_id);
+CREATE INDEX sys_file_permissions_user_id_idx ON sys_file_permissions(user_id);
+CREATE INDEX sys_file_permissions_role_idx ON sys_file_permissions(role);
+CREATE INDEX sys_file_permissions_org_id_idx ON sys_file_permissions(org_id);
+
+-- sys_storage_usage
+CREATE INDEX sys_storage_usage_user_id_idx ON sys_storage_usage(user_id);
+CREATE INDEX sys_storage_usage_org_id_idx ON sys_storage_usage(org_id);
+
+-- sys_storage_quotas
+CREATE INDEX sys_storage_quotas_user_id_idx ON sys_storage_quotas(user_id);
+CREATE INDEX sys_storage_quotas_org_id_idx ON sys_storage_quotas(org_id);</code></pre>
+
+<h3>Mẫu Sử dụng Chỉ mục</h3>
+<table>
+  <tr><th>Mẫu Truy vấn</th><th>Chỉ mục Sử dụng</th><th> dòng Ước tính</th></tr>
+  <tr><td>Liệt kê CV của người dùng</td><td>sys_files_user_category_status_idx</td><td>5-20</td></tr>
+  <tr><td>Liệt kê tài liệu nhà tuyển dụng</td><td>sys_files_employer_category_status_idx</td><td>10-50</td></tr>
+  <tr><td>Tìm tệp tin theo ID</td><td>Khóa chính (id)</td><td>1</td></tr>
+  <tr><td>Dọn dẹp các tệp tin TEMP cũ</td><td>sys_files_status_idx + sys_files_created_at_idx</td><td>0-100</td></tr>
+  <tr><td>Liệt kê các tải lên gần đây</td><td>sys_files_created_at_idx</td><td>thay đổi</td></tr>
+</table>
+
+<!-- 4. MIGRATIONS -->
+<h1 id="section-4">4. Di chuyển Dữ liệu</h1>
+
+<h2>4.1 Chiến lược Di chuyển</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Quyết định</th></tr>
+  <tr><td>Công cụ</td><td>Drizzle ORM (drizzle-kit)</td></tr>
+  <tr><td>Cơ sở dữ liệu</td><td>file_db</td></tr>
+  <tr><td>Hoàn nguyên</td><td>Bắt buộc cho mỗi bản di chuyển</td></tr>
+</table>
+
+<h2>4.2 Thứ tự Di chuyển</h2>
+<table>
+  <tr><th>Thứ tự</th><th>Di chuyển</th><th>Mô tả</th></tr>
+  <tr><td>1</td><td>001_create_sys_files</td><td>Tạo bảng sys_files với ràng buộc</td></tr>
+  <tr><td>2</td><td>002_create_indexes</td><td>Tạo tất cả chỉ mục</td></tr>
+  <tr><td>3</td><td>003_add_folder_support</td><td>Thêm các cột parent_folder_id, type, search_vector vào sys_files</td></tr>
+  <tr><td>4</td><td>004_create_sys_file_permissions</td><td>Tạo bảng sys_file_permissions</td></tr>
+  <tr><td>5</td><td>005_create_sys_storage_usage</td><td>Tạo bảng sys_storage_usage</td></tr>
+  <tr><td>6</td><td>006_create_sys_storage_quotas</td><td>Tạo bảng sys_storage_quotas</td></tr>
+  <tr><td>7</td><td>007_create_sys_storage_policies</td><td>Tạo bảng sys_storage_policies với dữ liệu mặc định</td></tr>
+</table>
+
+<!-- 5. DATA DICTIONARY -->
+<h1 id="section-5">5. Từ điển Dữ liệu</h1>
+
+<table class="trace-table">
+  <tr><th>Bảng</th><th>Mô tả</th><th>Giải quyết</th><th> dòng Ước tính (Năm 1)</th></tr>
+  <tr><td>sys_files</td><td>Metadata tệp tin và thư mục, tham chiếu lưu trữ</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-013</span></td><td>150,000</td></tr>
+  <tr><td>sys_file_permissions</td><td>Quyền truy cập chi tiết cho mỗi tệp tin/thư mục</td><td><span class="req-id">FR-014</span></td><td>50,000</td></tr>
+  <tr><td>sys_storage_usage</td><td>Thống kê sử dụng lưu trữ theo người dùng/tổ chức</td><td><span class="req-id">FR-016</span></td><td>10,000</td></tr>
+  <tr><td>sys_storage_quotas</td><td>Cấu hình hạn ngạch lưu trữ theo người dùng/tổ chức</td><td><span class="req-id">FR-017</span></td><td>5,000</td></tr>
+  <tr><td>sys_storage_policies</td><td>Chính sách lưu trữ theo danh mục tệp tin</td><td><span class="req-id">FR-018</span></td><td>5</td></tr>
+</table>
+
+<h3>Ước tính Tăng trưởng Dòng</h3>
+<table>
+  <tr><th>Danh mục Tệp tin</th><th>Kích thước Trung bình (byte)</th><th>Ước tính Dòng/Năm 1</th><th>Lưu trữ (GB)</th></tr>
+  <tr><td>RESUME</td><td>500 KB</td><td>20,000</td><td>10</td></tr>
+  <tr><td>AVATAR</td><td>200 KB</td><td>15,000</td><td>3</td></tr>
+  <tr><td>COMPANY_DOC</td><td>1 MB</td><td>5,000</td><td>5</td></tr>
+  <tr><td>JOB_ATTACHMENT</td><td>800 KB</td><td>10,000</td><td>8</td></tr>
+  <tr><td>OTHER</td><td>500 KB</td><td>5,000</td><td>2.5</td></tr>
+  <tr><td><strong>Tổng cộng</strong></td><td>-</td><td><strong>55,000</strong></td><td><strong>28.5</strong></td></tr>
+</table>
+
+</body>
+</html>

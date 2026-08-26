@@ -22,23 +22,23 @@
     <img src="assets/agiletech-logo.avif" alt="AgileTech" class="logo">
   </div>
   <div class="logo-right">
-    <img src="assets/gta-logo.png" alt="PVI" class="logo">
+    <img src="assets/pvi-logo.png" alt="PVI" class="logo">
   </div>
 </div>
 
 <div class="cover">
   <h1>Tài liệu Hệ thống</h1>
-  <div class="subtitle"> Authentication System</div>
+  <div class="subtitle"> Hệ thống Xác thực</div>
   <table class="meta-table">
-    <tr><td>Ngày tạo</td><td>2026-08-21</td></tr>
+    <tr><td>Ngày tạo</td><td>2026-08-26</td></tr>
   </table>
 </div>
 
 <h1>Modules</h1>
 <div class="modules-container">
 <div class="module-card">
-  <h3><span class="module-badge" style="background:#4CAF50">AUTH</span>  Authentication</h3>
-  <p> User accounts  login  roles  sessions  verification. Runs email/SMS queue workers internally — consumes from RabbitMQ and calls EMAIL/SMS modules for delivery</p>
+  <h3><span class="module-badge" style="background:#4CAF50">AUTH</span>  Xác thực</h3>
+  <p> Quản lý tài khoản người dùng  đăng nhập  vai trò  phiên làm việc  xác minh. Chạy nội bộ các worker hàng đợi email/SMS — tiêu thụ từ RabbitMQ và gọi các module EMAIL/SMS để gửi</p>
   <p>Database: <strong> auth_db</strong> | Tech: NestJS,Better Auth,Drizzle ORM,PostgreSQL,RabbitMQ (amqplib)</p>
   <div class="doc-links">
     <a href="auth/srs.html">SRS</a>
@@ -48,8 +48,8 @@
   </div>
 </div>
 <div class="module-card">
-  <h3><span class="module-badge" style="background:#2196F3">SMS</span>  SMS Service</h3>
-  <p> SMS delivery logging  tracking  and audit trail</p>
+  <h3><span class="module-badge" style="background:#2196F3">SMS</span>  Dịch vụ SMS</h3>
+  <p> Ghi nhật ký gửi SMS  theo dõi và lưu trữ lịch sử kiểm toán</p>
   <p>Database: <strong> sms_db</strong> | Tech: NestJS,Drizzle ORM,PostgreSQL,Twilio</p>
   <div class="doc-links">
     <a href="sms/srs.html">SRS</a>
@@ -59,8 +59,8 @@
   </div>
 </div>
 <div class="module-card">
-  <h3><span class="module-badge" style="background:#FF9800">EMAIL</span>  Email Notification</h3>
-  <p> Email notification delivery  templating  and audit trail. Provides email sending API (templates  SendGrid/SMTP) — consumed by AUTHs email queue worker</p>
+  <h3><span class="module-badge" style="background:#FF9800">EMAIL</span>  Thông báo Email</h3>
+  <p> Gửi thông báo email  quản lý mẫu và lưu trữ lịch sử kiểm toán. Cung cấp API gửi email (mẫu  SendGrid/SMTP) — được worker hàng đợi email của AUTH sử dụng</p>
   <p>Database: <strong> email_db</strong> | Tech: NestJS,Drizzle ORM,PostgreSQL,SendGrid/SMTP</p>
   <div class="doc-links">
     <a href="email/srs.html">SRS</a>
@@ -70,8 +70,8 @@
   </div>
 </div>
 <div class="module-card">
-  <h3><span class="module-badge" style="background:#4CAF50">RECR</span>  Recruitment</h3>
-  <p> End-to-end recruitment management with 3 roles: Candidate  HR  Employer</p>
+  <h3><span class="module-badge" style="background:#4CAF50">RECR</span>  Tuyển dụng</h3>
+  <p> Quản lý tuyển dụng toàn diện với 3 vai trò: Ứng viên  HR  Nhà tuyển dụng</p>
   <p>Database: <strong> recr_db</strong> | Tech: NestJS,Drizzle ORM,PostgreSQL,Elasticsearch,RabbitMQ</p>
   <div class="doc-links">
     <a href="recr/srs.html">SRS</a>
@@ -81,8 +81,8 @@
   </div>
 </div>
 <div class="module-card">
-  <h3><span class="module-badge" style="background:#00BCD4">WALLET</span>  Electronic Wallet</h3>
-  <p> Electronic wallet for payments  deposits  withdrawals  and financial transactions within the recruitment platform</p>
+  <h3><span class="module-badge" style="background:#00BCD4">WALLET</span>  Ví điện tử</h3>
+  <p> Ví điện tử cho thanh toán  nạp tiền  rút tiền và các giao dịch tài chính trong nền tảng tuyển dụng</p>
   <p>Database: <strong> wallet_db</strong> | Tech: NestJS,Drizzle ORM,PostgreSQL,RabbitMQ</p>
   <div class="doc-links">
     <a href="wallet/srs.html">SRS</a>
@@ -92,14 +92,25 @@
   </div>
 </div>
 <div class="module-card">
-  <h3><span class="module-badge" style="background:#607D8B">LOG</span>  Logger</h3>
-  <p> Centralized event logging — receives log events from all services via RabbitMQ  stores in OpenSearch for full-text search  analytics  and dashboards</p>
+  <h3><span class="module-badge" style="background:#607D8B">LOG</span>  Ghi nhật ký</h3>
+  <p> Ghi nhật ký tập trung sự kiện — nhận sự kiện nhật ký từ tất cả dịch vụ qua RabbitMQ  lưu trữ trong OpenSearch để tìm kiếm toàn văn  phân tích và bảng điều khiển</p>
   <p>Database: <strong> opensearch</strong> | Tech: NestJS,RabbitMQ (amqplib),OpenSearch (@opensearch-project/opensearch)</p>
   <div class="doc-links">
     <a href="log/srs.html">SRS</a>
     <a href="log/tds.html">TDS</a>
     <a href="log/database-design.html">Thiết kế Database</a>
     <a href="log/api-technical-spec.html">Spec API</a>
+  </div>
+</div>
+<div class="module-card">
+  <h3><span class="module-badge" style="background:#666666">FILE</span>  Quản lý tệp</h3>
+  <p> Tải lên  tải xuống  liệt kê  quản lý thư mục  phân quyền và quản lý vòng đời tệp với local filesystem. Hỗ trợ thao tác hàng loạt  sao chép/di chuyển tệp  kiểm soát truy cập và hạn ngạch lưu trữ</p>
+  <p>Database: <strong> file_db</strong> | Tech: NestJS,Drizzle ORM,PostgreSQL,Multer (local upload),fs (local filesystem)</p>
+  <div class="doc-links">
+    <a href="file/srs.html">SRS</a>
+    <a href="file/tds.html">TDS</a>
+    <a href="file/database-design.html">Thiết kế Database</a>
+    <a href="file/api-technical-spec.html">Spec API</a>
   </div>
 </div>
 </div>
@@ -113,23 +124,26 @@
 <h1>Giao tiếp giữa các Module</h1>
 <table class="trace-table">
   <tr><th>Từ</th><th>Đến</th><th>Sự kiện</th><th>Giao thức</th><th>Mô tả</th></tr>
-  <tr><td>AUTH</td><td>LOG</td><td><code>auth.event.logged</code></td><td>RabbitMQ</td><td>AUTH publishes any auth event (login, logout, register, password change) to Logger</td></tr>
-  <tr><td>SMS</td><td>LOG</td><td><code>sms.event.logged</code></td><td>RabbitMQ</td><td>SMS publishes delivery events (sent, delivered, failed) to Logger</td></tr>
-  <tr><td>AUTH</td><td>EMAIL</td><td><code>verification.email.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when user requests email verification</td></tr>
-  <tr><td>AUTH</td><td>EMAIL</td><td><code>verification.email.resent</code></td><td>RabbitMQ</td><td>AUTH publishes when user resends email verification (rate-limited)</td></tr>
-  <tr><td>EMAIL</td><td>AUTH</td><td><code>verification.email.delivered</code></td><td>Webhook</td><td>EMAIL confirms delivery status back to AUTH</td></tr>
-  <tr><td>AUTH</td><td>EMAIL</td><td><code>password.reset.email.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when user requests password reset via email</td></tr>
-  <tr><td>AUTH</td><td>SMS</td><td><code>password.reset.sms.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when user requests password reset via SMS</td></tr>
-  <tr><td>AUTH</td><td>EMAIL</td><td><code>invitation.email.requested</code></td><td>RabbitMQ</td><td>AUTH publishes when admin invites member to organization</td></tr>
-  <tr><td>AUTH</td><td>EMAIL</td><td><code>invitation.email.resent</code></td><td>RabbitMQ</td><td>AUTH publishes when admin resends invitation</td></tr>
-  <tr><td>EMAIL</td><td>LOG</td><td><code>email.event.logged</code></td><td>RabbitMQ</td><td>EMAIL publishes email delivery events (sent, delivered, failed) to Logger</td></tr>
-  <tr><td>RECR</td><td>EMAIL</td><td><code>application.submitted</code></td><td>RabbitMQ</td><td>RECR publishes when candidate submits application</td></tr>
-  <tr><td>RECR</td><td>EMAIL</td><td><code>interview.scheduled</code></td><td>RabbitMQ</td><td>RECR publishes when interview is scheduled</td></tr>
-  <tr><td>RECR</td><td>EMAIL</td><td><code>offer.sent</code></td><td>RabbitMQ</td><td>RECR publishes when offer letter is sent</td></tr>
-  <tr><td>RECR</td><td>LOG</td><td><code>recruitment.event.logged</code></td><td>RabbitMQ</td><td>RECR publishes recruitment events (application, interview, offer) to Logger</td></tr>
-  <tr><td>WALLET</td><td>RECR</td><td><code>wallet.payment.completed</code></td><td>RabbitMQ</td><td>WALLET publishes when payment for job posting or featured job is completed</td></tr>
-  <tr><td>WALLET</td><td>LOG</td><td><code>wallet.event.logged</code></td><td>RabbitMQ</td><td>WALLET publishes wallet events (deposit, withdrawal, transfer, payment) to Logger</td></tr>
-  <tr><td>AUTH</td><td>WALLET</td><td><code>user.registered</code></td><td>RabbitMQ</td><td>AUTH publishes when new user registers, WALLET creates wallet</td></tr>
+  <tr><td>AUTH</td><td>LOG</td><td><code>auth.event.logged</code></td><td>RabbitMQ</td><td>AUTH đăng phát bất kỳ sự kiện xác thực nào (đăng nhập, đăng xuất, đăng ký, đổi mật khẩu) đến Logger</td></tr>
+  <tr><td>SMS</td><td>LOG</td><td><code>sms.event.logged</code></td><td>RabbitMQ</td><td>SMS đăng phát sự kiện gửi (đã gửi, đã nhận, thất bại) đến Logger</td></tr>
+  <tr><td>AUTH</td><td>EMAIL</td><td><code>verification.email.requested</code></td><td>RabbitMQ</td><td>AUTH đăng phát khi người dùng yêu cầu xác minh email</td></tr>
+  <tr><td>AUTH</td><td>EMAIL</td><td><code>verification.email.resent</code></td><td>RabbitMQ</td><td>AUTH đăng phát khi người dùng gửi lại email xác minh (giới hạn tốc độ)</td></tr>
+  <tr><td>EMAIL</td><td>AUTH</td><td><code>verification.email.delivered</code></td><td>Webhook</td><td>EMAIL xác nhận trạng thái gửi lại cho AUTH</td></tr>
+  <tr><td>AUTH</td><td>EMAIL</td><td><code>password.reset.email.requested</code></td><td>RabbitMQ</td><td>AUTH đăng phát khi người dùng yêu cầu đặt lại mật khẩu qua email</td></tr>
+  <tr><td>AUTH</td><td>SMS</td><td><code>password.reset.sms.requested</code></td><td>RabbitMQ</td><td>AUTH đăng phát khi người dùng yêu cầu đặt lại mật khẩu qua SMS</td></tr>
+  <tr><td>AUTH</td><td>EMAIL</td><td><code>invitation.email.requested</code></td><td>RabbitMQ</td><td>AUTH đăng phát khi quản trị viên mời thành viên vào tổ chức</td></tr>
+  <tr><td>AUTH</td><td>EMAIL</td><td><code>invitation.email.resent</code></td><td>RabbitMQ</td><td>AUTH đăng phát khi quản trị viên gửi lại lời mời</td></tr>
+  <tr><td>EMAIL</td><td>LOG</td><td><code>email.event.logged</code></td><td>RabbitMQ</td><td>EMAIL đăng phát sự kiện gửi email (đã gửi, đã nhận, thất bại) đến Logger</td></tr>
+  <tr><td>RECR</td><td>EMAIL</td><td><code>application.submitted</code></td><td>RabbitMQ</td><td>RECR đăng phát khi ứng viên nộp đơn ứng tuyển</td></tr>
+  <tr><td>RECR</td><td>EMAIL</td><td><code>interview.scheduled</code></td><td>RabbitMQ</td><td>RECR đăng phát khi phỏng vấn được lên lịch</td></tr>
+  <tr><td>RECR</td><td>EMAIL</td><td><code>offer.sent</code></td><td>RabbitMQ</td><td>RECR đăng phát khi thư lời mời được gửi</td></tr>
+  <tr><td>RECR</td><td>LOG</td><td><code>recruitment.event.logged</code></td><td>RabbitMQ</td><td>RECR đăng phát sự kiện tuyển dụng (đơn ứng tuyển, phỏng vấn, lời mời) đến Logger</td></tr>
+  <tr><td>WALLET</td><td>RECR</td><td><code>wallet.payment.completed</code></td><td>RabbitMQ</td><td>WALLET đăng phát khi thanh toán cho đăng tin tuyển dụng hoặc tin nổi bật hoàn tất</td></tr>
+  <tr><td>WALLET</td><td>LOG</td><td><code>wallet.event.logged</code></td><td>RabbitMQ</td><td>WALLET đăng phát sự kiện ví (nạp tiền, rút tiền, chuyển khoản, thanh toán) đến Logger</td></tr>
+  <tr><td>AUTH</td><td>WALLET</td><td><code>user.registered</code></td><td>RabbitMQ</td><td>AUTH đăng phát khi người dùng mới đăng ký, WALLET tạo ví</td></tr>
+  <tr><td>FILE</td><td>LOG</td><td><code>file.event.logged</code></td><td>RabbitMQ</td><td>FILE đăng phát sự kiện truy cập tệp tin (xem, tải xuống, sửa, xóa) đến Logger để kiểm toán</td></tr>
+  <tr><td>FILE</td><td>FILE</td><td><code>file.deleted</code></td><td>RabbitMQ</td><td>FILE đăng phát khi tệp tin bị xóa mềm, FileWorker tiêu thụ để xóa vật lý trên S3</td></tr>
+  <tr><td>FILE</td><td>FILE</td><td><code>file.temp_cleanup</code></td><td>RabbitMQ</td><td>FILE đăng phát khi tệp tin tạm hết hạn bị dọn dẹp, FileWorker tiêu thụ để xóa vật lý trên S3</td></tr>
 </table>
 
 </body>
