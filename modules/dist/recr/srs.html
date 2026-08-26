@@ -1987,7 +1987,7 @@
   <tr><td>FR-004</td><td>Nộp Hồ sơ Ứng tuyển</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>POST /recr/applications</td></tr>
   <tr><td>FR-005</td><td>Xem Trạng thái Hồ sơ</td><td>Candidate</td><td>3.1</td><td>recr_applications</td><td>GET /recr/candidate/applications</td></tr>
   <tr><td>FR-006</td><td>Cập nhật Hồ sơ</td><td>Candidate</td><td>3.1</td><td>recr_candidates</td><td>PATCH /recr/candidate/profile</td></tr>
-  <tr><td>FR-007</td><td>Tải lên Hồ sơ</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files (FILE)</td><td>POST /recr/candidate/resume</td></tr>
+  <tr><td>FR-007</td><td>Tải lên Hồ sơ</td><td>Candidate</td><td>3.1</td><td>recr_candidate_resumes, sys_files</td><td>POST /recr/candidate/resume</td></tr>
   <tr><td>FR-008</td><td>Duyệt Hồ sơ Ứng tuyển</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>GET /recr/hr/applications</td></tr>
   <tr><td>FR-009</td><td>Sàng lọc Ứng viên</td><td>HR</td><td>3.2</td><td>recr_applications</td><td>PATCH /recr/hr/applications/:id/status</td></tr>
   <tr><td>FR-010</td><td>Lên lịch Phỏng vấn</td><td>HR</td><td>3.2</td><td>recr_interviews</td><td>POST /recr/hr/interviews</td></tr>
@@ -2021,13 +2021,13 @@
   <tr><td>FR-044</td><td>Thu hồi Lời mời</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>DELETE /recr/invitations/:id</td></tr>
   <tr><td>FR-045</td><td>Liệt kê Lời mời</td><td>HR/Employer</td><td>3.18</td><td>recr_invitations</td><td>GET /recr/invitations</td></tr>
   <tr><td>FR-046</td><td>Gửi lại Lời mời</td><td>HR/Employer</td><td>3.21</td><td>recr_invitations</td><td>POST /recr/invitations/:id/resend</td></tr>
-  <tr><td>FR-047</td><td>Cấu hình Webhook</td><td>HR/Employer</td><td>3.16</td><td>recr_webhook_configs</td><td>GET/PUT /recr/settings/webhook, POST /recr/settings/webhook/test</td></tr>
-  <tr><td>FR-010</td><td>Trích xuất Skills từ CV</td><td>Candidate / Hệ thống</td><td>3.17</td><td>recr_resume_skills</td><td>GET/POST/PATCH/DELETE /recr/candidate/resumes/:id/skills</td></tr>
-  <tr><td>FR-049</td><td>Trích xuất Skills từ JD</td><td>HR/Employer / Hệ thống</td><td>3.18</td><td>recr_job_skills, recr_skills_taxonomy</td><td>POST /recr/hr/jobs/:id/analyze, GET/PATCH /recr/hr/jobs/:id/skills</td></tr>
-  <tr><td>FR-050</td><td>Tính điểm Matching</td><td>Hệ thống / HR / Candidate</td><td>3.19</td><td>recr_match_scores</td><td>GET /recr/candidate/jobs/:id/match-score, GET /recr/hr/jobs/:id/applicants?sort=match_score</td></tr>
+  <tr><td>FR-047</td><td>Cấu hình Webhook</td><td>HR/Employer</td><td>3.16</td><td>recr_webhook_configs</td><td>GET/PUT /recr/settings/webhook</td></tr>
+  <tr><td>FR-010</td><td>Trích xuất Skills từ CV</td><td>Candidate / Hệ thống</td><td>3.17</td><td>recr_resume_skills</td><td>GET/POST/PATCH/DELETE .../resumes/:id/skills</td></tr>
+  <tr><td>FR-049</td><td>Trích xuất Skills từ JD</td><td>HR/Employer / Hệ thống</td><td>3.18</td><td>recr_job_skills, recr_skills_taxonomy</td><td>POST .../hr/jobs/:id/analyze</td></tr>
+  <tr><td>FR-050</td><td>Tính điểm Matching</td><td>Hệ thống / HR / Candidate</td><td>3.19</td><td>recr_match_scores</td><td>GET .../jobs/:id/match-score</td></tr>
   <tr><td>FR-051</td><td>Từ điển Skills chuẩn</td><td>Hệ thống</td><td>3.17, 3.18</td><td>recr_skills_taxonomy</td><td>GET /recr/skills/taxonomy</td></tr>
   <tr><td>FR-052</td><td>Mở để tìm việc</td><td>Candidate</td><td>3.20</td><td>recr_candidates</td><td>PATCH /recr/candidate/profile/open-to-work</td></tr>
-  <tr><td>FR-053</td><td>Gợi ý Ứng viên cho Job mới</td><td>Hệ thống / HR</td><td>3.20</td><td>recr_job_suggestions</td><td>GET /recr/hr/jobs/:id/suggestions, PATCH /recr/hr/suggestions/:id</td></tr>
+  <tr><td>FR-053</td><td>Gợi ý Ứng viên cho Job mới</td><td>Hệ thống / HR</td><td>3.20</td><td>recr_job_suggestions</td><td>GET/PUT .../hr/jobs/:id/suggestions</td></tr>
   <tr><td>FR-054</td><td>Phân tích Tương tác Ứng viên</td><td>Admin, HR, Employer</td><td>3.21</td><td>recr_candidate_resumes, recr_applications</td><td>GET /recr/analytics/candidate-activity</td></tr>
   <tr><td>FR-055</td><td>Tỷ lệ Ứng tuyển Thành công</td><td>Admin, HR, Employer</td><td>3.21</td><td>recr_applications</td><td>GET /recr/analytics/application-success-rate</td></tr>
   <tr><td>FR-056</td><td>Xuất Báo cáo Ứng viên</td><td>Admin, HR, Employer</td><td>3.21</td><td>recr_candidate_resumes, recr_applications</td><td>GET /recr/analytics/export</td></tr>
