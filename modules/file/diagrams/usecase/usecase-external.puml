@@ -1,5 +1,5 @@
 @startuml File Management - External Systems
-title Trường hợp Sử dụng &mdash; Hệ thống Bên ngoài
+title Trường hợp Sử dụng — Hệ thống Bên ngoài
 
 skinparam packageStyle rectangle
 skinparam defaultTextAlignment center
@@ -9,7 +9,7 @@ skinparam rectangleFontSize 13
 skinparam shadowing false
 skinparam nodesep 50
 skinparam ranksep 40
-skinparam padding 5
+skinparam rectanglePadding 5
 
 left to right direction
 

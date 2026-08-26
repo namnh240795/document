@@ -286,13 +286,28 @@ hr {
 @media print {
   *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
   body { padding: 0; max-width: none; font-size: 12px; }
-  h1 { page-break-before: always; }
+
+  /* Headings: avoid orphaned at bottom, keep attached to next content */
+  h1, h2, h3, h4 { page-break-after: avoid; orphans: 3; widows: 3; }
   h1:first-of-type { page-break-before: avoid; }
-  .diagram { page-break-inside: avoid; }
+
+  /* Prevent big blank gaps: only break before h2 when there's enough content above */
+  h2 { page-break-before: auto; }
+
+  /* Keep heading + diagram together on same page */
+  h3 + .diagram, h4 + .diagram, h2 + .diagram, p + .diagram { page-break-before: avoid !important; }
+  .diagram { page-break-inside: auto !important; margin: 8px 0 !important; }
+  .diagram img { max-height: 220mm; max-width: 80%; }
   table { page-break-inside: avoid; }
   pre { white-space: pre-wrap; word-wrap: break-word; }
   .toc { page-break-inside: avoid; }
   .logo-header { page-break-inside: avoid; }
+
+  /* Reduce spacing to fit more content per page */
+  h1 { margin: 15px 0 10px; }
+  h2 { margin: 12px 0 8px; }
+  h3 { margin: 10px 0 6px; }
+  .section { margin-bottom: 10px; }
 }
 
 @page {

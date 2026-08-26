@@ -1,43 +1,56 @@
 @startuml ERD File Management
 title ERD - Quản lý Tệp tin (file_db)
 
-skinparam classFontSize 10
-skinparam classAttributeFontSize 9
-skinparam nodesep 15
-skinparam ranksep 15
-
+skinparam classFontSize 12
+skinparam classAttributeFontSize 10
+skinparam classAttributeIconSize 0
+skinparam nodesep 30
+skinparam ranksep 20
 skinparam linetype ortho
 skinparam shadowing false
-skinparam classFontSize 12
-skinparam classAttributeFontSize 11
+skinparam class<<Core>> {
+  BackgroundColor<<Core>> #E8F5E9
+  BorderColor<<Core>> #4CAF50
+}
+skinparam class<<Stats>> {
+  BackgroundColor<<Stats>> #E3F2FD
+  BorderColor<<Stats>> #2196F3
+}
+skinparam class<<Config>> {
+  BackgroundColor<<Config>> #FFF8E1
+  BorderColor<<Config>> #FFC107
+}
+skinparam class<<External>> {
+  BackgroundColor<<External>> #FFEBEE
+  BorderColor<<External>> #F44336
+}
 
-' === External references ===
-class auth_users <<(E,#FFAAAA) External >> {
+' === External Reference ===
+class auth_users <<External>> <<E>> {
   id : UUID PK
 }
 
 ' === Core Tables ===
-
-class sys_files <<(T,#AAFFAA) Core >> {
+class sys_files <<Core>> <<T>> {
   id : UUID PK
   employer_id : UUID FK
   user_id : UUID FK NOT NULL
   parent_folder_id : UUID FK (self)
-  type : VARCHAR(10) NOT NULL = 'FILE'
+  type : VARCHAR(10) NOT NULL
   original_name : VARCHAR(500) NOT NULL
   file_path : VARCHAR(1000)
   mime_type : VARCHAR(100)
-  file_size : BIGINT = 0
-  category : VARCHAR(50) NOT NULL = 'OTHER'
-  is_public : BOOLEAN NOT NULL = FALSE
-  status : VARCHAR(20) NOT NULL = 'ACTIVE'
+  file_size : BIGINT DEFAULT 0
+  category : VARCHAR(50) NOT NULL
+  is_public : BOOLEAN NOT NULL
+  status : VARCHAR(20) NOT NULL
   search_vector : TSVECTOR
   created_at : TIMESTAMP NOT NULL
   updated_at : TIMESTAMP NOT NULL
   deleted_at : TIMESTAMP
 }
 
-class sys_file_permissions <<(T,#AAFFAA) Core >> {
+class sys_file_permissions <<Core>> <<T>> {
   id : UUID PK
   file_id : UUID FK NOT NULL
   user_id : UUID FK
@@ -48,16 +61,18 @@ class sys_file_permissions <<(T,#AAFFAA) Core >> {
   updated_at : TIMESTAMP NOT NULL
 }
 
-class sys_storage_usage <<(T,#AAAAFF) Stats >> {
+' === Stats Tables ===
+class sys_storage_usage <<Stats>> <<T>> {
   id : UUID PK
   user_id : UUID FK
   org_id : UUID
-  total_size : BIGINT NOT NULL = 0
-  file_count : INTEGER NOT NULL = 0
+  total_size : BIGINT NOT NULL
+  file_count : INTEGER NOT NULL
   last_calculated_at : TIMESTAMP NOT NULL
 }
 
-class sys_storage_quotas <<(T,#AAAAFF) Config >> {
+' === Config Tables ===
+class sys_storage_quotas <<Config>> <<T>> {
   id : UUID PK
   user_id : UUID FK
   org_id : UUID
@@ -67,55 +82,42 @@ class sys_storage_quotas <<(T,#AAAAFF) Config >> {
   updated_at : TIMESTAMP NOT NULL
 }
 
-class sys_storage_policies <<(T,#FFFFAA) Config >> {
+class sys_storage_policies <<Config>> <<T>> {
   id : UUID PK
   category : VARCHAR(50) NOT NULL UNIQUE
   allowed_mime_types : JSONB NOT NULL
   max_file_size : BIGINT NOT NULL
   retention_days : INTEGER
-  encryption_enabled : BOOLEAN NOT NULL = FALSE
+  encryption_enabled : BOOLEAN NOT NULL
   created_at : TIMESTAMP NOT NULL
   updated_at : TIMESTAMP NOT NULL
 }
 
 ' === Relationships ===
-
-' sys_files -> auth_users (owner)
 sys_files }o--|| auth_users : user_id
-
-' sys_files -> sys_files (self-referencing for folders)
 sys_files }o--o{ sys_files : parent_folder_id
-
-' sys_file_permissions -> sys_files
 sys_file_permissions }o--|| sys_files : file_id
-
-' sys_file_permissions -> auth_users (optional)
 sys_file_permissions }o--o| auth_users : user_id
-
-' sys_storage_usage -> auth_users (optional)
 sys_storage_usage }o--o| auth_users : user_id
-
-' sys_storage_quotas -> auth_users (optional)
 sys_storage_quotas }o--o| auth_users : user_id
 
 ' === Notes ===
-
 note top of sys_files
-  Lưu cả bản ghi FILE và FOLDER.
-  parent_folder_id hỗ trợ cấu trúc thư mục phân cấp.
+  FILE hoặc FOLDER.
+  parent_folder_id hỗ trợ thư mục phân cấp.
   Trạng thái: TEMP → ACTIVE → DELETED | REPLACED
   Danh mục: RESUME, AVATAR, COMPANY_DOC, JOB_ATTACHMENT, OTHER
 end note
 
 note top of sys_file_permissions
   Chính xác một trong ba: user_id, role, hoặc org_id
-  (được enforced bởi CHECK constraint)
-  Loại quyền: VIEW, DOWNLOAD, EDIT, DELETE
+  (CHECK constraint)
+  Quyền: VIEW, DOWNLOAD, EDIT, DELETE
 end note
 
 note right of sys_storage_usage
-  Được tính toán bởi cron job (mỗi giờ).
-  Phạm vi: theo người dùng HOẶC theo tổ chức (không cả hai).
+  Tính bởi cron job (mỗi giờ).
+  Phạm vi: user HOẶC org (không cả hai).
 end note
 
 note right of sys_storage_policies
