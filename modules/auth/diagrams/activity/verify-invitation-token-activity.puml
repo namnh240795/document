@@ -13,6 +13,13 @@ skinparam activity {
 
 title Xác minh Token Lời mời
 
+skinparam activityFontSize 11
+skinparam activityPadding 5
+skinparam activityBorderThickness 1
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
 start
 
 :Người dùng nhấp liên kết lời mời\ntrong email;

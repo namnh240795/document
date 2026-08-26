@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Software Requirements Specification - File Management (FILE)</title>
+  <title>Đặc tả Yêu cầu Phần mềm - Quản lý Tệp tin (FILE)</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,343 +18,713 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1 id="page-title">Software Requirements Specification</h1>
-  <div class="subtitle">File Management Module</div>
+  <h1 id="page-title">Đặc tả Yêu cầu Phần mềm</h1>
+  <div class="subtitle">Module Quản lý Tệp tin</div>
   <span class="module-badge">FILE</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>Job Portal System</td></tr>
-    <tr><td>Module</td><td>FILE - File Management</td></tr>
-    <tr><td>Database</td><td>file_db</td></tr>
-    <tr><td>Date</td><td>2026-08-17</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Status</td><td>Draft</td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Cổng Thông tin Tuyển dụng</td></tr>
+    <tr><td>Module</td><td>FILE - Quản lý Tệp tin</td></tr>
+    <tr><td>Cơ sở dữ liệu</td><td>file_db</td></tr>
+    <tr><td>Ngày</td><td>2026-08-17</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>Trạng thái</td><td>Bản nháp</td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Introduction</a>
+    <li><a href="#section-1">1. Giới thiệu</a>
       <ul>
-        <li><a href="#section-1-1">1.1 Purpose</a></li>
-        <li><a href="#section-1-2">1.2 Scope</a></li>
-        <li><a href="#section-1-3">1.3 Module Dependencies</a></li>
-        <li><a href="#section-1-4">1.4 Definitions</a></li>
+        <li><a href="#section-1-1">1.1 Mục đích</a></li>
+        <li><a href="#section-1-2">1.2 Phạm vi</a></li>
+        <li><a href="#section-1-3">1.3 Phụ thuộc Module</a></li>
+        <li><a href="#section-1-4">1.4 Định nghĩa</a></li>
       </ul>
     </li>
-    <li><a href="#section-2">2. Module Overview</a></li>
-    <li><a href="#section-3">3. Functional Requirements</a>
+    <li><a href="#section-2">2. Tổng quan Module</a></li>
+    <li><a href="#section-3">3. Yêu cầu Chức năng</a>
       <ul>
-        <li><a href="#fr-001">FR-001: Upload File</a></li>
-        <li><a href="#fr-002">FR-002: Download File</a></li>
-        <li><a href="#fr-003">FR-003: List Files</a></li>
-        <li><a href="#fr-004">FR-004: Delete File</a></li>
-        <li><a href="#fr-005">FR-005: File Access Control</a></li>
-        <li><a href="#fr-006">FR-006: Temp File Cleanup</a></li>
+        <li><a href="#fr-001">FR-001: Tải lên Tệp tin</a></li>
+        <li><a href="#fr-002">FR-002: Tải xuống Tệp tin</a></li>
+        <li><a href="#fr-003">FR-003: Liệt kê Tệp tin</a></li>
+        <li><a href="#fr-004">FR-004: Xóa Tệp tin</a></li>
+        <li><a href="#fr-005">FR-005: Kiểm soát Truy cập Tệp tin</a></li>
+        <li><a href="#fr-006">FR-006: Dọn dẹp Tệp tin Tạm</a></li>
+        <li><a href="#fr-007">FR-007: Tải lên CV/Hồ sơ</a></li>
+        <li><a href="#fr-008">FR-008: Tạo Thư mục</a></li>
+        <li><a href="#fr-009">FR-009: Tìm kiếm Tệp tin/Thư mục</a></li>
+        <li><a href="#fr-010">FR-010: Đổi tên Tệp tin/Thư mục</a></li>
+        <li><a href="#fr-011">FR-011: Tải lên Nhiều Tệp tin</a></li>
+        <li><a href="#fr-012">FR-012: Sao chép Tệp tin</a></li>
+        <li><a href="#fr-013">FR-013: Di chuyển Tệp tin</a></li>
+        <li><a href="#fr-014">FR-014: Quản lý Quyền</a></li>
+        <li><a href="#fr-015">FR-015: Ghi nhật ký Lịch sử Truy cập</a></li>
+        <li><a href="#fr-016">FR-016: Theo dõi Sử dụng Lưu trữ</a></li>
+        <li><a href="#fr-017">FR-017: Quản lý Hạn ngạch Lưu trữ</a></li>
+        <li><a href="#fr-018">FR-018: Cấu hình Chính sách Lưu trữ</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. Use Cases</a>
+    <li><a href="#section-4">4. Trường hợp Sử dụng</a>
       <ul>
-        <li><a href="#section-4-0">4.0 Use Case Diagram</a></li>
-        <li><a href="#uc-01">4.1 UC-01: Upload File</a></li>
-        <li><a href="#uc-02">4.2 UC-02: Download/View File</a></li>
-        <li><a href="#uc-03">4.3 UC-03: List User Files</a></li>
-        <li><a href="#uc-04">4.4 UC-04: Delete File</a></li>
+        <li><a href="#section-4-1">4.1 Sơ đồ Trường hợp Sử dụng</a></li>
+        <li><a href="#uc-01">4.2 UC-01: Tạo Thư mục</a></li>
+        <li><a href="#uc-02">4.3 UC-02: Liệt kê Tệp tin/Thư mục</a></li>
+        <li><a href="#uc-03">4.4 UC-03: Tìm kiếm Tệp tin/Thư mục</a></li>
+        <li><a href="#uc-04">4.5 UC-04: Xem & Đổi tên Tệp tin/Thư mục</a></li>
+        <li><a href="#uc-05">4.6 UC-05: Tải lên Tệp tin</a></li>
+        <li><a href="#uc-06">4.7 UC-06: Tải xuống Tệp tin</a></li>
+        <li><a href="#uc-07">4.8 UC-07: Tải lên Nhiều Tệp tin</a></li>
+        <li><a href="#uc-08">4.9 UC-08: Sao chép Tệp tin</a></li>
+        <li><a href="#uc-09">4.10 UC-09: Xóa Tệp tin/Thư mục</a></li>
+        <li><a href="#uc-10">4.11 UC-10: Di chuyển Tệp tin</a></li>
+        <li><a href="#uc-11">4.12 UC-11: Kiểm tra Quyền Truy cập</a></li>
+        <li><a href="#uc-12">4.13 UC-12: Ghi nhật ký Lịch sử Truy cập</a></li>
+        <li><a href="#uc-13">4.14 UC-13: Quản lý Quyền</a></li>
+        <li><a href="#uc-14">4.15 UC-14: Theo dõi Sử dụng Lưu trữ</a></li>
+        <li><a href="#uc-15">4.16 UC-15: Quản lý Cấu trúc Thư mục</a></li>
+        <li><a href="#uc-16">4.17 UC-16: Quản lý Hạn ngạch Lưu trữ</a></li>
+        <li><a href="#uc-17">4.18 UC-17: Cấu hình Chính sách Lưu trữ</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">5. Non-Functional Requirements</a>
+    <li><a href="#section-5">5. Yêu cầu Phi chức năng</a>
       <ul>
-        <li><a href="#nfr-001">NFR-001: Performance</a></li>
-        <li><a href="#nfr-002">NFR-002: Security</a></li>
-        <li><a href="#nfr-003">NFR-003: Availability</a></li>
-        <li><a href="#nfr-004">NFR-004: Scalability</a></li>
+        <li><a href="#nfr-001">NFR-001: Hiệu suất</a></li>
+        <li><a href="#nfr-002">NFR-002: Bảo mật</a></li>
+        <li><a href="#nfr-003">NFR-003: Khả dụng</a></li>
+        <li><a href="#nfr-004">NFR-004: Khả năng mở rộng</a></li>
+        <li><a href="#nfr-005">NFR-005: Giới hạn Kích thước Tệp tin</a></li>
+        <li><a href="#nfr-006">NFR-006: Dọn dẹp Tệp tin Tạm</a></li>
+        <li><a href="#nfr-007">NFR-007: Hiệu suất Tìm kiếm</a></li>
+        <li><a href="#nfr-008">NFR-008: Hiệu suất Tải lên Hàng loạt</a></li>
+        <li><a href="#nfr-009">NFR-009: Độ trễ Kiểm soát Truy cập</a></li>
+        <li><a href="#nfr-010">NFR-010: Thời gian Lưu trữ Nhật ký</a></li>
+        <li><a href="#nfr-011">NFR-011: Độ chính xác Theo dõi Lưu trữ</a></li>
       </ul>
     </li>
-    <li><a href="#section-6">6. Traceability Matrix</a>
+    <li><a href="#section-6">6. Ma trận Truy xuất Nguồn gốc</a>
       <ul>
-        <li><a href="#trace-fr-001">FR-001: Upload File</a></li>
-        <li><a href="#trace-fr-002">FR-002: Download File</a></li>
-        <li><a href="#trace-fr-003">FR-003: List Files</a></li>
-        <li><a href="#trace-fr-004">FR-004: Delete File</a></li>
-        <li><a href="#trace-fr-005">FR-005: File Access Control</a></li>
-        <li><a href="#trace-fr-006">FR-006: Temp File Cleanup</a></li>
+        <li><a href="#trace-fr-001">FR-001: Tải lên Tệp tin</a></li>
+        <li><a href="#trace-fr-002">FR-002: Tải xuống Tệp tin</a></li>
+        <li><a href="#trace-fr-003">FR-003: Liệt kê Tệp tin</a></li>
+        <li><a href="#trace-fr-004">FR-004: Xóa Tệp tin</a></li>
+        <li><a href="#trace-fr-005">FR-005: Kiểm soát Truy cập Tệp tin</a></li>
+        <li><a href="#trace-fr-006">FR-006: Dọn dẹp Tệp tin Tạm</a></li>
+        <li><a href="#trace-fr-007">FR-007: Tải lên CV/Hồ sơ</a></li>
+        <li><a href="#trace-fr-008">FR-008: Tạo Thư mục</a></li>
+        <li><a href="#trace-fr-009">FR-009: Tìm kiếm Tệp tin/Thư mục</a></li>
+        <li><a href="#trace-fr-010">FR-010: Đổi tên Tệp tin/Thư mục</a></li>
+        <li><a href="#trace-fr-011">FR-011: Tải lên Nhiều Tệp tin</a></li>
+        <li><a href="#trace-fr-012">FR-012: Sao chép Tệp tin</a></li>
+        <li><a href="#trace-fr-013">FR-013: Di chuyển Tệp tin</a></li>
+        <li><a href="#trace-fr-014">FR-014: Quản lý Quyền</a></li>
+        <li><a href="#trace-fr-015">FR-015: Ghi nhật ký Lịch sử Truy cập</a></li>
+        <li><a href="#trace-fr-016">FR-016: Theo dõi Sử dụng Lưu trữ</a></li>
+        <li><a href="#trace-fr-017">FR-017: Quản lý Hạn ngạch Lưu trữ</a></li>
+        <li><a href="#trace-fr-018">FR-018: Cấu hình Chính sách Lưu trữ</a></li>
       </ul>
     </li>
   </ul>
 </div>
 
 <!-- 1. INTRODUCTION -->
-<h1 id="section-1">1. Introduction</h1>
+<h1 id="section-1">1. Giới thiệu</h1>
 
-<h2 id="section-1-1">1.1 Purpose</h2>
-<p>This document defines the software requirements for the <strong>File Management</strong> module of the Job Portal System.</p>
+<h2 id="section-1-1">1.1 Mục đích</h2>
+<p>Tài liệu này định nghĩa các yêu cầu phần mềm cho module <strong>Quản lý Tệp tin</strong> của Hệ thống Cổng Thông tin Tuyển dụng.</p>
 
-<h2 id="section-1-2">1.2 Scope</h2>
-<p>The File Management module handles:</p>
+<h2 id="section-1-2">1.2 Phạm vi</h2>
+<p>Module Quản lý Tệp tin xử lý:</p>
 <ul>
-  <li>File upload via presigned URLs (client-side direct upload to S3)</li>
-  <li>File download via presigned URLs with expiration</li>
-  <li>File listing with filtering by user, employer, and category</li>
-  <li>Soft delete with event-driven S3 cleanup</li>
-  <li>File access control based on ownership and RBAC</li>
-  <li>Automatic cleanup of temporary/orphaned files</li>
+  <li>Tải lên tệp tin qua multipart/form-data, lưu vào local filesystem</li>
+  <li>Tải xuống tệp tin trực tiếp từ server</li>
+  <li>Liệt kê tệp tin với bộ lọc theo người dùng, nhà tuyển dụng và danh mục</li>
+  <li>Xóa mềm với xóa vật lý trên filesystem</li>
+  <li>Kiểm soát truy cập tệp tin dựa trên quyền sở hữu và RBAC</li>
+  <li>Tự động dọn dẹp các tệp tin tạm thời/bị bỏ rơi</li>
+  <li>Tạo thư mục và quản lý cấu trúc thư mục</li>
+  <li>Tìm kiếm tệp tin/thư mục với tìm kiếm toàn văn và lọc metadata</li>
+  <li>Đổi tên tệp tin/thư mục với xử lý tên trùng lặp</li>
+  <li>Tải lên nhiều tệp tin (tải lên hàng loạt)</li>
+  <li>Sao chép tệp tin giữa các thư mục</li>
+  <li>Di chuyển tệp tin giữa các thư mục</li>
+  <li>Quản lý quyền (xem/sửa/xóa) theo người dùng/vai trò/tổ chức</li>
+  <li>Ghi nhật ký lịch sử truy cập để kiểm toán</li>
+  <li>Theo dõi sử dụng lưu trữ và quản lý hạn ngạch</li>
+  <li>Cấu hình chính sách lưu trữ</li>
+  <li>Phiên bản hóa tệp tin</li>
 </ul>
 
-<h2 id="section-1-3">1.3 Module Dependencies</h2>
+<h2 id="section-1-3">1.3 Phụ thuộc Module</h2>
 <table>
-  <tr><th>Module</th><th>Dependency Type</th><th>Description</th></tr>
-  <tr><td>AUTH</td><td>Sync (API call)</td><td>Validate user identity and RBAC permissions</td></tr>
-  <tr><td>RECR</td><td>Sync (API call)</td><td>Access employer context for organization-scoped files</td></tr>
-  <tr><td>LOG</td><td>Async (RabbitMQ)</td><td>Publish file lifecycle events (uploaded, deleted)</td></tr>
+  <tr><th>Module</th><th>Loại Phụ thuộc</th><th>Mô tả</th></tr>
+  <tr><td>AUTH</td><td>Đồng bộ (Gọi API)</td><td>Xác thực danh tính người dùng và quyền RBAC</td></tr>
+  <tr><td>LOG</td><td>Bất đồng bộ (RabbitMQ)</td><td>Phát sự kiện vòng đời tệp tin (đã tải lên, đã xóa)</td></tr>
 </table>
 
-<h2 id="section-1-4">1.4 Definitions</h2>
+<h2 id="section-1-4">1.4 Định nghĩa</h2>
 <table>
-  <tr><th>Term</th><th>Definition</th></tr>
-  <tr><td>FR</td><td>Functional Requirement</td></tr>
-  <tr><td>NFR</td><td>Non-Functional Requirement</td></tr>
-  <tr><td>UC</td><td>Use Case</td></tr>
-  <tr><td>S3</td><td>Amazon Simple Storage Service</td></tr>
-  <tr><td>Presigned URL</td><td>A URL that grants temporary access to a private S3 object</td></tr>
-  <tr><td>MIME Type</td><td>Multipurpose Internet Mail Extensions - file type identifier</td></tr>
-  <tr><td>RBAC</td><td>Role-Based Access Control</td></tr>
+  <tr><th>Thuật ngữ</th><th>Định nghĩa</th></tr>
+  <tr><td>FR</td><td>Yêu cầu Chức năng</td></tr>
+  <tr><td>NFR</td><td>Yêu cầu Phi chức năng</td></tr>
+  <tr><td>UC</td><td>Trường hợp Sử dụng</td></tr>
+  <tr><td>MIME Type</td><td>Multipurpose Internet Mail Extensions - định danh loại tệp tin</td></tr>
+  <tr><td>RBAC</td><td>Kiểm soát Truy cập Dựa trên Vai trò</td></tr>
+  <tr><td>Tải lên Hàng loạt</td><td>Tải lên nhiều tệp tin trong một yêu cầu duy nhất</td></tr>
+  <tr><td>Kế thừa Quyền</td><td>Quyền kế thừa từ thư mục cha đến các tệp tin/thư mục con</td></tr>
+  <tr><td>Hạn ngạch Lưu trữ</td><td>Giới hạn lưu trữ tối đa cho mỗi người dùng hoặc tổ chức</td></tr>
+  <tr><td>Chính sách Lưu trữ</td><td>Các quy tắc cấu hình cho danh mục tệp tin (loại được phép, giới hạn kích thước, thời gian lưu trữ)</td></tr>
+  <tr><td>OpenSearch</td><td>Công cụ tìm kiếm và phân tích được sử dụng để lưu trữ nhật ký và tìm kiếm toàn văn</td></tr>
 </table>
 
 <!-- 2. MODULE OVERVIEW -->
-<h1 id="section-2">2. Module Overview</h1>
+<h1 id="section-2">2. Tổng quan Module</h1>
 
 <table>
-  <tr><th>Aspect</th><th>Value</th></tr>
-  <tr><td>Module Code</td><td>FILE</td></tr>
-  <tr><td>Module Name</td><td>File Management</td></tr>
-  <tr><td>Description</td><td>File upload, download, listing, and lifecycle management with S3 backend</td></tr>
-  <tr><td>Database</td><td>file_db</td></tr>
-  <tr><td>Tables</td><td>sys_files</td></tr>
-  <tr><td>Tech Stack</td><td>NestJS, Drizzle ORM, PostgreSQL, AWS S3 SDK</td></tr>
+  <tr><th>Khía cạnh</th><th>Giá trị</th></tr>
+  <tr><td>Mã Module</td><td>FILE</td></tr>
+  <tr><td>Tên Module</td><td>Quản lý Tệp tin</td></tr>
+  <tr><td>Mô tả</td><td>Tải lên, tải xuống, liệt kê, quản lý thư mục, quyền và quản lý vòng đời tệp tin với local filesystem</td></tr>
+  <tr><td>Cơ sở dữ liệu</td><td>file_db</td></tr>
+  <tr><td>Bảng</td><td>sys_files, sys_file_permissions, sys_storage_usage, sys_storage_quotas, sys_storage_policies</td></tr>
+  <tr><td>Stack Công nghệ</td><td>NestJS, Drizzle ORM, PostgreSQL, Multer + fs (local filesystem)</td></tr>
 </table>
 
 <!-- 3. FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-3">3. Functional Requirements</h1>
+<h1 id="section-3">3. Yêu cầu Chức năng</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
+    <th>Mã Yêu cầu</th>
     <th>Module</th>
-    <th>Requirement</th>
-    <th>Use Case</th>
-    <th>Priority</th>
-    <th>Description</th>
+    <th>Yêu cầu</th>
+    <th>Trường hợp Sử dụng</th>
+    <th>Ưu tiên</th>
+    <th>Mô tả</th>
   </tr>
   <tr id="fr-001">
     <td><span class="req-id">FR-001</span></td>
     <td>FILE</td>
-    <td>Upload File</td>
-    <td>UC-01</td>
-    <td>High</td>
-    <td>System shall generate presigned upload URL or support direct multipart upload. Client uploads directly to S3. System stores file metadata on confirmation.</td>
+    <td>Tải lên Tệp tin</td>
+    <td>UC-05</td>
+    <td>Cao</td>
+    <td>Hệ thống sẽ nhận tệp tin qua multipart/form-data. Server lưu tệp tin vào local filesystem và tạo bản ghi metadata. Trả về bản ghi tệp tin cho client.</td>
   </tr>
   <tr id="fr-002">
     <td><span class="req-id">FR-002</span></td>
     <td>FILE</td>
-    <td>Download File</td>
-    <td>UC-02</td>
-    <td>High</td>
-    <td>System shall generate presigned download URL with configurable expiration. Download URL is valid for 15 minutes by default.</td>
+    <td>Tải xuống Tệp tin</td>
+    <td>UC-06</td>
+    <td>Cao</td>
+    <td>Hệ thống sẽ đọc tệp tin từ local filesystem và trả về nội dung cho client. Kiểm tra quyền truy cập trước khi trả về.</td>
   </tr>
   <tr id="fr-003">
     <td><span class="req-id">FR-003</span></td>
     <td>FILE</td>
-    <td>List Files</td>
-    <td>UC-03</td>
-    <td>Medium</td>
-    <td>System shall query files by user, employer, and category with pagination support. Results are filtered by access control.</td>
+    <td>Liệt kê Tệp tin</td>
+    <td>UC-02</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ truy vấn tệp tin theo người dùng, nhà tuyển dụng và danh mục với hỗ trợ phân trang. Kết quả được lọc theo kiểm soát truy cập.</td>
   </tr>
   <tr id="fr-004">
     <td><span class="req-id">FR-004</span></td>
     <td>FILE</td>
-    <td>Delete File</td>
-    <td>UC-04</td>
-    <td>Medium</td>
-    <td>System shall soft-delete file metadata and emit an event for asynchronous S3 object cleanup. File status set to DELETED.</td>
+    <td>Xóa Tệp tin</td>
+    <td>UC-09</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ xóa mềm metadata tệp tin và xóa vật lý tệp tin trên local filesystem. Trạng thái tệp tin được đặt thành DELETED.</td>
   </tr>
   <tr id="fr-005">
     <td><span class="req-id">FR-005</span></td>
     <td>FILE</td>
-    <td>File Access Control</td>
-    <td>UC-02</td>
-    <td>High</td>
-    <td>System shall validate file ownership or RBAC permission before generating download URLs. Users can only access their own files unless they have admin/HR role in the organization.</td>
+    <td>Kiểm soát Truy cập Tệp tin</td>
+    <td>UC-11</td>
+    <td>Cao</td>
+    <td>Hệ thống sẽ kiểm tra quyền sở hữu tệp tin hoặc quyền RBAC trước khi tạo URL tải xuống. Người dùng chỉ có thể truy cập tệp tin của riêng họ trừ khi có vai trò admin/HR trong tổ chức.</td>
   </tr>
   <tr id="fr-006">
     <td><span class="req-id">FR-006</span></td>
     <td>FILE</td>
-    <td>Temp File Cleanup</td>
+    <td>Dọn dẹp Tệp tin Tạm</td>
     <td>-</td>
-    <td>Medium</td>
-    <td>System shall run a scheduled job (cron) to delete TEMP files older than 24 hours. Emits cleanup events for S3 physical deletion.</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ chạy tác vụ định kỳ (cron) để xóa các tệp tin TEMP cũ hơn 24 giờ. Xóa vật lý tệp tin trên local filesystem và xóa bản ghi metadata.</td>
+  </tr>
+  <tr id="fr-007">
+    <td><span class="req-id">FR-007</span></td>
+    <td>FILE</td>
+    <td>Tải lên CV/Hồ sơ</td>
+    <td>UC-05</td>
+    <td>Cao</td>
+    <td>Hệ thống sẽ cho phép người dùng đã xác thực tải lên tệp tin CV/hồ sơ (PDF, DOC, DOCX) với kích thước tối đa 10MB. Tệp tin được lưu trữ dưới danh mục RESUME với đường dẫn theo phạm vi người dùng. Hệ thống kiểm tra loại tệp tin, lưu tệp tin vào local filesystem và tạo metadata. Chỉ cho phép một CV đang hoạt động cho mỗi người dùng - tải lên CV mới sẽ thay thế CV trước đó.</td>
+  </tr>
+  <tr id="fr-008">
+    <td><span class="req-id">FR-008</span></td>
+    <td>FILE</td>
+    <td>Tạo Thư mục</td>
+    <td>UC-01</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ cho phép người dùng đã xác thực tạo thư mục trong cấu trúc thư mục được ủy quyền. Tên thư mục không được chứa ký tự đặc biệt (/, \, :, *, ?, ", <, >, |). Hệ thống kiểm tra tính duy nhất của tên thư mục trong thư mục cha. Metadata thư mục được lưu trong sys_files với type=FOLDER.</td>
+  </tr>
+  <tr id="fr-009">
+    <td><span class="req-id">FR-009</span></td>
+    <td>FILE</td>
+    <td>Tìm kiếm Tệp tin/Thư mục</td>
+    <td>UC-03</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ cung cấp tìm kiếm toàn văn trên tên và metadata tệp tin/thư mục. Tìm kiếm hỗ trợ bộ lọc: danh mục, mime_type, khoảng ngày, chủ sở hữu và trạng thái. Kết quả được phân trang và sắp xếp theo mức độ liên quan hoặc ngày. Tìm kiếm tuân theo kiểm soát truy cập - người dùng chỉ thấy các tệp tin mà họ có quyền truy cập.</td>
+  </tr>
+  <tr id="fr-010">
+    <td><span class="req-id">FR-010</span></td>
+    <td>FILE</td>
+    <td>Đổi tên Tệp tin/Thư mục</td>
+    <td>UC-04</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ cho phép người dùng được ủy quyền đổi tên tệp tin và thư mục. Tên mới phải duy nhất trong thư mục cha. Nếu tệp tin với tên tương tự tồn tại, hệ thống sẽ thêm hậu tố số (ví dụ: file(1).pdf). Hệ thống kiểm tra định dạng tên và cập nhật metadata. Việc đổi tên được ghi nhật ký để kiểm toán.</td>
+  </tr>
+  <tr id="fr-011">
+    <td><span class="req-id">FR-011</span></td>
+    <td>FILE</td>
+    <td>Tải lên Nhiều Tệp tin</td>
+    <td>UC-07</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ hỗ trợ tải lên hàng loạt nhiều tệp tin trong một yêu cầu. Mỗi tệp tin được kiểm tra riêng biệt về loại và kích thước. Hệ thống xử lý tất cả tệp tin và trả về kết quả tải lên dưới dạng mảng. Các tải lên thất bại không chặn các tải thành công - báo cáo một phần được cung cấp.</td>
+  </tr>
+  <tr id="fr-012">
+    <td><span class="req-id">FR-012</span></td>
+    <td>FILE</td>
+    <td>Sao chép Tệp tin</td>
+    <td>UC-08</td>
+    <td>Thấp</td>
+    <td>Hệ thống sẽ cho phép người dùng được ủy quyền sao chép tệp tin sang thư mục khác. Sao chép tạo bản ghi tệp tin mới với cùng đường dẫn file vật lý (hard link hoặc copy). Thư mục đích phải nằm trong phạm vi ủy quyền của người dùng. Hệ thống xử lý tên trùng lặp tại đích bằng cách thêm hậu tố số.</td>
+  </tr>
+  <tr id="fr-013">
+    <td><span class="req-id">FR-013</span></td>
+    <td>FILE</td>
+    <td>Di chuyển Tệp tin</td>
+    <td>UC-10</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ cho phép người dùng được ủy quyền di chuyển tệp tin giữa các thư mục. Di chuyển cập nhật metadata parent_folder_id của tệp tin. Nguồn và đích phải nằm trong phạm vi ủy quyền của người dùng. Hệ thống xử lý tên trùng lặp tại đích. Việc di chuyển được ghi nhật ký để kiểm toán.</td>
+  </tr>
+  <tr id="fr-014">
+    <td><span class="req-id">FR-014</span></td>
+    <td>FILE</td>
+    <td>Quản lý Quyền</td>
+    <td>UC-13</td>
+    <td>Cao</td>
+    <td>Hệ thống sẽ cho phép quản trị viên quản lý quyền tệp tin/thư mục ở cấp người dùng, vai trò và tổ chức. Các loại quyền: XEM, TẢI XUỐNG, SỬA, XÓA. Quyền có thể kế thừa từ thư mục cha. Thay đổi quyền được ghi nhật ký để kiểm toán.</td>
+  </tr>
+  <tr id="fr-015">
+    <td><span class="req-id">FR-015</span></td>
+    <td>FILE</td>
+    <td>Ghi nhật ký Lịch sử Truy cập</td>
+    <td>UC-12</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ ghi nhật ký tất cả sự kiện truy cập tệp tin (xem, tải xuống, sửa, xóa) với mã người dùng, thời gian, địa chỉ IP và loại hành động. Nhật ký được lưu trữ trong OpenSearch thông qua module LOG. Nhật ký truy cập được lưu giữ trong 90 ngày theo mặc định. Nhật ký hỗ trợ kiểm toán và yêu cầu tuân thủ.</td>
+  </tr>
+  <tr id="fr-016">
+    <td><span class="req-id">FR-016</span></td>
+    <td>FILE</td>
+    <td>Theo dõi Sử dụng Lưu trữ</td>
+    <td>UC-14</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ theo dõi sử dụng lưu trữ theo người dùng, tổ chức và toàn cục. Dữ liệu sử dụng bao gồm tổng kích thước, số lượng tệp tin và phân tích theo danh mục. Hệ thống cung cấp dữ liệu sử dụng lưu trữ qua API cho bảng điều khiển quản trị. Dữ liệu sử dụng được cập nhật bất đồng bộ thông qua phương pháp sự kiện.</td>
+  </tr>
+  <tr id="fr-017">
+    <td><span class="req-id">FR-017</span></td>
+    <td>FILE</td>
+    <td>Quản lý Hạn ngạch Lưu trữ</td>
+    <td>UC-16</td>
+    <td>Trung bình</td>
+    <td>Hệ thống sẽ cho phép quản trị viên đặt hạn ngạch lưu trữ cho mỗi người dùng và tổ chức. Giới hạn hạn ngạch: tổng kích thước tối đa, số lượng tệp tin tối đa. Hệ thống từ chối tải lên khi vượt quá hạn ngạch. Cảnh báo hạn ngạch được kích hoạt ở ngưỡng sử dụng 80% và 95%.</td>
+  </tr>
+  <tr id="fr-018">
+    <td><span class="req-id">FR-018</span></td>
+    <td>FILE</td>
+    <td>Cấu hình Chính sách Lưu trữ</td>
+    <td>UC-17</td>
+    <td>Thấp</td>
+    <td>Hệ thống sẽ cho phép quản trị viên cấu hình chính sách lưu trữ cho mỗi danh mục: loại mime được phép, kích thước tệp tin tối đa, thời gian lưu trữ và cài đặt mã hóa. Thay đổi chính sách có hiệu lực cho các tải lên mới. Các tệp tin hiện tại giữ nguyên cài đặt chính sách ban đầu.</td>
   </tr>
 </table>
 
 <!-- 4. USE CASES -->
-<h1 id="section-4">4. Use Cases</h1>
+<h1 id="section-4">4. Trường hợp Sử dụng</h1>
 
-<h2 id="section-4-0">4.0 Use Case Diagram</h2>
+<h2 id="section-4-1">4.1 Sơ đồ Trường hợp Sử dụng</h2>
 <div class="diagram">
-  <img src="./images/usecase/usecase-diagram.png" alt="Use Case Diagram">
-  <div class="caption">Figure 1: File Management Use Case Diagram</div>
+  <img src="./images/usecase/usecase-diagram-full.png" alt="Sơ đồ Trường hợp Sử dụng - Đầy đủ">
+  <div class="caption">Hình 1: Sơ đồ Trường hợp Sử dụng Quản lý Tệp tin (Đầy đủ)</div>
+</div>
+<div class="diagram">
+  <img src="./images/usecase/usecase-diagram.png" alt="Sơ đồ Trường hợp Sử dụng - Cốt lõi">
+  <div class="caption">Hình 2: Sơ đồ Trường hợp Sử dụng Quản lý Tệp tin (Cốt lõi)</div>
+</div>
+<div class="diagram">
+  <img src="./images/usecase/usecase-external.png" alt="Sơ đồ Hệ thống bên ngoài">
+  <div class="caption">Hình 3: Trường hợp Sử dụng &mdash; Hệ thống bên ngoài</div>
 </div>
 
-<h2 id="uc-01">4.1 UC-01: Upload File</h2>
+<h2 id="uc-01">4.2 UC-01: Tạo Thư mục</h2>
 <table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>Authenticated user</td></tr>
-  <tr><td>Preconditions</td><td>User is logged in; user has a valid session token</td></tr>
-  <tr><td>Main Flow</td><td>1. User selects a file to upload (e.g., resume, avatar)<br>2. Client sends upload request with original_name, mime_type, and category<br>3. System validates file type and size against category limits<br>4. System generates presigned S3 upload URL and creates file record with status TEMP<br>5. Client uploads file directly to S3 using presigned URL<br>6. Client confirms upload completion via POST /files/confirm<br>7. System updates file status to ACTIVE<br>8. System returns file record</td></tr>
-  <tr><td>Alternative Flows</td><td>3a. Invalid file type → System returns 400 Validation Error<br>3b. File too large → System returns 413 Payload Too Large<br>5a. S3 upload fails → Client can retry with same presigned URL<br>6a. Confirm not received within 24h → Temp file cleanup removes record</td></tr>
-  <tr><td>Postconditions</td><td>File uploaded to S3; file metadata stored in database with ACTIVE status; file accessible via download URL</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập; người dùng có quyền ghi trong thư mục đích</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Người dùng điều hướng đến thư mục đích<br>2. Người dùng nhấp vào "Tạo Thư mục" và nhập tên thư mục<br>3. Client gửi POST /files/folders với name và parent_folder_id<br>4. Hệ thống kiểm tra tên thư mục (không có ký tự đặc biệt, duy nhất trong thư mục cha)<br>5. Hệ thống tạo bản ghi thư mục trong sys_files với type=FOLDER<br>6. Hệ thống trả về bản ghi thư mục với folder_id</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>4a. Tên không hợp lệ (ký tự đặc biệt) → Hệ thống trả về 400 "Tên thư mục không hợp lệ"<br>4b. Tên đã tồn tại → Hệ thống trả về 409 "Thư mục đã tồn tại"<br>4c. Không có quyền ghi → Hệ thống trả về 403 Forbidden</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Thư mục được tạo trong cơ sở dữ liệu; thư mục có thể truy cập trong trình duyệt tệp tin</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-008</span></td></tr>
 </table>
 
-<h3>Activity Diagram</h3>
-<div class="diagram">
-  <img src="./images/activity/upload-activity.png" alt="Upload Activity Diagram">
-  <div class="caption">Figure 2: File Upload Activity Diagram</div>
-</div>
-
-<h3>Sequence Diagram</h3>
-<div class="diagram">
-  <img src="./images/sequence/upload-sequence.png" alt="Upload Sequence Diagram">
-  <div class="caption">Figure 3: File Upload Sequence Diagram</div>
-</div>
-
-<h2 id="uc-02">4.2 UC-02: Download/View File</h2>
+<h2 id="uc-02">4.3 UC-02: Liệt kê Tệp tin/Thư mục</h2>
 <table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>Authenticated user</td></tr>
-  <tr><td>Preconditions</td><td>User is logged in; file exists with ACTIVE status</td></tr>
-  <tr><td>Main Flow</td><td>1. Client requests file download by file ID<br>2. System validates user has access (owner or org admin/HR)<br>3. System generates presigned S3 download URL (15-minute expiry)<br>4. System returns download URL, expiration, and file name<br>5. Client downloads file from S3 via presigned URL</td></tr>
-  <tr><td>Alternative Flows</td><td>2a. User not authorized → System returns 403 Forbidden<br>2b. File not found or DELETED → System returns 404 Not Found<br>4a. Download URL expired → Client requests new URL</td></tr>
-  <tr><td>Postconditions</td><td>File downloaded by authorized user; presigned URL expires after 15 minutes</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-002</span>, <span class="req-id">FR-005</span></td></tr>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Client yêu cầu danh sách tệp tin/thư mục với bộ lọc tùy chọn (user_id, employer_id, category, parent_folder_id)<br>2. Hệ thống áp dụng bộ lọc kiểm soát truy cập<br>3. Hệ thống truy vấn sys_files với phân trang<br>4. Hệ thống trả về danh sách tệp tin/thư mục với tổng số, sắp xếp theo tên hoặc ngày</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>2a. Không có bộ lọc được cung cấp → Hệ thống trả về tệp tin của người dùng hiện tại<br>2b. Bộ lọc nhà tuyển dụng → Hệ thống trả về tất cả tệp tin của nhà tuyển dụng đó (chỉ admin/HR)<br>2c. parent_folder_id → Hệ thống trả về các mục con của thư mục đó</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Danh sách tệp tin/thư mục phân trang được trả về với metadata (không có nội dung tệp tin)</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-003</span>, <span class="req-id">FR-005</span></td></tr>
 </table>
 
-<h3>Activity Diagram</h3>
-<div class="diagram">
-  <img src="./images/activity/download-activity.png" alt="Download Activity Diagram">
-  <div class="caption">Figure 4: File Download Activity Diagram</div>
-</div>
-
-<h3>Sequence Diagram</h3>
-<div class="diagram">
-  <img src="./images/sequence/download-sequence.png" alt="Download Sequence Diagram">
-  <div class="caption">Figure 5: File Download Sequence Diagram</div>
-</div>
-
-<h2 id="uc-03">4.3 UC-03: List User Files</h2>
+<h2 id="uc-03">4.4 UC-03: Tìm kiếm Tệp tin/Thư mục</h2>
 <table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>Authenticated user</td></tr>
-  <tr><td>Preconditions</td><td>User is logged in</td></tr>
-  <tr><td>Main Flow</td><td>1. Client requests file list with optional filters (user_id, employer_id, category)<br>2. System applies access control filters<br>3. System queries sys_files with pagination<br>4. System returns file list with total count</td></tr>
-  <tr><td>Alternative Flows</td><td>2a. No filters provided → System returns current user's files<br>2b. Employer filter → System returns all files for that employer (admin/HR only)</td></tr>
-  <tr><td>Postconditions</td><td>Paginated file list returned with metadata (no file content)</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-003</span>, <span class="req-id">FR-005</span></td></tr>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Người dùng nhập từ khóa tìm kiếm (từ khóa, bộ lọc)<br>2. Client gửi GET /files/search với query, category, mime_type, khoảng ngày<br>3. Hệ thống thực hiện tìm kiếm toàn văn trên tên tệp tin và metadata<br>4. Hệ thống áp dụng bộ lọc kiểm soát truy cập<br>5. Hệ thống trả về kết quả tìm kiếm với phân trang, sắp xếp theo mức độ liên quan</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>3a. Không tìm thấy kết quả → Hệ thống trả về danh sách trống với total_count=0<br>4a. Người dùng không có quyền truy cập bất kỳ tệp tin khớp nào → Hệ thống trả về danh sách trống</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Kết quả tìm kiếm được trả về với metadata tệp tin</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-009</span>, <span class="req-id">FR-005</span></td></tr>
 </table>
 
-<h2 id="uc-04">4.4 UC-04: Delete File</h2>
+<h2 id="uc-04">4.5 UC-04: Xem & Đổi tên Tệp tin/Thư mục</h2>
 <table>
-  <tr><th>Aspect</th><th>Description</th></tr>
-  <tr><td>Actor</td><td>Authenticated user (file owner or admin)</td></tr>
-  <tr><td>Preconditions</td><td>User is logged in; file exists with ACTIVE status</td></tr>
-  <tr><td>Main Flow</td><td>1. Client requests file deletion by file ID<br>2. System validates user is file owner or has admin role<br>3. System sets file status to DELETED and deleted_at timestamp<br>4. System emits file.deleted event to message queue<br>5. FileWorker picks up event and deletes S3 object<br>6. System returns success response</td></tr>
-  <tr><td>Alternative Flows</td><td>2a. User not authorized → System returns 403 Forbidden<br>2b. File already DELETED → System returns 404 Not Found<br>5a. S3 deletion fails → Worker retries with exponential backoff</td></tr>
-  <tr><td>Postconditions</td><td>File metadata soft-deleted; S3 object queued for physical deletion; file no longer accessible</td></tr>
-  <tr><td>Related FR</td><td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td></tr>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực (chủ sở hữu hoặc admin)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập; tệp tin/thư mục tồn tại với trạng thái ACTIVE</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Người dùng chọn tệp tin/thư mục và nhấp vào "Đổi tên"<br>2. Người dùng nhập tên mới<br>3. Client gửi PATCH /files/:id với tên mới<br>4. Hệ thống kiểm tra người dùng có quyền sửa<br>5. Hệ thống kiểm tra tên mới (duy nhất trong thư mục cha, không có ký tự đặc biệt)<br>6. Hệ thống cập nhật metadata tệp tin<br>7. Hệ thống ghi nhật ký sự kiện đổi tên để kiểm toán<br>8. Hệ thống trả về bản ghi tệp tin đã cập nhật</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>4a. Không có quyền sửa → Hệ thống trả về 403 Forbidden<br>5a. Tên đã tồn tại → Hệ thống thêm hậu tố số (ví dụ: file(1).pdf)<br>5b. Tên không hợp lệ → Hệ thống trả về 400 "Tên không hợp lệ"</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Tệp tin/thư mục đã đổi tên; sự kiện đổi tên được ghi nhật ký để kiểm toán</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-010</span>, <span class="req-id">FR-005</span></td></tr>
 </table>
 
-<h3>Activity Diagram</h3>
+<h2 id="uc-05">4.6 UC-05: Tải lên Tệp tin</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập; người dùng có token phiên hợp lệ</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Người dùng chọn tệp tin để tải lên (ví dụ: hồ sơ, ảnh đại diện)<br>2. Client gửi yêu cầu POST /files/upload (multipart/form-data) với tệp tin và category<br>3. Hệ thống kiểm tra loại và kích thước tệp tin theo giới hạn danh mục<br>4. Hệ thống tạo tên file UUID và lưu tệp tin vào local filesystem (uploads/{user_id}/{category}/{uuid})<br>5. Hệ thống tạo bản ghi metadata trong sys_files với trạng thái ACTIVE<br>6. Hệ thống trả về bản ghi tệp tin cho client</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>3a. Loại tệp tin không hợp lệ → Hệ thống trả về 400 Lỗi Xác thực<br>3b. Tệp tin quá lớn → Hệ thống trả về 413 Payload Too Large<br>4a. Lưu filesystem thất bại → Hệ thống trả về 500 Lỗi Server</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Tệp tin đã lưu trên local filesystem; metadata tệp tin được lưu trong cơ sở dữ liệu với trạng thái ACTIVE; tệp tin có thể truy cập qua endpoint tải xuống</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-001</span></td></tr>
+</table>
+
+<h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
-  <img src="./images/activity/delete-activity.png" alt="Delete Activity Diagram">
-  <div class="caption">Figure 6: File Delete Activity Diagram</div>
+  <img src="./images/activity/upload-activity.png" alt="Sơ đồ Hoạt động Tải lên">
+  <div class="caption">Hình 4: Sơ đồ Hoạt động Tải lên Tệp tin</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3>Sơ đồ Tuần tự</h3>
 <div class="diagram">
-  <img src="./images/sequence/delete-sequence.png" alt="Delete Sequence Diagram">
-  <div class="caption">Figure 7: File Delete Sequence Diagram</div>
+  <img src="./images/sequence/upload-sequence.png" alt="Sơ đồ Tuần tự Tải lên">
+  <div class="caption">Hình 5: Sơ đồ Tuần tự Tải lên Tệp tin</div>
+</div>
+
+<h2 id="uc-06">4.7 UC-06: Tải xuống Tệp tin</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập; tệp tin tồn tại với trạng thái ACTIVE</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Client yêu cầu tải xuống tệp tin bằng file ID<br>2. Hệ thống kiểm tra người dùng có quyền truy cập (chủ sở hữu hoặc admin/HR tổ chức)<br>3. Hệ thống đọc tệp tin từ local filesystem (file_path)<br>4. Hệ thống trả về nội dung tệp tin (file stream)</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>2a. Người dùng không được ủy quyền → Hệ thống trả về 403 Forbidden<br>2b. Tệp tin không tìm thấy hoặc đã DELETED → Hệ thống trả về 404 Not Found<br>3a. Tệp tin không tồn tại trên filesystem → Hệ thống trả về 404 Not Found</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Tệp tin đã được người dùng được ủy quyền tải xuống</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-002</span>, <span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h3>Sơ đồ Hoạt động</h3>
+<div class="diagram">
+  <img src="./images/activity/download-activity.png" alt="Sơ đồ Hoạt động Tải xuống">
+  <div class="caption">Hình 6: Sơ đồ Hoạt động Tải xuống Tệp tin</div>
+</div>
+
+<h3>Sơ đồ Tuần tự</h3>
+<div class="diagram">
+  <img src="./images/sequence/download-sequence.png" alt="Sơ đồ Tuần tự Tải xuống">
+  <div class="caption">Hình 7: Sơ đồ Tuần tự Tải xuống Tệp tin</div>
+</div>
+
+<h2 id="uc-07">4.8 UC-07: Tải lên Nhiều Tệp tin</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập; người dùng có quyền ghi trong thư mục đích</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Người dùng chọn nhiều tệp tin để tải lên<br>2. Client gửi POST /files/batch với mảng metadata tệp tin<br>3. Hệ thống kiểm tra từng tệp tin riêng biệt về loại và kích thước<br>4. Hệ thống lưu tệp tin vào local filesystem cho tất cả tệp tin hợp lệ<br>5. Hệ thống tạo bản ghi tệp tin với trạng thái TEMP<br>6. Server lưu tệp tin vào local filesystem<br>7. <br>8. <br>9. Hệ thống trả về kết quả tải lên dưới dạng mảng (thành công/một phần)</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>3a. Một số tệp tin không hợp lệ → Hệ thống trả về thành công một phần với chi tiết lỗi cho từng tệp tin<br>6a. Một số tải lên thất bại → Client có thể thử lại các tải lên thất bại riêng lẻ<br>7a. Một số xác nhận không được nhận → Dọn dẹp tệp tin tạm xóa các bản ghi bị bỏ rơi</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Các tệp tin hợp lệ đã lưu trên filesystem; metadata tệp tin được lưu; tệp tin không hợp lệ bị từ chối với chi tiết lỗi</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-011</span></td></tr>
+</table>
+
+<h2 id="uc-08">4.9 UC-08: Sao chép Tệp tin</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập; tệp tin nguồn tồn tại; người dùng có quyền đọc trên nguồn và quyền ghi trên đích</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Người dùng chọn tệp tin và nhấp vào "Sao chép đến..."<br>2. Người dùng chọn thư mục đích<br>3. Client gửi POST /files/:id/copy với destination_folder_id<br>4. Hệ thống kiểm tra quyền truy cập (đọc nguồn, ghi đích)<br>5. Hệ thống tạo bản ghi tệp tin mới với cùng đường dẫn file vật lý<br>6. Hệ thống xử lý tên trùng lặp tại đích (thêm hậu tố số)<br>7. Hệ thống trả về bản ghi tệp tin mới</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>4a. Không có quyền đọc trên nguồn → Hệ thống trả về 403 Forbidden<br>4b. Không có quyền ghi trên đích → Hệ thống trả về 403 Forbidden<br>6a. Tên trùng lặp → Hệ thống thêm (1), (2), v.v.</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Bản ghi tệp tin mới được tạo; tệp tin vật lý được sao chép trên filesystem; tệp tin có thể truy cập tại đích</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-012</span>, <span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h2 id="uc-09">4.10 UC-09: Xóa Tệp tin/Thư mục</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực (chủ sở hữu tệp tin hoặc admin)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập; tệp tin/thư mục tồn tại với trạng thái ACTIVE</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Client yêu cầu xóa tệp tin/thư mục bằng ID<br>2. Hệ thống kiểm tra người dùng là chủ sở hữu hoặc có vai trò admin<br>3. Nếu là thư mục: Hệ thống đánh dấu đệ quy tất cả các mục con là DELETED<br>4. Hệ thống đặt trạng thái tệp tin thành DELETED và timestamp deleted_at<br>5. Hệ thống xóa vật lý tệp tin trên local filesystem (fs.unlink)<br>6. Hệ thống trả về phản hồi thành công</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>2a. Người dùng không được ủy quyền → Hệ thống trả về 403 Forbidden<br>2b. Tệp tin đã DELETED → Hệ thống trả về 404 Not Found<br>5a. Xóa filesystem thất bại → Ghi log lỗi, tệp tin vẫn đánh dấu DELETED</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Metadata tệp tin/thư mục đã xóa mềm; tệp tin vật lý đã bị xóa trên filesystem; tệp tin không còn truy cập được</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-004</span>, <span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h3>Sơ đồ Hoạt động</h3>
+<div class="diagram">
+  <img src="./images/activity/delete-activity.png" alt="Sơ đồ Hoạt động Xóa">
+  <div class="caption">Hình 8: Sơ đồ Hoạt động Xóa Tệp tin</div>
+</div>
+
+<h3>Sơ đồ Tuần tự</h3>
+<div class="diagram">
+  <img src="./images/sequence/delete-sequence.png" alt="Sơ đồ Tuần tự Xóa">
+  <div class="caption">Hình 9: Sơ đồ Tuần tự Xóa Tệp tin</div>
+</div>
+
+<h2 id="uc-10">4.11 UC-10: Di chuyển Tệp tin</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực (chủ sở hữu tệp tin hoặc admin)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập; tệp tin tồn tại; người dùng có quyền ghi trên cả nguồn và đích</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Người dùng chọn tệp tin và nhấp vào "Di chuyển đến..."<br>2. Người dùng chọn thư mục đích<br>3. Client gửi POST /files/:id/move với destination_folder_id<br>4. Hệ thống kiểm tra quyền truy cập (ghi nguồn, ghi đích)<br>5. Hệ thống cập nhật parent_folder_id của tệp tin<br>6. Hệ thống xử lý tên trùng lặp tại đích (thêm hậu tố số)<br>7. Hệ thống ghi nhật ký sự kiện di chuyển để kiểm toán<br>8. Hệ thống trả về bản ghi tệp tin đã cập nhật</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>4a. Không có quyền ghi → Hệ thống trả về 403 Forbidden<br>4b. Đích là thư mục con của nguồn → Hệ thống trả về 400 "Không thể di chuyển thư mục vào chính nó"<br>6a. Tên trùng lặp → Hệ thống thêm (1), (2), v.v.</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Tệp tin đã di chuyển sang thư mục mới; sự kiện di chuyển được ghi nhật ký để kiểm toán</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-013</span>, <span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h2 id="uc-11">4.12 UC-11: Kiểm tra Quyền Truy cập</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Hệ thống (nội bộ)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Nhận yêu cầu từ người dùng; tệp tin/thư mục tồn tại</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Hệ thống nhận yêu cầu truy cập tệp tin<br>2. Hệ thống kiểm tra người dùng là chủ sở hữu tệp tin → cấp quyền truy cập<br>3. Hệ thống kiểm tra vai trò của người dùng trong tổ chức (admin/HR) → cấp quyền truy cập<br>4. Hệ thống kiểm tra quyền rõ ràng trong sys_file_permissions → cấp/từ chối<br>5. Hệ thống kiểm tra quyền thư mục cha (kế thừa) → cấp/từ chối<br>6. Hệ thống trả về quyết định truy cập (ALLOW/DENY)</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>2a. Người dùng không phải chủ sở hữu → Tiếp tục bước 3<br>3a. Người dùng không phải admin/HR → Tiếp tục bước 4<br>4a. Không tìm thấy quyền rõ ràng → Tiếp tục bước 5<br>5a. Không tìm thấy quyền thư mục → DENY truy cập</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Quyết định truy cập được trả về; quyết định được ghi nhật ký nếu DENY</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-005</span></td></tr>
+</table>
+
+<h2 id="uc-12">4.13 UC-12: Ghi nhật ký Lịch sử Truy cập</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Hệ thống (nội bộ)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Sự kiện truy cập tệp tin đã xảy ra (xem, tải xuống, sửa, xóa)</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Hệ thống phát hiện sự kiện truy cập tệp tin<br>2. Hệ thống thu thập: user_id, file_id, action, timestamp, địa chỉ IP<br>3. Hệ thống phát sự kiện vào RabbitMQ (hàng đợi: log.events)<br>4. Module LOG tiêu thụ sự kiện và lưu trữ trong OpenSearch<br>5. Lịch sử truy cập sẵn sàng cho các truy vấn kiểm toán</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>3a. RabbitMQ không khả dụng → Sự kiện được xếp hàng cục bộ, thử lại khi kết nối lại</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Sự kiện truy cập được ghi nhật ký; kiểm toán được duy trì</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-015</span></td></tr>
+</table>
+
+<h2 id="uc-13">4.14 UC-13: Quản lý Quyền</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Quản trị viên</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Admin đã đăng nhập; admin có vai trò admin hệ thống hoặc admin tổ chức</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Admin chọn tệp tin/thư mục và mở bảng "Quyền"<br>2. Admin thêm/cập nhật/xóa quyền cho người dùng, vai trò hoặc tổ chức<br>3. Admin đặt loại quyền: XEM, TẢI XUỐNG, SỬA, XÓA<br>4. Admin tùy chọn bật kế thừa quyền từ thư mục cha<br>5. Client gửi PUT /files/:id/permissions với mảng quyền<br>6. Hệ thống kiểm tra admin có vai trò quản lý quyền<br>7. Hệ thống cập nhật bảng sys_file_permissions<br>8. Hệ thống ghi nhật ký thay đổi quyền để kiểm toán<br>9. Hệ thống trả về quyền đã cập nhật</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>6a. Admin không được ủy quyền → Hệ thống trả về 403 Forbidden<br>7a. Xung đột quyền → Hệ thống áp dụng quy tắc hạn chế nhất</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Quyền được cập nhật; thay đổi có hiệu lực ngay lập tức; nhật ký kiểm toán được ghi lại</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-014</span></td></tr>
+</table>
+
+<h2 id="uc-14">4.15 UC-14: Theo dõi Sử dụng Lưu trữ</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Hệ thống (Tác vụ Cron)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Hệ thống đang chạy; file_db có thể truy cập</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Tác vụ cron chạy định kỳ (mỗi giờ)<br>2. Hệ thống tính toán sử dụng lưu trữ cho mỗi người dùng: total_size, file_count<br>3. Hệ thống tính toán sử dụng lưu trữ cho mỗi tổ chức<br>4. Hệ thống tính toán sử dụng lưu trữ toàn cục<br>5. Hệ thống lưu dữ liệu sử dụng trong bảng sys_storage_usage<br>6. Hệ thống cung cấp dữ liệu sử dụng qua API GET /files/storage-usage</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>2a. Tính toán thất bại → Hệ thống ghi nhật ký lỗi, thử lại ở chu kỳ tiếp theo</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Dữ liệu sử dụng lưu trữ được cập nhật; sẵn sàng cho bảng điều khiển quản trị</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-016</span></td></tr>
+</table>
+
+<h2 id="uc-15">4.16 UC-15: Quản lý Cấu trúc Thư mục</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Hệ thống (Tác vụ Cron)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Hệ thống đang chạy; file_db có thể truy cập</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Tác vụ cron chạy định kỳ (hàng ngày)<br>2. Hệ thống quét cấu trúc thư mục để tìm thư mục bị bỏ rơi<br>3. Hệ thống kiểm tra tính toàn vẹn cấp bậc thư mục<br>4. Hệ thống dọn dẹp các thư mục trống không có mục con<br>5. Hệ thống cập nhật metadata cấu trúc thư mục<br>6. Hệ thống ghi nhật ký các sự kiện dọn dẹp</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>4a. Thư mục có mục con → Hệ thống bỏ qua việc xóa<br>5a. Phát hiện vấn đề toàn vẹn → Hệ thống ghi nhật ký cảnh báo</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Cấu trúc thư mục được dọn dẹp; thư mục bị bỏ rơi được xóa</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-015</span></td></tr>
+</table>
+
+<h2 id="uc-16">4.17 UC-16: Quản lý Hạn ngạch Lưu trữ</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Quản trị viên</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Admin đã đăng nhập; admin có vai trò admin hệ thống</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Admin điều hướng đến cài đặt Hạn ngạch Lưu trữ<br>2. Admin đặt giới hạn hạn ngạch cho mỗi người dùng hoặc tổ chức: max_total_size, max_file_count<br>3. Client gửi PUT /files/quotas với cấu hình hạn ngạch<br>4. Hệ thống kiểm tra ủy quyền của admin<br>5. Hệ thống lưu hạn ngạch trong bảng sys_storage_quotas<br>6. Hệ thống kiểm tra hạn ngạch tại mỗi lần tải lên<br>7. Hệ thống từ chối tải lên khi vượt quá hạn ngạch</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>4a. Admin không được ủy quyền → Hệ thống trả về 403 Forbidden<br>6a. Vượt quá hạn ngạch → Hệ thống trả về 413 "Vượt quá hạn ngạch lưu trữ"<br>6b. Hạn ngạch ở 80% → Hệ thống gửi thông báo cảnh báo<br>6c. Hạn ngạch ở 95% → Hệ thống gửi thông báo nghiêm trọng</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Giới hạn hạn ngạch được cấu hình; tải lên được kiểm tra theo hạn ngạch</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-017</span></td></tr>
+</table>
+
+<h2 id="uc-17">4.18 UC-17: Cấu hình Chính sách Lưu trữ</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Quản trị viên</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Admin đã đăng nhập; admin có vai trò admin hệ thống</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Admin điều hướng đến cài đặt Chính sách Lưu trữ<br>2. Admin chọn hoặc tạo chính sách cho danh mục (RESUME, AVATAR, v.v.)<br>3. Admin cấu hình: mime_types được phép, max_file_size, retention_period, encryption<br>4. Client gửi PUT /files/policies với cấu hình chính sách<br>5. Hệ thống kiểm tra ủy quyền của admin<br>6. Hệ thống lưu chính sách trong bảng sys_storage_policies<br>7. Chính sách có hiệu lực cho các tải lên mới trong danh mục đó</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>5a. Admin không được ủy quyền → Hệ thống trả về 403 Forbidden<br>7a. Tệp tin hiện tại → Giữ nguyên cài đặt chính sách ban đầu</td></tr>
+  <tr><td>Điều kiện hậu</td><td>Chính sách lưu trữ được cấu hình; tải lên mới được kiểm tra theo chính sách</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-018</span></td></tr>
+</table>
+
+<h2>4.19 UC-05 (Mở rộng): Tải lên CV/Hồ sơ</h2>
+<table>
+  <tr><th>Khía cạnh</th><th>Mô tả</th></tr>
+  <tr><td>Actor</td><td>Người dùng đã xác thực (Ứng viên)</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập; người dùng có token phiên hợp lệ</td></tr>
+  <tr><td>Lưu trình Chính</td><td>1. Người dùng điều hướng đến trang tải lên CV/Hồ sơ<br>2. Người dùng chọn tệp tin CV (PDF, DOC, DOCX) với kích thước tối đa 10MB<br>3. Client gửi yêu cầu tải lên với original_name, mime_type, category=RESUME<br>4. Hệ thống kiểm tra loại tệp tin được phép (PDF, DOC, DOCX) và kích thước <= 10MB<br>5. Hệ thống kiểm tra tệp tin RESUME đang hoạt động hiện có cho người dùng này<br>6a. Nếu tìm thấy CV hiện có: Hệ thống đặt trạng thái tệp tin cũ thành REPLACED<br>6b. Nếu không có CV hiện có: Hệ thống chuyển sang bước 7<br>7. Hệ thống lưu tệp tin vào local filesystem và tạo bản ghi tệp tin với trạng thái TEMP<br>8. Server lưu tệp tin vào local filesystem<br>9. Client xác nhận hoàn tất tải lên qua POST /files/confirm<br>10. <br>11. Hệ thống trả về bản ghi tệp tin với file_id</td></tr>
+  <tr><td>Lưu trình Thay thế</td><td>4a. Loại tệp tin không hợp lệ → Hệ thống trả về 400 "Chỉ cho phép tệp tin PDF, DOC, DOCX"<br>4b. Tệp tin quá lớn (>10MB) → Hệ thống trả về 413 "Kích thước tệp tin vượt quá giới hạn 10MB"<br>5a. Lưu filesystem thất bại → Client có thể thử lại<br>9a. Xác nhận không được nhận trong vòng 24 giờ → Dọn dẹp tệp tin tạm xóa bản ghi</td></tr>
+  <tr><td>Điều kiện hậu</td><td>CV đã lưu trên filesystem trong thư mục RESUME của người dùng; metadata tệp tin được lưu với trạng thái ACTIVE; CV trước đó (nếu có) được đánh dấu là REPLACED; CV có thể truy cập qua URL tải xuống</td></tr>
+  <tr><td>FR liên quan</td><td><span class="req-id">FR-007</span>, <span class="req-id">FR-001</span></td></tr>
+</table>
+
+<h3>Sơ đồ Hoạt động</h3>
+<div class="diagram">
+  <img src="./images/activity/upload-cv-activity.png" alt="Sơ đồ Hoạt động Tải lên CV">
+  <div class="caption">Hình 10: Sơ đồ Hoạt động Tải lên CV/Hồ sơ</div>
+</div>
+
+<h3>Sơ đồ Tuần tự</h3>
+<div class="diagram">
+  <img src="./images/sequence/upload-cv-sequence.png" alt="Sơ đồ Tuần tự Tải lên CV">
+  <div class="caption">Hình 11: Sơ đồ Tuần tự Tải lên CV/Hồ sơ</div>
 </div>
 
 <!-- 5. NON-FUNCTIONAL REQUIREMENTS -->
-<h1 id="section-5">5. Non-Functional Requirements</h1>
+<h1 id="section-5">5. Yêu cầu Phi chức năng</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
-    <th>Category</th>
-    <th>Requirement</th>
-    <th>Target</th>
+    <th>Mã Yêu cầu</th>
+    <th>Danh mục</th>
+    <th>Yêu cầu</th>
+    <th>Mục tiêu</th>
   </tr>
   <tr id="nfr-001">
     <td><span class="req-id">NFR-001</span></td>
-    <td>Performance</td>
-    <td>Presigned URL generation response time</td>
-    <td>&lt; 500ms (p95)</td>
+    <td>Hiệu suất</td>
+    <td>Thời gian phản hồi tải lên tệp tin</td>
+    <td>< 2000ms (p95) cho tệp tin ≤ 10MB</td>
   </tr>
   <tr id="nfr-002">
     <td><span class="req-id">NFR-002</span></td>
-    <td>Security</td>
-    <td>Presigned URL expiration</td>
-    <td>Upload: 15 min, Download: 15 min</td>
+    <td>Bảo mật</td>
+    <td>Giới hạn kích thước tải lên</td>
+    <td>Theo danh mục: RESUME 10MB, AVATAR 5MB, OTHER 10MB</td>
   </tr>
   <tr id="nfr-003">
     <td><span class="req-id">NFR-003</span></td>
-    <td>Availability</td>
-    <td>File service uptime</td>
+    <td>Khả dụng</td>
+    <td>Uptime dịch vụ tệp tin</td>
     <td>99.9%</td>
   </tr>
   <tr id="nfr-004">
     <td><span class="req-id">NFR-004</span></td>
-    <td>Scalability</td>
-    <td>Concurrent uploads</td>
-    <td>100+ simultaneous uploads</td>
+    <td>Khả năng mở rộng</td>
+    <td>Tải lên đồng thời</td>
+    <td>100+ tải lên đồng thời</td>
   </tr>
   <tr id="nfr-005">
     <td><span class="req-id">NFR-005</span></td>
-    <td>Storage</td>
-    <td>Max file size per category</td>
+    <td>Lưu trữ</td>
+    <td>Kích thước tệp tin tối đa theo danh mục</td>
     <td>RESUME: 10MB, AVATAR: 5MB, OTHER: 10MB</td>
   </tr>
   <tr id="nfr-006">
     <td><span class="req-id">NFR-006</span></td>
-    <td>Maintenance</td>
-    <td>Temp file cleanup frequency</td>
-    <td>Every 1 hour (files older than 24h)</td>
+    <td>Bảo trì</td>
+    <td>Tần suất dọn dẹp tệp tin tạm</td>
+    <td>Mỗi 1 giờ (tệp tin cũ hơn 24h)</td>
+  </tr>
+  <tr id="nfr-007">
+    <td><span class="req-id">NFR-007</span></td>
+    <td>Hiệu suất</td>
+    <td>Thời gian phản hồi tìm kiếm</td>
+    <td>< 1000ms (p95) cho tìm kiếm toàn văn</td>
+  </tr>
+  <tr id="nfr-008">
+    <td><span class="req-id">NFR-008</span></td>
+    <td>Hiệu suất</td>
+    <td>Thời gian phản hồi tải lên hàng loạt</td>
+    <td>< 2000ms để tạo multipart upload (tối đa 20 tệp tin)</td>
+  </tr>
+  <tr id="nfr-009">
+    <td><span class="req-id">NFR-009</span></td>
+    <td>Bảo mật</td>
+    <td>Độ trễ kiểm tra kiểm soát truy cập</td>
+    <td>< 100ms (p95) mỗi yêu cầu</td>
+  </tr>
+  <tr id="nfr-010">
+    <td><span class="req-id">NFR-010</span></td>
+    <td>Tuân thủ</td>
+    <td>Thời gian lưu trữ nhật ký truy cập</td>
+    <td>90 ngày (có thể cấu hình)</td>
+  </tr>
+  <tr id="nfr-011">
+    <td><span class="req-id">NFR-011</span></td>
+    <td>Lưu trữ</td>
+    <td>Độ chính xác theo dõi sử dụng lưu trữ</td>
+    <td>+- 1% so với sử dụng thực tế</td>
   </tr>
 </table>
 
 <!-- 6. TRACEABILITY -->
-<h1 id="section-6">6. Requirements Traceability Matrix</h1>
+<h1 id="section-6">6. Ma trận Truy xuất Nguồn gốc Yêu cầu</h1>
 
 <table class="trace-table">
   <tr>
-    <th>Req ID</th>
-    <th>Requirement</th>
-    <th>DB Table</th>
-    <th>API Endpoint</th>
+    <th>Mã Yêu cầu</th>
+    <th>Yêu cầu</th>
+    <th>Trường hợp Sử dụng</th>
+    <th>Bảng CSDL</th>
+    <th>Endpoint API</th>
   </tr>
-  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>Upload File</td><td>sys_files</td><td>POST /files/presigned-url, POST /files/confirm</td></tr>
-  <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>Download File</td><td>sys_files</td><td>GET /files/:id/download-url</td></tr>
-  <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>List Files</td><td>sys_files</td><td>GET /files</td></tr>
-  <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Delete File</td><td>sys_files</td><td>DELETE /files/:id</td></tr>
-  <tr id="trace-fr-005"><td><span class="req-id">FR-005</span></td><td>File Access Control</td><td>sys_files (join auth_users, auth_members)</td><td>All file endpoints (middleware)</td></tr>
-  <tr id="trace-fr-006"><td><span class="req-id">FR-006</span></td><td>Temp File Cleanup</td><td>sys_files</td><td>Cron job (internal)</td></tr>
+  <tr id="trace-fr-001"><td><span class="req-id">FR-001</span></td><td>Tải lên Tệp tin</td><td>UC-05</td><td>sys_files</td><td>POST /files/upload (multipart)</td></tr>
+  <tr id="trace-fr-002"><td><span class="req-id">FR-002</span></td><td>Tải xuống Tệp tin</td><td>UC-06</td><td>sys_files</td><td>GET /files/:id/download</td></tr>
+  <tr id="trace-fr-003"><td><span class="req-id">FR-003</span></td><td>Liệt kê Tệp tin</td><td>UC-02</td><td>sys_files</td><td>GET /files</td></tr>
+  <tr id="trace-fr-004"><td><span class="req-id">FR-004</span></td><td>Xóa Tệp tin</td><td>UC-09</td><td>sys_files</td><td>DELETE /files/:id</td></tr>
+  <tr id="trace-fr-005"><td><span class="req-id">FR-005</span></td><td>Kiểm soát Truy cập Tệp tin</td><td>UC-11</td><td>sys_files, sys_file_permissions (join auth_users, auth_members)</td><td>Tất cả endpoint tệp tin (middleware)</td></tr>
+  <tr id="trace-fr-006"><td><span class="req-id">FR-006</span></td><td>Dọn dẹp Tệp tin Tạm</td><td>-</td><td>sys_files</td><td>Cron job (nội bộ)</td></tr>
+  <tr id="trace-fr-007"><td><span class="req-id">FR-007</span></td><td>Tải lên CV/Hồ sơ</td><td>UC-05 (mở rộng)</td><td>sys_files</td><td>POST /files/upload (multipart)</td></tr>
+  <tr id="trace-fr-008"><td><span class="req-id">FR-008</span></td><td>Tạo Thư mục</td><td>UC-01</td><td>sys_files</td><td>POST /files/folders</td></tr>
+  <tr id="trace-fr-009"><td><span class="req-id">FR-009</span></td><td>Tìm kiếm Tệp tin/Thư mục</td><td>UC-03</td><td>sys_files</td><td>GET /files/search</td></tr>
+  <tr id="trace-fr-010"><td><span class="req-id">FR-010</span></td><td>Đổi tên Tệp tin/Thư mục</td><td>UC-04</td><td>sys_files</td><td>PATCH /files/:id</td></tr>
+  <tr id="trace-fr-011"><td><span class="req-id">FR-011</span></td><td>Tải lên Nhiều Tệp tin</td><td>UC-07</td><td>sys_files</td><td>POST /files/batch</td></tr>
+  <tr id="trace-fr-012"><td><span class="req-id">FR-012</span></td><td>Sao chép Tệp tin</td><td>UC-08</td><td>sys_files</td><td>POST /files/:id/copy</td></tr>
+  <tr id="trace-fr-013"><td><span class="req-id">FR-013</span></td><td>Di chuyển Tệp tin</td><td>UC-10</td><td>sys_files</td><td>POST /files/:id/move</td></tr>
+  <tr id="trace-fr-014"><td><span class="req-id">FR-014</span></td><td>Quản lý Quyền</td><td>UC-13</td><td>sys_file_permissions</td><td>PUT /files/:id/permissions</td></tr>
+  <tr id="trace-fr-015"><td><span class="req-id">FR-015</span></td><td>Ghi nhật ký Lịch sử Truy cập</td><td>UC-12</td><td>OpenSearch (qua module LOG)</td><td>RabbitMQ (bất đồng bộ)</td></tr>
+  <tr id="trace-fr-016"><td><span class="req-id">FR-016</span></td><td>Theo dõi Sử dụng Lưu trữ</td><td>UC-14</td><td>sys_storage_usage</td><td>GET /files/storage-usage</td></tr>
+  <tr id="trace-fr-017"><td><span class="req-id">FR-017</span></td><td>Quản lý Hạn ngạch Lưu trữ</td><td>UC-16</td><td>sys_storage_quotas</td><td>PUT /files/quotas</td></tr>
+  <tr id="trace-fr-018"><td><span class="req-id">FR-018</span></td><td>Cấu hình Chính sách Lưu trữ</td><td>UC-17</td><td>sys_storage_policies</td><td>PUT /files/policies</td></tr>
 </table>
 
 </body>

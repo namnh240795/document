@@ -1,0 +1,41 @@
+@startuml Upload File Sequence
+title UC-05: Tải lên Tệp tin
+
+skinparam sequenceArrowThickness 1
+skinparam sequenceParticipantPadding 5
+skinparam sequenceLifeLineBorderColor #333
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+skinparam responseMessageBelowArrow true
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam maxMessageSize 200
+skinparam sequenceParticipantPadding 20
+
+actor "Người dùng" as U
+participant "Client" as Client
+participant "FILE Service" as FILE
+database "PostgreSQL" as DB
+participant "Filesystem" as FS
+
+U -> Client : Chọn tệp tin
+Client -> FILE : POST /files/upload\n(multipart/form-data)
+activate FILE
+FILE -> FILE : Kiểm tra loại & kích thước
+FILE -> FILE : Tạo tên file UUID
+FILE -> FS : Lưu tệp tin vào disk\nuploads/{user_id}/{category}/{uuid}
+activate FS
+FS --> FILE : OK
+deactivate FS
+FILE -> DB : INSERT metadata\n(status: ACTIVE)
+activate DB
+DB --> FILE : file record
+deactivate DB
+FILE --> Client : bản ghi tệp tin
+deactivate FILE
+
+Client --> U : Thành công
+
+@enduml

@@ -1,45 +1,31 @@
 @startuml
-' ============================================================
-' Sơ đồ Use Case - Hệ thống Xác thực
-' NestJS + Better Auth + PostgreSQL + Drizzle ORM
-' ============================================================
+title Hệ thống Xác thực — Sơ đồ Use Case
 
-left to right direction
-skinparam packageStyle rectangle
-skinparam actorStyle awesome
-skinparam usecase {
-  BackgroundColor #F8F8F8
-  BorderColor #333333
-  ArrowColor #333333
-}
+skinparam defaultTextAlignment center
+skinparam usecaseFontSize 10
+skinparam actorFontSize 11
+skinparam shadowing false
+skinparam nodesep 20
+skinparam ranksep 20
 
-' --- Khoảng cách ---
-skinparam nodesep 60
-skinparam ranksep 40
-
-' --- Diễn viên ---
 actor "User" as user
 actor "Admin" as admin
 actor "System" as system
 
-' --- Đảm bảo thứ tự diễn viên ---
-user -[hidden]down- admin
-admin -[hidden]down- system
+rectangle "Module AUTH" {
+  usecase "Đăng ký" as UC01
+  usecase "Đăng nhập" as UC02
+  usecase "Đăng xuất" as UC03
+  usecase "Làm mới Token" as UC04
+  usecase "Đặt lại MK\n(Email)" as UC05
+  usecase "Đặt lại MK\n(OTP)" as UC06
+  usecase "Thay đổi MK" as UC07
+  usecase "Xác minh Email" as UC08
+  usecase "Xác minh SĐT" as UC09
+  usecase "Quản lý\nNgười dùng" as UC10
+  usecase "Quản lý\nVai trò" as UC11
+}
 
-' --- Use Cases ---
-usecase "UC-01: Đăng ký\n(Email/SĐT + Mật khẩu)" as UC01
-usecase "UC-02: Đăng nhập\n(Email/SĐT + Mật khẩu)" as UC02
-usecase "UC-03: Đăng xuất" as UC03
-usecase "UC-04: Làm mới Token" as UC04
-usecase "UC-05: Đặt lại mật khẩu (Email)" as UC05
-usecase "UC-06: Đặt lại mật khẩu (SĐT/OTP)" as UC06
-usecase "UC-07: Thay đổi mật khẩu" as UC07
-usecase "UC-08: Xác minh Email" as UC08
-usecase "UC-09: Xác minh SĐT" as UC09
-usecase "UC-10: Quản lý Người dùng" as UC10
-usecase "UC-11: Quản lý Vai trò" as UC11
-
-' --- Mối quan hệ của User ---
 user --> UC01
 user --> UC02
 user --> UC03
@@ -47,15 +33,12 @@ user --> UC05
 user --> UC06
 user --> UC07
 
-' --- Mối quan hệ của Admin ---
 admin --> UC10
 admin --> UC11
 
-' --- Mối quan hệ của System ---
 system --> UC08
 system --> UC09
 
-' --- Include/Extend ---
 UC02 ..> UC04 : <<include>>
 UC05 ..> UC07 : <<extend>>
 UC06 ..> UC07 : <<extend>>

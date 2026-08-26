@@ -1,19 +1,19 @@
 # ============================================================
-# Module Registry - BA Documentation Framework
-# Define all modules, their databases, tables, and dependencies
+# Đăng ký Module - Frame tài liệu BA
+# Định nghĩa tất cả module, cơ sở dữ liệu, bảng và phụ thuộc
 # ============================================================
 
 project:
-  name: "Authentication System"
+  name: "Hệ thống Xác thực"
   short_name: "auth"
 
 # ============================================================
-# Modules
+# Module
 # ============================================================
 modules:
   - code: AUTH
-    name: "Authentication"
-    description: "User accounts, login, roles, sessions, verification. Runs email/SMS queue workers internally — consumes from RabbitMQ and calls EMAIL/SMS modules for delivery"
+    name: "Xác thực"
+    description: "Quản lý tài khoản người dùng, đăng nhập, vai trò, phiên làm việc, xác minh. Chạy nội bộ các worker hàng đợi email/SMS — tiêu thụ từ RabbitMQ và gọi các module EMAIL/SMS để gửi"
     database: auth_db
     tables:
       - auth_users
@@ -35,10 +35,10 @@ modules:
     queue_workers:
       - name: "Email Queue Worker"
         queues: ["verification.email", "password.reset.email", "invitation.email"]
-        description: "Consume email events (verification, password reset, invitation), call EMAIL module to send emails"
+        description: "Tiêu thụ sự kiện email (xác minh, đặt lại mật khẩu, lời mời), gọi module EMAIL để gửi email"
       - name: "SMS Queue Worker"
         queues: ["password.reset.sms"]
-        description: "Consume password reset SMS events, call SMS module to send OTP"
+        description: "Tiêu thụ sự kiện SMS đặt lại mật khẩu, gọi module SMS để gửi OTP"
     tech_stack:
       - NestJS
       - Better Auth
@@ -47,8 +47,8 @@ modules:
       - RabbitMQ (amqplib)
 
   - code: SMS
-    name: "SMS Service"
-    description: "SMS delivery logging, tracking, and audit trail"
+    name: "Dịch vụ SMS"
+    description: "Ghi nhật ký gửi SMS, theo dõi và lưu trữ lịch sử kiểm toán"
     database: sms_db
     tables:
       - sms_logs
@@ -61,8 +61,8 @@ modules:
       - Twilio
 
   - code: EMAIL
-    name: "Email Notification"
-    description: "Email notification delivery, templating, and audit trail. Provides email sending API (templates, SendGrid/SMTP) — consumed by AUTH's email queue worker"
+    name: "Thông báo Email"
+    description: "Gửi thông báo email, quản lý mẫu và lưu trữ lịch sử kiểm toán. Cung cấp API gửi email (mẫu, SendGrid/SMTP) — được worker hàng đợi email của AUTH sử dụng"
     database: email_db
     tables:
       - email_logs
@@ -74,8 +74,8 @@ modules:
       - SendGrid/SMTP
 
   - code: RECR
-    name: "Recruitment"
-    description: "End-to-end recruitment management with 3 roles: Candidate, HR, Employer"
+    name: "Tuyển dụng"
+    description: "Quản lý tuyển dụng toàn diện với 3 vai trò: Ứng viên, HR, Nhà tuyển dụng"
     database: recr_db
     tables:
       - recr_users
@@ -100,8 +100,8 @@ modules:
       - RabbitMQ
 
   - code: WALLET
-    name: "Electronic Wallet"
-    description: "Electronic wallet for payments, deposits, withdrawals, and financial transactions within the recruitment platform"
+    name: "Ví điện tử"
+    description: "Ví điện tử cho thanh toán, nạp tiền, rút tiền và các giao dịch tài chính trong nền tảng tuyển dụng"
     database: wallet_db
     tables:
       - wallet_wallets
@@ -120,8 +120,8 @@ modules:
       - RabbitMQ
 
   - code: LOG
-    name: "Logger"
-    description: "Centralized event logging — receives log events from all services via RabbitMQ, stores in OpenSearch for full-text search, analytics, and dashboards"
+    name: "Ghi nhật ký"
+    description: "Ghi nhật ký tập trung sự kiện — nhận sự kiện nhật ký từ tất cả dịch vụ qua RabbitMQ, lưu trữ trong OpenSearch để tìm kiếm toàn văn, phân tích và bảng điều khiển"
     database: opensearch
     index: log-events
     tables: []
@@ -133,115 +133,135 @@ modules:
       - OpenSearch (@opensearch-project/opensearch)
     architecture:
       description: |
-        Event-driven logging pipeline (OpenSearch as primary store):
-        Any Service → RabbitMQ (queue: log.events) → Logger Consumer → OpenSearch
+        Pipeline ghi nhật ký theo sự kiện (OpenSearch làm kho lưu trữ chính):
+        Bất kỳ Dịch vụ nào → RabbitMQ (queue: log.events) → Logger Consumer → OpenSearch
       components:
         - name: Log Producer
-          role: "Publishes log events to RabbitMQ queue 'log.events'"
-          implemented_in: "Each service (AUTH, SMS, etc.)"
+          role: "Đăng phát sự kiện nhật ký lên hàng đợi RabbitMQ 'log.events'"
+          implemented_in: "Mỗi dịch vụ (AUTH, SMS, v.v.)"
         - name: Log Consumer
-          role: "Consumes from RabbitMQ, indexes to OpenSearch"
+          role: "Tiêu thụ từ RabbitMQ, lập chỉ mục vào OpenSearch"
           implemented_in: "Logger Worker"
         - name: OpenSearch
-          role: "Primary store — full-text search, analytics, dashboards"
+          role: "Kho lưu trữ chính — tìm kiếm toàn văn, phân tích, bảng điều khiển"
           index: "log-events"
         - name: Log Query API
-          role: "REST API to query logs from OpenSearch"
+          role: "API REST để truy vấn nhật ký từ OpenSearch"
       log_schema:
-        eventId: "keyword — unique event identifier (UUID)"
-        source: "text + keyword — producing service name (auth, sms, etc.)"
+        eventId: "keyword — mã định danh sự kiện duy nhất (UUID)"
+        source: "text + keyword — tên dịch vụ tạo sự kiện (auth, sms, v.v.)"
         level: "keyword — debug, info, warn, error"
-        action: "keyword — event action (login, register, send_otp, etc.)"
-        message: "text — human-readable log message"
-        input: "text — input data as JSON string"
-        output: "text — success output as JSON string"
-        error: "text — error message on failure"
-        exception: "text — exception with stack trace"
-        metadata: "object — additional context data"
-        traceId: "keyword — distributed trace ID"
-        userId: "keyword — associated user ID"
-        timestamp: "date — event timestamp (ISO 8601)"
+        action: "keyword — hành động sự kiện (login, register, send_otp, v.v.)"
+        message: "text — thông báo nhật ký dễ đọc"
+        input: "text — dữ liệu đầu vào dưới dạng chuỗi JSON"
+        output: "text — kết quả thành công dưới dạng chuỗi JSON"
+        error: "text — thông báo lỗi khi thất bại"
+        exception: "text — ngoại lệ kèm theo stack trace"
+        metadata: "object — dữ liệu ngữ cảnh bổ sung"
+        traceId: "keyword — mã truy vết phân tán"
+        userId: "keyword — mã người dùng liên quan"
+        timestamp: "date — thời gian sự kiện (ISO 8601)"
+
+  - code: FILE
+    name: "Quản lý tệp"
+    description: "Tải lên, tải xuống, liệt kê, quản lý thư mục, phân quyền và quản lý vòng đời tệp với local filesystem. Hỗ trợ thao tác hàng loạt, sao chép/di chuyển tệp, kiểm soát truy cập và hạn ngạch lưu trữ"
+    database: file_db
+    tables:
+      - sys_files
+      - sys_file_permissions
+      - sys_storage_usage
+      - sys_storage_quotas
+      - sys_storage_policies
+    depends_on:
+      - AUTH
+      - LOG
+    tech_stack:
+      - NestJS
+      - Drizzle ORM
+      - PostgreSQL
+      - Multer (local upload)
+      - fs (local filesystem)
 
 # ============================================================
-# Features — maps business features to modules
-# Shows which modules work together for each feature
+# Tính năng — ánh xạ tính năng kinh doanh với module
+# Cho thấy các module làm việc cùng nhau cho mỗi tính năng
 # ============================================================
 features:
-  - name: "User Registration"
+  - name: "Đăng ký người dùng"
     modules: [AUTH, SMS, EMAIL, LOG]
-    description: "User signs up, receives OTP via SMS/email, account created, event logged"
+    description: "Người dùng đăng ký, nhận OTP qua SMS/email, tài khoản được tạo, sự kiện được ghi nhật ký"
 
-  - name: "User Login"
+  - name: "Đăng nhập người dùng"
     modules: [AUTH, LOG]
-    description: "User authenticates, session created, login event logged"
+    description: "Người dùng xác thực, phiên làm việc được tạo, sự kiện đăng nhập được ghi nhật ký"
 
-  - name: "Phone Verification"
+  - name: "Xác minh số điện thoại"
     modules: [AUTH, SMS, LOG]
-    description: "User requests SMS OTP, SMS delivered, verification confirmed, event logged"
+    description: "Người dùng yêu cầu SMS OTP, SMS được gửi, xác minh được xác nhận, sự kiện được ghi nhật ký"
 
-  - name: "Email Verification"
+  - name: "Xác minh email"
     modules: [AUTH, EMAIL, LOG]
-    description: "User requests email OTP, email delivered, verification confirmed, event logged"
+    description: "Người dùng yêu cầu email OTP, email được gửi, xác minh được xác nhận, sự kiện được ghi nhật ký"
 
-  - name: "Password Reset"
+  - name: "Đặt lại mật khẩu"
     modules: [AUTH, EMAIL, LOG]
-    description: "User requests reset, email sent with token, password updated, event logged"
+    description: "Người dùng yêu cầu đặt lại, email được gửi kèm token, mật khẩu được cập nhật, sự kiện được ghi nhật ký"
 
-  - name: "Job Posting"
+  - name: "Đăng tin tuyển dụng"
     modules: [RECR, LOG]
-    description: "HR Manager creates job listing, job published, event logged"
+    description: "Quản lý HR tạo tin tuyển dụng, tin được đăng, sự kiện được ghi nhật ký"
 
-  - name: "Application Submission"
+  - name: "Nộp đơn ứng tuyển"
     modules: [RECR, EMAIL, LOG]
-    description: "Candidate submits application, confirmation email sent, event logged"
+    description: "Ứng viên nộp đơn ứng tuyển, email xác nhận được gửi, sự kiện được ghi nhật ký"
 
-  - name: "Interview Scheduling"
+  - name: "Lên lịch phỏng vấn"
     modules: [RECR, EMAIL, LOG]
-    description: "Recruiter schedules interview, calendar invite sent, event logged"
+    description: "Nhà tuyển dụng lên lịch phỏng vấn, lời mời lịch được gửi, sự kiện được ghi nhật ký"
 
-  - name: "Offer Management"
+  - name: "Quản lý lời mời"
     modules: [RECR, EMAIL, LOG]
-    description: "Recruiter creates offer, offer letter sent, event logged"
+    description: "Nhà tuyển dụng tạo lời mời, thư lời mời được gửi, sự kiện được ghi nhật ký"
 
-  - name: "Wallet Deposit"
+  - name: "Nạp tiền vào ví"
     modules: [WALLET, LOG]
-    description: "User deposits funds via bank transfer, credit card, or e-wallet, transaction recorded"
+    description: "Người dùng nạp tiền qua chuyển khoản ngân hàng, thẻ tín dụng hoặc ví điện tử, giao dịch được ghi nhận"
 
-  - name: "Wallet Withdrawal"
+  - name: "Rút tiền từ ví"
     modules: [WALLET, LOG]
-    description: "User requests withdrawal, admin approves, funds transferred to bank"
+    description: "Người dùng yêu cầu rút tiền, quản trị viên phê duyệt, tiền được chuyển vào ngân hàng"
 
-  - name: "Wallet Transfer"
+  - name: "Chuyển tiền trong ví"
     modules: [WALLET, LOG]
-    description: "User transfers funds to another user's wallet"
+    description: "Người dùng chuyển tiền sang ví của người dùng khác"
 
-  - name: "Job Posting Payment"
+  - name: "Thanh toán đăng tin tuyển dụng"
     modules: [WALLET, RECR, LOG]
-    description: "Employer pays for job posting using wallet balance, job activated"
+    description: "Nhà tuyển dụng thanh toán đăng tin bằng số dư ví, tin được kích hoạt"
 
-  - name: "Featured Job Payment"
+  - name: "Thanh toán tin nổi bật"
     modules: [WALLET, RECR, LOG]
-    description: "Employer pays to feature job listing, job marked as featured"
+    description: "Nhà tuyển dụng thanh toán để hiển thị tin nổi bật, tin được đánh dấu nổi bật"
 
-  - name: "Wallet Management"
+  - name: "Quản lý ví"
     modules: [WALLET, LOG]
-    description: "User views balance, sets PIN, manages payment methods, views transaction history"
+    description: "Người dùng xem số dư, đặt mã PIN, quản lý phương thức thanh toán, xem lịch sử giao dịch"
 
 # ============================================================
-# Inter-Module Communication (Webhook Events)
-# Modules communicate via webhook events
+# Giao tiếp giữa các Module (Sự kiện Webhook)
+# Các module giao tiếp qua sự kiện webhook
 # ============================================================
 webhooks:
 
   # ============================================================
-  # Logger Module Events (all services -> LOG)
+  # Sự kiện Module Logger (tất cả dịch vụ -> LOG)
   # ============================================================
 
   - from: AUTH
     to: LOG
     event: auth.event.logged
     protocol: RabbitMQ
-    description: "AUTH publishes any auth event (login, logout, register, password change) to Logger"
+    description: "AUTH đăng phát bất kỳ sự kiện xác thực nào (đăng nhập, đăng xuất, đăng ký, đổi mật khẩu) đến Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -257,7 +277,7 @@ webhooks:
     to: LOG
     event: sms.event.logged
     protocol: RabbitMQ
-    description: "SMS publishes delivery events (sent, delivered, failed) to Logger"
+    description: "SMS đăng phát sự kiện gửi (đã gửi, đã nhận, thất bại) đến Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -270,14 +290,14 @@ webhooks:
       timestamp: iso8601
 
   # ============================================================
-  # Email Module Events (AUTH -> EMAIL)
+  # Sự kiện Module Email (AUTH -> EMAIL)
   # ============================================================
 
   - from: AUTH
     to: EMAIL
     event: verification.email.requested
     protocol: RabbitMQ
-    description: "AUTH publishes when user requests email verification"
+    description: "AUTH đăng phát khi người dùng yêu cầu xác minh email"
     queue: verification.email
     payload:
       user_id: uuid
@@ -290,7 +310,7 @@ webhooks:
     to: EMAIL
     event: verification.email.resent
     protocol: RabbitMQ
-    description: "AUTH publishes when user resends email verification (rate-limited)"
+    description: "AUTH đăng phát khi người dùng gửi lại email xác minh (giới hạn tốc độ)"
     queue: verification.email
     payload:
       user_id: uuid
@@ -303,7 +323,7 @@ webhooks:
     to: AUTH
     event: verification.email.delivered
     protocol: Webhook
-    description: "EMAIL confirms delivery status back to AUTH"
+    description: "EMAIL xác nhận trạng thái gửi lại cho AUTH"
     url: /api/webhooks/email/delivered
     payload:
       verification_id: string
@@ -312,14 +332,14 @@ webhooks:
       error_message: string | null
 
   # ============================================================
-  # Password Reset Events (AUTH -> EMAIL, SMS)
+  # Sự kiện đặt lại mật khẩu (AUTH -> EMAIL, SMS)
   # ============================================================
 
   - from: AUTH
     to: EMAIL
     event: password.reset.email.requested
     protocol: RabbitMQ
-    description: "AUTH publishes when user requests password reset via email"
+    description: "AUTH đăng phát khi người dùng yêu cầu đặt lại mật khẩu qua email"
     queue: password.reset.email
     payload:
       user_id: uuid
@@ -332,7 +352,7 @@ webhooks:
     to: SMS
     event: password.reset.sms.requested
     protocol: RabbitMQ
-    description: "AUTH publishes when user requests password reset via SMS"
+    description: "AUTH đăng phát khi người dùng yêu cầu đặt lại mật khẩu qua SMS"
     queue: password.reset.sms
     payload:
       user_id: uuid
@@ -342,14 +362,14 @@ webhooks:
       verification_id: string
 
   # ============================================================
-  # Invitation Events (AUTH -> EMAIL)
+  # Sự kiện lời mời (AUTH -> EMAIL)
   # ============================================================
 
   - from: AUTH
     to: EMAIL
     event: invitation.email.requested
     protocol: RabbitMQ
-    description: "AUTH publishes when admin invites member to organization"
+    description: "AUTH đăng phát khi quản trị viên mời thành viên vào tổ chức"
     queue: invitation.email
     payload:
       event_id: uuid
@@ -365,7 +385,7 @@ webhooks:
     to: EMAIL
     event: invitation.email.resent
     protocol: RabbitMQ
-    description: "AUTH publishes when admin resends invitation"
+    description: "AUTH đăng phát khi quản trị viên gửi lại lời mời"
     queue: invitation.email
     payload:
       event_id: uuid
@@ -378,14 +398,14 @@ webhooks:
       invitation_id: string
 
   # ============================================================
-  # Email Module Events (EMAIL -> LOG)
+  # Sự kiện Module Email (EMAIL -> LOG)
   # ============================================================
 
   - from: EMAIL
     to: LOG
     event: email.event.logged
     protocol: RabbitMQ
-    description: "EMAIL publishes email delivery events (sent, delivered, failed) to Logger"
+    description: "EMAIL đăng phát sự kiện gửi email (đã gửi, đã nhận, thất bại) đến Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -398,14 +418,14 @@ webhooks:
       timestamp: iso8601
 
   # ============================================================
-  # Recruitment Module Events (RECR -> EMAIL, LOG)
+  # Sự kiện Module Tuyển dụng (RECR -> EMAIL, LOG)
   # ============================================================
 
   - from: RECR
     to: EMAIL
     event: application.submitted
     protocol: RabbitMQ
-    description: "RECR publishes when candidate submits application"
+    description: "RECR đăng phát khi ứng viên nộp đơn ứng tuyển"
     queue: recruitment.email
     payload:
       event_id: uuid
@@ -418,7 +438,7 @@ webhooks:
     to: EMAIL
     event: interview.scheduled
     protocol: RabbitMQ
-    description: "RECR publishes when interview is scheduled"
+    description: "RECR đăng phát khi phỏng vấn được lên lịch"
     queue: recruitment.email
     payload:
       event_id: uuid
@@ -434,7 +454,7 @@ webhooks:
     to: EMAIL
     event: offer.sent
     protocol: RabbitMQ
-    description: "RECR publishes when offer letter is sent"
+    description: "RECR đăng phát khi thư lời mời được gửi"
     queue: recruitment.email
     payload:
       event_id: uuid
@@ -449,7 +469,7 @@ webhooks:
     to: LOG
     event: recruitment.event.logged
     protocol: RabbitMQ
-    description: "RECR publishes recruitment events (application, interview, offer) to Logger"
+    description: "RECR đăng phát sự kiện tuyển dụng (đơn ứng tuyển, phỏng vấn, lời mời) đến Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -460,14 +480,14 @@ webhooks:
       timestamp: iso8601
 
   # ============================================================
-  # Wallet Module Events (WALLET -> RECR, LOG)
+  # Sự kiện Module Ví (WALLET -> RECR, LOG)
   # ============================================================
 
   - from: WALLET
     to: RECR
     event: wallet.payment.completed
     protocol: RabbitMQ
-    description: "WALLET publishes when payment for job posting or featured job is completed"
+    description: "WALLET đăng phát khi thanh toán cho đăng tin tuyển dụng hoặc tin nổi bật hoàn tất"
     queue: wallet.events
     payload:
       event_id: uuid
@@ -483,7 +503,7 @@ webhooks:
     to: LOG
     event: wallet.event.logged
     protocol: RabbitMQ
-    description: "WALLET publishes wallet events (deposit, withdrawal, transfer, payment) to Logger"
+    description: "WALLET đăng phát sự kiện ví (nạp tiền, rút tiền, chuyển khoản, thanh toán) đến Logger"
     queue: log.events
     payload:
       event_id: uuid
@@ -496,17 +516,67 @@ webhooks:
       timestamp: iso8601
 
   # ============================================================
-  # Auth Module Events (AUTH -> WALLET)
+  # Sự kiện Module Auth (AUTH -> WALLET)
   # ============================================================
 
   - from: AUTH
     to: WALLET
     event: user.registered
     protocol: RabbitMQ
-    description: "AUTH publishes when new user registers, WALLET creates wallet"
+    description: "AUTH đăng phát khi người dùng mới đăng ký, WALLET tạo ví"
     queue: wallet.user
     payload:
       user_id: uuid
       email: string
       role: string
+      timestamp: iso8601
+
+  # ============================================================
+  # Sự kiện Module File (FILE -> LOG)
+  # ============================================================
+
+  - from: FILE
+    to: LOG
+    event: file.event.logged
+    protocol: RabbitMQ
+    description: "FILE đăng phát sự kiện truy cập tệp tin (xem, tải xuống, sửa, xóa) đến Logger để kiểm toán"
+    queue: log.events
+    payload:
+      event_id: uuid
+      level: "info" | "warn" | "error"
+      action: string
+      user_id: uuid | null
+      file_id: uuid
+      file_name: string
+      ip_address: string
+      metadata: jsonb
+      timestamp: iso8601
+
+  # ============================================================
+  # Sự kiện Dọn dẹp File (FILE内部 — FileWorker tiêu thụ)
+  # ============================================================
+
+  - from: FILE
+    to: FILE
+    event: file.deleted
+    protocol: RabbitMQ
+    description: "FILE đăng phát khi tệp tin bị xóa mềm, FileWorker tiêu thụ để xóa vật lý trên S3"
+    queue: file.events
+    payload:
+      file_id: uuid
+      storage_key: string
+      bucket_name: string
+      user_id: uuid
+      timestamp: iso8601
+
+  - from: FILE
+    to: FILE
+    event: file.temp_cleanup
+    protocol: RabbitMQ
+    description: "FILE đăng phát khi tệp tin tạm hết hạn bị dọn dẹp, FileWorker tiêu thụ để xóa vật lý trên S3"
+    queue: file.events
+    payload:
+      file_id: uuid
+      storage_key: string
+      bucket_name: string
       timestamp: iso8601

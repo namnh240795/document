@@ -1,176 +1,205 @@
-# Implementation Status Checklist
+# Kiểm Tra Trạng Thái Hiện Thực
 
-Cross-reference of `modules.yaml` features vs actual codebase. Last updated: 2026-08-21.
+Đối chiếu các tính năng trong `modules.yaml` với codebase thực tế. Cập nhật lần cuối: 2026-08-21.
 
-**Legend:**
-- ✅ Fully implemented and working
-- ⚠️ Partially implemented (stub/skeleton or missing integration)
-- ❌ Not implemented
-
----
-
-## AUTH Module (`apps/auth/`)
-
-| # | Document Feature | Status | Backend | Frontend | Notes |
-|---|-----------------|--------|---------|----------|-------|
-| 1 | User Registration | ✅ | ✅ | ✅ | Email/password + verification code |
-| 2 | User Login | ✅ | ✅ | ✅ | Email/password + Google OAuth |
-| 3 | Phone Verification | ⚠️ | ⚠️ | — | SMS service exists, no Twilio — Discord webhook only |
-| 4 | Email Verification | ✅ | ✅ | ✅ | Verification code via email |
-| 5 | Password Reset | ✅ | ✅ | ✅ | Email reset via Better Auth (`request-password-reset` / `reset-password`), RabbitMQ + `reset_password` template, sessions revoked. Phone OTP reset (FR-006) not implemented |
-| 6 | Organization Management | ✅ | ✅ | ✅ | Create, list, switch, roles |
-| 7 | Team Management | ✅ | ✅ | ✅ | CRUD within orgs |
-| 8 | Member Invitation | ✅ | ✅ | — | Invite with role assignment |
-| 9 | RBAC | ✅ | ✅ | ✅ | Casbin-style permissions |
-| 10 | Session Management | ✅ | ✅ | — | JWT + JWKS, cookies |
-| 11 | Social Auth (Google) | ✅ | ✅ | ✅ | OAuth callback, account linking |
+**Chú Thích:**
+- ✅ Đã hiện thực đầy đủ và hoạt động
+- ⚠️ Hiện thực một phần (stub/skeleton hoặc thiếu tích hợp)
+- ❌ Chưa hiện thực
 
 ---
 
-## EMAIL Module (`apps/email/`)
+## Module AUTH (`apps/auth/`)
 
-| # | Document Feature | Status | Backend | Frontend | Notes |
-|---|-----------------|--------|---------|----------|-------|
-| 12 | Send Email (REST) | ✅ | ✅ | — | JWT-protected endpoint |
-| 13 | Send Email (RabbitMQ) | ✅ | ✅ | — | Async consumer on `email.send` queue |
-| 14 | Email Tracking | ✅ | ✅ | — | Status tracking, logs, stats |
-| 15 | Email Templates | ✅ | ✅ | ✅ | CRUD in admin panel |
-| 16 | Discord Webhook | ✅ | ✅ | — | Email notifications via Discord |
-
----
-
-## SMS Module (`apps/sms/`)
-
-| # | Document Feature | Status | Backend | Frontend | Notes |
-|---|-----------------|--------|---------|----------|-------|
-| 17 | Send SMS (REST) | ✅ | ✅ | — | JWT-protected endpoint |
-| 18 | SMS Tracking | ✅ | ✅ | — | Status tracking, logs, stats |
-| 19 | SMS Templates | ✅ | ✅ | ✅ | CRUD in admin panel |
-| 20 | Discord Webhook | ✅ | ✅ | — | SMS notifications via Discord |
-| 21 | Twilio Integration | ❌ | ❌ | — | Only Discord, no real SMS provider |
+| # | Tính Năng Theo Tài Liệu | Trạng Thái | Backend | Frontend | Ghi Chú |
+|---|------------------------|------------|---------|----------|--------|
+| 1 | Đăng Ký Tài Khoản | ✅ | ✅ | ✅ | Email/password + mã xác minh |
+| 2 | Đăng Nhập | ✅ | ✅ | ✅ | Email/password + Google OAuth |
+| 3 | Xác Minh Số Điện Thoại | ⚠️ | ⚠️ | — | SMS service đã có, không có Twilio — chỉ Discord webhook |
+| 4 | Xác Minh Email | ✅ | ✅ | ✅ | Mã xác minh qua email |
+| 5 | Đặt Lại Mật Khẩu | ✅ | ✅ | ✅ | Đặt lại qua email bằng Better Auth (`request-password-reset` / `reset-password`), RabbitMQ + template `reset_password`, sessions bị thu hồi. Đặt lại OTP qua điện thoại (FR-006) chưa hiện thực |
+| 6 | Quản Lý Tổ Chức | ✅ | ✅ | ✅ | Tạo, liệt kê, chuyển đổi, vai trò |
+| 7 | Quản Lý Nhóm | ✅ | ✅ | ✅ | CRUD trong tổ chức |
+| 8 | Mời Thành Viên | ✅ | ✅ | — | Mời với phân quyền vai trò |
+| 9 | RBAC | ✅ | ✅ | ✅ | Quyền kiểu Casbin |
+| 10 | Quản Lý Phiên | ✅ | ✅ | — | JWT + JWKS, cookies |
+| 11 | Xác Thực Social (Google) | ✅ | ✅ | ✅ | OAuth callback, liên kết tài khoản |
 
 ---
 
-## LOG Module (`apps/log-service/`)
+## Module EMAIL (`apps/email/`)
 
-| # | Document Feature | Status | Backend | Frontend | Notes |
-|---|-----------------|--------|---------|----------|-------|
-| 22 | Log Ingestion (RabbitMQ) | ✅ | ✅ | — | Consumer on `log.events` queue |
-| 23 | OpenSearch Indexing | ✅ | ✅ | — | With in-memory fallback |
-| 24 | Log Query API | ✅ | ✅ | ✅ | Filters: level, source, action, userId, date range |
-| 25 | Log Analytics | ✅ | ✅ | — | Aggregations by level, source, timeline |
-
----
-
-## RECR Module (`apps/recruitment/`)
-
-| # | Document Feature | Status | Backend | Frontend | Notes |
-|---|-----------------|--------|---------|----------|-------|
-| 26 | Job Posting | ✅ | ✅ | ✅ | Full CRUD: create/update/delete/submit-for-approval, public browse with filtering, employer job list |
-| 27 | Application Submission | ⚠️ | ⚠️ | ✅ | DB schema exists, apply endpoint returns stubs |
-| 28 | Interview Scheduling | ✅ | ✅ | ✅ | Schedule, update, cancel — fully working |
-| 29 | Offer Management | ⚠️ | ⚠️ | — | `recr_offers` table exists, no creation/update endpoints |
-| 30 | Candidate Profile | ⚠️ | ⚠️ | ✅ | Endpoint exists, returns stubs |
-| 31 | Employer Profile | ⚠️ | ⚠️ | ✅ | Endpoint exists, returns stubs |
-| 32 | HR Profile | ⚠️ | ⚠️ | ✅ | Endpoint exists, returns stubs |
-| 33 | Evaluations | ✅ | ✅ | ✅ | Submit, query, duplicate prevention |
-| 34 | Reviews (Job) | ⚠️ | ⚠️ | ✅ | DB schema exists, endpoints return stubs |
-| 35 | Reviews (Candidate) | ⚠️ | ⚠️ | ✅ | DB schema exists, endpoints return stubs |
-| 36 | Recruitment Pipeline | ⚠️ | ⚠️ | — | Endpoint exists, returns stubs |
-| 37 | Reports | ⚠️ | ⚠️ | — | Endpoint exists, returns stubs |
-| 38 | Subscriptions | ⚠️ | ⚠️ | — | DB schema + endpoints exist, all return stubs |
-| 39 | Dashboard Stats | ⚠️ | ⚠️ | ✅ | Endpoint exists, returns stubs |
-| 40 | Elasticsearch | ❌ | ❌ | — | Listed in tech stack, not wired up |
+| # | Tính Năng Theo Tài Liệu | Trạng Thái | Backend | Frontend | Ghi Chú |
+|---|------------------------|------------|---------|----------|--------|
+| 12 | Gửi Email (REST) | ✅ | ✅ | — | Endpoint bảo vệ bằng JWT |
+| 13 | Gửi Email (RabbitMQ) | ✅ | ✅ | — | Async consumer trên queue `email.send` |
+| 14 | Theo Dõi Email | ✅ | ✅ | — | Theo dõi trạng thái, nhật ký, thống kê |
+| 15 | Mẫu Email | ✅ | ✅ | ✅ | CRUD trong admin panel |
+| 16 | Discord Webhook | ✅ | ✅ | — | Thông báo email qua Discord |
 
 ---
 
-## WALLET Module
+## Module SMS (`apps/sms/`)
 
-| # | Document Feature | Status | Backend | Frontend | Notes |
-|---|-----------------|--------|---------|----------|-------|
-| 41 | Wallet Deposit | ❌ | ❌ | ❌ | No wallet service exists |
-| 42 | Wallet Withdrawal | ❌ | ❌ | ❌ | No wallet service exists |
-| 43 | Wallet Transfer | ❌ | ❌ | ❌ | No wallet service exists |
-| 44 | Job Posting Payment | ❌ | ❌ | ❌ | No wallet service exists |
-| 45 | Featured Job Payment | ❌ | ❌ | ❌ | No wallet service exists |
-| 46 | Wallet Management | ❌ | ❌ | ❌ | No wallet service exists |
+| # | Tính Năng Theo Tài Liệu | Trạng Thái | Backend | Frontend | Ghi Chú |
+|---|------------------------|------------|---------|----------|--------|
+| 17 | Gửi SMS (REST) | ✅ | ✅ | — | Endpoint bảo vệ bằng JWT |
+| 18 | Theo Dõi SMS | ✅ | ✅ | — | Theo dõi trạng thái, nhật ký, thống kê |
+| 19 | Mẫu SMS | ✅ | ✅ | ✅ | CRUD trong admin panel |
+| 20 | Discord Webhook | ✅ | ✅ | — | Thông báo SMS qua Discord |
+| 21 | Tích Hợp Twilio | ❌ | ❌ | — | Chỉ có Discord, không có nhà cung cấp SMS thật |
+
+---
+
+## Module LOG (`apps/log-service/`)
+
+| # | Tính Năng Theo Tài Liệu | Trạng Thái | Backend | Frontend | Ghi Chú |
+|---|------------------------|------------|---------|----------|--------|
+| 22 | Thu Thập Log (RabbitMQ) | ✅ | ✅ | — | Consumer trên queue `log.events` |
+| 23 | Index OpenSearch | ✅ | ✅ | — | Có fallback trong bộ nhớ |
+| 24 | API Truy Vấn Log | ✅ | ✅ | ✅ | Bộ lọc: level, source, action, userId, khoảng ngày |
+| 25 | Phân Tích Log | ✅ | ✅ | — | Tổng hợp theo level, source, timeline |
+
+---
+
+## Module RECR (`apps/recruitment/`)
+
+| # | Tính Năng Theo Tài Liệu | Trạng Thái | Backend | Frontend | Ghi Chú |
+|---|------------------------|------------|---------|----------|--------|
+| 26 | Đăng Tin Tuyển Dụng | ✅ | ✅ | ✅ | CRUD đầy đủ: tạo/sửa/xóa/gửi duyệt, tìm kiếm công khai với bộ lọc, danh sách việc làm của employer |
+| 27 | Nộp Hồ Sơ | ⚠️ | ⚠️ | ✅ | Schema DB đã có, endpoint apply trả về stub |
+| 28 | Lịch Phỏng Vấn | ✅ | ✅ | ✅ | Lịch, cập nhật, hủy — hoạt động đầy đủ |
+| 29 | Quản Lý Offer | ⚠️ | ⚠️ | — | Bảng `recr_offers` đã có, không có endpoint tạo/cập nhật |
+| 30 | Hồ Sơ Ứng Viên | ⚠️ | ⚠️ | ✅ | Endpoint đã có, trả về stub |
+| 31 | Hồ Sơ Nhà Tuyển Dụng | ⚠️ | ⚠️ | ✅ | Endpoint đã có, trả về stub |
+| 32 | Hồ Sơ HR | ⚠️ | ⚠️ | ✅ | Endpoint đã có, trả về stub |
+| 33 | Đánh Giá | ✅ | ✅ | ✅ | Nộp, truy vấn, chống trùng lặp |
+| 34 | Đánh Giá (Việc Làm) | ⚠️ | ⚠️ | ✅ | Schema DB đã có, endpoint trả về stub |
+| 35 | Đánh Giá (Ứng Viên) | ⚠️ | ⚠️ | ✅ | Schema DB đã có, endpoint trả về stub |
+| 36 | Quy Trình Tuyển Dụng | ⚠️ | ⚠️ | — | Endpoint đã có, trả về stub |
+| 37 | Báo Cáo | ⚠️ | ⚠️ | — | Endpoint đã có, trả về stub |
+| 38 | Gói Đăng Ký | ⚠️ | ⚠️ | — | Schema DB + endpoint đã có, tất cả trả về stub |
+| 39 | Thống Kê Dashboard | ⚠️ | ⚠️ | ✅ | Endpoint đã có, trả về stub |
+| 40 | Elasticsearch | ❌ | ❌ | — | Liệt kê trong tech stack, chưa kết nối |
+
+---
+
+## Module WALLET
+
+| # | Tính Năng Theo Tài Liệu | Trạng Thái | Backend | Frontend | Ghi Chú |
+|---|------------------------|------------|---------|----------|--------|
+| 41 | Nạp Tiền Ví | ❌ | ❌ | ❌ | Không có wallet service |
+| 42 | Rút Tiền Ví | ❌ | ❌ | ❌ | Không có wallet service |
+| 43 | Chuyển Tiền Ví | ❌ | ❌ | ❌ | Không có wallet service |
+| 44 | Thanh Toán Đăng Tin | ❌ | ❌ | ❌ | Không có wallet service |
+| 45 | Thanh Toán Tin Nổi Bật | ❌ | ❌ | ❌ | Không có wallet service |
+| 46 | Quản Lý Ví | ❌ | ❌ | ❌ | Không có wallet service |
+
+---
+
+## Module FILE (`apps/file/`)
+
+| # | Tính Năng Theo Tài Liệu | Trạng Thái | Backend | Frontend | Ghi Chú |
+|---|------------------------|------------|---------|----------|--------|
+| 47 | Tải Lên Tệp Tin (Presigned URL) | ❌ | ❌ | ❌ | Không có file service |
+| 48 | Tải Xuống Tệp Tin | ❌ | ❌ | ❌ | Không có file service |
+| 49 | Liệt Kê Tệp Tin | ❌ | ❌ | ❌ | Không có file service |
+| 50 | Xóa Tệp Tin (Soft Delete) | ❌ | ❌ | ❌ | Không có file service |
+| 51 | Kiểm Soát Truy Cập (RBAC) | ❌ | ❌ | ❌ | Không có file service |
+| 52 | Dọn Dẹp Tệp TẠM (Cron) | ❌ | ❌ | ❌ | Không có file service |
+| 53 | Tải Lên CV/Hồ Sơ | ❌ | ❌ | ❌ | Không có file service |
+| 54 | Tạo Thư Mục | ❌ | ❌ | ❌ | Không có file service |
+| 55 | Tìm Kiếm Tệp Tin/Thư Mục | ❌ | ❌ | ❌ | Không có file service |
+| 56 | Đổi Tên Tệp Tin/Thư Mục | ❌ | ❌ | ❌ | Không có file service |
+| 57 | Tải Lên Nhiều Tệp Tin | ❌ | ❌ | ❌ | Không có file service |
+| 58 | Sao Chép Tệp Tin | ❌ | ❌ | ❌ | Không có file service |
+| 59 | Di Chuyển Tệp Tin | ❌ | ❌ | ❌ | Không có file service |
+| 60 | Quản Lý Quyền Tệp Tin | ❌ | ❌ | ❌ | Không có file service |
+| 61 | Ghi Nhật Ký Lịch Sử Truy Cập | ❌ | ❌ | ❌ | Không có file service |
+| 62 | Theo Dõi Sử Dụng Lưu Trữ | ❌ | ❌ | ❌ | Không có file service |
+| 63 | Quản Lý Hạn Ngạch Lưu Trữ | ❌ | ❌ | ❌ | Không có file service |
+| 64 | Cấu Hình Chính Sách Lưu Trữ | ❌ | ❌ | ❌ | Không có file service |
 
 ---
 
 ## Frontend (`global-talent-acquisition/`)
 
-| # | Feature | Status | Notes |
-|---|---------|--------|-------|
-| 47 | Job Listings (Public) | ✅ | Hero search, filters, sorting, tabs |
-| 48 | Login Page | ✅ | Email, Google OAuth, role selection, forgot-password modal |
-| 49 | Registration Page | ✅ | Name, email, password, role |
-| 50 | Candidate Dashboard | ✅ | Stats, recent activity |
-| 51 | Applied Jobs View | ✅ | UI ready, depends on backend |
-| 52 | Favorite Jobs View | ✅ | UI ready |
-| 53 | My CV / Resume | ✅ | UI ready |
-| 54 | Interview Schedule | ✅ | UI ready |
-| 55 | Organization Dashboard | ✅ | Stats, overview |
-| 56 | Job Management (Org) | ✅ | Create, list, edit UI |
-| 57 | Candidate Management (Org) | ✅ | Browse, filter UI |
-| 58 | Organization Creation | ✅ | Multi-field form with validation |
-| 59 | Salary Calculator | ✅ | Gross/net + unemployment |
-| 60 | Referral Wallet | ✅ | UI for referral tracking |
+| # | Tính Năng | Trạng Thái | Ghi Chú |
+|---|----------|------------|--------|
+| 65 | Danh Sách Việc Làm (Công Khai) | ✅ | Tìm kiếm hero, bộ lọc, sắp xếp, tabs |
+| 66 | Trang Đăng Nhập | ✅ | Email, Google OAuth, chọn vai trò, modal quên mật khẩu |
+| 67 | Trang Đăng Ký | ✅ | Tên, email, mật khẩu, vai trò |
+| 68 | Dashboard Ứng Viên | ✅ | Thống kê, hoạt động gần đây |
+| 69 | Việc Đã Nộp | ✅ | UI sẵn sàng, phụ thuộc backend |
+| 70 | Việc Yêu Thích | ✅ | UI sẵn sàng |
+| 71 | Hồ Sơ / CV | ✅ | UI sẵn sàng |
+| 72 | Lịch Phỏng Vấn | ✅ | UI sẵn sàng |
+| 73 | Dashboard Tổ Chức | ✅ | Thống kê, tổng quan |
+| 74 | Quản Lý Việc Làm (Tổ Chức) | ✅ | UI tạo, liệt kê, chỉnh sửa |
+| 75 | Quản Lý Ứng Viên (Tổ Chức) | ✅ | UI tìm kiếm, bộ lọc |
+| 76 | Tạo Tổ Chức | ✅ | Form đa trường với xác thực |
+| 77 | Máy Tính Lương | ✅ | Gross/net + bảo hiểm thất nghiệp |
+| 78 | Ví Giới Thiệu | ✅ | UI theo dõi giới thiệu |
 
 ---
 
 ## Admin Panel (`onprem-admin/`)
 
-| # | Feature | Status | Notes |
-|---|---------|--------|-------|
-| 61 | Admin Login | ✅ | |
-| 62 | Dashboard Stats | ✅ | |
-| 63 | User Management | ✅ | CRUD, ban/unban, sessions |
-| 64 | Organization Management | ✅ | List, create |
-| 65 | Team Management | ✅ | List, create |
-| 66 | Email Templates | ✅ | CRUD |
-| 67 | SMS Templates | ✅ | CRUD |
-| 68 | Settings | ✅ | API URLs, maintenance mode |
+| # | Tính Năng | Trạng Thái | Ghi Chú |
+|---|----------|------------|--------|
+| 79 | Đăng Nhập Admin | ✅ | |
+| 80 | Thống Kê Dashboard | ✅ | |
+| 81 | Quản Lý Người Dùng | ✅ | CRUD, chặn/bỏ chặn, phiên |
+| 82 | Quản Lý Tổ Chức | ✅ | Liệt kê, tạo |
+| 83 | Quản Lý Nhóm | ✅ | Liệt kê, tạo |
+| 84 | Mẫu Email | ✅ | CRUD |
+| 85 | Mẫu SMS | ✅ | CRUD |
+| 86 | Thiết Lập | ✅ | API URLs, chế độ bảo trì |
 
 ---
 
-## Webhook Events (from `modules.yaml`)
+## Sự Kiện Webhook (từ `modules.yaml`)
 
-| # | From → To | Event | Status | Notes |
-|---|-----------|-------|--------|-------|
-| 69 | AUTH → SMS | `verification.requested` | ❌ | No Twilio integration |
-| 70 | AUTH → SMS | `verification.resent` | ❌ | No Twilio integration |
-| 71 | SMS → AUTH | `verification.delivered` | ❌ | No webhook callback |
-| 72 | AUTH → LOG | `auth.event.logged` | ⚠️ | Logger exists, not wired to auth events |
-| 73 | SMS → LOG | `sms.event.logged` | ⚠️ | Log service exists, not wired |
-| 74 | AUTH → EMAIL | `verification.email.requested` | ⚠️ | Email service exists, no RabbitMQ publish from auth |
-| 75 | AUTH → EMAIL | `verification.email.resent` | ⚠️ | Same as above |
-| 76 | EMAIL → AUTH | `verification.email.delivered` | ❌ | No webhook callback |
-| 77 | EMAIL → LOG | `email.event.logged` | ⚠️ | Log service exists, not wired |
-| 78 | RECR → EMAIL | `application.submitted` | ❌ | No event publishing |
-| 79 | RECR → EMAIL | `interview.scheduled` | ❌ | No event publishing |
-| 80 | RECR → EMAIL | `offer.sent` | ❌ | No event publishing |
-| 81 | RECR → LOG | `recruitment.event.logged` | ❌ | No event publishing |
-| 82 | WALLET → RECR | `wallet.payment.completed` | ❌ | No wallet service |
-| 83 | WALLET → LOG | `wallet.event.logged` | ❌ | No wallet service |
-| 84 | AUTH → WALLET | `user.registered` | ❌ | No wallet service |
+| # | Từ → Đến | Sự Kiện | Trạng Thái | Ghi Chú |
+|---|-----------|---------|------------|--------|
+| 87 | AUTH → SMS | `verification.requested` | ❌ | Không có tích hợp Twilio |
+| 88 | AUTH → SMS | `verification.resent` | ❌ | Không có tích hợp Twilio |
+| 89 | SMS → AUTH | `verification.delivered` | ❌ | Không có webhook callback |
+| 90 | AUTH → LOG | `auth.event.logged` | ⚠️ | Logger đã có, chưa kết nối với sự kiện auth |
+| 91 | SMS → LOG | `sms.event.logged` | ⚠️ | Log service đã có, chưa kết nối |
+| 92 | AUTH → EMAIL | `verification.email.requested` | ⚠️ | Email service đã có, không có RabbitMQ publish từ auth |
+| 93 | AUTH → EMAIL | `verification.email.resent` | ⚠️ | Tương tự trên |
+| 94 | EMAIL → AUTH | `verification.email.delivered` | ❌ | Không có webhook callback |
+| 95 | EMAIL → LOG | `email.event.logged` | ⚠️ | Log service đã có, chưa kết nối |
+| 96 | RECR → EMAIL | `application.submitted` | ❌ | Không có phát sự kiện |
+| 97 | RECR → EMAIL | `interview.scheduled` | ❌ | Không có phát sự kiện |
+| 98 | RECR → EMAIL | `offer.sent` | ❌ | Không có phát sự kiện |
+| 99 | RECR → LOG | `recruitment.event.logged` | ❌ | Không có phát sự kiện |
+| 100 | WALLET → RECR | `wallet.payment.completed` | ❌ | Không có wallet service |
+| 101 | WALLET → LOG | `wallet.event.logged` | ❌ | Không có wallet service |
+| 102 | AUTH → WALLET | `user.registered` | ❌ | Không có wallet service |
+| 103 | FILE → LOG | `file.event.logged` | ❌ | Không có file service |
+| 104 | FILE → FILE | `file.deleted` | ❌ | Không có file service |
+| 105 | FILE → FILE | `file.temp_cleanup` | ❌ | Không có file service |
 
 ---
 
-## Summary
+## Tổng Hợp
 
-| Category | ✅ Implemented | ⚠️ Partial | ❌ Not Implemented |
-|----------|---------------|------------|-------------------|
-| **15 Document Features** | 4 | 5 | **6** (entire WALLET module) |
-| **Backend Services** | 5 (auth, email, sms, log, recr-jobs) | 1 (recr — other stubs) | **1** (wallet) |
+| Hạng Mục | ✅ Đã Hiện Thực | ⚠️ Một Phần | ❌ Chưa Hiện Thực |
+|----------|----------------|------------|-----------------|
+| **Tính Năng Theo Tài Liệu** | 4 | 5 | **24** (WALLET 6 + FILE 18) |
+| **Backend Services** | 5 (auth, email, sms, log, recr-jobs) | 1 (recr — các stub khác) | **2** (wallet, file) |
 | **Frontend/UI** | 14 | — | — |
 | **Admin Panel** | 8 | — | — |
-| **Webhook Events** | 0 | 3 | **13** |
+| **Sự Kiện Webhook** | 0 | 3 | **16** |
 
-### Priority Gaps
+### Khoảng Trống Ưu Tiên
 
-1. **WALLET module** — 6 features completely missing, needs new NestJS service + DB schema + frontend
-2. **Recruitment backend** — application submission, candidate/employer profiles, pipeline, reports, subscriptions still return stubs
-3. **Webhook events** — 13 out of 16 events not wired, services exist but don't publish/subscribe
-4. **Twilio integration** — SMS service sends to Discord only
-5. **Elasticsearch** — listed in tech stack for recruitment search, not connected
-6. **Password reset (phone)** — email reset is live; FR-006 OTP via SMS is not implemented
+1. **Module WALLET** — 6 tính năng hoàn toàn thiếu, cần NestJS service mới + schema DB + frontend
+2. **Module FILE** — 18 tính năng hoàn toàn thiếu, cần NestJS service mới + schema DB + S3 integration + frontend
+3. **Backend tuyển dụng** — nộp hồ sơ, hồ sơ ứng viên/nhà tuyển dụng, quy trình, báo cáo, gói đăng ký vẫn trả về stub
+4. **Sự kiện Webhook** — 16/19 sự kiện chưa kết nối, services đã có nhưng không publish/subscribe
+5. **Tích hợp Twilio** — SMS service chỉ gửi qua Discord
+6. **Elasticsearch** — liệt kê trong tech stack cho tìm kiếm tuyển dụng, chưa kết nối
+7. **Đặt lại mật khẩu (điện thoại)** — đặt lại qua email đã hoạt động; FR-006 OTP qua SMS chưa hiện thực

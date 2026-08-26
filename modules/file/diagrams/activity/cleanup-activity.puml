@@ -1,0 +1,31 @@
+@startuml Temp File Cleanup Activity
+title UC-06: Dọn dẹp Tệp tin Tạm (Cron Job)
+
+skinparam activityFontSize 11
+skinparam activityPadding 5
+skinparam activityBorderThickness 1
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+start
+
+:NestJS Scheduler kích hoạt\ncron job mỗi 1 giờ;
+
+:Truy vấn sys_files\nWHERE status = 'TEMP'\nAND created_at < NOW() - 24h;
+
+if (Có tệp tin TEMP hết hạn?) then (Có)
+  while (Còn tệp tin cần dọn dẹp?) is (Có)
+    :Xóa tệp tin trên filesystem;
+    :Xóa bản ghi sys_files;
+    :Ghi log sự kiện dọn dẹp;
+
+  endwhile
+else (Không)
+endif
+
+:Ghi log tổng kết\ndọn dẹp;
+
+stop
+
+@enduml

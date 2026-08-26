@@ -1,0 +1,42 @@
+@startuml Delete File Activity
+title UC-09: Xóa Tệp tin
+
+skinparam activityFontSize 11
+skinparam activityPadding 5
+skinparam activityBorderThickness 1
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+skinparam activityBackgroundColor White
+skinparam activityBorderColor #333
+skinparam activityDiamondBackgroundColor #ecf0f1
+skinparam activityDiamondBorderColor #333
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam activityPadding 10
+skinparam activityBorderThickness 2
+
+start
+
+:Yêu cầu xóa tệp tin;
+
+:Kiểm tra quyền sở hữu;
+
+if (Được ủy quyền?) then (Không)
+  :Trả về 403;
+  stop
+endif
+
+if (Tệp tin đang active?) then (Không)
+  :Trả về 404;
+  stop
+endif
+
+:Đặt trạng thái DELETED;
+:Xóa tệp tin trên filesystem;
+:Trả về thành công;
+
+stop
+
+@enduml

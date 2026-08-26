@@ -13,6 +13,13 @@ skinparam activity {
 
 title Làm mới Token
 
+skinparam activityFontSize 11
+skinparam activityPadding 5
+skinparam activityBorderThickness 1
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
 start
 
 :Client phát hiện access token hết hạn;

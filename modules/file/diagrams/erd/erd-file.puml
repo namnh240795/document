@@ -1,0 +1,126 @@
+@startuml ERD File Management
+title ERD - Quản lý Tệp tin (file_db)
+
+skinparam classFontSize 10
+skinparam classAttributeFontSize 9
+skinparam nodesep 15
+skinparam ranksep 15
+
+skinparam linetype ortho
+skinparam shadowing false
+skinparam classFontSize 12
+skinparam classAttributeFontSize 11
+
+' === External references ===
+class auth_users <<(E,#FFAAAA) External >> {
+  id : UUID PK
+}
+
+' === Core Tables ===
+
+class sys_files <<(T,#AAFFAA) Core >> {
+  id : UUID PK
+  employer_id : UUID FK
+  user_id : UUID FK NOT NULL
+  parent_folder_id : UUID FK (self)
+  type : VARCHAR(10) NOT NULL = 'FILE'
+  original_name : VARCHAR(500) NOT NULL
+  file_path : VARCHAR(1000)
+  mime_type : VARCHAR(100)
+  file_size : BIGINT = 0
+  category : VARCHAR(50) NOT NULL = 'OTHER'
+  is_public : BOOLEAN NOT NULL = FALSE
+  status : VARCHAR(20) NOT NULL = 'ACTIVE'
+  search_vector : TSVECTOR
+  created_at : TIMESTAMP NOT NULL
+  updated_at : TIMESTAMP NOT NULL
+  deleted_at : TIMESTAMP
+}
+
+class sys_file_permissions <<(T,#AAFFAA) Core >> {
+  id : UUID PK
+  file_id : UUID FK NOT NULL
+  user_id : UUID FK
+  role : VARCHAR(50)
+  org_id : UUID
+  permission : VARCHAR(20) NOT NULL
+  created_at : TIMESTAMP NOT NULL
+  updated_at : TIMESTAMP NOT NULL
+}
+
+class sys_storage_usage <<(T,#AAAAFF) Stats >> {
+  id : UUID PK
+  user_id : UUID FK
+  org_id : UUID
+  total_size : BIGINT NOT NULL = 0
+  file_count : INTEGER NOT NULL = 0
+  last_calculated_at : TIMESTAMP NOT NULL
+}
+
+class sys_storage_quotas <<(T,#AAAAFF) Config >> {
+  id : UUID PK
+  user_id : UUID FK
+  org_id : UUID
+  max_total_size : BIGINT NOT NULL
+  max_file_count : INTEGER NOT NULL
+  created_at : TIMESTAMP NOT NULL
+  updated_at : TIMESTAMP NOT NULL
+}
+
+class sys_storage_policies <<(T,#FFFFAA) Config >> {
+  id : UUID PK
+  category : VARCHAR(50) NOT NULL UNIQUE
+  allowed_mime_types : JSONB NOT NULL
+  max_file_size : BIGINT NOT NULL
+  retention_days : INTEGER
+  encryption_enabled : BOOLEAN NOT NULL = FALSE
+  created_at : TIMESTAMP NOT NULL
+  updated_at : TIMESTAMP NOT NULL
+}
+
+' === Relationships ===
+
+' sys_files -> auth_users (owner)
+sys_files }o--|| auth_users : user_id
+
+' sys_files -> sys_files (self-referencing for folders)
+sys_files }o--o{ sys_files : parent_folder_id
+
+' sys_file_permissions -> sys_files
+sys_file_permissions }o--|| sys_files : file_id
+
+' sys_file_permissions -> auth_users (optional)
+sys_file_permissions }o--o| auth_users : user_id
+
+' sys_storage_usage -> auth_users (optional)
+sys_storage_usage }o--o| auth_users : user_id
+
+' sys_storage_quotas -> auth_users (optional)
+sys_storage_quotas }o--o| auth_users : user_id
+
+' === Notes ===
+
+note top of sys_files
+  Lưu cả bản ghi FILE và FOLDER.
+  parent_folder_id hỗ trợ cấu trúc thư mục phân cấp.
+  Trạng thái: TEMP → ACTIVE → DELETED | REPLACED
+  Danh mục: RESUME, AVATAR, COMPANY_DOC, JOB_ATTACHMENT, OTHER
+end note
+
+note top of sys_file_permissions
+  Chính xác một trong ba: user_id, role, hoặc org_id
+  (được enforced bởi CHECK constraint)
+  Loại quyền: VIEW, DOWNLOAD, EDIT, DELETE
+end note
+
+note right of sys_storage_usage
+  Được tính toán bởi cron job (mỗi giờ).
+  Phạm vi: theo người dùng HOẶC theo tổ chức (không cả hai).
+end note
+
+note right of sys_storage_policies
+  Một dòng mỗi danh mục.
+  Chỉ áp dụng cho tải lên mới.
+end note
+
+@enduml

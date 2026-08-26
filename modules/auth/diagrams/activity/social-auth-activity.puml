@@ -13,6 +13,13 @@ skinparam activity {
 
 title Đăng nhập Xã hội
 
+skinparam activityFontSize 11
+skinparam activityPadding 5
+skinparam activityBorderThickness 1
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
 start
 
 :Nhấp "Đăng nhập với Provider";

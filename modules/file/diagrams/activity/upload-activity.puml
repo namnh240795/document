@@ -1,0 +1,46 @@
+@startuml Upload File Activity
+title UC-05: Tải lên Tệp tin
+
+skinparam activityFontSize 11
+skinparam activityPadding 5
+skinparam activityBorderThickness 1
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+skinparam activityBackgroundColor White
+skinparam activityBorderColor #333
+skinparam activityDiamondBackgroundColor #ecf0f1
+skinparam activityDiamondBorderColor #333
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam activityPadding 10
+skinparam activityBorderThickness 2
+
+start
+
+:Người dùng chọn tệp tin;
+:Gửi yêu cầu tải lên\n(multipart/form-data);
+
+:Kiểm tra loại tệp tin;
+
+if (Loại hợp lệ?) then (Không)
+  :Trả về lỗi 400;
+  stop
+endif
+
+:Kiểm tra kích thước tệp tin;
+
+if (Kích thước OK?) then (Không)
+  :Trả về lỗi 413;
+  stop
+endif
+
+:Tạo tên file UUID;
+:Lưu tệp tin vào local filesystem;
+:Tạo bản ghi metadata;
+:Trả về bản ghi tệp tin;
+
+stop
+
+@enduml

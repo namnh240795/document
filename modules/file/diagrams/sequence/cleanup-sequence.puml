@@ -1,0 +1,50 @@
+@startuml Temp File Cleanup Sequence
+title UC-06: Dọn dẹp Tệp tin Tạm - Sequence
+
+skinparam sequenceArrowThickness 1
+skinparam sequenceParticipantPadding 5
+skinparam sequenceLifeLineBorderColor #333
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+actor "System\n(Cron Job)" as System
+participant "NestJS\nScheduler" as Scheduler
+participant "FileService" as FS
+database "PostgreSQL\n(file_db)" as DB
+participant "Filesystem" as FSYS
+
+== Cron Trigger ==
+
+System -> Scheduler : Kích hoạt mỗi 1 giờ
+activate Scheduler
+
+Scheduler -> FS : cleanupTempFiles()
+activate FS
+
+FS -> DB : SELECT * FROM sys_files\nWHERE status = 'TEMP'\nAND created_at < NOW() - 24h
+activate DB
+DB --> FS : temp_files[]
+deactivate DB
+
+loop For each expired temp file
+
+  FS -> FSYS : Xóa tệp tin trên disk\nfs.unlink(file_path)
+  activate FSYS
+  FSYS --> FS : OK
+  deactivate FSYS
+
+  FS -> DB : DELETE FROM sys_files\nWHERE id = file_id
+  activate DB
+  DB --> FS : OK
+  deactivate DB
+
+end
+
+FS --> Scheduler : { cleaned: N files }
+deactivate FS
+
+Scheduler --> System : Done
+deactivate Scheduler
+
+@enduml

@@ -13,6 +13,11 @@ skinparam class {
 
 title Hệ thống Xác thực - Mô hình Domain
 
+skinparam classFontSize 10
+skinparam classAttributeFontSize 9
+skinparam nodesep 15
+skinparam ranksep 15
+
 ' --- Các lớp ---
 class User {
   - id: UUID

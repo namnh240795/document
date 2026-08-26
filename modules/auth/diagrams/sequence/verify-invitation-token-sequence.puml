@@ -13,6 +13,13 @@ skinparam sequence {
 
 title Sơ đồ Tuần tự: Luồng Xác minh Token Lời mời
 
+skinparam sequenceArrowThickness 1
+skinparam sequenceParticipantPadding 5
+skinparam sequenceLifeLineBorderColor #333
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
 actor "Invitee" as Inv
 participant "Frontend" as FE
 participant "Auth API" as API

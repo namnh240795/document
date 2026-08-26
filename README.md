@@ -1,38 +1,38 @@
 # BA Documentation Framework
 
-Framework for creating technical documentation (SRS, TDS, Database Design, API Spec) with PlantUML diagrams. Outputs HTML documents print-optimized for A4 paper.
+Framework tạo tài liệu kỹ thuật (SRS, TDS, Thiết Kế CSDL, API Spec) với sơ đồ PlantUML. Output là HTML in ấn tối ưu cho giấy A4.
 
-## Prerequisites
+## Yêu Cầu Ban Đầu
 
-- [Docker](https://docs.docker.com/get-docker/) (for PlantUML diagram generation)
+- [Docker](https://docs.docker.com/get-docker/) (để chạy PlantUML generate sơ đồ)
 - [GNU Make](https://www.gnu.org/software/make/) (macOS: `xcode-select --install`)
 
-## Quick Start
+## Bắt Đầu Nhanh
 
 ```bash
-# 1. Pull PlantUML Docker image (one-time setup)
+# 1. Tải ảnh PlantUML Docker (cần 1 lần)
 make pull
 
-# 2. Build everything (diagrams + HTML docs)
+# 2. Xây dựng tất cả (sơ đồ + HTML)
 make build-all
 
-# 3. Serve and view in browser
+# 3. Chạy server và xem trong trình duyệt
 make serve
 ```
 
-Then open [http://localhost:8080](http://localhost:8080) — click any module to browse its documents (SRS, TDS, Database Design, API Spec).
+Sau đó mở [http://localhost:8080](http://localhost:8080) — nhấn vào bất kỳ module nào để xem tài liệu (SRS, TDS, Thiết Kế CSDL, API Spec).
 
-## Viewing Documents
+## Xem Tài Liệu
 
-### `make serve` (recommended)
+### `make serve` (khuyên dùng)
 
 ```bash
 make serve
 ```
 
-This rebuilds docs and starts a local server at **http://localhost:8080**. The index page lists all modules — click a module name to see its documents, then click any document to view it.
+Lệnh này xây dựng lại tài liệu và chạy server cục bộ tại **http://localhost:8080**. Trang index liệt kê tất cả module — nhấn tên module để xem tài liệu, sau đó nhấn bất kỳ tài liệu nào để xem.
 
-To stop the server, press `Ctrl+C`.
+Để dừng server, nhấn `Ctrl+C`.
 
 ### `make open`
 
@@ -40,129 +40,137 @@ To stop the server, press `Ctrl+C`.
 make open
 ```
 
-Builds docs and opens `modules/index.html` directly in your default browser. Quick one-time view — no server needed.
+Xây dựng tài liệu và mở `modules/index.html` trực tiếp trong trình duyệt mặc định. Xem nhanh — không cần server.
 
-### Export to PDF
+### Xuất PDF
 
-1. Open any HTML document in your browser (via `make serve` or `make open`)
-2. Press `Cmd+P` (macOS) or `Ctrl+P` (Windows/Linux)
-3. Select "Save as PDF"
-4. The CSS is print-optimized for A4 paper
+1. Mở bất kỳ file HTML nào trong trình duyệt (qua `make serve` hoặc `make open`)
+2. Nhấn `Cmd+P` (macOS) hoặc `Ctrl+P` (Windows/Linux)
+3. Chọn "Save as PDF"
+4. CSS được tối ưu in ấn cho giấy A4
 
-## What You Get
+## Đầu Ra
 
-Each module produces 4 documents:
+Mỗi module tạo ra 4 tài liệu:
 
-| Document | Content |
-|----------|---------|
-| `srs.html` | Functional requirements, use cases with activity/sequence diagrams, NFRs, traceability |
-| `tds.html` | Technical design, architecture, API endpoints, integration flows |
-| `database-design.html` | ERD, table schemas, indexes, migration scripts |
-| `api-technical-spec.html` | API endpoints with request/response examples, error codes |
+| Tài Liệu | Nội Dung |
+|----------|----------|
+| `srs.html` | Yêu cầu chức năng, use case với sơ đồ activity/sequence, NFR, truy ngước |
+| `tds.html` | Thiết kế kỹ thuật, kiến trúc, API endpoint, luồng tích hợp |
+| `database-design.html` | ERD, schema bảng, index, script migration |
+| `api-technical-spec.html` | API endpoint với ví dụ request/response, mã lỗi |
 
-### Modules
+### Các Module
 
-| Module | Description | Database |
-|--------|-------------|----------|
-| AUTH | User accounts, login, roles, sessions, verification | auth_db |
-| SMS | SMS delivery, logging, audit trail | sms_db |
-| LOG | Application logging, audit trail, error tracking | OpenSearch |
+| Module | Mô Tả | Cơ Sở Dữ Liệu |
+|--------|-------|---------------|
+| AUTH | Tài khoản người dùng, đăng nhập, vai trò, phiên làm việc, xác minh | auth_db |
+| SMS | Gửi SMS, nhật ký, kiểm toán | sms_db |
+| EMAIL | Thông báo email, mẫu, lịch sử gửi | email_db |
+| RECR | Quản lý tuyển dụng: tin tuyển dụng, ứng viên, phỏng vấn, offer | recr_db |
+| WALLET | Ví điện tử: nạp tiền, rút tiền, chuyển khoản, thanh toán | wallet_db |
+| LOG | Nhật ký ứng dụng, kiểm toán, theo dõi lỗi | OpenSearch |
+| FILE | Quản lý tệp tin: tải lên/xuống, thư mục, quyền, lưu trữ S3 | file_db |
 
-## Build Commands
+## Lệnh Xây Dựng
 
-| Command | Description |
-|---------|-------------|
-| `make help` | Show all available commands |
-| `make pull` | Pull PlantUML Docker image (required once) |
-| `make build-all` | Generate all diagrams + build HTML docs |
-| `make build-docs` | Build HTML documents only (skip diagram generation) |
-| `make open` | Build and open `modules/index.html` in browser |
-| `make serve` | Start local web server at http://localhost:8080 |
-| `make clean` | Remove all generated files |
-| `make watch` | Auto-rebuild on file change (requires `fswatch`) |
+| Lệnh | Mô Tả |
+|------|-------|
+| `make help` | Hiển thị tất cả lệnh khả dụng |
+| `make pull` | Tải ảnh PlantUML Docker (cần 1 lần) |
+| `make build-all` | Generate tất cả sơ đồ + xây dựng HTML |
+| `make build-docs` | Chỉ xây dựng HTML (bỏ qua generate sơ đồ) |
+| `make open` | Xây dựng và mở `modules/index.html` trong trình duyệt |
+| `make serve` | Chạy server cục bộ tại http://localhost:8080 |
+| `make clean` | Xóa tất cả file đã generate |
+| `make watch` | Tự động rebuild khi file thay đổi (cần `fswatch`) |
 
-### Development workflow
+### Quy Trình Phát Triển
 
-Use `make watch` alongside `make serve` for live editing:
+Sử dụng `make watch` cùng với `make serve` để chỉnh sửa trực tiếp:
 
 ```bash
-# Terminal 1: serve documents
+# Terminal 1: chạy server tài liệu
 make serve
 
-# Terminal 2: watch for changes and auto-rebuild
+# Terminal 2: theo dõi thay đổi và tự động rebuild
 make watch
 ```
 
-Edit any `.puml` or `src/*.html` file — changes are rebuilt automatically and reflected on refresh.
+Chỉnh sửa bất kỳ file `.puml` hoặc `src/*.html` nào — thay đổi được rebuild tự động và hiển thị khi refresh.
 
-### Per-module
+### Theo Từng Module
 
 ```bash
-make generate MODULE=auth TYPE=erd       # Single module + diagram type
-make generate-erd-auth                    # Auth ERD only
-make generate-erd-all                     # All ERDs
-make generate-all-modules                 # All modules, all types
+make generate MODULE=auth TYPE=erd       # Module + loại sơ đồ đơn lẻ
+make generate-erd-auth                    # Chỉ ERD của AUTH
+make generate-erd-all                     # Tất cả ERD
+make generate-all-modules                 # Tất cả module, tất cả loại
 ```
 
-## Project Structure
+## Cấu Trúc Dự Án
 
 ```
 ba/
-├── Makefile                       # Build commands
+├── Makefile                       # Lệnh xây dựng
 ├── scripts/
 │   ├── generate.sh                # PlantUML -> PNG images
 │   └── build-docs.sh              # Templates -> HTML docs
 │
-├── templates/                     # Source templates
-│   ├── style.css                  # Print-optimized CSS
-│   ├── srs.html                   # SRS template
-│   ├── tds.html                   # TDS template
-│   ├── database-design.html       # DB design template
-│   ├── api-technical-spec.html    # API spec template
-│   └── erd-*.puml                 # ERD PlantUML templates
+├── templates/                     # Mẫu nguồn
+│   ├── style.css                  # CSS tối ưu in ấn
+│   ├── srs.html                   # Mẫu SRS
+│   ├── tds.html                   # Mẫu TDS
+│   ├── database-design.html       # Mẫu thiết kế CSDL
+│   ├── api-technical-spec.html    # Mẫu API spec
+│   └── erd-*.puml                 # Mẫu ERD PlantUML
 │
-├── modules/                       # Module output
-│   ├── index.html                 # Master index (start here)
-│   ├── auth/                      # AUTH module docs + diagrams
-│   ├── sms/                       # SMS module docs + diagrams
-│   ├── log/                       # LOG module docs + diagrams
-│   └── style.css                  # Shared stylesheet
+├── modules/                       # Output module
+│   ├── index.html                 # Trang chủ (bắt đầu từ đây)
+│   ├── auth/                      # Tài liệu + sơ đồ module AUTH
+│   ├── sms/                       # Tài liệu + sơ đồ module SMS
+│   ├── email/                     # Tài liệu + sơ đồ module EMAIL
+│   ├── recr/                      # Tài liệu + sơ đồ module RECR
+│   ├── wallet/                    # Tài liệu + sơ đồ module WALLET
+│   ├── log/                       # Tài liệu + sơ đồ module LOG
+│   ├── file/                      # Tài liệu + sơ đồ module FILE
+│   └── style.css                  # Stylesheet chung
 │
-└── CLAUDE.md                      # Framework rules
+└── CLAUDE.md                      # Quy tắc framework
 ```
 
-## Customizing Documents
+## Tùy Chỉnh Tài Liệu
 
-To override a module's template HTML, create a file in `modules/<code>/src/`:
+Để ghi đè mẫu HTML của module, tạo file trong `modules/<code>/src/`:
 
 ```
-modules/auth/src/srs.html          # Overrides templates/srs.html for AUTH
-modules/auth/src/tds.html          # Overrides templates/tds.html for AUTH
+modules/auth/src/srs.html          # Ghi đè templates/srs.html cho AUTH
+modules/auth/src/tds.html          # Ghi đè templates/tds.html cho AUTH
 ```
 
-The build script uses your custom file when it exists, otherwise falls back to the template.
+Script xây dựng sẽ sử dụng file tùy chỉnh khi tồn tại, nếu không sẽ dùng mẫu mặc định.
 
-## Diagram Types
+## Các Loại Sơ Đồ
 
-| Type | Use For | File Location |
-|------|---------|---------------|
-| Use Case | Actor-system interactions | `diagrams/usecase/` |
-| Activity | Process flow (no swimlanes) | `diagrams/activity/` |
-| Sequence | Integration between services | `diagrams/sequence/` |
-| ERD | Data model (entities, relationships) | `diagrams/erd/` or `templates/erd-*.puml` |
-| Component | System components | `diagrams/component/` |
+| Loại | Dùng Cho | Vị Trí File |
+|------|----------|-------------|
+| Use Case | Tương tác Actor-Hệ Thống | `diagrams/usecase/` |
+| Activity | Luồng quy trình (không swimlane) | `diagrams/activity/` |
+| Sequence | Tích hợp giữa các service | `diagrams/sequence/` |
+| ERD | Mô hình dữ liệu (entity, relationship) | `diagrams/erd/` hoặc `templates/erd-*.puml` |
+| Component | Các thành phần hệ thống | `diagrams/component/` |
 | Architecture | C4 Level 1 context | `templates/architecture-system.puml` |
 
-## Working with Claude Code
+## Làm Việc Với Claude Code
 
-Describe what you want to do, or run `/ba-guide`. Claude will check existing modules, ask you two questions (what's the business, what's the new use case), analyze the impact, and handle everything.
+Mô tả bạn muốn làm gì, hoặc chạy `/ba-guide`. Claude sẽ kiểm tra các module hiện có, hỏi bạn hai câu hỏi (business là gì, use case mới là gì), phân tích ảnh hưởng, và xử lý tất cả.
 
-## Troubleshooting
+## Khắc Phục Sự Cố
 
-**"docker: command not found"** — Install [Docker](https://docs.docker.com/get-docker/) and ensure it's running.
+**"docker: command not found"** — Cài đặt [Docker](https://docs.docker.com/get-docker/) và đảm bảo nó đang chạy.
 
-**"make: command not found"** — Install Make: `xcode-select --install` (macOS) or `sudo apt install make` (Linux).
+**"make: command not found"** — Cài đặt Make: `xcode-select --install` (macOS) hoặc `sudo apt install make` (Linux).
 
-**Diagrams not updating** — Run `make clean` then `make build-all` to regenerate from scratch.
+**Sơ đồ không cập nhật** — Chạy `make clean` rồi `make build-all` để generate lại từ đầu.
 
-**Linux build failure** — The build script uses macOS `sed -i ''`. On Linux, edit `scripts/build-docs.sh` to use `sed -i` (without the empty string argument).
+**Lỗi build trên Linux** — Script xây dựng sử dụng `sed -i ''` của macOS. Trên Linux, chỉnh sửa `scripts/build-docs.sh` để sử dụng `sed -i` (không có tham số string rỗng).

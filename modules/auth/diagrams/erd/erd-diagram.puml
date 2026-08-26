@@ -18,6 +18,11 @@ skinparam package {
 
 title Hệ thống Xác thực - Sơ đồ Quan hệ Thực thể
 
+skinparam classFontSize 10
+skinparam classAttributeFontSize 9
+skinparam nodesep 15
+skinparam ranksep 15
+
 ' ============================================================
 ' MODULE: Xác thực (Cơ sở dữ liệu: auth_db)
 ' Xử lý: tài khoản người dùng, phiên, tài khoản (Better Auth), xác minh, vai trò

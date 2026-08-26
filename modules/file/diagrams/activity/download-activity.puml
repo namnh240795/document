@@ -1,0 +1,41 @@
+@startuml Download File Activity
+title UC-06: Tải xuống Tệp tin
+
+skinparam activityFontSize 11
+skinparam activityPadding 5
+skinparam activityBorderThickness 1
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+skinparam activityBackgroundColor White
+skinparam activityBorderColor #333
+skinparam activityDiamondBackgroundColor #ecf0f1
+skinparam activityDiamondBorderColor #333
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam activityPadding 10
+skinparam activityBorderThickness 2
+
+start
+
+:Yêu cầu tải xuống tệp tin;
+
+:Kiểm tra quyền truy cập;
+
+if (Được ủy quyền?) then (Không)
+  :Trả về 403;
+  stop
+endif
+
+if (Tệp tin tồn tại?) then (Không)
+  :Trả về 404;
+  stop
+endif
+
+:Đọc tệp tin từ local filesystem;
+:Trả về nội dung tệp tin;
+
+stop
+
+@enduml

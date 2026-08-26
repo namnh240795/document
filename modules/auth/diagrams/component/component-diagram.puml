@@ -43,6 +43,10 @@ skinparam linetype polyline
 
 title Module AUTH - Sơ đồ Thành phần
 
+skinparam componentFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
 ' --- Khách hàng ---
 component "Ứng dụng Web" as web
 component "Ứng dụng Di động" as mobile

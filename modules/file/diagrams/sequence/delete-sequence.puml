@@ -1,0 +1,42 @@
+@startuml Delete File Sequence
+title UC-09: Xóa Tệp tin
+
+skinparam sequenceArrowThickness 1
+skinparam sequenceParticipantPadding 5
+skinparam sequenceLifeLineBorderColor #333
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+skinparam responseMessageBelowArrow true
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam maxMessageSize 200
+skinparam sequenceParticipantPadding 20
+
+actor "Người dùng" as U
+participant "Client" as Client
+participant "FILE Service" as FILE
+database "PostgreSQL" as DB
+participant "Filesystem" as FS
+
+U -> Client : Yêu cầu xóa
+Client -> FILE : DELETE /files/:id
+activate FILE
+FILE -> DB : SELECT bản ghi tệp tin
+activate DB
+DB --> FILE : file_path
+deactivate DB
+FILE -> FILE : Kiểm tra quyền truy cập
+FILE -> DB : UPDATE status → DELETED
+activate DB
+DB --> FILE : OK
+deactivate DB
+FILE -> FS : Xóa tệp tin trên disk\nfs.unlink(file_path)
+activate FS
+FS --> FILE : OK
+deactivate FS
+FILE --> Client : 200 OK
+deactivate FILE
+
+@enduml

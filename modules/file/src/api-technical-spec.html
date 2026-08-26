@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>API Technical Specification - File Management (FILE)</title>
+  <title>Đặc tả Kỹ thuật API - Quản lý Tệp tin (FILE)</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,98 +18,128 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>API Technical Specification</h1>
-  <div class="subtitle">File Management API</div>
+  <h1>Đặc tả Kỹ thuật API</h1>
+  <div class="subtitle">API Quản lý Tệp tin</div>
   <span class="module-badge">FILE</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0.0</td></tr>
+    <tr><td>Phiên bản</td><td>1.0.0</td></tr>
     <tr><td>Base URL</td><td>http://localhost:3001/api/files</td></tr>
-    <tr><td>System</td><td>Job Portal System</td></tr>
-    <tr><td>Module</td><td>FILE - File Management</td></tr>
-    <tr><td>Date</td><td>2026-08-17</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">File Management SRS</a></td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Cổng Thông tin Tuyển dụng</td></tr>
+    <tr><td>Module</td><td>FILE - Quản lý Tệp tin</td></tr>
+    <tr><td>Ngày</td><td>2026-08-17</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Quản lý Tệp tin</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a>
+    <li><a href="#section-1">1. Tổng quan</a>
       <ul>
-        <li><a href="#section-1-1">1.1 Requirements Addressed</a></li>
-        <li><a href="#section-1-2">1.2 Authentication</a></li>
-        <li><a href="#section-1-3">1.3 Endpoint Summary</a></li>
+        <li><a href="#section-1-1">1.1 Yêu cầu được Giải quyết</a></li>
+        <li><a href="#section-1-2">1.2 Xác thực</a></li>
+        <li><a href="#section-1-3">1.3 Tóm tắt Endpoint</a></li>
       </ul>
     </li>
-    <li><a href="#section-2">2. Response Format</a></li>
-    <li><a href="#section-3">3. Schemas</a>
+    <li><a href="#section-2">2. Định dạng Phản hồi</a></li>
+    <li><a href="#section-3">3. Schema</a>
       <ul>
-        <li><a href="#section-3-1">3.1 File</a></li>
-        <li><a href="#section-3-2">3.2 Presigned URL Response</a></li>
+        <li><a href="#section-3-1">3.1 Tệp tin</a></li>
+        <li><a href="#section-3-2">3.2 Phản hồi URL Presigned</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. File Endpoints</a>
+    <li><a href="#section-4">4. Endpoint Tệp tin</a>
       <ul>
-        <li><a href="#section-4-1">4.1 Upload File (Presigned URL)</a></li>
-        <li><a href="#section-4-2">4.2 Confirm Upload</a></li>
-        <li><a href="#section-4-3">4.3 Get Download URL</a></li>
-        <li><a href="#section-4-4">4.4 List Files</a></li>
-        <li><a href="#section-4-5">4.5 Delete File</a></li>
+        <li><a href="#section-4-1">4.1 Tải lên Tệp tin (Presigned URL)</a></li>
+        <li><a href="#section-4-2">4.2 Xác nhận Tải lên</a></li>
+        <li><a href="#section-4-3">4.3 Tải lên Hàng loạt</a></li>
+        <li><a href="#section-4-4">4.4 Lấy URL Tải xuống</a></li>
+        <li><a href="#section-4-5">4.5 Liệt kê Tệp tin</a></li>
+        <li><a href="#section-4-6">4.6 Tìm kiếm Tệp tin</a></li>
+        <li><a href="#section-4-7">4.7 Tạo Thư mục</a></li>
+        <li><a href="#section-4-8">4.8 Đổi tên Tệp tin/Thư mục</a></li>
+        <li><a href="#section-4-9">4.9 Sao chép Tệp tin</a></li>
+        <li><a href="#section-4-10">4.10 Di chuyển Tệp tin</a></li>
+        <li><a href="#section-4-11">4.11 Xóa Tệp tin/Thư mục</a></li>
+        <li><a href="#section-4-12">4.12 Quản lý Quyền</a></li>
+        <li><a href="#section-4-13">4.13 Quản lý Lưu trữ</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">5. Error Codes</a></li>
+    <li><a href="#section-5">5. Mã Lỗi</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2 id="section-1-1">1.1 Requirements Addressed</h2>
+<h2 id="section-1-1">1.1 Yêu cầu được Giải quyết</h2>
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>API Endpoint(s)</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Upload File</td><td>POST /files/presigned-url, POST /files/confirm</td></tr>
-  <tr><td><span class="req-id">FR-002</span> Download File</td><td>GET /files/:id/download-url</td></tr>
-  <tr><td><span class="req-id">FR-003</span> List Files</td><td>GET /files</td></tr>
-  <tr><td><span class="req-id">FR-004</span> Delete File</td><td>DELETE /files/:id</td></tr>
-  <tr><td><span class="req-id">FR-005</span> File Access Control</td><td>All endpoints (middleware)</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Endpoint API</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Tải lên Tệp tin</td><td>POST /files/upload (multipart)</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Tải xuống Tệp tin</td><td>GET /files/:id/download</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Liệt kê Tệp tin</td><td>GET /files</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Xóa Tệp tin</td><td>DELETE /files/:id</td></tr>
+  <tr><td><span class="req-id">FR-005</span> Kiểm soát Truy cập Tệp tin</td><td>Tất cả endpoint (middleware)</td></tr>
+  <tr><td><span class="req-id">FR-008</span> Tạo Thư mục</td><td>POST /files/folders</td></tr>
+  <tr><td><span class="req-id">FR-009</span> Tìm kiếm Tệp tin</td><td>GET /files/search</td></tr>
+  <tr><td><span class="req-id">FR-010</span> Đổi tên Tệp tin</td><td>PATCH /files/:id</td></tr>
+  <tr><td><span class="req-id">FR-011</span> Tải lên Hàng loạt</td><td>POST /files/batch</td></tr>
+  <tr><td><span class="req-id">FR-012</span> Sao chép Tệp tin</td><td>POST /files/:id/copy</td></tr>
+  <tr><td><span class="req-id">FR-013</span> Di chuyển Tệp tin</td><td>POST /files/:id/move</td></tr>
+  <tr><td><span class="req-id">FR-014</span> Quản lý Quyền</td><td>GET /files/:id/permissions, PUT /files/:id/permissions</td></tr>
+  <tr><td><span class="req-id">FR-016</span> Theo dõi Sử dụng Lưu trữ</td><td>GET /files/storage-usage</td></tr>
+  <tr><td><span class="req-id">FR-017</span> Quản lý Hạn ngạch</td><td>GET /files/quotas, PUT /files/quotas</td></tr>
+  <tr><td><span class="req-id">FR-018</span> Chính sách Lưu trữ</td><td>GET /files/policies, PUT /files/policies</td></tr>
 </table>
 
-<h2 id="section-1-2">1.2 Authentication</h2>
-<p>All endpoints require authentication via:</p>
+<h2 id="section-1-2">1.2 Xác thực</h2>
+<p>Tất cả endpoint yêu cầu xác thực qua:</p>
 <ul>
-  <li><strong>Bearer Token</strong> — <code>Authorization: Bearer &lt;token&gt;</code></li>
-  <li><strong>API Key Cookie</strong> — <code>apiKeyCookie</code></li>
+  <li><strong>Bearer Token</strong> &mdash; <code>Authorization: Bearer &lt;token&gt;</code></li>
+  <li><strong>Cookie API Key</strong> &mdash; <code>apiKeyCookie</code></li>
 </ul>
-<p>Additionally, file access is validated against ownership or organization membership (RBAC).</p>
+<p>Ngoài ra, quyền truy cập tệp tin được kiểm tra theo quyền sở hữu hoặc thành viên tổ chức (RBAC).</p>
 
-<h2 id="section-1-3">1.3 Endpoint Summary</h2>
+<h2 id="section-1-3">1.3 Tóm tắt Endpoint</h2>
 <table>
-  <tr><th>Method</th><th>Path</th><th>Description</th><th>Auth Required</th></tr>
-  <tr><td>POST</td><td>/files/presigned-url</td><td>Generate presigned upload URL</td><td>Yes</td></tr>
-  <tr><td>POST</td><td>/files/confirm</td><td>Confirm file upload completion</td><td>Yes</td></tr>
-  <tr><td>GET</td><td>/files/:id/download-url</td><td>Generate presigned download URL</td><td>Yes</td></tr>
-  <tr><td>GET</td><td>/files</td><td>List files with filtering and pagination</td><td>Yes</td></tr>
-  <tr><td>DELETE</td><td>/files/:id</td><td>Soft delete a file</td><td>Yes</td></tr>
+  <tr><th>Phương thức</th><th>Đường dẫn</th><th>Mô tả</th><th>Cần Xác thực</th></tr>
+  <tr><td>POST</td><td>/files/upload</td><td>Tải lên tệp tin (multipart/form-data)</td><td>Có</td></tr>
+  <tr><td>POST</td><td>/files/batch</td><td>Tải lên hàng loạt (nhiều tệp tin)</td><td>Có</td></tr>
+  <tr><td>GET</td><td>/files/:id/download</td><td>Tải xuống tệp tin (file stream)</td><td>Có</td></tr>
+  <tr><td>GET</td><td>/files</td><td>Liệt kê tệp tin với lọc và phân trang</td><td>Có</td></tr>
+  <tr><td>GET</td><td>/files/search</td><td>Tìm kiếm toàn văn tệp tin/thư mục</td><td>Có</td></tr>
+  <tr><td>POST</td><td>/files/folders</td><td>Tạo thư mục mới</td><td>Có</td></tr>
+  <tr><td>PATCH</td><td>/files/:id</td><td>Đổi tên tệp tin hoặc thư mục</td><td>Có</td></tr>
+  <tr><td>POST</td><td>/files/:id/copy</td><td>Sao chép tệp tin đến thư mục đích</td><td>Có</td></tr>
+  <tr><td>POST</td><td>/files/:id/move</td><td>Di chuyển tệp tin đến thư mục đích</td><td>Có</td></tr>
+  <tr><td>DELETE</td><td>/files/:id</td><td>Xóa mềm tệp tin hoặc thư mục</td><td>Có</td></tr>
+  <tr><td>GET</td><td>/files/:id/permissions</td><td>Lấy quyền tệp tin/thư mục</td><td>Có</td></tr>
+  <tr><td>PUT</td><td>/files/:id/permissions</td><td>Quản lý quyền tệp tin/thư mục</td><td>Có (Admin)</td></tr>
+  <tr><td>GET</td><td>/files/storage-usage</td><td>Lấy thống kê sử dụng lưu trữ</td><td>Có</td></tr>
+  <tr><td>GET</td><td>/files/quotas</td><td>Lấy cấu hình hạn ngạch lưu trữ</td><td>Có (Admin)</td></tr>
+  <tr><td>PUT</td><td>/files/quotas</td><td>Cập nhật giới hạn hạn ngạch lưu trữ</td><td>Có (Admin)</td></tr>
+  <tr><td>GET</td><td>/files/policies</td><td>Lấy chính sách lưu trữ</td><td>Có (Admin)</td></tr>
+  <tr><td>PUT</td><td>/files/policies</td><td>Cập nhật chính sách lưu trữ</td><td>Có (Admin)</td></tr>
 </table>
 
 <!-- 2. RESPONSE FORMAT -->
-<h1 id="section-2">2. Response Format</h1>
+<h1 id="section-2">2. Định dạng Phản hồi</h1>
 
-<h2>2.1 Success Response</h2>
+<h2>2.1 Phản hồi Thành công</h2>
 <pre><code>{
   "success": true,
   "data": { ... },
-  "message": "Operation completed successfully"
+  "message": "Thao tác hoàn tất thành công"
 }</code></pre>
 
-<h2>2.2 Paginated Response</h2>
+<h2>2.2 Phản hồi Phân trang</h2>
 <pre><code>{
   "success": true,
   "data": {
@@ -120,184 +150,151 @@
   }
 }</code></pre>
 
-<h2>2.3 Error Response</h2>
+<h2>2.3 Phản hồi Lỗi</h2>
 <pre><code>{
   "success": false,
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "Invalid file type for category RESUME"
+    "message": "Loại tệp tin không hợp lệ cho danh mục RESUME"
   }
 }</code></pre>
 
 <!-- 3. SCHEMAS -->
-<h1 id="section-3">3. Schemas</h1>
+<h1 id="section-3">3. Schema</h1>
 
-<h2 id="section-3-1">3.1 File</h2>
+<h2 id="section-3-1">3.1 Tệp tin</h2>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>id</td><td>string (UUID)</td><td>Yes</td><td>Unique file identifier</td></tr>
-  <tr><td>employerId</td><td>string (UUID)</td><td>No</td><td>Associated employer ID (null for personal files)</td></tr>
-  <tr><td>userId</td><td>string (UUID)</td><td>Yes</td><td>Owner user ID</td></tr>
-  <tr><td>originalName</td><td>string</td><td>Yes</td><td>Original filename as uploaded</td></tr>
-  <tr><td>storageKey</td><td>string</td><td>Yes</td><td>S3 object key</td></tr>
-  <tr><td>bucketName</td><td>string</td><td>Yes</td><td>S3 bucket name</td></tr>
-  <tr><td>mimeType</td><td>string</td><td>Yes</td><td>MIME type (e.g., application/pdf)</td></tr>
-  <tr><td>fileSize</td><td>number (bigint)</td><td>Yes</td><td>File size in bytes</td></tr>
-  <tr><td>category</td><td>string (enum)</td><td>Yes</td><td>RESUME, AVATAR, COMPANY_DOC, JOB_ATTACHMENT, OTHER</td></tr>
-  <tr><td>isPublic</td><td>boolean</td><td>Yes</td><td>Whether file is publicly accessible</td></tr>
-  <tr><td>status</td><td>string (enum)</td><td>Yes</td><td>TEMP, ACTIVE, DELETED</td></tr>
-  <tr><td>createdAt</td><td>datetime</td><td>Yes</td><td>Creation timestamp</td></tr>
-  <tr><td>updatedAt</td><td>datetime</td><td>Yes</td><td>Last update timestamp</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string (UUID)</td><td>Có</td><td>Định danh tệp tin duy nhất</td></tr>
+  <tr><td>employerId</td><td>string (UUID)</td><td>Không</td><td>Mã nhà tuyển dụng liên kết (null cho tệp tin cá nhân)</td></tr>
+  <tr><td>userId</td><td>string (UUID)</td><td>Có</td><td>Mã người dùng chủ sở hữu</td></tr>
+  <tr><td>originalName</td><td>string</td><td>Có</td><td>Tên tệp tin gốc khi tải lên</td></tr>
+  <tr><td>filePath</td><td>string</td><td>Có</td><td>Đường dẫn tệp tin trên local filesystem</td></tr>
+  <tr><td>mimeType</td><td>string</td><td>Có</td><td>Loại MIME (ví dụ: application/pdf)</td></tr>
+  <tr><td>fileSize</td><td>number (bigint)</td><td>Có</td><td>Kích thước tệp tin bằng byte</td></tr>
+  <tr><td>category</td><td>string (enum)</td><td>Có</td><td>RESUME, AVATAR, COMPANY_DOC, JOB_ATTACHMENT, OTHER</td></tr>
+  <tr><td>isPublic</td><td>boolean</td><td>Có</td><td>Tệp tin có được truy cập công khai không</td></tr>
+  <tr><td>status</td><td>string (enum)</td><td>Có</td><td>TEMP, ACTIVE, DELETED, REPLACED</td></tr>
+  <tr><td>createdAt</td><td>datetime</td><td>Có</td><td>Thời gian tạo</td></tr>
+  <tr><td>updatedAt</td><td>datetime</td><td>Có</td><td>Thời gian cập nhật lần cuối</td></tr>
 </table>
 
-<h2 id="section-3-2">3.2 Presigned URL Response</h2>
+<h2 id="section-3-2">3.2 Phản hồi URL Presigned</h2>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Description</th></tr>
-  <tr><td>uploadUrl / downloadUrl</td><td>string (URL)</td><td>Presigned S3 URL</td></tr>
-  <tr><td>fileId</td><td>string (UUID)</td><td>File record ID</td></tr>
-  <tr><td>storageKey</td><td>string</td><td>S3 object key</td></tr>
-  <tr><td>expiresAt</td><td>datetime</td><td>URL expiration timestamp (15 min)</td></tr>
-  <tr><td>fileName</td><td>string</td><td>Original filename (download only)</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string (UUID)</td><td>Mã bản ghi tệp tin</td></tr>
+  <tr><td>originalName</td><td>string</td><td>Tên tệp tin gốc</td></tr>
+  <tr><td>filePath</td><td>string</td><td>Đường dẫn tệp tin trên filesystem</td></tr>
 </table>
 
 <!-- 4. FILE ENDPOINTS -->
-<h1 id="section-4">4. File Endpoints</h1>
+<h1 id="section-4">4. Endpoint Tệp tin</h1>
 
-<h2 id="section-4-1">4.1 Upload File (Presigned URL)</h2>
+<h2 id="section-4-1">4.1 Tải lên Tệp tin (Local Filesystem)</h2>
 
-<h3 id="fr-001">POST /files/presigned-url <span class="req-id">FR-001</span></h3>
-<p>Generate a presigned URL for direct client upload to S3. Creates a file record with status TEMP.</p>
-<p><strong>Request:</strong></p>
-<pre><code>{
-  "original_name": "my-resume.pdf",
-  "mime_type": "application/pdf",
-  "category": "RESUME",
-  "employer_id": "acme-corp-uuid"
-}</code></pre>
-<p><strong>Request Fields:</strong></p>
+<h3 id="fr-001">POST /files/upload <span class="req-id">FR-001</span></h3>
+<p>Tải lên tệp tin qua multipart/form-data. Server lưu tệp tin vào local filesystem và tạo bản ghi metadata.</p>
+<p><strong>Yêu cầu:</strong> <code>Content-Type: multipart/form-data</code></p>
 <table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>original_name</td><td>string</td><td>Yes</td><td>Original filename (max 500 chars)</td></tr>
-  <tr><td>mime_type</td><td>string</td><td>Yes</td><td>MIME type (must match allowed types for category)</td></tr>
-  <tr><td>category</td><td>string (enum)</td><td>Yes</td><td>RESUME, AVATAR, COMPANY_DOC, JOB_ATTACHMENT, OTHER</td></tr>
-  <tr><td>employer_id</td><td>string (UUID)</td><td>No</td><td>Employer ID for organization-scoped files</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>file</td><td>file</td><td>Có</td><td>Tệp tin cần tải lên</td></tr>
+  <tr><td>category</td><td>string (enum)</td><td>Có</td><td>RESUME, AVATAR, COMPANY_DOC, JOB_ATTACHMENT, OTHER</td></tr>
+  <tr><td>employer_id</td><td>string (UUID)</td><td>Không</td><td>Mã nhà tuyển dụng cho tệp tin theo phạm vi tổ chức</td></tr>
 </table>
-<p><strong>Validation Rules:</strong></p>
+<p><strong>Quy tắc Xác thực:</strong></p>
 <table>
-  <tr><th>Category</th><th>Allowed MIME Types</th><th>Max Size</th></tr>
+  <tr><th>Danh mục</th><th>Các loại MIME được phép</th><th>Kích thước Tối đa</th></tr>
   <tr><td>RESUME</td><td>application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document</td><td>10 MB</td></tr>
   <tr><td>AVATAR</td><td>image/jpeg, image/png, image/webp</td><td>5 MB</td></tr>
   <tr><td>COMPANY_DOC</td><td>image/*, application/pdf</td><td>10 MB</td></tr>
   <tr><td>JOB_ATTACHMENT</td><td>application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, image/*</td><td>10 MB</td></tr>
   <tr><td>OTHER</td><td>*</td><td>10 MB</td></tr>
 </table>
-<p><strong>Response 200:</strong></p>
-<pre><code>{
-  "success": true,
-  "data": {
-    "upload_url": "https://bucket.s3.amazonaws.com/acme/user-123/RESUME/a1b2c3d4-resume.pdf?X-Amz-Algorithm=...",
-    "file_id": "file-uuid-123",
-    "storage_key": "acme/user-123/RESUME/a1b2c3d4-resume.pdf",
-    "expires_at": "2026-08-17T11:00:00Z"
-  }
-}</code></pre>
-<p><strong>Client Upload (PUT to presigned URL):</strong></p>
-<pre><code>PUT {upload_url}
-Content-Type: application/pdf
-Body: &lt;binary file data&gt;</code></pre>
-
-<h2 id="section-4-2">4.2 Confirm Upload</h2>
-
-<h3 id="fr-001-confirm">POST /files/confirm <span class="req-id">FR-001</span></h3>
-<p>Confirm that a file upload has completed successfully. Updates file status from TEMP to ACTIVE.</p>
-<p><strong>Request:</strong></p>
-<pre><code>{
-  "file_id": "file-uuid-123"
-}</code></pre>
-<p><strong>Request Fields:</strong></p>
-<table class="trace-table">
-  <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>file_id</td><td>string (UUID)</td><td>Yes</td><td>File ID returned from presigned-url endpoint</td></tr>
-</table>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "success": true,
   "data": {
     "id": "file-uuid-123",
-    "employer_id": "acme-corp-uuid",
-    "user_id": "user-uuid-456",
     "original_name": "my-resume.pdf",
-    "storage_key": "acme/user-123/RESUME/a1b2c3d4-resume.pdf",
-    "bucket_name": "job-portal-files",
+    "file_path": "user-123/RESUME/a1b2c3d4-resume.pdf",
     "mime_type": "application/pdf",
     "file_size": 524288,
     "category": "RESUME",
-    "is_public": false,
-    "status": "ACTIVE",
-    "created_at": "2026-08-17T10:45:00Z",
-    "updated_at": "2026-08-17T10:46:00Z"
-  }
-}</code></pre>
-<p><strong>Error 404 — File not found or already confirmed:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "File not found or already confirmed"
+    "status": "ACTIVE"
   }
 }</code></pre>
 
-<h2 id="section-4-3">4.3 Get Download URL</h2>
-
-<h3 id="fr-002">GET /files/:id/download-url <span class="req-id">FR-002</span></h3>
-<p>Generate a presigned download URL for a file. Validates access control before generating URL.</p>
-<p><strong>Path Parameters:</strong></p>
+<h2 id="section-4-2">4.2 Tải lên Hàng loạt</h2>
+<h3>POST /files/batch <span class="req-id">FR-011</span></h3>
+<p>Tải lên nhiều tệp tin trong một yêu cầu duy nhất (multipart/form-data).</p>
+<p><strong>Yêu cầu:</strong> <code>Content-Type: multipart/form-data</code></p>
 <table class="trace-table">
-  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-  <tr><td>id</td><td>string (UUID)</td><td>File ID</td></tr>
+  <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>files</td><td>file[]</td><td>Có</td><td>Mảng các tệp tin cần tải lên</td></tr>
+  <tr><td>category</td><td>string (enum)</td><td>Có</td><td>RESUME, AVATAR, COMPANY_DOC, JOB_ATTACHMENT, OTHER</td></tr>
+  <tr><td>employer_id</td><td>string (UUID)</td><td>Không</td><td>Mã nhà tuyển dụng</td></tr>
 </table>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "success": true,
   "data": {
-    "download_url": "https://bucket.s3.amazonaws.com/acme/user-123/RESUME/a1b2c3d4-resume.pdf?X-Amz-Algorithm=...",
-    "expires_at": "2026-08-17T11:00:00Z",
-    "file_name": "my-resume.pdf"
+    "uploads": [
+      { "id": "uuid-1", "original_name": "resume.pdf", "file_path": "..." },
+      { "id": "uuid-2", "original_name": "avatar.jpg", "file_path": "..." }
+    ],
+    "errors": []
   }
 }</code></pre>
-<p><strong>Error 403 — Access denied:</strong></p>
+
+<h2 id="section-4-3">4.3 Tải xuống Tệp tin</h2>
+
+<h3 id="fr-002">GET /files/:id/download <span class="req-id">FR-002</span></h3>
+<p>Tải xuống tệp tin từ local filesystem. Kiểm tra quyền truy cập trước khi trả về nội dung.</p>
+<p><strong>Tham số Đường dẫn:</strong></p>
+<table class="trace-table">
+  <tr><th>Tham số</th><th>Loại</th><th>Mô tả</th></tr>
+  <tr><td>id</td><td>string (UUID)</td><td>Mã tệp tin</td></tr>
+</table>
+<p><strong>Phản hồi 200:</strong> File stream (Content-Type: application/octet-stream)</p>
+<pre><code>HTTP/1.1 200 OK
+Content-Type: application/pdf
+Content-Disposition: attachment; filename="my-resume.pdf"
+Content-Length: 524288
+
+&lt;binary file data&gt;</code></pre>
+<p><strong>Lỗi 403 &mdash; Từ chối truy cập:</strong></p>
 <pre><code>{
   "success": false,
   "error": {
     "code": "FORBIDDEN",
-    "message": "You do not have permission to access this file"
+    "message": "Bạn không có quyền truy cập tệp tin này"
   }
 }</code></pre>
-<p><strong>Error 404 — File not found:</strong></p>
+<p><strong>Lỗi 404 &mdash; Không tìm thấy tệp tin:</strong></p>
 <pre><code>{
   "success": false,
   "error": {
     "code": "NOT_FOUND",
-    "message": "File not found"
+    "message": "Không tìm thấy tệp tin"
   }
 }</code></pre>
 
-<h2 id="section-4-4">4.4 List Files</h2>
+<h2 id="section-4-5">4.5 Liệt kê Tệp tin</h2>
 
 <h3 id="fr-003">GET /files <span class="req-id">FR-003</span></h3>
-<p>List files with optional filtering by user, employer, and category. Supports pagination.</p>
-<p><strong>Query Parameters:</strong></p>
+<p>Liệt kê tệp tin với lọc tùy chọn theo người dùng, nhà tuyển dụng và danh mục. Hỗ trợ phân trang.</p>
+<p><strong>Tham số Truy vấn:</strong></p>
 <table class="trace-table">
-  <tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr>
-  <tr><td>user_id</td><td>string (UUID)</td><td>No</td><td>Filter by user ID (defaults to current user)</td></tr>
-  <tr><td>employer_id</td><td>string (UUID)</td><td>No</td><td>Filter by employer ID</td></tr>
-  <tr><td>category</td><td>string (enum)</td><td>No</td><td>Filter by category (RESUME, AVATAR, COMPANY_DOC, JOB_ATTACHMENT, OTHER)</td></tr>
-  <tr><td>page</td><td>integer</td><td>No</td><td>Page number (default: 1)</td></tr>
-  <tr><td>limit</td><td>integer</td><td>No</td><td>Items per page (default: 20, max: 100)</td></tr>
+  <tr><th>Tham số</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>user_id</td><td>string (UUID)</td><td>Không</td><td>Lọc theo mã người dùng (mặc định là người dùng hiện tại)</td></tr>
+  <tr><td>employer_id</td><td>string (UUID)</td><td>Không</td><td>Lọc theo mã nhà tuyển dụng</td></tr>
+  <tr><td>category</td><td>string (enum)</td><td>Không</td><td>Lọc theo danh mục (RESUME, AVATAR, COMPANY_DOC, JOB_ATTACHMENT, OTHER)</td></tr>
+  <tr><td>page</td><td>integer</td><td>Không</td><td>Số trang (mặc định: 1)</td></tr>
+  <tr><td>limit</td><td>integer</td><td>Không</td><td>Số mục mỗi trang (mặc định: 20, tối đa: 100)</td></tr>
 </table>
-<p><strong>Example Request:</strong></p>
+<p><strong>Ví dụ Yêu cầu:</strong></p>
 <pre><code>GET /files?category=RESUME&page=1&limit=10</code></pre>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "success": true,
   "data": {
@@ -307,8 +304,8 @@ Body: &lt;binary file data&gt;</code></pre>
         "employer_id": "acme-corp-uuid",
         "user_id": "user-uuid-456",
         "original_name": "my-resume.pdf",
-        "storage_key": "acme/user-123/RESUME/a1b2c3d4-resume.pdf",
-        "bucket_name": "job-portal-files",
+        "file_path": "user-123/RESUME/a1b2c3d4-resume.pdf",
+        "file_path": "user-123/RESUME/a1b2c3d4-resume.pdf",
         "mime_type": "application/pdf",
         "file_size": 524288,
         "category": "RESUME",
@@ -324,50 +321,223 @@ Body: &lt;binary file data&gt;</code></pre>
   }
 }</code></pre>
 
-<h2 id="section-4-5">4.5 Delete File</h2>
-
-<h3 id="fr-004">DELETE /files/:id <span class="req-id">FR-004</span></h3>
-<p>Soft-delete a file. Sets status to DELETED and emits event for asynchronous S3 cleanup.</p>
-<p><strong>Path Parameters:</strong></p>
+<h2 id="section-4-6">4.6 Tìm kiếm Tệp tin</h2>
+<h3>GET /files/search <span class="req-id">FR-009</span></h3>
+<p>Tìm kiếm toàn văn trên tên và metadata tệp tin/thư mục.</p>
+<p><strong>Tham số Truy vấn:</strong></p>
 <table class="trace-table">
-  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-  <tr><td>id</td><td>string (UUID)</td><td>File ID</td></tr>
+  <tr><th>Tham số</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th></tr>
+  <tr><td>q</td><td>string</td><td>Có</td><td>Truy vấn tìm kiếm</td></tr>
+  <tr><td>category</td><td>string</td><td>Không</td><td>Lọc theo danh mục</td></tr>
+  <tr><td>mime_type</td><td>string</td><td>Không</td><td>Lọc theo loại MIME</td></tr>
+  <tr><td>page</td><td>integer</td><td>Không</td><td>Số trang (mặc định: 1)</td></tr>
+  <tr><td>limit</td><td>integer</td><td>Không</td><td>Số mục mỗi trang (mặc định: 20)</td></tr>
 </table>
-<p><strong>Response 200:</strong></p>
+<p><strong>Phản hồi 200:</strong></p>
 <pre><code>{
   "success": true,
-  "message": "File deleted successfully"
-}</code></pre>
-<p><strong>Error 403 — Not authorized:</strong></p>
-<pre><code>{
-  "success": false,
-  "error": {
-    "code": "FORBIDDEN",
-    "message": "You can only delete your own files"
+  "data": {
+    "files": [ ... ],
+    "total": 15,
+    "page": 1,
+    "limit": 20
   }
 }</code></pre>
-<p><strong>Error 404 — File not found:</strong></p>
+
+<h2 id="section-4-7">4.7 Tạo Thư mục</h2>
+<h3>POST /files/folders <span class="req-id">FR-008</span></h3>
+<p>Tạo thư mục mới trong cấu trúc thư mục được ủy quyền.</p>
+<p><strong>Yêu cầu:</strong></p>
 <pre><code>{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "File not found"
+  "name": "My Documents",
+  "parent_folder_id": "folder-uuid-123"
+}</code></pre>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": "folder-uuid-456",
+    "name": "My Documents",
+    "parent_folder_id": "folder-uuid-123",
+    "type": "FOLDER",
+    "created_at": "2026-08-17T10:45:00Z"
   }
+}</code></pre>
+
+<h2 id="section-4-8">4.8 Đổi tên Tệp tin/Thư mục</h2>
+<h3>PATCH /files/:id <span class="req-id">FR-010</span></h3>
+<p>Đổi tên tệp tin hoặc thư mục. Xử lý tên trùng lặp bằng cách thêm hậu tố số.</p>
+<p><strong>Yêu cầu:</strong></p>
+<pre><code>{
+  "name": "New Document Name"
+}</code></pre>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": "file-uuid-123",
+    "original_name": "New Document Name",
+    "updated_at": "2026-08-17T10:50:00Z"
+  }
+}</code></pre>
+
+<h2 id="section-4-9">4.9 Sao chép Tệp tin</h2>
+<h3>POST /files/:id/copy <span class="req-id">FR-012</span></h3>
+<p>Sao chép tệp tin đến thư mục đích. Tạo bản ghi mới với cùng file vật lý.</p>
+<p><strong>Yêu cầu:</strong></p>
+<pre><code>{
+  "destination_folder_id": "folder-uuid-789"
+}</code></pre>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": "file-uuid-new",
+    "original_name": "document.pdf",
+    "parent_folder_id": "folder-uuid-789",
+    "file_path": "same-as-original",
+    "created_at": "2026-08-17T10:55:00Z"
+  }
+}</code></pre>
+
+<h2 id="section-4-10">4.10 Di chuyển Tệp tin</h2>
+<h3>POST /files/:id/move <span class="req-id">FR-013</span></h3>
+<p>Di chuyển tệp tin đến thư mục đích. Cập nhật parent_folder_id.</p>
+<p><strong>Yêu cầu:</strong></p>
+<pre><code>{
+  "destination_folder_id": "folder-uuid-789"
+}</code></pre>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "id": "file-uuid-123",
+    "original_name": "document.pdf",
+    "parent_folder_id": "folder-uuid-789",
+    "updated_at": "2026-08-17T11:00:00Z"
+  }
+}</code></pre>
+
+<h2 id="section-4-11">4.11 Xóa Tệp tin/Thư mục</h2>
+<h3>DELETE /files/:id <span class="req-id">FR-004</span></h3>
+<p>Xóa mềm tệp tin hoặc thư mục. Đối với thư mục, đánh dấu đệ quy tất cả các mục con là DELETED.</p>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "message": "Tệp tin/thư mục đã được xóa thành công"
+}</code></pre>
+
+<h2 id="section-4-12">4.12 Quản lý Quyền</h2>
+<h3>GET /files/:id/permissions <span class="req-id">FR-014</span></h3>
+<p>Lấy tất cả quyền cho tệp tin hoặc thư mục.</p>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "permissions": [
+      { "id": "perm-uuid-1", "user_id": "user-uuid-1", "permission": "VIEW" },
+      { "id": "perm-uuid-2", "role": "HR", "permission": "DOWNLOAD" },
+      { "id": "perm-uuid-3", "org_id": "org-uuid-1", "permission": "EDIT" }
+    ]
+  }
+}</code></pre>
+
+<h3>PUT /files/:id/permissions <span class="req-id">FR-014</span></h3>
+<p>Cập nhật quyền cho tệp tin hoặc thư mục (chỉ admin).</p>
+<p><strong>Yêu cầu:</strong></p>
+<pre><code>{
+  "permissions": [
+    { "user_id": "user-uuid-1", "permission": "VIEW" },
+    { "role": "HR", "permission": "DOWNLOAD" },
+    { "org_id": "org-uuid-1", "permission": "EDIT" }
+  ]
+}</code></pre>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "message": "Quyền đã được cập nhật thành công"
+}</code></pre>
+
+<h2 id="section-4-13">4.13 Quản lý Lưu trữ</h2>
+<h3>GET /files/storage-usage <span class="req-id">FR-016</span></h3>
+<p>Lấy thống kê sử dụng lưu trữ cho người dùng hoặc tổ chức hiện tại.</p>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "user": { "total_size": 52428800, "file_count": 25 },
+    "organization": { "total_size": 524288000, "file_count": 250 }
+  }
+}</code></pre>
+
+<h3>GET /files/quotas <span class="req-id">FR-017</span></h3>
+<p>Lấy cấu hình hạn ngạch lưu trữ (chỉ admin).</p>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "quotas": [
+      { "user_id": "user-uuid-1", "max_total_size": 104857600, "max_file_count": 100 },
+      { "org_id": "org-uuid-1", "max_total_size": 1073741824, "max_file_count": 1000 }
+    ]
+  }
+}</code></pre>
+
+<h3>PUT /files/quotas <span class="req-id">FR-017</span></h3>
+<p>Cập nhật giới hạn hạn ngạch lưu trữ (chỉ admin).</p>
+<p><strong>Yêu cầu:</strong></p>
+<pre><code>{
+  "user_id": "user-uuid-1",
+  "max_total_size": 209715200,
+  "max_file_count": 200
+}</code></pre>
+
+<h3>GET /files/policies <span class="req-id">FR-018</span></h3>
+<p>Lấy chính sách lưu trữ theo danh mục (chỉ admin).</p>
+<p><strong>Phản hồi 200:</strong></p>
+<pre><code>{
+  "success": true,
+  "data": {
+    "policies": [
+      {
+        "category": "RESUME",
+        "allowed_mime_types": ["application/pdf", "application/msword"],
+        "max_file_size": 10485760,
+        "retention_days": null,
+        "encryption_enabled": false
+      }
+    ]
+  }
+}</code></pre>
+
+<h3>PUT /files/policies <span class="req-id">FR-018</span></h3>
+<p>Cập nhật chính sách lưu trữ (chỉ admin).</p>
+<p><strong>Yêu cầu:</strong></p>
+<pre><code>{
+  "category": "RESUME",
+  "allowed_mime_types": ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+  "max_file_size": 10485760,
+  "retention_days": 365,
+  "encryption_enabled": true
 }</code></pre>
 
 <!-- 5. ERROR CODES -->
-<h1 id="section-5">5. Error Codes</h1>
+<h1 id="section-5">5. Mã Lỗi</h1>
 
 <table>
-  <tr><th>HTTP Status</th><th>Error Code</th><th>Description</th></tr>
-  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Request validation failed (missing/invalid parameters, invalid file type)</td></tr>
-  <tr><td>401</td><td>UNAUTHORIZED</td><td>Missing or invalid authentication</td></tr>
-  <tr><td>403</td><td>FORBIDDEN</td><td>Insufficient permissions (not file owner, not org admin)</td></tr>
-  <tr><td>404</td><td>NOT_FOUND</td><td>File not found or already deleted</td></tr>
-  <tr><td>413</td><td>PAYLOAD_TOO_LARGE</td><td>File exceeds maximum size for category</td></tr>
-  <tr><td>415</td><td>UNSUPPORTED_MEDIA_TYPE</td><td>File MIME type not allowed for category</td></tr>
-  <tr><td>429</td><td>RATE_LIMITED</td><td>Too many requests</td></tr>
-  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Server error (S3 unavailable, etc.)</td></tr>
+  <tr><th>HTTP Status</th><th>Mã Lỗi</th><th>Mô tả</th></tr>
+  <tr><td>400</td><td>VALIDATION_ERROR</td><td>Xác thực yêu cầu thất bại (thiếu/trường không hợp lệ, loại tệp tin không hợp lệ)</td></tr>
+  <tr><td>400</td><td>INVALID_NAME</td><td>Tên tệp tin/thư mục chứa ký tự đặc biệt</td></tr>
+  <tr><td>400</td><td>INVALID_FOLDER</td><td>Không thể di chuyển thư mục vào chính nó</td></tr>
+  <tr><td>401</td><td>UNAUTHORIZED</td><td>Thiếu hoặc xác thực không hợp lệ</td></tr>
+  <tr><td>403</td><td>FORBIDDEN</td><td>Không đủ quyền (không phải chủ sở hữu tệp tin, không phải admin tổ chức)</td></tr>
+  <tr><td>404</td><td>NOT_FOUND</td><td>Không tìm thấy tệp tin/thư mục hoặc đã bị xóa</td></tr>
+  <tr><td>409</td><td>NAME_CONFLICT</td><td>Tệp tin/thư mục với tên tương tự đã tồn tại tại vị trí đích</td></tr>
+  <tr><td>413</td><td>PAYLOAD_TOO_LARGE</td><td>Tệp tin vượt quá kích thước tối đa cho danh mục</td></tr>
+  <tr><td>413</td><td>QUOTA_EXCEEDED</td><td>Vượt quá hạn ngạch lưu trữ cho người dùng hoặc tổ chức</td></tr>
+  <tr><td>415</td><td>UNSUPPORTED_MEDIA_TYPE</td><td>Loại MIME tệp tin không được phép cho danh mục</td></tr>
+  <tr><td>429</td><td>RATE_LIMITED</td><td>Quá nhiều yêu cầu</td></tr>
+  <tr><td>500</td><td>INTERNAL_ERROR</td><td>Lỗi server (filesystem không khả dụng)</td></tr>
 </table>
 
 </body>

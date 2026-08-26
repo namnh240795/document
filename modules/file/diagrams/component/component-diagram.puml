@@ -1,0 +1,53 @@
+@startuml FILE Component Diagram
+title FILE Module - Sơ đồ Thành phần
+
+skinparam componentFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+skinparam component {
+  BackgroundColor<<module>> #FEFECE
+  BackgroundColor<<external>> #BFDFFF
+  BorderColor #A80036
+  FontSize 11
+}
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+
+rectangle "**Module FILE**" as FILE_MOD <<module>> {
+  component "FileController" as FC
+  component "FileService" as FS
+  component "FileGuard" as FG
+  component "FileWorker" as FW
+  component "TempCleanupJob" as TCJ
+  component "MulterUtil" as MU
+  component "FileUtil" as FU
+  component "NameResolverUtil" as NRU
+}
+
+rectangle "Phụ thuộc Bên ngoài" as EXT {
+  component "AuthGuard\n(Module AUTH)" as AG <<external>>
+  component "RabbitMQ" as RMQ <<external>>
+  component "Local Filesystem\n(uploads/)" as LFS <<external>>
+  component "PostgreSQL\n(file_db)" as DB <<external>>
+  component "NestJS\nScheduler" as SCH <<external>>
+}
+
+' --- Internal connections ---
+FC --> FG : sử dụng
+FC --> FS : gọi
+FG --> AG : ủy quyền
+FS --> MU : sử dụng
+FS --> FU : sử dụng
+FS --> NRU : sử dụng
+FS --> DB : truy vấn
+FS --> LFS : đọc/ghi tệp tin
+FS --> RMQ : phát sự kiện
+FW --> RMQ : tiêu thụ sự kiện
+FW --> FU : xóa tệp tin
+TCJ --> SCH : được kích hoạt bởi
+TCJ --> FS : gọi dọn dẹp
+
+@enduml

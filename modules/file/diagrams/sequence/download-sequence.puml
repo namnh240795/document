@@ -1,0 +1,40 @@
+@startuml Download File Sequence
+title UC-06: Tải xuống Tệp tin
+
+skinparam sequenceArrowThickness 1
+skinparam sequenceParticipantPadding 5
+skinparam sequenceLifeLineBorderColor #333
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+skinparam responseMessageBelowArrow true
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam maxMessageSize 200
+skinparam sequenceParticipantPadding 20
+
+actor "Người dùng" as U
+participant "Client" as Client
+participant "FILE Service" as FILE
+database "PostgreSQL" as DB
+participant "Filesystem" as FS
+
+U -> Client : Yêu cầu tải xuống
+Client -> FILE : GET /files/:id/download
+activate FILE
+FILE -> DB : SELECT bản ghi tệp tin
+activate DB
+DB --> FILE : file_path
+deactivate DB
+FILE -> FILE : Kiểm tra quyền truy cập
+FILE -> FS : Đọc tệp tin từ disk
+activate FS
+FS --> FILE : nội dung tệp tin
+deactivate FS
+FILE --> Client : file stream (octet-stream)
+deactivate FILE
+
+Client --> U : Hiển thị/tải tệp tin
+
+@enduml

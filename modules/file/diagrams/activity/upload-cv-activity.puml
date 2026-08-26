@@ -1,0 +1,49 @@
+@startuml Upload CV Activity
+title UC-05: Tải lên CV/Hồ sơ
+
+skinparam activityFontSize 11
+skinparam activityPadding 5
+skinparam activityBorderThickness 1
+skinparam defaultFontSize 10
+skinparam nodesep 15
+skinparam ranksep 15
+
+skinparam activityBackgroundColor White
+skinparam activityBorderColor #333
+skinparam activityDiamondBackgroundColor #ecf0f1
+skinparam activityDiamondBorderColor #333
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam activityPadding 10
+skinparam activityBorderThickness 2
+
+start
+
+:Chọn tệp CV (PDF/DOC/DOCX);
+
+:Kiểm tra loại tệp tin;
+
+if (Loại hợp lệ?) then (Không)
+  :Trả về lỗi 400;
+  stop
+endif
+
+if (Kích thước ≤ 10MB?) then (Không)
+  :Trả về lỗi 413;
+  stop
+endif
+
+:Kiểm tra CV hiện có;
+
+if (Có CV?) then (Có)
+  :Đánh dấu CV cũ là REPLACED;
+endif
+
+:Tạo tên file UUID;
+:Lưu tệp CV vào local filesystem;
+:Tạo bản ghi metadata;
+:Trả về bản ghi tệp tin;
+
+stop
+
+@enduml

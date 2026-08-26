@@ -1,0 +1,60 @@
+@startuml
+title Sơ đồ Trường hợp Sử dụng — Quản lý Tệp tin
+
+skinparam defaultTextAlignment center
+skinparam responseMessageBelowArrow true
+skinparam usecaseFontSize 11
+skinparam actorFontSize 13
+skinparam shadowing false
+skinparam nodesep 30
+skinparam ranksep 30
+skinparam packageStyle rectangle
+
+actor "Người dùng" as User
+actor "Quản trị viên" as Admin
+actor "Hệ thống" as System
+
+rectangle "Module Quản lý Tệp tin" {
+  usecase "Tạo Thư mục" as UC01
+  usecase "Liệt kê" as UC02
+  usecase "Tìm kiếm" as UC03
+  usecase "Đổi tên" as UC04
+  usecase "Tải lên" as UC05
+  usecase "Tải xuống" as UC06
+  usecase "Tải lên nhiều tệp" as UC07
+  usecase "Sao chép" as UC08
+  usecase "Xóa" as UC09
+  usecase "Di chuyển" as UC10
+  usecase "Kiểm tra quyền" as UC11
+  usecase "Ghi nhật ký" as UC12
+  usecase "Quản lý quyền" as UC13
+  usecase "Theo dõi lưu trữ" as UC14
+  usecase "Quản lý thư mục" as UC15
+  usecase "Hạn ngạch" as UC16
+  usecase "Chính sách" as UC17
+}
+
+User --> UC01
+User --> UC02
+User --> UC03
+User --> UC04
+User --> UC05
+User --> UC06
+User --> UC07
+User --> UC08
+User --> UC10
+
+Admin --> UC09
+Admin --> UC13
+Admin --> UC16
+Admin --> UC17
+
+System --> UC14
+System --> UC15
+
+UC05 ..> UC11 : <<include>>
+UC06 ..> UC11 : <<include>>
+UC09 ..> UC11 : <<include>>
+UC12 ..> UC11 : <<include>>
+
+@enduml

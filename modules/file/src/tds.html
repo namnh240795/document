@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Technical Design Specification - File Management (FILE)</title>
+  <title>Đặc tả Thiết kế Kỹ thuật - Quản lý Tệp tin (FILE)</title>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -18,405 +18,613 @@
 </div>
 
 <div class="back-link">
-  <a href="../index.html">&larr; Back to System Overview</a>
+  <a href="../index.html">&larr; Quay lại Tổng quan Hệ thống</a>
 </div>
 
 <!-- COVER PAGE -->
 <div class="cover">
-  <h1>Technical Design Specification</h1>
-  <div class="subtitle">File Management Module</div>
+  <h1>Đặc tả Thiết kế Kỹ thuật</h1>
+  <div class="subtitle">Module Quản lý Tệp tin</div>
   <span class="module-badge">FILE</span>
   <table class="meta-table">
-    <tr><td>Version</td><td>1.0</td></tr>
-    <tr><td>System</td><td>Job Portal System</td></tr>
-    <tr><td>Module</td><td>FILE - File Management</td></tr>
-    <tr><td>Date</td><td>2026-08-17</td></tr>
-    <tr><td>Author</td><td>Nam Nguyen</td></tr>
-    <tr><td>Status</td><td>Draft</td></tr>
-    <tr><td>Related SRS</td><td><a href="srs.html">File Management SRS</a></td></tr>
+    <tr><td>Phiên bản</td><td>1.0</td></tr>
+    <tr><td>Hệ thống</td><td>Hệ thống Cổng Thông tin Tuyển dụng</td></tr>
+    <tr><td>Module</td><td>FILE - Quản lý Tệp tin</td></tr>
+    <tr><td>Ngày</td><td>2026-08-17</td></tr>
+    <tr><td>Tác giả</td><td>Nam Nguyen</td></tr>
+    <tr><td>Trạng thái</td><td>Bản nháp</td></tr>
+    <tr><td>SRS liên quan</td><td><a href="srs.html">SRS Quản lý Tệp tin</a></td></tr>
   </table>
 </div>
 
 <!-- TABLE OF CONTENTS -->
 <div class="toc">
-  <h2>Table of Contents</h2>
+  <h2>Mục lục</h2>
   <ul>
-    <li><a href="#section-1">1. Overview</a></li>
-    <li><a href="#section-2">2. Architecture</a>
+    <li><a href="#section-1">1. Tổng quan</a></li>
+    <li><a href="#section-2">2. Kiến trúc</a>
       <ul>
-        <li><a href="#section-2-1">2.1 Architecture Style</a></li>
-        <li><a href="#section-2-2">2.2 Key Design Decisions</a></li>
+        <li><a href="#section-2-1">2.1 Kiểu Kiến trúc</a></li>
+        <li><a href="#section-2-2">2.2 Các Quyết định Thiết kế Chính</a></li>
       </ul>
     </li>
-    <li><a href="#section-3">3. Component Design</a>
+    <li><a href="#section-3">3. Thiết kế Thành phần</a>
       <ul>
-        <li><a href="#section-3-1">3.1 Component Diagram</a></li>
-        <li><a href="#section-3-2">3.2 Module Structure</a></li>
-        <li><a href="#section-3-3">3.3 Component to Requirements Mapping</a></li>
+        <li><a href="#section-3-1">3.1 Sơ đồ Thành phần</a></li>
+        <li><a href="#section-3-2">3.2 Cấu trúc Module</a></li>
+        <li><a href="#section-3-3">3.3 Ánh xạ Thành phần đến Yêu cầu</a></li>
       </ul>
     </li>
-    <li><a href="#section-4">4. Data Architecture</a>
+    <li><a href="#section-4">4. Kiến trúc Dữ liệu</a>
       <ul>
-        <li><a href="#section-4-1">4.1 Database</a></li>
-        <li><a href="#section-4-2">4.2 Data Requirements Resolution</a></li>
+        <li><a href="#section-4-1">4.1 Cơ sở dữ liệu</a></li>
+        <li><a href="#section-4-2">4.2 Giải quyết Yêu cầu Dữ liệu</a></li>
       </ul>
     </li>
-    <li><a href="#section-5">5. API Design</a>
+    <li><a href="#section-5">5. Thiết kế API</a>
       <ul>
-        <li><a href="#section-5-1">5.1 Endpoint to Requirements Mapping</a></li>
+        <li><a href="#section-5-1">5.1 Ánh xạ Endpoint đến Yêu cầu</a></li>
       </ul>
     </li>
-    <li><a href="#section-6">6. Integration Flows</a>
+    <li><a href="#section-6">6. Lưu trình Tích hợp</a>
       <ul>
-        <li><a href="#section-6-1">6.1 File Upload Flow</a></li>
-        <li><a href="#section-6-2">6.2 File Download Flow</a></li>
-        <li><a href="#section-6-3">6.3 File Delete Flow</a></li>
-        <li><a href="#section-6-4">6.4 Temp File Cleanup Flow</a></li>
+        <li><a href="#section-6-1">6.1 Lưu trình Tải lên Tệp tin</a></li>
+        <li><a href="#section-6-2">6.2 Lưu trình Tải xuống Tệp tin</a></li>
+        <li><a href="#section-6-3">6.3 Lưu trình Xóa Tệp tin</a></li>
+        <li><a href="#section-6-4">6.4 Lưu trình Dọn dẹp Tệp tin Tạm</a></li>
+        <li><a href="#section-6-5">6.5 Lưu trình Quản lý Thư mục</a></li>
+        <li><a href="#section-6-6">6.6 Lưu trình Di chuyển/Sao chép Tệp tin</a></li>
+        <li><a href="#section-6-7">6.7 Lưu trình Ghi nhật ký Truy cập</a></li>
       </ul>
     </li>
-    <li><a href="#section-7">7. Security Design</a></li>
-    <li><a href="#section-8">8. Traceability Summary</a></li>
+    <li><a href="#section-7">7. Thiết kế Bảo mật</a></li>
+    <li><a href="#section-8">8. Tóm tắt Truy xuất Nguồn gốc</a></li>
   </ul>
 </div>
 
 <!-- 1. OVERVIEW -->
-<h1 id="section-1">1. Overview</h1>
+<h1 id="section-1">1. Tổng quan</h1>
 
-<h2>1.1 Purpose</h2>
-<p>This document describes the technical design decisions for the <strong>File Management</strong> module.</p>
+<h2>1.1 Mục đích</h2>
+<p>Tài liệu này mô tả các quyết định thiết kế kỹ thuật cho module <strong>Quản lý Tệp tin</strong>.</p>
 
-<h2>1.2 Requirements Addressed</h2>
+<h2>1.2 Yêu cầu được Giải quyết</h2>
 <table class="trace-table">
-  <tr><th>Category</th><th>Requirement IDs</th><th>Design Section</th></tr>
-  <tr><td>Functional</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-006</span></td><td>Section 3, 5</td></tr>
-  <tr><td>Non-Functional</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-006</span></td><td>Section 6, 7</td></tr>
+  <tr><th>Danh mục</th><th>Mã Yêu cầu</th><th>Phần Thiết kế</th></tr>
+  <tr><td>Chức năng</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-018</span></td><td>Phần 3, 5</td></tr>
+  <tr><td>Phi chức năng</td><td><span class="req-id">NFR-001</span> - <span class="req-id">NFR-011</span></td><td>Phần 6, 7</td></tr>
 </table>
 
 <!-- 2. ARCHITECTURE -->
-<h1 id="section-2">2. Architecture</h1>
+<h1 id="section-2">2. Kiến trúc</h1>
 
-<h2 id="section-2-1">2.1 Architecture Style</h2>
+<h2 id="section-2-1">2.1 Kiểu Kiến trúc</h2>
 <table>
-  <tr><th>Aspect</th><th>Decision</th><th>Resolves</th></tr>
-  <tr><td>Pattern</td><td>NestJS Module (within Monolith)</td><td><span class="req-id">NFR-003</span></td></tr>
-  <tr><td>Storage Backend</td><td>Amazon S3 (presigned URLs)</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
-  <tr><td>ORM</td><td>Drizzle ORM</td><td>All data requirements</td></tr>
-  <tr><td>Database</td><td>PostgreSQL (file_db)</td><td><span class="req-id">NFR-003</span></td></tr>
-  <tr><td>Message Queue</td><td>RabbitMQ (event-driven cleanup)</td><td><span class="req-id">FR-004</span>, <span class="req-id">FR-006</span></td></tr>
-  <tr><td>Job Scheduler</td><td>NestJS Scheduler (cron)</td><td><span class="req-id">FR-006</span></td></tr>
+  <tr><th>Khía cạnh</th><th>Quyết định</th><th>Giải quyết</th></tr>
+  <tr><td>Mẫu</td><td>NestJS Module (trong Monolith)</td><td><span class="req-id">NFR-003</span></td></tr>
+  <tr><td>Backend Lưu trữ</td><td>Local Filesystem (Multer + fs)</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
+  <tr><td>ORM</td><td>Drizzle ORM</td><td>Tất cả yêu cầu dữ liệu</td></tr>
+  <tr><td>Cơ sở dữ liệu</td><td>PostgreSQL (file_db)</td><td><span class="req-id">NFR-003</span></td></tr>
+  <tr><td>Hàng đợi Tin nhắn</td><td>RabbitMQ (dọn dẹp dựa trên sự kiện)</td><td><span class="req-id">FR-004</span>, <span class="req-id">FR-006</span></td></tr>
+  <tr><td>Lên lịch Tác vụ</td><td>NestJS Scheduler (cron)</td><td><span class="req-id">FR-006</span></td></tr>
 </table>
 
-<h2 id="section-2-2">2.2 Key Design Decisions</h2>
+<h2 id="section-2-2">2.2 Các Quyết định Thiết kế Chính</h2>
 <table class="trace-table">
-  <tr><th>#</th><th>Decision</th><th>Rationale</th><th>Resolves</th></tr>
+  <tr><th>#</th><th>Quyết định</th><th>Lý do</th><th>Giải quyết</th></tr>
   <tr>
-    <td>1</td><td>Presigned URL upload (client-side)</td>
-    <td>Reduces server load; no need to buffer file content in backend; supports large files</td>
+    <td>1</td><td>Tải lên qua Multer (multipart/form-data)</td>
+    <td>Đơn giản; server kiểm soát trực tiếp; không phụ thuộc service bên ngoài</td>
     <td><span class="req-id">FR-001</span>, <span class="req-id">NFR-004</span></td>
   </tr>
   <tr>
-    <td>2</td><td>Soft delete with event-driven S3 cleanup</td>
-    <td>Allows rollback; decouples metadata cleanup from physical storage cleanup; audit trail</td>
+    <td>2</td><td>Xóa mềm với xóa vật lý trên filesystem</td>
+    <td>Cho phép hoàn nguyên metadata; xóa vật lý ngay khi xóa mềm; kiểm toán</td>
     <td><span class="req-id">FR-004</span></td>
   </tr>
   <tr>
-    <td>3</td><td>Separate file_db database</td>
-    <td>Independent scaling; isolated failure domain; clean separation of concerns</td>
+    <td>3</td><td>Cơ sở dữ liệu file_db riêng biệt</td>
+    <td>Mở rộng độc lập; biệt lập miền lỗi; phân tách rõ ràng trách nhiệm</td>
     <td><span class="req-id">NFR-003</span></td>
   </tr>
   <tr>
-    <td>4</td><td>Hierarchical S3 key structure</td>
-    <td>Supports multi-tenancy; simplifies access control; efficient listing by prefix</td>
+    <td>4</td><td>Cấu trúc thư mục local phân cấp</td>
+    <td>Hỗ trợ đa tenancy; đơn giản hóa kiểm soát truy cập; cách ly file theo user</td>
     <td><span class="req-id">FR-005</span></td>
   </tr>
   <tr>
-    <td>5</td><td>TEMP status for in-progress uploads</td>
-    <td>Prevents phantom files; enables automatic cleanup of abandoned uploads</td>
+    <td>5</td><td>Trạng thái TEMP cho tải lên đang thực hiện</td>
+    <td>Ngăn chặn tệp tin ảo; cho phép dọn dẹp tự động các tải lên bị bỏ rơi</td>
     <td><span class="req-id">FR-006</span></td>
   </tr>
   <tr>
-    <td>6</td><td>Category-based validation</td>
-    <td>Enforces file type/size rules per use case; prevents abuse</td>
+    <td>6</td><td>Xác thực dựa trên danh mục</td>
+    <td>Bắt buộc quy tắc loại/kích thước tệp tin theo từng trường hợp sử dụng; ngăn chặn lạm dụng</td>
     <td><span class="req-id">FR-001</span>, <span class="req-id">NFR-005</span></td>
+  </tr>
+  <tr>
+    <td>7</td><td>Thư mục là bản ghi sys_files (type=FOLDER)</td>
+    <td>Bảng thống nhất cho tệp tin và thư mục; đơn giản hóa truy vấn; hỗ trợ điều hướng phân cấp</td>
+    <td><span class="req-id">FR-008</span></td>
+  </tr>
+  <tr>
+    <td>8</td><td>Bảng quyền riêng biệt (sys_file_permissions)</td>
+    <td>Kiểm soát truy cập chi tiết; hỗ trợ quyền ở cấp người dùng/vai trò/tổ chức; có thể kế thừa</td>
+    <td><span class="req-id">FR-014</span></td>
+  </tr>
+  <tr>
+    <td>9</td><td>Tìm kiếm toàn văn qua PostgreSQL tsvector</td>
+    <td>Tìm kiếm PostgreSQL gốc; không phụ thuộc bên ngoài; hỗ trợ nội dung Thái/Anh</td>
+    <td><span class="req-id">FR-009</span>, <span class="req-id">NFR-007</span></td>
+  </tr>
+  <tr>
+    <td>10</td><td>Ghi nhật ký truy cập dựa trên sự kiện (RabbitMQ &rarr; LOG &rarr; OpenSearch)</td>
+    <td>Kiểm toán tách biệt; ghi nhật ký bất đồng bộ; quản lý nhật ký tập trung</td>
+    <td><span class="req-id">FR-015</span>, <span class="req-id">NFR-010</span></td>
+  </tr>
+  <tr>
+    <td>11</td><td>Sao chép = bản ghi mới với cùng file_path (không sao chép vật lý)</td>
+    <td>Lưu trữ hiệu quả; không trùng lặp file vật lý; dọn dẹp theo số tham chiếu</td>
+    <td><span class="req-id">FR-012</span></td>
+  </tr>
+  <tr>
+    <td>12</td><td>Di chuyển = cập nhật parent_folder_id</td>
+    <td>Thao tác chỉ trên metadata; nhanh; không cần di chuyển file vật lý</td>
+    <td><span class="req-id">FR-013</span></td>
+  </tr>
+  <tr>
+    <td>13</td><td>Hạn ngạch lưu trữ với theo dõi bất đồng bộ</td>
+    <td>Ngăn chặn lạm dụng; kiểm tra hạn ngạch khi tải lên; theo dõi sử dụng qua tác vụ cron</td>
+    <td><span class="req-id">FR-016</span>, <span class="req-id">FR-017</span></td>
+  </tr>
+  <tr>
+    <td>14</td><td>Chính sách lưu trữ theo danh mục</td>
+    <td>Các quy tắc có thể cấu hình; quản trị viên quản lý; chỉ ảnh hưởng tải lên mới</td>
+    <td><span class="req-id">FR-018</span></td>
   </tr>
 </table>
 
 <!-- 3. COMPONENT DESIGN -->
-<h1 id="section-3">3. Component Design</h1>
+<h1 id="section-3">3. Thiết kế Thành phần</h1>
 
-<h2 id="section-3-1">3.1 Component Diagram</h2>
+<h2 id="section-3-1">3.1 Sơ đồ Thành phần</h2>
 <div class="diagram">
-  <img src="./images/component/component-diagram.png" alt="FILE Component Diagram">
-  <div class="caption">Figure 1: FILE Module Components</div>
+  <img src="./images/component/component-diagram.png" alt="Sơ đồ Thành phần FILE">
+  <div class="caption">Hình 1: Các Thành phần Module FILE</div>
 </div>
 
-<h2 id="section-3-2">3.2 Module Structure</h2>
+<h2 id="section-3-2">3.2 Cấu trúc Module</h2>
 <pre><code>src/
   file/
     file.module.ts
     file.controller.ts
     file.service.ts
     file.guard.ts
+    permission.guard.ts       # Kiểm tra quyền truy cập
     dto/
       create-file.dto.ts
       confirm-file.dto.ts
       list-files.dto.ts
+      create-folder.dto.ts
+      rename-file.dto.ts
+      move-file.dto.ts
+      copy-file.dto.ts
+      search-files.dto.ts
+      batch-upload.dto.ts
+      manage-permissions.dto.ts
+      storage-quota.dto.ts
+      storage-policy.dto.ts
     workers/
-      file.worker.ts          # S3 cleanup consumer
+      file.worker.ts          # Bộ tiêu thụ xóa file vật lý
     events/
-      file.events.ts          # Event definitions
+      file.events.ts          # Định nghĩa sự kiện
+    services/
+      folder.service.ts       # Quản lý thư mục
+      permission.service.ts   # Quản lý quyền
+      search.service.ts       # Tìm kiếm toàn văn
+      storage.service.ts      # Theo dõi lưu trữ & hạn ngạch
+      audit.service.ts        # Ghi nhật ký lịch sử truy cập
     utils/
-      s3.util.ts              # S3 client wrapper
-      presigned.util.ts       # Presigned URL generation
-      storage-key.util.ts     # Storage key generation</code></pre>
+      multer.util.ts          # Cấu hình Multer (local upload)
+      file.util.ts            # Thao tác filesystem (đọc, xóa, copy)
+      name-resolver.util.ts   # Xử lý tên trùng lặp</code></pre>
 
-<h2 id="section-3-3">3.3 Component to Requirements Mapping</h2>
+<h2 id="section-3-3">3.3 Ánh xạ Thành phần đến Yêu cầu</h2>
 <table class="trace-table">
-  <tr><th>Component</th><th>Responsibility</th><th>Resolves</th></tr>
-  <tr><td>FileController</td><td>HTTP endpoints for upload, download, list, delete</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-004</span></td></tr>
-  <tr><td>FileService</td><td>Business logic: validation, metadata CRUD, S3 coordination</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-005</span></td></tr>
-  <tr><td>FileGuard</td><td>Access control: ownership and RBAC validation</td><td><span class="req-id">FR-005</span></td></tr>
-  <tr><td>FileWorker</td><td>Async S3 cleanup consumer (deletes physical objects)</td><td><span class="req-id">FR-004</span></td></tr>
-  <tr><td>S3Util</td><td>AWS S3 client wrapper (upload, delete, presigned URLs)</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span></td></tr>
-  <tr><td>StorageKeyUtil</td><td>Generate hierarchical storage keys with UUID prefix</td><td><span class="req-id">FR-001</span></td></tr>
-  <tr><td>TempCleanupJob</td><td>Cron job to remove TEMP files older than 24h</td><td><span class="req-id">FR-006</span></td></tr>
+  <tr><th>Thành phần</th><th>Trách nhiệm</th><th>Giải quyết</th></tr>
+  <tr><td>FileController</td><td>Endpoint HTTP cho tải lên, tải xuống, liệt kê, xóa, sao chép, di chuyển, hàng loạt</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-004</span>, <span class="req-id">FR-007</span>, <span class="req-id">FR-011</span>, <span class="req-id">FR-012</span>, <span class="req-id">FR-013</span></td></tr>
+  <tr><td>FileService</td><td>Logic nghiệp vụ: xác thực, CRUD metadata, phối hợp filesystem</td><td><span class="req-id">FR-001</span> - <span class="req-id">FR-005</span></td></tr>
+  <tr><td>FileGuard</td><td>Kiểm soát truy cập: xác thực quyền sở hữu và RBAC</td><td><span class="req-id">FR-005</span></td></tr>
+  <tr><td>PermissionGuard</td><td>Kiểm tra quyền chi tiết (xem/sửa/xóa) theo người dùng/vai trò/tổ chức</td><td><span class="req-id">FR-014</span></td></tr>
+  <tr><td>PermissionService</td><td>Quản lý quyền tệp tin/thư mục (CRUD trên sys_file_permissions)</td><td><span class="req-id">FR-014</span></td></tr>
+  <tr><td>FolderService</td><td>CRUD thư mục, quản lý cấu trúc thư mục</td><td><span class="req-id">FR-008</span>, <span class="req-id">FR-015</span></td></tr>
+  <tr><td>SearchService</td><td>Tìm kiếm toàn văn trên tên và metadata tệp tin/thư mục</td><td><span class="req-id">FR-009</span></td></tr>
+  <tr><td>StorageService</td><td>Theo dõi sử dụng lưu trữ, quản lý hạn ngạch, áp dụng chính sách</td><td><span class="req-id">FR-016</span>, <span class="req-id">FR-017</span>, <span class="req-id">FR-018</span></td></tr>
+  <tr><td>AuditService</td><td>Ghi nhật ký lịch sử truy cập (phát đến RabbitMQ cho module LOG)</td><td><span class="req-id">FR-015</span></td></tr>
+  <tr><td>FileWorker</td><td>Bộ tiêu thụ xóa file vật lý bất đồng bộ (xóa đối tượng vật lý)</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>MulterUtil</td><td>Cấu hình Multer cho upload multipart (disk storage, file filter)</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>FileUtil</td><td>Thao tác filesystem: đọc, xóa, copy tệp tin (fs.readFile, fs.unlink, fs.copyFile)</td><td><span class="req-id">FR-001</span>, <span class="req-id">FR-002</span>, <span class="req-id">FR-004</span></td></tr>
+  <tr><td>NameResolverUtil</td><td>Xử lý tên tệp tin/thư mục trùng lặp (thêm hậu tố số)</td><td><span class="req-id">FR-010</span>, <span class="req-id">FR-012</span>, <span class="req-id">FR-013</span></td></tr>
+  <tr><td>TempCleanupJob</td><td>Tác vụ cron xóa các tệp tin TEMP cũ hơn 24h</td><td><span class="req-id">FR-006</span></td></tr>
+  <tr><td>StorageUsageJob</td><td>Tác vụ cron tính toán và cập nhật thống kê sử dụng lưu trữ</td><td><span class="req-id">FR-016</span></td></tr>
 </table>
 
-<h3>3.4 Class Design</h3>
+<h3>3.4 Thiết kế Lớp</h3>
 
 <h4>FileController</h4>
 <table>
-  <tr><th>Method</th><th>Signature</th><th>Description</th></tr>
-  <tr><td>POST</td><td><code>generatePresignedUrl(dto: CreateFileDto)</code></td><td>Generate presigned upload URL</td></tr>
-  <tr><td>POST</td><td><code>confirmUpload(dto: ConfirmFileDto)</code></td><td>Confirm upload, set status ACTIVE</td></tr>
-  <tr><td>GET</td><td><code>getDownloadUrl(id: string)</code></td><td>Generate presigned download URL</td></tr>
-  <tr><td>GET</td><td><code>listFiles(query: ListFilesDto)</code></td><td>List files with filters and pagination</td></tr>
-  <tr><td>DELETE</td><td><code>deleteFile(id: string)</code></td><td>Soft delete file, emit cleanup event</td></tr>
+  <tr><th>Phương thức</th><th>Chữ ký</th><th>Mô tả</th></tr>
+  <tr><td>POST</td><td><code>uploadFile(dto: CreateFileDto)</code></td><td>Tải lên tệp tin (multipart)</td></tr>
+  <tr><td>POST</td><td><code>confirmUpload(dto: ConfirmFileDto)</code></td><td>Xác nhận tải lên, đặt trạng thái ACTIVE</td></tr>
+  <tr><td>POST</td><td><code>batchUpload(dto: BatchUploadDto)</code></td><td>Tải lên nhiều tệp tin</td></tr>
+  <tr><td>GET</td><td><code>downloadFile(id: string)</code></td><td>Tải xuống tệp tin (file stream)</td></tr>
+  <tr><td>GET</td><td><code>listFiles(query: ListFilesDto)</code></td><td>Liệt kê tệp tin với bộ lọc và phân trang</td></tr>
+  <tr><td>GET</td><td><code>searchFiles(query: SearchFilesDto)</code></td><td>Tìm kiếm toàn văn trên tệp tin/thư mục</td></tr>
+  <tr><td>POST</td><td><code>createFolder(dto: CreateFolderDto)</code></td><td>Tạo thư mục mới</td></tr>
+  <tr><td>PATCH</td><td><code>renameFile(id: string, dto: RenameFileDto)</code></td><td>Đổi tên tệp tin hoặc thư mục</td></tr>
+  <tr><td>POST</td><td><code>copyFile(id: string, dto: CopyFileDto)</code></td><td>Sao chép tệp tin đến thư mục đích</td></tr>
+  <tr><td>POST</td><td><code>moveFile(id: string, dto: MoveFileDto)</code></td><td>Di chuyển tệp tin đến thư mục đích</td></tr>
+  <tr><td>DELETE</td><td><code>deleteFile(id: string)</code></td><td>Xóa mềm tệp tin/thư mục, phát sự kiện dọn dẹp</td></tr>
+  <tr><td>GET</td><td><code>getPermissions(id: string)</code></td><td>Lấy quyền tệp tin/thư mục</td></tr>
+  <tr><td>PUT</td><td><code>managePermissions(id: string, dto: ManagePermissionsDto)</code></td><td>Cập nhật quyền cho tệp tin/thư mục</td></tr>
+  <tr><td>GET</td><td><code>getStorageUsage()</code></td><td>Lấy thống kê sử dụng lưu trữ</td></tr>
+  <tr><td>GET</td><td><code>getStorageQuotas()</code></td><td>Lấy cấu hình hạn ngạch lưu trữ</td></tr>
+  <tr><td>PUT</td><td><code>manageStorageQuotas(dto: StorageQuotaDto)</code></td><td>Cập nhật giới hạn hạn ngạch lưu trữ</td></tr>
+  <tr><td>GET</td><td><code>getStoragePolicies()</code></td><td>Lấy chính sách lưu trữ</td></tr>
+  <tr><td>PUT</td><td><code>manageStoragePolicies(dto: StoragePolicyDto)</code></td><td>Cập nhật chính sách lưu trữ</td></tr>
 </table>
 
 <h4>FileService</h4>
 <table>
-  <tr><th>Method</th><th>Signature</th><th>Description</th></tr>
-  <tr><td>createFileMetadata</td><td><code>(dto, userId, employerId?)</code></td><td>Insert sys_files record with TEMP status</td></tr>
-  <tr><td>confirmUpload</td><td><code>(fileId, userId)</code></td><td>Verify ownership, update status to ACTIVE</td></tr>
-  <tr><td>generateDownloadUrl</td><td><code>(fileId, userId)</code></td><td>Validate access, generate presigned URL</td></tr>
-  <tr><td>listFiles</td><td><code>(filters, pagination)</code></td><td>Query files with access control</td></tr>
-  <tr><td>softDelete</td><td><code>(fileId, userId)</code></td><td>Set status DELETED, emit file.deleted event</td></tr>
-  <tr><td>cleanupTempFiles</td><td><code>()</code></td><td>Delete TEMP files older than 24h (cron)</td></tr>
+  <tr><th>Phương thức</th><th>Chữ ký</th><th>Mô tả</th></tr>
+  <tr><td>createFileMetadata</td><td><code>(dto, userId, employerId?)</code></td><td>Chèn bản ghi sys_files với trạng thái TEMP</td></tr>
+  <tr><td>confirmUpload</td><td><code>(fileId, userId)</code></td><td>Xác minh quyền sở hữu, cập nhật trạng thái thành ACTIVE</td></tr>
+  <tr><td>generateDownloadUrl</td><td><code>(fileId, userId)</code></td><td>Xác thực truy cập, đọc file từ disk</td></tr>
+  <tr><td>listFiles</td><td><code>(filters, pagination)</code></td><td>Truy vấn tệp tin với kiểm soát truy cập</td></tr>
+  <tr><td>searchFiles</td><td><code>(query, filters, pagination)</code></td><td>Tìm kiếm toàn văn với kiểm soát truy cập</td></tr>
+  <tr><td>softDelete</td><td><code>(fileId, userId)</code></td><td>Đặt trạng thái DELETED, phát sự kiện file.deleted</td></tr>
+  <tr><td>cleanupTempFiles</td><td><code>()</code></td><td>Xóa các tệp tin TEMP cũ hơn 24h (cron)</td></tr>
+</table>
+
+<h4>FolderService</h4>
+<table>
+  <tr><th>Phương thức</th><th>Chữ ký</th><th>Mô tả</th></tr>
+  <tr><td>createFolder</td><td><code>(dto, userId)</code></td><td>Tạo bản ghi thư mục (type=FOLDER)</td></tr>
+  <tr><td>renameFolder</td><td><code>(folderId, newName, userId)</code></td><td>Đổi tên thư mục, xử lý trùng lặp</td></tr>
+  <tr><td>deleteFolder</td><td><code>(folderId, userId)</code></td><td>Xóa mềm đệ quy các mục con</td></tr>
+  <tr><td>cleanupOrphanedFolders</td><td><code>()</code></td><td>Xóa các thư mục trống (cron)</td></tr>
+</table>
+
+<h4>PermissionService</h4>
+<table>
+  <tr><th>Phương thức</th><th>Chữ ký</th><th>Mô tả</th></tr>
+  <tr><td>checkAccess</td><td><code>(fileId, userId, action)</code></td><td>Kiểm tra người dùng có quyền thực hiện thao tác không</td></tr>
+  <tr><td>getPermissions</td><td><code>(fileId)</code></td><td>Lấy tất cả quyền cho tệp tin/thư mục</td></tr>
+  <tr><td>updatePermissions</td><td><code>(fileId, permissions[])</code></td><td>Cập nhật quyền hàng loạt</td></tr>
+  <tr><td>inheritPermissions</td><td><code>(parentId, childId)</code></td><td>Sao chép quyền từ cha sang con</td></tr>
+</table>
+
+<h4>SearchService</h4>
+<table>
+  <tr><th>Phương thức</th><th>Chữ ký</th><th>Mô tả</th></tr>
+  <tr><td>search</td><td><code>(query, filters, userId)</code></td><td>Tìm kiếm toàn văn với tsvector</td></tr>
+  <tr><td>buildSearchVector</td><td><code>(fileId)</code></td><td>Cập nhật tsvector cho metadata tệp tin</td></tr>
+</table>
+
+<h4>StorageService</h4>
+<table>
+  <tr><th>Phương thức</th><th>Chữ ký</th><th>Mô tả</th></tr>
+  <tr><td>trackUsage</td><td><code>()</code></td><td>Tính toán và cập nhật sử dụng lưu trữ (cron)</td></tr>
+  <tr><td>checkQuota</td><td><code>(userId, fileSize)</code></td><td>Kiểm tra tải lên có vượt hạn ngạch không</td></tr>
+  <tr><td>getUsage</td><td><code>(userId?, orgId?)</code></td><td>Lấy thống kê sử dụng lưu trữ</td></tr>
+  <tr><td>updateQuotas</td><td><code>(quotas)</code></td><td>Cập nhật cấu hình hạn ngạch</td></tr>
+  <tr><td>updatePolicies</td><td><code>(policies)</code></td><td>Cập nhật chính sách lưu trữ</td></tr>
+</table>
+
+<h4>AuditService</h4>
+<table>
+  <tr><th>Phương thức</th><th>Chữ ký</th><th>Mô tả</th></tr>
+  <tr><td>logAccess</td><td><code>(fileId, userId, action, ip)</code></td><td>Phát sự kiện truy cập đến RabbitMQ</td></tr>
 </table>
 
 <h4>FileWorker</h4>
 <table>
-  <tr><th>Method</th><th>Event</th><th>Description</th></tr>
-  <tr><td>handleFileDeleted</td><td><code>file.deleted</code></td><td>Delete S3 object using storage_key</td></tr>
-  <tr><td>handleTempCleanup</td><td><code>file.temp_cleanup</code></td><td>Delete S3 objects for cleaned-up TEMP files</td></tr>
+  <tr><th>Phương thức</th><th>Sự kiện</th><th>Mô tả</th></tr>
+  <tr><td>handleFileDeleted</td><td><code>file.deleted</code></td><td>Xóa file trên filesystem</td></tr>
+  <tr><td>handleTempCleanup</td><td><code>file.temp_cleanup</code></td><td>Xóa file trên filesystem cho các tệp tin TEMP đã dọn dẹp</td></tr>
 </table>
 
 <!-- 4. DATA ARCHITECTURE -->
-<h1 id="section-4">4. Data Architecture</h1>
+<h1 id="section-4">4. Kiến trúc Dữ liệu</h1>
 
-<h2 id="section-4-1">4.1 Database</h2>
-<p>Database: <code>file_db</code> (PostgreSQL)</p>
-<p>Refer to: <a href="database-design.html">Database Design</a></p>
+<h2 id="section-4-1">4.1 Cơ sở dữ liệu</h2>
+<p>Cơ sở dữ liệu: <code>file_db</code> (PostgreSQL)</p>
+<p>Tham khảo: <a href="database-design.html">Thiết kế Cơ sở dữ liệu</a></p>
 
-<h2 id="section-4-2">4.2 Data Requirements Resolution</h2>
+<h2 id="section-4-2">4.2 Giải quyết Yêu cầu Dữ liệu</h2>
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>Design Solution</th><th>DB Table</th></tr>
-  <tr><td><span class="req-id">FR-001</span> Upload File</td><td>Create metadata record (TEMP), generate presigned URL</td><td>sys_files</td></tr>
-  <tr><td><span class="req-id">FR-002</span> Download File</td><td>Lookup storage_key, generate presigned download URL</td><td>sys_files</td></tr>
-  <tr><td><span class="req-id">FR-003</span> List Files</td><td>Query with filters (user, employer, category) + pagination</td><td>sys_files</td></tr>
-  <tr><td><span class="req-id">FR-004</span> Delete File</td><td>Soft delete (status=DELETED), emit event for S3 cleanup</td><td>sys_files</td></tr>
-  <tr><td><span class="req-id">FR-005</span> Access Control</td><td>FileGuard middleware validates ownership or org membership</td><td>sys_files + auth_users + auth_members</td></tr>
-  <tr><td><span class="req-id">FR-006</span> Temp Cleanup</td><td>Cron job deletes TEMP records > 24h, emits cleanup events</td><td>sys_files</td></tr>
+  <tr><th>Yêu cầu SRS</th><th>Giải pháp Thiết kế</th><th>Bảng CSDL</th></tr>
+  <tr><td><span class="req-id">FR-001</span> Tải lên Tệp tin</td><td>Lưu tệp tin vào filesystem, tạo metadata</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-002</span> Tải xuống Tệp tin</td><td>Tra cứu file_path, đọc file từ disk</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-003</span> Liệt kê Tệp tin</td><td>Truy vấn với bộ lọc (người dùng, nhà tuyển dụng, danh mục) + phân trang</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-004</span> Xóa Tệp tin</td><td>Xóa mềm (status=DELETED), phát sự kiện để xóa file vật lý</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-005</span> Kiểm soát Truy cập</td><td>Middleware FileGuard xác thực quyền sở hữu hoặc thành viên tổ chức</td><td>sys_files + auth_users + auth_members</td></tr>
+  <tr><td><span class="req-id">FR-006</span> Dọn dẹp Tạm</td><td>Tác vụ cron xóa các bản ghi TEMP > 24h, phát sự kiện dọn dẹp</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-007</span> Tải lên CV/Hồ sơ</td><td>Danh mục RESUME, thay thế CV hiện có</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-008</span> Tạo Thư mục</td><td>Tạo bản ghi với type=FOLDER, parent_folder_id</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-009</span> Tìm kiếm Tệp tin</td><td>Tìm kiếm toàn văn qua tsvector, lọc theo kiểm soát truy cập</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-010</span> Đổi tên Tệp tin</td><td>Cập nhật original_name, xử lý trùng lặp</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-011</span> Tải lên Hàng loạt</td><td>Nhiều tệp tin multipart, báo cáo thành công một phần</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-012</span> Sao chép Tệp tin</td><td>Bản ghi mới với cùng file_path, xử lý trùng lặp</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-013</span> Di chuyển Tệp tin</td><td>Cập nhật parent_folder_id, xử lý trùng lặp</td><td>sys_files</td></tr>
+  <tr><td><span class="req-id">FR-014</span> Quản lý Quyền</td><td>CRUD trên sys_file_permissions, có thể kế thừa</td><td>sys_file_permissions</td></tr>
+  <tr><td><span class="req-id">FR-015</span> Ghi nhật ký Truy cập</td><td>Sự kiện đến RabbitMQ &rarr; module LOG &rarr; OpenSearch</td><td>OpenSearch (qua LOG)</td></tr>
+  <tr><td><span class="req-id">FR-016</span> Theo dõi Sử dụng</td><td>Tác vụ cron tính toán sử dụng theo người dùng/tổ chức</td><td>sys_storage_usage</td></tr>
+  <tr><td><span class="req-id">FR-017</span> Quản lý Hạn ngạch</td><td>CRUD trên sys_storage_quotas, kiểm tra khi tải lên</td><td>sys_storage_quotas</td></tr>
+  <tr><td><span class="req-id">FR-018</span> Chính sách Lưu trữ</td><td>CRUD trên sys_storage_policies, theo danh mục</td><td>sys_storage_policies</td></tr>
 </table>
 
 <!-- 5. API DESIGN -->
-<h1 id="section-5">5. API Design</h1>
+<h1 id="section-5">5. Thiết kế API</h1>
 
-<h2 id="section-5-1">5.1 Endpoint to Requirements Mapping</h2>
+<h2 id="section-5-1">5.1 Ánh xạ Endpoint đến Yêu cầu</h2>
 <table class="trace-table">
-  <tr><th>Method</th><th>Path</th><th>Description</th><th>Resolves</th></tr>
-  <tr><td>POST</td><td>/files/presigned-url</td><td>Generate presigned upload URL</td><td><span class="req-id">FR-001</span></td></tr>
-  <tr><td>POST</td><td>/files/confirm</td><td>Confirm file upload</td><td><span class="req-id">FR-001</span></td></tr>
-  <tr><td>GET</td><td>/files/:id/download-url</td><td>Generate presigned download URL</td><td><span class="req-id">FR-002</span></td></tr>
-  <tr><td>GET</td><td>/files</td><td>List files with filters</td><td><span class="req-id">FR-003</span></td></tr>
-  <tr><td>DELETE</td><td>/files/:id</td><td>Soft delete file</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><th>Phương thức</th><th>Đường dẫn</th><th>Mô tả</th><th>Giải quyết</th></tr>
+  <tr><td>POST</td><td>/files/upload</td><td>Tải lên tệp tin (multipart/form-data)</td><td><span class="req-id">FR-001</span></td></tr>
+  <tr><td>POST</td><td>/files/batch</td><td>Tải lên hàng loạt (nhiều tệp tin)</td><td><span class="req-id">FR-011</span></td></tr>
+  <tr><td>GET</td><td>/files/:id/download</td><td>Tải xuống tệp tin (file stream)</td><td><span class="req-id">FR-002</span></td></tr>
+  <tr><td>GET</td><td>/files</td><td>Liệt kê tệp tin với bộ lọc</td><td><span class="req-id">FR-003</span></td></tr>
+  <tr><td>GET</td><td>/files/search</td><td>Tìm kiếm toàn văn tệp tin/thư mục</td><td><span class="req-id">FR-009</span></td></tr>
+  <tr><td>POST</td><td>/files/folders</td><td>Tạo thư mục</td><td><span class="req-id">FR-008</span></td></tr>
+  <tr><td>PATCH</td><td>/files/:id</td><td>Đổi tên tệp tin/thư mục</td><td><span class="req-id">FR-010</span></td></tr>
+  <tr><td>POST</td><td>/files/:id/copy</td><td>Sao chép tệp tin đến thư mục</td><td><span class="req-id">FR-012</span></td></tr>
+  <tr><td>POST</td><td>/files/:id/move</td><td>Di chuyển tệp tin đến thư mục</td><td><span class="req-id">FR-013</span></td></tr>
+  <tr><td>DELETE</td><td>/files/:id</td><td>Xóa mềm tệp tin/thư mục</td><td><span class="req-id">FR-004</span></td></tr>
+  <tr><td>GET</td><td>/files/:id/permissions</td><td>Lấy quyền tệp tin</td><td><span class="req-id">FR-014</span></td></tr>
+  <tr><td>PUT</td><td>/files/:id/permissions</td><td>Quản lý quyền tệp tin</td><td><span class="req-id">FR-014</span></td></tr>
+  <tr><td>GET</td><td>/files/storage-usage</td><td>Lấy thống kê sử dụng lưu trữ</td><td><span class="req-id">FR-016</span></td></tr>
+  <tr><td>GET</td><td>/files/quotas</td><td>Lấy hạn ngạch lưu trữ</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>PUT</td><td>/files/quotas</td><td>Cập nhật hạn ngạch lưu trữ</td><td><span class="req-id">FR-017</span></td></tr>
+  <tr><td>GET</td><td>/files/policies</td><td>Lấy chính sách lưu trữ</td><td><span class="req-id">FR-018</span></td></tr>
+  <tr><td>PUT</td><td>/files/policies</td><td>Cập nhật chính sách lưu trữ</td><td><span class="req-id">FR-018</span></td></tr>
 </table>
 
-<h3>5.2 Middleware Pipeline</h3>
+<h3>5.2 Pipeline Middleware</h3>
 <pre><code>Request
-  → AuthGuard (JWT validation)
-    → FileGuard (ownership/RBAC check)
+  → AuthGuard (Xác thực JWT)
+    → FileGuard (Kiểm tra quyền sở hữu/RBAC)
       → FileController (handler)
-        → FileService (business logic)
+        → FileService (logic nghiệp vụ)
           → Response</code></pre>
 
 <!-- 6. INTEGRATION FLOWS -->
-<h1 id="section-6">6. Integration Flows</h1>
+<h1 id="section-6">6. Lưu trình Tích hợp</h1>
 
-<h2 id="section-6-1">6.1 File Upload Flow</h2>
+<h2 id="section-6-1">6.1 Lưu trình Tải lên Tệp tin</h2>
 
-<h3>Activity Diagram</h3>
+<h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
-  <img src="./images/activity/upload-activity.png" alt="Upload Activity Diagram">
-  <div class="caption">Figure 2: File Upload Activity Flow</div>
+  <img src="./images/activity/upload-activity.png" alt="Sơ đồ Hoạt động Tải lên">
+  <div class="caption">Hình 2: Lưu trình Hoạt động Tải lên Tệp tin</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3>Sơ đồ Tuần tự</h3>
 <div class="diagram">
-  <img src="./images/sequence/upload-sequence.png" alt="Upload Sequence Diagram">
-  <div class="caption">Figure 3: File Upload Integration Flow</div>
+  <img src="./images/sequence/upload-sequence.png" alt="Sơ đồ Tuần tự Tải lên">
+  <div class="caption">Hình 3: Lưu trình Tích hợp Tải lên Tệp tin</div>
 </div>
 
-<p><strong>Flow Description:</strong></p>
+<p><strong>Mô tả Lưu trình:</strong></p>
 <ol>
-  <li>Client sends POST /files/presigned-url with file metadata</li>
-  <li>FileService validates category MIME types and size limits</li>
-  <li>StorageKeyUtil generates unique S3 key: <code>{employer_id}/{user_id}/{category}/{uuid_filename}</code></li>
-  <li>S3Util generates presigned PUT URL (15 min expiry)</li>
-  <li>FileService inserts sys_files record with status TEMP</li>
-  <li>Response sent to client with presigned URL</li>
-  <li>Client uploads file directly to S3 via presigned URL (PUT)</li>
-  <li>Client calls POST /files/confirm with file_id</li>
-  <li>FileService updates status from TEMP to ACTIVE</li>
-  <li>File record returned to client</li>
+  <li>Client gửi POST /files/upload (multipart/form-data) với tệp tin và category</li>
+  <li>FileService kiểm tra MIME types và giới hạn kích thước của danh mục</li>
+  <li>MulterUtil lưu tệp tin vào disk: <code>uploads/{user_id}/{category}/{uuid_filename}</code></li>
+  <li>FileService chèn bản ghi sys_files với trạng thái ACTIVE và file_path</li>
+  <li>Bản ghi tệp tin được trả về cho client</li>
 </ol>
 
-<h2 id="section-6-2">6.2 File Download Flow</h2>
+<h2 id="section-6-2">6.2 Lưu trình Tải xuống Tệp tin</h2>
 
-<h3>Activity Diagram</h3>
+<h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
-  <img src="./images/activity/download-activity.png" alt="Download Activity Diagram">
-  <div class="caption">Figure 4: File Download Activity Flow</div>
+  <img src="./images/activity/download-activity.png" alt="Sơ đồ Hoạt động Tải xuống">
+  <div class="caption">Hình 4: Lưu trình Hoạt động Tải xuống Tệp tin</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3>Sơ đồ Tuần tự</h3>
 <div class="diagram">
-  <img src="./images/sequence/download-sequence.png" alt="Download Sequence Diagram">
-  <div class="caption">Figure 5: File Download Integration Flow</div>
+  <img src="./images/sequence/download-sequence.png" alt="Sơ đồ Tuần tự Tải xuống">
+  <div class="caption">Hình 5: Lưu trình Tích hợp Tải xuống Tệp tin</div>
 </div>
 
-<p><strong>Flow Description:</strong></p>
+<p><strong>Mô tả Lưu trình:</strong></p>
 <ol>
-  <li>Client sends GET /files/:id/download-url</li>
-  <li>AuthGuard validates JWT token</li>
-  <li>FileGuard checks access (owner or org admin/HR)</li>
-  <li>FileService looks up sys_files record</li>
-  <li>S3Util generates presigned GET URL (15 min expiry)</li>
-  <li>Response sent to client with download URL</li>
-  <li>Client downloads file from S3 via presigned URL (GET)</li>
+  <li>Client gửi GET /files/:id/download</li>
+  <li>AuthGuard xác thực token JWT</li>
+  <li>FileGuard kiểm tra truy cập (chủ sở hữu hoặc admin/HR tổ chức)</li>
+  <li>FileService tra cứu bản ghi sys_files, lấy file_path</li>
+  <li>FileUtil đọc tệp tin từ local filesystem</li>
+  <li>Phản hồi được gửi đến client với nội dung tệp tin (file stream)</li>
 </ol>
 
-<h2 id="section-6-3">6.3 File Delete Flow</h2>
+<h2 id="section-6-3">6.3 Lưu trình Xóa Tệp tin</h2>
 
-<h3>Activity Diagram</h3>
+<h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
-  <img src="./images/activity/delete-activity.png" alt="Delete Activity Diagram">
-  <div class="caption">Figure 6: File Delete Activity Flow</div>
+  <img src="./images/activity/delete-activity.png" alt="Sơ đồ Hoạt động Xóa">
+  <div class="caption">Hình 6: Lưu trình Hoạt động Xóa Tệp tin</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3>Sơ đồ Tuần tự</h3>
 <div class="diagram">
-  <img src="./images/sequence/delete-sequence.png" alt="Delete Sequence Diagram">
-  <div class="caption">Figure 7: File Delete Integration Flow</div>
+  <img src="./images/sequence/delete-sequence.png" alt="Sơ đồ Tuần tự Xóa">
+  <div class="caption">Hình 7: Lưu trình Tích hợp Xóa Tệp tin</div>
 </div>
 
-<p><strong>Flow Description:</strong></p>
+<p><strong>Mô tả Lưu trình:</strong></p>
 <ol>
-  <li>Client sends DELETE /files/:id</li>
-  <li>AuthGuard validates JWT token</li>
-  <li>FileGuard checks ownership or admin role</li>
-  <li>FileService sets status to DELETED and deleted_at timestamp</li>
-  <li>FileService emits <code>file.deleted</code> event to RabbitMQ</li>
-  <li>FileWorker consumes event</li>
-  <li>FileWorker calls S3Util to delete S3 object by storage_key</li>
-  <li>Success response sent to client</li>
+  <li>Client gửi DELETE /files/:id</li>
+  <li>AuthGuard xác thực token JWT</li>
+  <li>FileGuard kiểm tra quyền sở hữu hoặc vai trò admin</li>
+  <li>FileService đặt trạng thái thành DELETED và timestamp deleted_at</li>
+  <li>FileService gọi FileUtil để xóa tệp tin trên filesystem (fs.unlink)</li>
+  <li>Phản hồi thành công được gửi đến client</li>
 </ol>
 
-<h2 id="section-6-4">6.4 Temp File Cleanup Flow</h2>
+<h2 id="section-6-4">6.4 Lưu trình Dọn dẹp Tệp tin Tạm</h2>
 
-<h3>Activity Diagram</h3>
+<h3>Sơ đồ Hoạt động</h3>
 <div class="diagram">
-  <img src="./images/activity/cleanup-activity.png" alt="Cleanup Activity Diagram">
-  <div class="caption">Figure 8: Temp File Cleanup Activity Flow</div>
+  <img src="./images/activity/cleanup-activity.png" alt="Sơ đồ Hoạt động Dọn dẹp">
+  <div class="caption">Hình 8: Lưu trình Hoạt động Dọn dẹp Tệp tin Tạm</div>
 </div>
 
-<h3>Sequence Diagram</h3>
+<h3>Sơ đồ Tuần tự</h3>
 <div class="diagram">
-  <img src="./images/sequence/cleanup-sequence.png" alt="Cleanup Sequence Diagram">
-  <div class="caption">Figure 9: Temp File Cleanup Integration Flow</div>
+  <img src="./images/sequence/cleanup-sequence.png" alt="Sơ đồ Tuần tự Dọn dẹp">
+  <div class="caption">Hình 9: Lưu trình Tích hợp Dọn dẹp Tệp tin Tạm</div>
 </div>
 
-<p><strong>Flow Description:</strong></p>
+<p><strong>Mô tả Lưu trình:</strong></p>
 <ol>
-  <li>NestJS Scheduler triggers cron job every 1 hour</li>
-  <li>TempCleanupJob queries sys_files where status=TEMP AND created_at &lt; NOW() - 24h</li>
-  <li>For each expired TEMP file:
+  <li>NestJS Scheduler kích hoạt tác vụ cron mỗi 1 giờ</li>
+  <li>TempCleanupJob truy vấn sys_files where status=TEMP AND created_at &lt; NOW() - 24h</li>
+  <li>Đối với mỗi tệp tin TEMP hết hạn:
     <ul>
-      <li>Delete sys_files record</li>
-      <li>Emit <code>file.temp_cleanup</code> event with storage_key</li>
+      <li>Xóa bản ghi sys_files</li>
+      <li>Xóa file trên filesystem</li>
     </ul>
   </li>
-  <li>FileWorker consumes events and deletes S3 objects</li>
+  <li>FileUtil xóa file trên filesystem</li>
+</ol>
+
+<h2 id="section-6-5">6.5 Lưu trình Quản lý Thư mục</h2>
+<p><strong>Mô tả Lưu trình:</strong></p>
+<ol>
+  <li>Client gửi POST /files/folders với name và parent_folder_id</li>
+  <li>FolderService kiểm tra tên (không có ký tự đặc biệt, duy nhất trong thư mục cha)</li>
+  <li>FolderService tạo bản ghi sys_files với type=FOLDER</li>
+  <li>Nếu thư mục cha có quyền: kế thừa quyền cho thư mục mới</li>
+  <li>Bản ghi thư mục được trả về cho client</li>
+</ol>
+
+<h2 id="section-6-6">6.6 Lưu trình Di chuyển/Sao chép Tệp tin</h2>
+<p><strong>Mô tả Lưu trình (Di chuyển):</strong></p>
+<ol>
+  <li>Client gửi POST /files/:id/move với destination_folder_id</li>
+  <li>PermissionGuard kiểm tra quyền EDIT trên nguồn và WRITE trên đích</li>
+  <li>FileService cập nhật parent_folder_id</li>
+  <li>NameResolverUtil xử lý tên trùng lặp tại đích</li>
+  <li>AuditService ghi nhật ký sự kiện di chuyển</li>
+  <li>Bản ghi tệp tin đã cập nhật được trả về</li>
+</ol>
+<p><strong>Mô tả Lưu trình (Sao chép):</strong></p>
+<ol>
+  <li>Client gửi POST /files/:id/copy với destination_folder_id</li>
+  <li>PermissionGuard kiểm tra VIEW trên nguồn và WRITE trên đích</li>
+  <li>FileService tạo bản ghi mới với cùng file_path (không sao chép file vật lý)</li>
+  <li>NameResolverUtil xử lý tên trùng lặp tại đích</li>
+  <li>Bản ghi tệp tin mới được trả về</li>
+</ol>
+
+<h2 id="section-6-7">6.7 Lưu trình Ghi nhật ký Truy cập</h2>
+<p><strong>Mô tả Lưu trình:</strong></p>
+<ol>
+  <li>Truy cập tệp tin xảy ra (xem, tải xuống, sửa, xóa)</li>
+  <li>AuditService thu thập: user_id, file_id, action, timestamp, IP</li>
+  <li>AuditService phát sự kiện đến RabbitMQ (hàng đợi: log.events)</li>
+  <li>Module LOG tiêu thụ sự kiện và lưu trữ</li>
+  <li>Lịch sử truy cập sẵn sàng cho các truy vấn kiểm toán</li>
 </ol>
 
 <!-- 7. SECURITY -->
-<h1 id="section-7">7. Security Design</h1>
+<h1 id="section-7">7. Thiết kế Bảo mật</h1>
 
 <table class="trace-table">
-  <tr><th>SRS Requirement</th><th>Design Solution</th><th>Implementation</th></tr>
+  <tr><th>Yêu cầu SRS</th><th>Giải pháp Thiết kế</th><th>Triển khai</th></tr>
   <tr>
-    <td><span class="req-id">FR-005</span> File Access Control</td>
-    <td>FileGuard middleware with ownership + RBAC check</td>
-    <td>Check user_id match or org membership with admin/HR role</td>
+    <td><span class="req-id">FR-005</span> Kiểm soát Truy cập Tệp tin</td>
+    <td>Middleware FileGuard với kiểm tra quyền sở hữu + RBAC</td>
+    <td>Kiểm tra khớp user_id hoặc thành viên tổ chức với vai trò admin/HR</td>
   </tr>
   <tr>
-    <td><span class="req-id">NFR-002</span> URL Expiration</td>
-    <td>Short-lived presigned URLs</td>
-    <td>Upload URL: 15 min, Download URL: 15 min</td>
+    <td><span class="req-id">NFR-002</span> Giới hạn Kích thước</td>
+    <td>Kiểm tra kích thước tệp tin theo danh mục</td>
+    <td>RESUME/COMPANY_DOC/JOB_ATTACHMENT: 10MB, AVATAR: 5MB</td>
   </tr>
   <tr>
-    <td><span class="req-id">NFR-005</span> File Size Limits</td>
-    <td>Category-based validation</td>
+    <td><span class="req-id">NFR-005</span> Giới hạn Kích thước Tệp tin</td>
+    <td>Xác thực dựa trên danh mục</td>
     <td>RESUME/COMPANY_DOC/JOB_ATTACHMENT: 10MB, AVATAR: 5MB</td>
   </tr>
 </table>
 
-<h3>7.1 Access Control Rules</h3>
+<h3>7.1 Quy tắc Kiểm soát Truy cập</h3>
 <table>
-  <tr><th>Operation</th><th>Owner</th><th>Org Admin/HR</th><th>Other Users</th></tr>
-  <tr><td>Upload</td><td>Yes</td><td>Yes (org-scoped)</td><td>Yes (personal only)</td></tr>
-  <tr><td>Download</td><td>Yes</td><td>Yes (org-scoped)</td><td>No</td></tr>
-  <tr><td>List</td><td>Own files only</td><td>Org files</td><td>Own files only</td></tr>
-  <tr><td>Delete</td><td>Yes</td><td>Yes (org-scoped)</td><td>No</td></tr>
+  <tr><th>Thao tác</th><th>Chủ sở hữu</th><th>Admin/HR Tổ chức</th><th>Người dùng Khác</th><th>Quyền Rõ ràng</th></tr>
+  <tr><td>Tải lên</td><td>Có</td><td>Có (theo phạm vi tổ chức)</td><td>Có (chỉ cá nhân)</td><td>-</td></tr>
+  <tr><td>Tải xuống</td><td>Có</td><td>Có (theo phạm vi tổ chức)</td><td>Không</td><td>VIEW hoặc DOWNLOAD</td></tr>
+  <tr><td>Liệt kê</td><td>Chỉ tệp tin của riêng</td><td>Tệp tin tổ chức</td><td>Chỉ tệp tin của riêng</td><td>-</td></tr>
+  <tr><td>Tìm kiếm</td><td>Chỉ tệp tin của riêng</td><td>Tệp tin tổ chức</td><td>Chỉ tệp tin của riêng</td><td>-</td></tr>
+  <tr><td>Đổi tên</td><td>Có</td><td>Có (theo phạm vi tổ chức)</td><td>Không</td><td>EDIT</td></tr>
+  <tr><td>Sao chép</td><td>Có</td><td>Có (theo phạm vi tổ chức)</td><td>Không</td><td>VIEW (nguồn) + WRITE (đích)</td></tr>
+  <tr><td>Di chuyển</td><td>Có</td><td>Có (theo phạm vi tổ chức)</td><td>Không</td><td>EDIT</td></tr>
+  <tr><td>Xóa</td><td>Có</td><td>Có (theo phạm vi tổ chức)</td><td>Không</td><td>DELETE</td></tr>
+  <tr><td>Quản lý Quyền</td><td>Không</td><td>Chỉ Admin Hệ thống</td><td>Không</td><td>-</td></tr>
+  <tr><td>Tạo Thư mục</td><td>Có</td><td>Có (theo phạm vi tổ chức)</td><td>Có (chỉ cá nhân)</td><td>-</td></tr>
 </table>
 
-<h3>7.2 Presigned URL Security</h3>
+<h3>7.2 Kế thừa Quyền</h3>
 <ul>
-  <li>Presigned URLs use SigV4 signing with short expiration (15 minutes)</li>
-  <li>URLs are single-use in practice (though technically reusable within expiry window)</li>
-  <li>No file content passes through the application server (direct S3 transfer)</li>
-  <li>S3 bucket policy enforces HTTPS-only access</li>
-  <li>CORS configuration allows only the application domain</li>
+  <li>Quyền kế thừa từ thư mục cha đến các tệp tin/thư mục con</li>
+  <li>Quyền rõ ràng trên mục con ghi đè quyền kế thừa</li>
+  <li>Xóa thư mục cha cascade dọn dẹp quyền</li>
+  <li>Hệ thống kiểm tra: chủ sở hữu &rarr; vai trò (admin/HR) &rarr; quyền rõ ràng &rarr; quyền kế thừa &rarr; DENY</li>
+</ul>
+
+<h3>7.3 Bảo mật Local Filesystem</h3>
+<ul>
+  <li>Path traversal prevention: kiểm tra và sanitize file path, không cho phép truy cập ngoài thư mục uploads/</li>
+  <li>File type validation: kiểm tra MIME type theo danh mục trước khi lưu</li>
+  <li>File size validation: kiểm tra kích thước theo danh mục trước khi lưu</li>
+  <li>Thư mục uploads/ nằm ngoài web root, không accessible trực tiếp qua HTTP</li>
+  <li>Chỉ serve file qua endpoint có xác thực (FILE Service)</li>
 </ul>
 
 <!-- 8. TRACEABILITY -->
-<h1 id="section-8">8. Traceability Summary</h1>
+<h1 id="section-8">8. Tóm tắt Truy xuất Nguồn gốc</h1>
 
 <table class="trace-table">
-  <tr><th>SRS Req ID</th><th>Requirement</th><th>TDS Section</th><th>Design Decision</th></tr>
-  <tr><td><span class="req-id">FR-001</span></td><td>Upload File</td><td>3.2, 5.1, 6.1</td><td>FileController + POST /files/presigned-url + presigned URL upload</td></tr>
-  <tr><td><span class="req-id">FR-002</span></td><td>Download File</td><td>3.2, 5.1, 6.2</td><td>FileController + GET /files/:id/download-url + presigned URL download</td></tr>
-  <tr><td><span class="req-id">FR-003</span></td><td>List Files</td><td>3.2, 5.1</td><td>FileController + GET /files with filters and pagination</td></tr>
-  <tr><td><span class="req-id">FR-004</span></td><td>Delete File</td><td>3.2, 5.1, 6.3</td><td>FileController + DELETE /files/:id + file.deleted event + FileWorker</td></tr>
-  <tr><td><span class="req-id">FR-005</span></td><td>File Access Control</td><td>3.2, 7</td><td>FileGuard middleware with ownership + RBAC validation</td></tr>
-  <tr><td><span class="req-id">FR-006</span></td><td>Temp File Cleanup</td><td>3.2, 6.4</td><td>TempCleanupJob (cron) + file.temp_cleanup event + FileWorker</td></tr>
-  <tr><td><span class="req-id">NFR-001</span></td><td>Performance</td><td>2.1</td><td>Presigned URLs eliminate server as data proxy</td></tr>
-  <tr><td><span class="req-id">NFR-002</span></td><td>Security - URL Expiry</td><td>7.2</td><td>15 min presigned URL expiration</td></tr>
-  <tr><td><span class="req-id">NFR-003</span></td><td>Availability</td><td>2.1</td><td>Independent file_db; S3 99.999999999% durability</td></tr>
-  <tr><td><span class="req-id">NFR-004</span></td><td>Scalability</td><td>2.2</td><td>Client-side upload; no server file buffering</td></tr>
-  <tr><td><span class="req-id">NFR-005</span></td><td>File Size Limits</td><td>3.2, 7</td><td>Category-based validation in FileService</td></tr>
-  <tr><td><span class="req-id">NFR-006</span></td><td>Temp Cleanup</td><td>6.4</td><td>Hourly cron job via NestJS Scheduler</td></tr>
+  <tr><th>Mã Yêu cầu SRS</th><th>Yêu cầu</th><th>Phần TDS</th><th>Quyết định Thiết kế</th></tr>
+  <tr><td><span class="req-id">FR-001</span></td><td>Tải lên Tệp tin</td><td>3.2, 5.1, 6.1</td><td>FileController + POST /files/upload (multipart) + Multer + FileUtil</td></tr>
+  <tr><td><span class="req-id">FR-002</span></td><td>Tải xuống Tệp tin</td><td>3.2, 5.1, 6.2</td><td>FileController + GET /files/:id/download + FileUtil (file stream)</td></tr>
+  <tr><td><span class="req-id">FR-003</span></td><td>Liệt kê Tệp tin</td><td>3.2, 5.1</td><td>FileController + GET /files với bộ lọc và phân trang</td></tr>
+  <tr><td><span class="req-id">FR-004</span></td><td>Xóa Tệp tin</td><td>3.2, 5.1, 6.3</td><td>FileController + DELETE /files/:id + sự kiện file.deleted + FileWorker</td></tr>
+  <tr><td><span class="req-id">FR-005</span></td><td>Kiểm soát Truy cập Tệp tin</td><td>3.2, 7</td><td>Middleware FileGuard với quyền sở hữu + xác thực RBAC</td></tr>
+  <tr><td><span class="req-id">FR-006</span></td><td>Dọn dẹp Tệp tin Tạm</td><td>3.2, 6.4</td><td>TempCleanupJob (cron) + sự kiện file.temp_cleanup + FileWorker</td></tr>
+  <tr><td><span class="req-id">FR-007</span></td><td>Tải lên CV/Hồ sơ</td><td>3.2, 5.1</td><td>FileController + danh mục RESUME + logic thay thế CV hiện có</td></tr>
+  <tr><td><span class="req-id">FR-008</span></td><td>Tạo Thư mục</td><td>3.2, 5.1</td><td>FolderService + POST /files/folders + bản ghi type=FOLDER</td></tr>
+  <tr><td><span class="req-id">FR-009</span></td><td>Tìm kiếm Tệp tin</td><td>3.2, 5.1</td><td>SearchService + GET /files/search + tìm kiếm toàn văn tsvector</td></tr>
+  <tr><td><span class="req-id">FR-010</span></td><td>Đổi tên Tệp tin</td><td>3.2, 5.1</td><td>FileController + PATCH /files/:id + NameResolverUtil</td></tr>
+  <tr><td><span class="req-id">FR-011</span></td><td>Tải lên Hàng loạt</td><td>3.2, 5.1</td><td>FileController + POST /files/batch + báo cáo thành công một phần</td></tr>
+  <tr><td><span class="req-id">FR-012</span></td><td>Sao chép Tệp tin</td><td>3.2, 5.1</td><td>FileController + POST /files/:id/copy + cùng file_path</td></tr>
+  <tr><td><span class="req-id">FR-013</span></td><td>Di chuyển Tệp tin</td><td>3.2, 5.1</td><td>FileController + POST /files/:id/move + cập nhật parent_folder_id</td></tr>
+  <tr><td><span class="req-id">FR-014</span></td><td>Quản lý Quyền</td><td>3.2, 5.1, 7</td><td>PermissionService + PUT /files/:id/permissions + có thể kế thừa</td></tr>
+  <tr><td><span class="req-id">FR-015</span></td><td>Ghi nhật ký Truy cập</td><td>3.2</td><td>AuditService &rarr; RabbitMQ &rarr; module LOG &rarr; OpenSearch</td></tr>
+  <tr><td><span class="req-id">FR-016</span></td><td>Theo dõi Sử dụng</td><td>3.2, 5.1</td><td>StorageService + GET /files/storage-usage + tác vụ cron</td></tr>
+  <tr><td><span class="req-id">FR-017</span></td><td>Quản lý Hạn ngạch</td><td>3.2, 5.1</td><td>StorageService + PUT /files/quotas + kiểm tra khi tải lên</td></tr>
+  <tr><td><span class="req-id">FR-018</span></td><td>Chính sách Lưu trữ</td><td>3.2, 5.1</td><td>StorageService + PUT /files/policies + cấu hình theo danh mục</td></tr>
+  <tr><td><span class="req-id">NFR-001</span></td><td>Hiệu suất</td><td>2.1</td><td>Local filesystem, server xử lý trực tiếp</td></tr>
+  <tr><td><span class="req-id">NFR-002</span></td><td>Bảo mật - Thời hạn URL</td><td>7.3</td><td>Giới hạn kích thước tệp tin theo danh mục</td></tr>
+  <tr><td><span class="req-id">NFR-003</span></td><td>Khả dụng</td><td>2.1</td><td>file_db độc lập; filesystem local trên server</td></tr>
+  <tr><td><span class="req-id">NFR-004</span></td><td>Khả năng mở rộng</td><td>2.2</td><td>Tải lên phía client; không bộ đệm tệp tin trên server</td></tr>
+  <tr><td><span class="req-id">NFR-005</span></td><td>Giới hạn Kích thước Tệp tin</td><td>3.2, 7</td><td>Xác thực dựa trên danh mục trong FileService</td></tr>
+  <tr><td><span class="req-id">NFR-006</span></td><td>Dọn dẹp Tạm</td><td>6.4</td><td>Tác vụ cron hàng giờ qua NestJS Scheduler</td></tr>
+  <tr><td><span class="req-id">NFR-007</span></td><td>Hiệu suất Tìm kiếm</td><td>2.1, 3.2</td><td>Chỉ mục PostgreSQL tsvector; &lt; 1000ms p95</td></tr>
+  <tr><td><span class="req-id">NFR-008</span></td><td>Tải lên Hàng loạt</td><td>2.1, 3.2</td><td>Xử lý upload song song; &lt; 2000ms cho 20 tệp tin</td></tr>
+  <tr><td><span class="req-id">NFR-009</span></td><td>Độ trễ Kiểm soát Truy cập</td><td>7</td><td>PermissionGuard với tra cứu vai trò được đệm; &lt; 100ms p95</td></tr>
+  <tr><td><span class="req-id">NFR-010</span></td><td>Thời gian Lưu trữ Nhật ký</td><td>3.2</td><td>Chính sách vòng đời chỉ mục OpenSearch; 90 ngày mặc định</td></tr>
+  <tr><td><span class="req-id">NFR-011</span></td><td>Độ chính xác Lưu trữ</td><td>3.2</td><td>Tác vụ cron bất đồng bộ với dung sai +-1%</td></tr>
 </table>
 
 </body>
