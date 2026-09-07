@@ -84,6 +84,9 @@
         <li><a href="#section-3-24">3.24 UC-24: Ứng tuyển qua Link HR</a></li>
         <li><a href="#section-3-25">3.25 UC-25: HR Chia sẻ Link Job</a></li>
         <li><a href="#section-3-26">3.26 UC-26: Tính Hoa hồng HR</a></li>
+        <li><a href="#section-3-27">3.27 UC-27: Tạo Tổ chức</a></li>
+        <li><a href="#section-3-28">3.28 UC-28: Quản lý Tổ chức</a></li>
+        <li><a href="#section-3-29">3.29 UC-29: Đăng tin Việc làm (Draft → Publish)</a></li>
       </ul>
     </li>
     <li><a href="#section-4">4. Yêu cầu Chức năng</a>
@@ -1156,6 +1159,128 @@
 commission_rate = job_type == "IT" ? 0.10 : 0.08
 payment_date = hired_date + 30 days</code></pre>
 
+<h2 id="section-3-27">3.27 UC-27: Tạo Tổ chức (Organization)</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-27</td></tr>
+  <tr><td>Tên</td><td>Tạo Tổ chức</td></tr>
+  <tr><td>Tác nhân</td><td>Employer / HR</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng đã đăng nhập, chưa có tổ chức nào sở hữu</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Tổ chức được tạo, người dùng trở thành Owner, có thể đăng tin tuyển dụng</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng nhấn "Tạo Tổ chức" hoặc truy cập lần đầu với vai trò Employer/HR</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Người dùng điều hướng đến trang "Tạo Tổ chức"</li>
+  <li>Hệ thống hiển thị form tạo tổ chức:
+    <ul>
+      <li><strong>Tên tổ chức:</strong> Bắt buộc, duy nhất</li>
+      <li><strong>URL Slug:</strong> Duy nhất, tự động tạo từ tên, có thể chỉnh sửa. Định dạng: <code>recr.com/o/{slug}</code></li>
+      <li><strong>Mô tả:</strong> Optional</li>
+      <li><strong>Lĩnh vực:</strong> Dropdown chọn</li>
+      <li><strong>Website:</strong> Optional</li>
+      <li><strong>Logo:</strong> Optional (upload qua FILE module)</li>
+    </ul>
+  </li>
+  <li>Người dùng nhập thông tin và nhấn "Tạo"</li>
+  <li>Hệ thống kiểm tra:
+    <ul>
+      <li>Tên tổ chức chưa tồn tại</li>
+      <li>Slug chưa tồn tại (kiểm tra real-time khi nhập)</li>
+      <li>Người dùng chưa sở hữu tổ chức khác</li>
+    </ul>
+  </li>
+  <li>Hệ thống tạo bản ghi tổ chức (status: active)</li>
+  <li>Hệ thống tạo bản ghi thành viên với role: owner</li>
+  <li>Người dùng thấy thông báo thành công và được chuyển đến trang tổ chức</li>
+  <li>Người dùng có thể bắt đầu đăng tin tuyển dụng</li>
+</ol>
+<p><strong>Luồng Thay thế:</strong></p>
+<ul>
+  <li>4a. Tên tổ chức đã tồn tại: Hệ thống hiển thị lỗi "Tên tổ chức đã được sử dụng"</li>
+  <li>4b. Slug đã tồn tại: Hệ thống gợi ý slug khác</li>
+  <li>4c. Đã có tổ chức: Hệ thống từ chối "Bạn chỉ có thể tạo 1 tổ chức"</li>
+</ul>
+
+<h2 id="section-3-28">3.28 UC-28: Quản lý Tổ chức</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-28</td></tr>
+  <tr><td>Tên</td><td>Quản lý Tổ chức</td></tr>
+  <tr><td>Tác nhân</td><td>Owner, HR</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng là Owner hoặc HR của tổ chức</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Thông tin tổ chức được cập nhật, thành viên được quản lý</td></tr>
+  <tr><td>Kích hoạt</td><td>Owner truy cập trang quản lý tổ chức</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Owner truy cập trang quản lý tổ chức</li>
+  <li>Hệ thống hiển thị thông tin tổ chức:
+    <ul>
+      <li>Tên, slug, mô tả, logo</li>
+      <li>Danh sách thành viên (Owner, HR)</li>
+      <li>Số lượng việc làm đang đăng</li>
+    </ul>
+  </li>
+  <li>Owner có thể:
+    <ul>
+      <li>Chỉnh sửa thông tin tổ chức</li>
+      <li>Mời HR qua email</li>
+      <li>Quản lý vai trò thành viên</li>
+      <li>Xóa thành viên (không xóa được Owner)</li>
+    </ul>
+  </li>
+  <li>HR được mời nhận email và chấp nhận</li>
+  <li>HR trở thành thành viên của tổ chức, có thể đăng tin tuyển dụng</li>
+</ol>
+
+<h2 id="section-3-29">3.29 UC-29: Đăng tin Việc làm (Draft → Publish)</h2>
+<table>
+  <tr><th>Trường</th><th>Mô tả</th></tr>
+  <tr><td>Mã Trường hợp sử dụng</td><td>UC-29</td></tr>
+  <tr><td>Tên</td><td>Đăng tin Việc làm</td></tr>
+  <tr><td>Tác nhân</td><td>Owner, HR</td></tr>
+  <tr><td>Điều kiện tiên quyết</td><td>Người dùng là Owner hoặc HR của tổ chức active</td></tr>
+  <tr><td>Điều kiện thành công</td><td>Việc làm được đăng và hiển thị trên trang tìm kiếm</td></tr>
+  <tr><td>Kích hoạt</td><td>Người dùng nhấn "Đăng tin tuyển dụng"</td></tr>
+</table>
+<p><strong>Luồng Chính:</strong></p>
+<ol>
+  <li>Người dùng nhấn "Tạo tin tuyển dụng mới"</li>
+  <li>Hệ thống kiểm tra OrgGuard: người dùng thuộc tổ chức active</li>
+  <li>Hệ thống hiển thị form tạo việc làm</li>
+  <li><strong>Bước 1 - Lưu nháp:</strong>
+    <ul>
+      <li>Người dùng nhập thông tin bất kỳ (không bắt buộc đầy đủ)</li>
+      <li>Nhấn "Lưu nháp" → Việc làm được lưu với status: draft</li>
+      <li> Có thể lưu lại bất cứ lúc nào</li>
+    </ul>
+  </li>
+  <li><strong>Bước 2 - Chỉnh sửa:</strong>
+    <ul>
+      <li>Chỉ sửa được việc làm có status: draft</li>
+      <li>Có thể thêm/bớt yêu cầu công việc (skills, kinh nghiệm...)</li>
+    </ul>
+  </li>
+  <li><strong>Bước 3 - Đăng tin:</strong>
+    <ul>
+      <li>Nhấn "Đăng tin" → Hệ thống validate đầy đủ:</li>
+      <li><code>title</code> - không rỗng</li>
+      <li><code>description</code> - không rỗng</li>
+      <li><code>salary_min</code> <= <code>salary_max</code></li>
+      <li><code>location</code> - không rỗng</li>
+      <li><code>job_type</code> - hợp lệ (full_time, part_time, contract...)</li>
+    </ul>
+  </li>
+  <li>Nếu validate thành công: status → pending_approval</li>
+  <li>Admin/HR duyệt tin → status → open</li>
+  <li>Việc làm hiển thị trên trang tìm việc</li>
+</ol>
+<p><strong>Luồng Thay thế:</strong></p>
+<ul>
+  <li>5a. Validate thất bại: Hệ thống hiển thị lỗi, cho phép chỉnh sửa</li>
+  <li>7a. Admin từ chối: status → draft, lý do từ chối</li>
+</ul>
 
 <!-- 4. FUNCTIONAL REQUIREMENTS -->
 <h1 id="section-4">4. Yêu cầu Chức năng</h1>

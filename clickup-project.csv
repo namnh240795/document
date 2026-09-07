@@ -1,120 +1,146 @@
 Folder,List,Task Name,Subtask Of,Priority,Description,Status
-FILE,FILE - Core Features,FR-001: Upload File (multipart/form-data),,High,"POST /files/upload - Multer + fs, save to uploads/{user_id}/{category}/{uuid_filename}, create metadata in sys_files. MIME/size validation per category.",To Do
-FILE,FILE - Core Features,FR-002: Download File (file stream),,High,"GET /files/:id/download - Check access, read from local filesystem, return stream. Check FileGuard before serving.",To Do
-FILE,FILE - Core Features,FR-003: List Files,,Medium,"GET /files - Query by user/employer/category with pagination. Filter by access control. Use sys_files indexes.",To Do
-FILE,FILE - Core Features,FR-004: Delete File (soft + physical),,Medium,"DELETE /files/:id - Soft delete (status=DELETED, deleted_at), publish file.deleted event to RabbitMQ. FileWorker consumes and physically deletes.",To Do
-FILE,FILE - Core Features,FR-005: File Access Control (FileGuard),,High,"Guard middleware: check file ownership or RBAC (admin/HR in org). Applied on download, delete, rename endpoints.",To Do
-FILE,FILE - Core Features,FR-006: Temp File Cleanup (Cron),,Medium,"TempCleanupJob runs every hour. Delete files with status=TEMP and created_at > 24h. Physical delete via fs.unlink.",To Do
-FILE,FILE - Core Features,FR-007: CV/Resume Upload,,High,"Allow PDF/DOC/DOCX up to 10MB under RESUME category. Only one active CV per user - new upload replaces previous (ACTIVE → REPLACED).",To Do
-FILE,FILE - Core Features,FR-008: Create Folder,,Medium,"POST /files/folders - type=FOLDER, file_path=NULL. Unique name within parent. NameResolverUtil handles duplicates.",To Do
-FILE,FILE - Core Features,FR-009: Search Files/Folders,,Medium,"GET /files/search - Full-text search via tsvector. Filters: category, mime_type, date range, owner, status. Paginated.",To Do
-FILE,FILE - Core Features,FR-010: Rename File/Folder,,Medium,"PATCH /files/:id - Name must be unique in parent. Duplicate gets numeric suffix (file(1).pdf). Audit log.",To Do
-FILE,FILE - Core Features,FR-011: Batch Upload,,Medium,"POST /files/batch - Upload multiple files. Each checked individually for type/size. Partial success report.",To Do
-FILE,FILE - Core Features,FR-012: Copy File,,Low,"POST /files/:id/copy - New record with same file_path (no physical copy). Handle name conflict at destination.",To Do
-FILE,FILE - Core Features,FR-013: Move File,,Medium,"POST /files/:id/move - Update parent_folder_id. Handle name conflict. Audit log.",To Do
-FILE,FILE - Core Features,FR-014: Permission Management,,High,"PUT /files/:id/permissions - Admin manages VIEW/DOWNLOAD/EDIT/DELETE at user/role/org level. Inherit from parent folder.",To Do
-FILE,FILE - Core Features,FR-015: Access History Logging,,Medium,"Log all file access events (view/download/edit/delete) to OpenSearch via LOG module. 90-day retention.",To Do
-FILE,FILE - Core Features,FR-016: Storage Usage Tracking,,Medium,"GET /files/storage-usage - Track by user/org. Cron job calculates total_size, file_count, category breakdown.",To Do
-FILE,FILE - Core Features,FR-017: Storage Quota Management,,Medium,"Admin sets max_total_size, max_file_count per user/org. Reject upload when exceeded. Warnings at 80%/95%.",To Do
-FILE,FILE - Core Features,FR-018: Storage Policy Configuration,,Low,"Admin configures per category: allowed MIME, max size, retention, encryption. Effective for new uploads only.",To Do
-FILE,FILE - Database,Create sys_files table,,High,"UUID PK, employer_id, user_id, parent_folder_id, type, original_name, file_path, mime_type, file_size, category, is_public, status, search_vector, timestamps, deleted_at. CHECK constraints.",To Do
-FILE,FILE - Database,Create sys_files indexes,,High,"user_id, employer_id, category, status, created_at, type, parent_folder_id, composite (user+category+status), full-text search (GIN), unique file_path.",To Do
-FILE,FILE - Database,Create sys_file_permissions table,,High,"UUID PK, file_id (CASCADE), user_id, role, org_id, permission. CHECK: exactly one of user_id/role/org_id.",To Do
-FILE,FILE - Database,Create sys_storage_usage table,,Medium,"UUID PK, user_id, org_id, total_size, file_count, last_calculated_at. CHECK: user XOR org.",To Do
-FILE,FILE - Database,Create sys_storage_quotas table,,Medium,"UUID PK, user_id, org_id, max_total_size, max_file_count. CHECK: user XOR org.",To Do
-FILE,FILE - Database,Create sys_storage_policies table,,Medium,"UUID PK, category (UNIQUE), allowed_mime_types (JSONB), max_file_size, retention_days, encryption_enabled. Seed default data.",To Do
-FILE,FILE - Components,FileController,,High,"HTTP endpoints: upload, download, list, delete, copy, move, batch, search, folders, permissions, storage-usage, quotas, policies.",To Do
-FILE,FILE - Components,FileService,,High,"Business logic: validation, CRUD metadata, filesystem coordination. Publishes file.deleted event to RabbitMQ.",To Do
-FILE,FILE - Components,FileGuard,,High,"Access control middleware: verify file ownership and RBAC before download/delete/rename.",To Do
-FILE,FILE - Components,FileWorker,,Medium,"RabbitMQ consumer (queue: file.events). Physically deletes files from filesystem when file.deleted event received.",To Do
-FILE,FILE - Components,TempCleanupJob,,Medium,"NestJS Cron job. Runs every hour. Finds TEMP files > 24h, deletes physically and from metadata.",To Do
-FILE,FILE - Components,MulterUtil,,High,"Multer configuration: disk storage, file filter (MIME validation per category), size limits.",To Do
-FILE,FILE - Components,FileUtil,,Medium,"Filesystem operations: readFile, unlink, copyFile. Wraps fs module with error handling.",To Do
-FILE,FILE - Components,NameResolverUtil,,Medium,"Handle duplicate names by appending numeric suffix: file.pdf → file(1).pdf → file(2).pdf.",To Do
-FILE,FILE - Integration,RabbitMQ Events,,High,"Queues: file.events. Events: file.deleted (physical cleanup), file.temp_cleanup (temp cleanup).",To Do
-FILE,FILE - Integration,AUTH Module Integration,,High,"Sync API calls for identity verification and RBAC role checks. AuthGuard applied on all endpoints.",To Do
-FILE,FILE - Integration,LOG Module Integration,,Medium,"Async via RabbitMQ (queue: log.events). Log file access audit events with traceId, userId, action.",To Do
-FILE,FILE - NFR,Performance: Upload < 2s (p95),,Medium,"Target: upload response < 2000ms for files <= 10MB. Benchmark and optimize.",To Do
-FILE,FILE - NFR,Security: Access control < 100ms,,Medium,"FileGuard check latency < 100ms p95 per request.",To Do
-FILE,FILE - NFR,Availability: 99.9% uptime,,Low,"Service uptime target 99.9%. Health checks, graceful shutdown.",To Do
-FILE,FILE - NFR,Scalability: 100+ concurrent uploads,,Low,"Handle 100+ concurrent upload requests without degradation.",To Do
-RECR,RECR - Auth & Registration,FR-001: User Registration,,High,"POST /recr/auth/register - Create recr_users + recr_candidates. Email verification. Role: user.",To Do
-RECR,RECR - Auth & Registration,FR-002: Login (JWT),,High,"POST /recr/auth/login - Email/password, return JWT. Role-based access.",To Do
-RECR,RECR - Auth & Registration,FR-015: Employer Registration,,High,"POST /recr/auth/register - Create recr_users + recr_employers with company info.",To Do
-RECR,RECR - Auth & Registration,FR-032: Update HR Profile,,Medium,"PATCH /recr/hr/profile - Department, position, avatar.",To Do
-RECR,RECR - Auth & Registration,FR-033: Update Employer Profile,,Medium,"PATCH /recr/employer/profile - Company name, logo, description, industry.",To Do
-RECR,RECR - Candidate Features,FR-003: Browse Jobs,,High,"GET /recr/jobs - Public. Filter by location, salary, type, category. Paginated.",To Do
-RECR,RECR - Candidate Features,FR-004: Submit Application,,High,"POST /recr/applications - With resume_file_id (frozen). Status: submitted.",To Do
-RECR,RECR - Candidate Features,FR-005: View Application Status,,High,"GET /recr/candidate/applications - Track progress through stages.",To Do
-RECR,RECR - Candidate Features,FR-006: Update Candidate Profile,,Medium,"PATCH /recr/candidate/profile - Skills, experience, salary expectations.",To Do
-RECR,RECR - Candidate Features,FR-007: Upload Resume (via FILE),,High,"POST /recr/candidate/resume - PDF/DOCX, max 10MB. Delegates to FILE module.",To Do
-RECR,RECR - Candidate Features,FR-008: Manage Resumes,,High,"GET/POST/DELETE /recr/candidate/resumes - List, upload, set primary, delete.",To Do
-RECR,RECR - Candidate Features,FR-009: Link Resume to Application,,High,"POST /recr/applications - resume_file_id frozen at submission time.",To Do
-RECR,RECR - Candidate Features,FR-052: Open to Work Toggle,,Medium,"PATCH /recr/candidate/profile/open-to-work - Boolean flag.",To Do
-RECR,RECR - HR Features,FR-008: Review Applications,,High,"GET /recr/hr/applications - Filter by job/status. View candidate details.",To Do
-RECR,RECR - HR Features,FR-009: Screen Candidates,,High,"PATCH /recr/hr/applications/:id/status - Advance through stages.",To Do
-RECR,RECR - HR Features,FR-010: Schedule Interview,,High,"POST /recr/hr/interviews - Date, time, location, meeting link. Conflict detection.",To Do
-RECR,RECR - HR Features,FR-011: Evaluate Candidate,,High,"POST /recr/hr/evaluations - Scores + recommendation (hire/reject/hold).",To Do
-RECR,RECR - HR Features,FR-012: Reject Candidate,,High,"PATCH /recr/hr/applications/:id/status - Optional reason. Status: rejected.",To Do
-RECR,RECR - HR Features,FR-013: Track Recruitment Pipeline,,High,"GET /recr/hr/pipeline - View all candidates across stages.",To Do
-RECR,RECR - HR Features,FR-014: Create Reports,,Medium,"GET /recr/hr/reports - Recruitment metrics, conversion rates.",To Do
-RECR,RECR - HR Features,FR-028: HR Post Job,,High,"POST /recr/hr/jobs - Create job posting with requirements.",To Do
-RECR,RECR - HR Features,FR-029: HR Manage Jobs,,High,"GET/PATCH /recr/hr/jobs - Edit, close, archive jobs.",To Do
-RECR,RECR - Employer Features,FR-016: Post Job,,High,"POST /recr/employer/jobs - With requirements, salary range, description.",To Do
-RECR,RECR - Employer Features,FR-017: Manage Jobs,,High,"GET/PATCH /recr/employer/jobs - Edit, close, archive.",To Do
-RECR,RECR - Employer Features,FR-018: View Applicants,,High,"GET /recr/employer/jobs/:id/applicants - List candidates who applied.",To Do
-RECR,RECR - Employer Features,FR-019: Submit for HR Approval,,Medium,"PATCH /recr/employer/jobs/:id/submit - Status: draft → pending_approval.",To Do
-RECR,RECR - Employer Features,FR-020: View Analytics,,Medium,"GET /recr/employer/analytics - Recruitment metrics for posted jobs.",To Do
-RECR,RECR - Subscription,FR-021: Subscription Plans,,High,"GET /recr/subscriptions/plans - 3 tiers: 1mo, 6mo, 1yr.",To Do
-RECR,RECR - Subscription,FR-022: Purchase Subscription,,Medium,"POST /recr/subscriptions/purchase - All roles can purchase.",To Do
-RECR,RECR - Subscription,FR-023: Subscription Access Control,,High,"SubscriptionGuard - Check active subscription before premium features.",To Do
-RECR,RECR - Subscription,FR-024: Subscription Validation,,High,"GET /recr/subscriptions/current - Validate before premium actions.",To Do
-RECR,RECR - Subscription,FR-025: Renew/Upgrade,,Medium,"PATCH /recr/subscriptions/renew - Extend or upgrade plan.",To Do
-RECR,RECR - Subscription,FR-026: Subscription History,,Low,"GET /recr/subscriptions/history - Payments, invoices.",To Do
-RECR,RECR - Reviews,FR-030: Job Review,,Medium,"POST /recr/candidate/reviews/jobs - 1-5 stars + comment.",To Do
-RECR,RECR - Reviews,FR-031: Candidate Review,,Medium,"POST /recr/hr/reviews/candidates - Interviewer rates candidate.",To Do
-RECR,RECR - Invitations,FR-039: Send Invitation,,High,"POST /recr/invitations/send - Email with role assignment.",To Do
-RECR,RECR - Invitations,FR-040: Create Invitation Token,,High,"SHA-256 hashed token. Stored in recr_invitations.",To Do
-RECR,RECR - Invitations,FR-041: Send Invitation Email,,High,"Via RabbitMQ to EMAIL module.",To Do
-RECR,RECR - Invitations,FR-042: Verify Invitation Token,,High,"GET /recr/invitations/verify - Check token validity.",To Do
-RECR,RECR - Invitations,FR-043: Accept Invitation,,High,"POST /recr/invitations/accept - Activate account.",To Do
-RECR,RECR - Invitations,FR-044: Revoke Invitation,,Medium,"DELETE /recr/invitations/:id - Cancel pending.",To Do
-RECR,RECR - Invitations,FR-045: List Invitations,,Medium,"GET /recr/invitations - Filter/paginate.",To Do
-RECR,RECR - Invitations,FR-046: Resend Invitation,,Medium,"POST /recr/invitations/:id/resend - Expired/revoked.",To Do
-RECR,RECR - AI & Matching,FR-010: AI Extract Skills from CV,,Medium,"LLM + OCR to extract skills from uploaded CVs. Store in recr_resume_skills with confidence score.",To Do
-RECR,RECR - AI & Matching,FR-049: AI Extract Skills from JD,,Medium,"Extract required/nice_to_have skills from job description. Store in recr_job_skills.",To Do
-RECR,RECR - AI & Matching,FR-050: Calculate Matching Score,,High,"0-100% weighted formula. CV skills vs JD skills. Store in recr_match_scores.",To Do
-RECR,RECR - AI & Matching,FR-051: Standard Skills Taxonomy,,High,"recr_skills_taxonomy master data. Standardized skill dictionary.",To Do
-RECR,RECR - AI & Matching,FR-053: Auto-Suggest Candidates,,High,"GET /recr/hr/jobs/:id/suggestions - Score >= 70%. Store in recr_job_suggestions.",To Do
-RECR,RECR - Analytics,FR-054: Candidate Interaction Analytics,,High,"CV uploads, application counts, time-to-hire. OpenSearch indices.",To Do
-RECR,RECR - Analytics,FR-055: Application Success Rate,,High,"Conversion rates across stages. OpenSearch aggregation.",To Do
-RECR,RECR - Analytics,FR-056: Export Reports,,Medium,"Excel/CSV, max 10k rows. GET /recr/analytics/export.",To Do
-RECR,RECR - Database,Create recr_users table,,High,"UUID PK, email, password_hash, role (candidate/employer/hr/admin), status, auth_user_id FK, timestamps.",To Do
-RECR,RECR - Database,Create recr_candidates table,,High,"UUID PK, user_id FK, full_name, phone, skills, experience_years, salary_expectation, open_to_work, timestamps.",To Do
-RECR,RECR - Database,Create recr_candidate_resumes table,,High,"UUID PK, candidate_id FK, file_id FK (→ sys_files), is_primary, created_at.",To Do
-RECR,RECR - Database,Create recr_employers table,,High,"UUID PK, user_id FK, company_name, industry, size, website, logo_url, description, timestamps.",To Do
-RECR,RECR - Database,Create recr_hr_profiles table,,Medium,"UUID PK, user_id FK, employer_id FK, department, position, timestamps.",To Do
-RECR,RECR - Database,Create recr_jobs table,,High,"UUID PK, employer_id FK, title, description, location, salary_min, salary_max, type, status (draft/pending/open/closed/archived), timestamps.",To Do
-RECR,RECR - Database,Create recr_job_requirements table,,High,"UUID PK, job_id FK, skill, experience, education, certification, is_required.",To Do
-RECR,RECR - Database,Create recr_applications table,,High,"UUID PK, job_id FK, candidate_id FK, resume_file_id FK (→ sys_files), status (submitted/screening/interview/offer/rejected/hired), timestamps.",To Do
-RECR,RECR - Database,Create recr_interviews table,,Medium,"UUID PK, application_id FK, interviewer_id, date, time, location, meeting_link, status, timestamps.",To Do
-RECR,RECR - Database,Create recr_evaluations table,,Medium,"UUID PK, interview_id FK, interviewer_id, scores (JSONB), recommendation, notes, timestamps.",To Do
-RECR,RECR - Database,Create recr_subscription_plans table,,Medium,"UUID PK, name, duration_months, price, features (JSONB), is_active.",To Do
-RECR,RECR - Database,Create recr_subscriptions table,,Medium,"UUID PK, user_id FK, plan_id FK, status (active/expired/cancelled/pending), start_date, end_date, timestamps.",To Do
-RECR,RECR - Database,Create recr_subscription_history table,,Low,"UUID PK, subscription_id FK, action, old_status, new_status, timestamps.",To Do
-RECR,RECR - Database,Create recr_invitations table,,High,"UUID PK, email, token (SHA-256), role, invited_by FK, status (pending/accepted/expired/revoked), expires_at, timestamps.",To Do
-RECR,RECR - Database,Create recr_webhook_configs table,,Medium,"UUID PK, user_id FK (UNIQUE), webhook_url, is_active, subscribed_events (JSONB), secret_key, status, timestamps.",To Do
-RECR,RECR - Database,Create AI/Matching tables,,Medium,"recr_resume_skills, recr_job_skills, recr_skills_taxonomy, recr_match_scores, recr_job_suggestions.",To Do
-RECR,RECR - Database,Create review tables,,Medium,"recr_job_reviews (1-5 stars), recr_candidate_reviews (interviewer ratings).",To Do
-RECR,RECR - Components,NestJS Modules (6),,High,"Job Module, Application Module, Interview Module, Subscription Module, Review Module, Analytics Module.",To Do
-RECR,RECR - Components,Services (8),,High,"JobService, ApplicationService, InterviewService, EvaluationService, ProfileService, SubscriptionService, ReviewService, InviteService.",To Do
-RECR,RECR - Components,Controllers (9),,High,"AuthController, JobController, ApplicationController, InterviewController, EvaluationController, ProfileController, SubscriptionController, ReviewController, InviteController.",To Do
-RECR,RECR - Components,Workers/Consumers (8),,Medium,"JobConsumer, ApplicationConsumer, InterviewConsumer, SubscriptionConsumer, ReviewConsumer, NotificationConsumer, FileConsumer, InviteConsumer.",To Do
-RECR,RECR - Integration,AUTH Module,,High,"Required. User auth, JWT, role management, user registration.",To Do
-RECR,RECR - Integration,FILE Module,,High,"Required. Resume upload (presigned URLs), file metadata, deletion cleanup.",To Do
-RECR,RECR - Integration,EMAIL Module,,High,"Required. Invitation emails, application notifications, interview notifications via RabbitMQ.",To Do
-RECR,RECR - Integration,LOG Module,,Low,"Optional. Audit trail for all recruitment events.",To Do
-RECR,RECR - Integration,WALLET Module,,Low,"Optional. Payment for job posting, featured jobs, premium subscriptions.",To Do
-RECR,RECR - Integration,RabbitMQ Events,,High,"Outbound: user.registered, application.submitted, interview.scheduled, offer.sent, invitation.created. Inbound: file.deleted.",To Do
-RECR,RECR - Integration,OpenSearch,,Medium,"4 indices: user-events, job-events, application-events, subscription-events. Dashboards for analytics.",To Do
-RECR,RECR - Integration,AI/LLM Service,,Medium,"Skill extraction from CVs and JDs. LLM + OCR integration.",To Do
+FILE,1. Upload & Download,FR-001: Upload File,,High,"POST /files/upload - Multer + fs, save to uploads/{user_id}/{category}/{uuid_filename}, create metadata in sys_files. MIME/size validation per category.",To Do
+FILE,1. Upload & Download,FR-002: Download File,,High,"GET /files/:id/download - Check access, read from local filesystem, return stream. Check FileGuard before serving.",To Do
+FILE,1. Upload & Download,FR-007: CV/Resume Upload,,High,"Allow PDF/DOC/DOCX up to 10MB under RESUME category. Only one active CV per user - new upload replaces previous (ACTIVE → REPLACED).",To Do
+FILE,1. Upload & Download,FR-011: Batch Upload,,Medium,"POST /files/batch - Upload multiple files. Each checked individually for type/size. Partial success report.",To Do
+FILE,2. File Management,FR-008: Create Folder,,Medium,"POST /files/folders - type=FOLDER, file_path=NULL. Unique name within parent. NameResolverUtil handles duplicates.",To Do
+FILE,2. File Management,FR-010: Rename File/Folder,,Medium,"PATCH /files/:id - Name must be unique in parent. Duplicate gets numeric suffix (file(1).pdf). Audit log.",To Do
+FILE,2. File Management,FR-012: Copy File,,Low,"POST /files/:id/copy - New record with same file_path (no physical copy). Handle name conflict at destination.",To Do
+FILE,2. File Management,FR-013: Move File,,Medium,"POST /files/:id/move - Update parent_folder_id. Handle name conflict. Audit log.",To Do
+FILE,2. File Management,FR-004: Delete File,,Medium,"DELETE /files/:id - Soft delete (status=DELETED, deleted_at), publish file.deleted event to RabbitMQ. FileWorker consumes and physically deletes.",To Do
+FILE,3. Search & Browse,FR-003: List Files,,Medium,"GET /files - Query by user/employer/category with pagination. Filter by access control. Use sys_files indexes.",To Do
+FILE,3. Search & Browse,FR-009: Search Files/Folders,,Medium,"GET /files/search - Full-text search via tsvector. Filters: category, mime_type, date range, owner, status. Paginated.",To Do
+FILE,4. Access Control,FR-005: File Access Control (FileGuard),,High,"Guard middleware: check file ownership or RBAC (admin/HR in org). Applied on download, delete, rename endpoints.",To Do
+FILE,4. Access Control,FR-014: Permission Management,,High,"PUT /files/:id/permissions - Admin manages VIEW/DOWNLOAD/EDIT/DELETE at user/role/org level. Inherit from parent folder.",To Do
+FILE,4. Access Control,FR-015: Access History Logging,,Medium,"Log all file access events (view/download/edit/delete) to OpenSearch via LOG module. 90-day retention.",To Do
+FILE,5. Storage Management,FR-016: Storage Usage Tracking,,Medium,"GET /files/storage-usage - Track by user/org. Cron job calculates total_size, file_count, category breakdown.",To Do
+FILE,5. Storage Management,FR-017: Storage Quota Management,,Medium,"Admin sets max_total_size, max_file_count per user/org. Reject upload when exceeded. Warnings at 80%/95%.",To Do
+FILE,5. Storage Management,FR-018: Storage Policy Configuration,,Low,"Admin configures per category: allowed MIME, max size, retention, encryption. Effective for new uploads only.",To Do
+FILE,6. Background Jobs,FR-006: Temp File Cleanup,,Medium,"TempCleanupJob runs every hour. Delete files with status=TEMP and created_at > 24h. Physical delete via fs.unlink.",To Do
+FILE,6. Background Jobs,FileWorker: Physical Delete,,Medium,"RabbitMQ consumer (queue: file.events). Physically deletes files from filesystem when file.deleted event received.",To Do
+FILE,7. Database,Create sys_files table,,High,"UUID PK, employer_id, user_id, parent_folder_id, type, original_name, file_path, mime_type, file_size, category, is_public, status, search_vector, timestamps, deleted_at.",To Do
+FILE,7. Database,Create sys_files indexes,,High,"user_id, employer_id, category, status, created_at, type, parent_folder_id, composite, full-text search (GIN), unique file_path.",To Do
+FILE,7. Database,Create sys_file_permissions table,,High,"UUID PK, file_id (CASCADE), user_id, role, org_id, permission. CHECK: exactly one of user_id/role/org_id.",To Do
+FILE,7. Database,Create sys_storage_usage table,,Medium,"UUID PK, user_id, org_id, total_size, file_count, last_calculated_at.",To Do
+FILE,7. Database,Create sys_storage_quotas table,,Medium,"UUID PK, user_id, org_id, max_total_size, max_file_count.",To Do
+FILE,7. Database,Create sys_storage_policies table,,Medium,"UUID PK, category (UNIQUE), allowed_mime_types (JSONB), max_file_size, retention_days, encryption_enabled.",To Do
+FILE,8. Components,FileController,,High,"HTTP endpoints: upload, download, list, delete, copy, move, batch, search, folders, permissions, storage-usage.",To Do
+FILE,8. Components,FileService,,High,"Business logic: validation, CRUD metadata, filesystem coordination. Publishes file.deleted event to RabbitMQ.",To Do
+FILE,8. Components,FileGuard,,High,"Access control middleware: verify file ownership and RBAC before download/delete/rename.",To Do
+FILE,8. Components,MulterUtil,,High,"Multer configuration: disk storage, file filter (MIME validation per category), size limits.",To Do
+FILE,8. Components,FileUtil,,Medium,"Filesystem operations: readFile, unlink, copyFile. Wraps fs module with error handling.",To Do
+FILE,8. Components,NameResolverUtil,,Medium,"Handle duplicate names by appending numeric suffix: file.pdf → file(1).pdf → file(2).pdf.",To Do
+FILE,9. Integration,AUTH Module Integration,,High,"Sync API calls for identity verification and RBAC role checks. AuthGuard applied on all endpoints.",To Do
+FILE,9. Integration,RabbitMQ Events,,High,"Queues: file.events. Events: file.deleted (physical cleanup), file.temp_cleanup (temp cleanup).",To Do
+FILE,9. Integration,LOG Module Integration,,Medium,"Async via RabbitMQ (queue: log.events). Log file access audit events with traceId, userId, action.",To Do
+FILE,10. NFR,Performance: Upload < 2s,,Medium,"Target: upload response < 2000ms for files <= 10MB. Benchmark and optimize.",To Do
+FILE,10. NFR,Security: Access control < 100ms,,Medium,"FileGuard check latency < 100ms p95 per request.",To Do
+FILE,10. NFR,Availability: 99.9% uptime,,Low,"Service uptime target 99.9%. Health checks, graceful shutdown.",To Do
+FILE,10. NFR,Scalability: 100+ concurrent uploads,,Low,"Handle 100+ concurrent upload requests without degradation.",To Do
+RECR,1. Đăng nhập & Đăng ký,FR-001: User Registration,,High,"POST /recr/auth/register - Create recr_users + recr_candidates. Email verification. Role: user.",To Do
+RECR,1. Đăng nhập & Đăng ký,FR-002: Login (JWT),,High,"POST /recr/auth/login - Email/password, return JWT. Role-based access.",To Do
+RECR,1. Đăng nhập & Đăng ký,FR-015: Employer Registration,,High,"POST /recr/auth/register - Create recr_users + recr_employers with company info.",To Do
+RECR,1. Đăng nhập & Đăng ký,FR-032: Update HR Profile,,Medium,"PATCH /recr/hr/profile - Department, position, avatar.",To Do
+RECR,1. Đăng nhập & Đăng ký,FR-033: Update Employer Profile,,Medium,"PATCH /recr/employer/profile - Company name, logo, description, industry.",To Do
+RECR,2. Tổ chức (Organization),FR-073: Create Organization,,High,"POST /recr/orgs - Create org with name, slug (UNIQUE), description, industry, website, logo. 1 user = 1 org.",To Do
+RECR,2. Tổ chức (Organization),FR-074: Check Slug Availability,,High,"GET /recr/orgs/check-slug?slug=xxx - Real-time check if slug is available.",To Do
+RECR,2. Tổ chức (Organization),FR-075: View Organization Profile,,High,"GET /recr/orgs/:slug - Public org profile page with jobs list.",To Do
+RECR,2. Tổ chức (Organization),FR-076: Update Organization,,Medium,"PATCH /recr/orgs/:id - Owner can update name, description, logo, website.",To Do
+RECR,2. Tổ chức (Organization),FR-077: Invite HR to Organization,,High,"POST /recr/orgs/:id/invite - Owner invites HR via email. HR joins org.",To Do
+RECR,2. Tổ chức (Organization),FR-078: Manage Org Members,,Medium,"GET/PATCH/DELETE /recr/orgs/:id/members - List, update role, remove members.",To Do
+RECR,2. Tổ chức (Organization),OrgGuard: Validate Org Access,,High,"Guard middleware: check user belongs to org before posting jobs or managing members.",To Do
+RECR,3. Hồ sơ Ứng viên,FR-006: Update Candidate Profile,,Medium,"PATCH /recr/candidate/profile - Skills, experience, salary expectations.",To Do
+RECR,3. Hồ sơ Ứng viên,FR-007: Upload Resume (via FILE),,High,"POST /recr/candidate/resume - PDF/DOCX, max 10MB. Delegates to FILE module.",To Do
+RECR,3. Hồ sơ Ứng viên,FR-008: Manage Resumes,,High,"GET/POST/DELETE /recr/candidate/resumes - List, upload, set primary, delete.",To Do
+RECR,3. Hồ sơ Ứng viên,FR-052: Open to Work Toggle,,Medium,"PATCH /recr/candidate/profile/open-to-work - Boolean flag.",To Do
+RECR,4. Tìm & Ứng tuyển Việc làm,FR-003: Browse Jobs,,High,"GET /recr/jobs - Public. Filter by location, salary, type, category. Paginated.",To Do
+RECR,4. Tìm & Ứng tuyển Việc làm,FR-004: Submit Application,,High,"POST /recr/applications - With resume_file_id (frozen). Status: submitted.",To Do
+RECR,4. Tìm & Ứng tuyển Việc làm,FR-005: View Application Status,,High,"GET /recr/candidate/applications - Track progress through stages.",To Do
+RECR,4. Tìm & Ứng tuyển Việc làm,FR-009: Link Resume to Application,,High,"POST /recr/applications - resume_file_id frozen at submission time.",To Do
+RECR,5. Quản lý Việc làm,FR-079: Save Job Draft,,High,"POST /recr/jobs/draft - Save incomplete job. No validation required. Auto-save supported.",To Do
+RECR,5. Quản lý Việc làm,FR-080: Edit Job Draft,,High,"PATCH /recr/jobs/:id - Edit draft job. Only draft jobs can be edited.",To Do
+RECR,5. Quản lý Việc làm,FR-081: Publish Job,,High,"PATCH /recr/jobs/:id/publish - Validate required fields (title, description, salary, location). Status: draft → pending_approval.",To Do
+RECR,5. Quản lý Việc làm,FR-082: Validate Job on Publish,,High,"Server-side validation: title required, description required, salary_min <= salary_max, location required, job_type valid.",To Do
+RECR,5. Quản lý Việc làm,FR-083: Approve Job,,Medium,"PATCH /recr/jobs/:id/approve - Admin/HR approves. Status: pending_approval → open.",To Do
+RECR,5. Quản lý Việc làm,FR-084: Close Job,,Medium,"PATCH /recr/jobs/:id/close - Status: open → closed. No longer visible in search.",To Do
+RECR,5. Quản lý Việc làm,FR-085: Archive Job,,Low,"PATCH /recr/jobs/:id/archive - Status: closed → archived. Historical data.",To Do
+RECR,5. Quản lý Việc làm,FR-086: View Org Jobs,,High,"GET /recr/orgs/:slug/jobs - List all jobs for an organization.",To Do
+RECR,6. Quy trình Tuyển dụng,FR-008: Review Applications,,High,"GET /recr/hr/applications - Filter by job/status. View candidate details.",To Do
+RECR,6. Quy trình Tuyển dụng,FR-009: Screen Candidates,,High,"PATCH /recr/hr/applications/:id/status - Advance through stages.",To Do
+RECR,6. Quy trình Tuyển dụng,FR-013: Track Recruitment Pipeline,,High,"GET /recr/hr/pipeline - View all candidates across stages.",To Do
+RECR,6. Quy trình Tuyển dụng,FR-018: View Applicants,,High,"GET /recr/employer/jobs/:id/applicants - List candidates who applied.",To Do
+RECR,7. Phỏng vấn & Đánh giá,FR-010: Schedule Interview,,High,"POST /recr/hr/interviews - Date, time, location, meeting link. Conflict detection.",To Do
+RECR,7. Phỏng vấn & Đánh giá,FR-011: Evaluate Candidate,,High,"POST /recr/hr/evaluations - Scores + recommendation (hire/reject/hold).",To Do
+RECR,7. Phỏng vấn & Đánh giá,FR-012: Reject Candidate,,High,"PATCH /recr/hr/applications/:id/status - Optional reason. Status: rejected.",To Do
+RECR,7. Phỏng vấn & Đánh giá,FR-030: Job Review,,Medium,"POST /recr/candidate/reviews/jobs - 1-5 stars + comment.",To Do
+RECR,7. Phỏng vấn & Đánh giá,FR-031: Candidate Review,,Medium,"POST /recr/hr/reviews/candidates - Interviewer rates candidate.",To Do
+RECR,8. Gói Đăng ký,FR-021: Subscription Plans,,High,"GET /recr/subscriptions/plans - 3 tiers: 1mo, 6mo, 1yr.",To Do
+RECR,8. Gói Đăng ký,FR-022: Purchase Subscription,,Medium,"POST /recr/subscriptions/purchase - All roles can purchase.",To Do
+RECR,8. Gói Đăng ký,FR-023: Subscription Access Control,,High,"SubscriptionGuard - Check active subscription before premium features.",To Do
+RECR,8. Gói Đăng ký,FR-024: Subscription Validation,,High,"GET /recr/subscriptions/current - Validate before premium actions.",To Do
+RECR,8. Gói Đăng ký,FR-025: Renew/Upgrade,,Medium,"PATCH /recr/subscriptions/renew - Extend or upgrade plan.",To Do
+RECR,8. Gói Đăng ký,FR-026: Subscription History,,Low,"GET /recr/subscriptions/history - Payments, invoices.",To Do
+RECR,9. Lời mời,FR-039: Send Invitation,,High,"POST /recr/invitations/send - Email with role assignment.",To Do
+RECR,9. Lời mời,FR-040: Create Invitation Token,,High,"SHA-256 hashed token. Stored in recr_invitations.",To Do
+RECR,9. Lời mời,FR-041: Send Invitation Email,,High,"Via RabbitMQ to EMAIL module.",To Do
+RECR,9. Lời mời,FR-042: Verify Invitation Token,,High,"GET /recr/invitations/verify - Check token validity.",To Do
+RECR,9. Lời mời,FR-043: Accept Invitation,,High,"POST /recr/invitations/accept - Activate account.",To Do
+RECR,9. Lời mời,FR-044: Revoke Invitation,,Medium,"DELETE /recr/invitations/:id - Cancel pending.",To Do
+RECR,9. Lời mời,FR-045: List Invitations,,Medium,"GET /recr/invitations - Filter/paginate.",To Do
+RECR,9. Lời mời,FR-046: Resend Invitation,,Medium,"POST /recr/invitations/:id/resend - Expired/revoked.",To Do
+RECR,10. AI Matching & Gợi ý,FR-010: AI Extract Skills from CV,,Medium,"LLM + OCR to extract skills from uploaded CVs. Store in recr_resume_skills with confidence score.",To Do
+RECR,10. AI Matching & Gợi ý,FR-049: AI Extract Skills from JD,,Medium,"Extract required/nice_to_have skills from job description. Store in recr_job_skills.",To Do
+RECR,10. AI Matching & Gợi ý,FR-050: Calculate Matching Score,,High,"0-100% weighted formula. CV skills vs JD skills. Store in recr_match_scores.",To Do
+RECR,10. AI Matching & Gợi ý,FR-051: Standard Skills Taxonomy,,High,"recr_skills_taxonomy master data. Standardized skill dictionary.",To Do
+RECR,10. AI Matching & Gợi ý,FR-053: Auto-Suggest Candidates,,High,"GET /recr/hr/jobs/:id/suggestions - Score >= 70%. Store in recr_job_suggestions.",To Do
+RECR,11. Thống kê & Báo cáo,FR-014: Create Reports,,Medium,"GET /recr/hr/reports - Recruitment metrics, conversion rates.",To Do
+RECR,11. Thống kê & Báo cáo,FR-020: View Analytics,,Medium,"GET /recr/employer/analytics - Recruitment metrics for posted jobs.",To Do
+RECR,11. Thống kê & Báo cáo,FR-054: Candidate Interaction Analytics,,High,"CV uploads, application counts, time-to-hire. OpenSearch indices.",To Do
+RECR,11. Thống kê & Báo cáo,FR-055: Application Success Rate,,High,"Conversion rates across stages. OpenSearch aggregation.",To Do
+RECR,11. Thống kê & Báo cáo,FR-056: Export Reports,,Medium,"Excel/CSV, max 10k rows. GET /recr/analytics/export.",To Do
+RECR,12. Hot Job,FR-060: Create Hot Job,,High,"POST /recr/hr/jobs/:id/hot - Set is_hot=true, hot_expires_at. Requires Premium subscription.",To Do
+RECR,12. Hot Job,FR-061: Hot Job Pricing,,Medium,"GET /recr/hot/pricing - 3 days (standard), 7 days (-10%), 14 days (-20%).",To Do
+RECR,12. Hot Job,FR-062: Hot Job Expiry Notification,,Medium,"Cron job checks hot_expires_at. Send notification 24h before expiry.",To Do
+RECR,13. Ads Job,FR-063: Purchase Job Ads,,High,"POST /recr/employer/jobs/:id/ads - Select package (basic/premium/enterprise), pay, activate.",To Do
+RECR,13. Ads Job,FR-064: Ads Job Packages,,Medium,"GET /recr/ads/packages - Basic (7d, homepage), Premium (14d, homepage+email), Enterprise (30d, homepage+email+push).",To Do
+RECR,13. Ads Job,FR-065: Track Ad Performance,,Medium,"GET /recr/employer/jobs/:id/ads/stats - impressions, clicks, CTR, applications from ad.",To Do
+RECR,13. Ads Job,FR-066: Auto-stop Expired Ads,,Medium,"Cron job stops ads past end_date. Send performance report to employer.",To Do
+RECR,14. HR Link & Share,FR-067: Generate HR Share Link,,High,"POST /recr/hr/jobs/:id/share - Generate short link: recr.com/j/{job_id}?ref={hr_id}. Log to recr_hr_job_links.",To Do
+RECR,14. HR Link & Share,FR-068: Apply via HR Link,,High,"GET /recr/j/{job_id}?ref={hr_id} - Display job, prompt login/register, submit application with source=hr_link.",To Do
+RECR,14. HR Link & Share,FR-069: Track Link Performance,,Medium,"GET /recr/hr/links/stats - clicks, applications, conversion rate per link/channel.",To Do
+RECR,15. Hoa hồng HR,FR-070: Calculate HR Commission,,High,"On hire event: commission = gross_salary × rate (IT=10%, Non-IT=8%). Store in recr_hr_commissions.",To Do
+RECR,15. Hoa hồng HR,FR-071: Commission Payment Schedule,,Medium,"Payment due = hired_date + 30 days. Admin approves before disbursement.",To Do
+RECR,15. Hoa hồng HR,FR-072: Commission Dashboard,,Medium,"GET /recr/admin/commissions - Pending, paid, total by HR. Filter by date range.",To Do
+RECR,16. Webhook & Tích hợp,FR-047: Webhook Configuration,,High,"GET/PUT /recr/settings/webhook - URL, events, is_active. HTTPS validation, test event.",To Do
+RECR,16. Webhook & Tích hợp,Webhook Event Dispatch,,High,"Publish events to user-configured webhook URLs. Retry with exponential backoff.",To Do
+RECR,17. Database,Create recr_users table,,High,"UUID PK, email, password_hash, role, status, auth_user_id FK, timestamps.",To Do
+RECR,17. Database,Create recr_organizations table,,High,"UUID PK, owner_id FK, name (UNIQUE), slug (UNIQUE), description, industry, website, logo_url, status (pending/active/suspended), timestamps.",To Do
+RECR,17. Database,Create recr_org_members table,,High,"UUID PK, org_id FK, user_id FK, role (owner/hr), joined_at. UNIQUE(org_id, user_id).",To Do
+RECR,17. Database,Create recr_candidates table,,High,"UUID PK, user_id FK, full_name, phone, skills, experience_years, salary_expectation, open_to_work.",To Do
+RECR,17. Database,Create recr_candidate_resumes table,,High,"UUID PK, candidate_id FK, file_id FK (→ sys_files), is_primary.",To Do
+RECR,17. Database,Create recr_jobs table,,High,"UUID PK, org_id FK (→ recr_organizations), title, description, location, salary_min, salary_max, type, status (draft/pending/open/closed/archived).",To Do
+RECR,17. Database,Create recr_job_requirements table,,High,"UUID PK, job_id FK, skill, experience, education, certification, is_required.",To Do
+RECR,17. Database,Create recr_applications table,,High,"UUID PK, job_id FK, candidate_id FK, resume_file_id FK, status.",To Do
+RECR,17. Database,Create recr_interviews table,,Medium,"UUID PK, application_id FK, interviewer_id, date, time, location, meeting_link, status.",To Do
+RECR,17. Database,Create recr_evaluations table,,Medium,"UUID PK, interview_id FK, interviewer_id, scores (JSONB), recommendation, notes.",To Do
+RECR,17. Database,Create recr_subscription_plans table,,Medium,"UUID PK, name, duration_months, price, features (JSONB), is_active.",To Do
+RECR,17. Database,Create recr_subscriptions table,,Medium,"UUID PK, user_id FK, plan_id FK, status, start_date, end_date.",To Do
+RECR,17. Database,Create recr_invitations table,,High,"UUID PK, email, token (SHA-256), role, invited_by FK, status, expires_at.",To Do
+RECR,17. Database,Create recr_webhook_configs table,,Medium,"UUID PK, user_id FK (UNIQUE), webhook_url, is_active, subscribed_events (JSONB), secret_key.",To Do
+RECR,17. Database,Create AI/Matching tables,,Medium,"recr_resume_skills, recr_job_skills, recr_skills_taxonomy, recr_match_scores, recr_job_suggestions.",To Do
+RECR,17. Database,Create review tables,,Medium,"recr_job_reviews (1-5 stars), recr_candidate_reviews (interviewer ratings).",To Do
+RECR,17. Database,Create recr_job_ads table,,Medium,"UUID PK, job_id FK, type (hot/featured/ads), duration_days, amount, status, start_date, end_date.",To Do
+RECR,17. Database,Create recr_hr_job_links table,,Medium,"UUID PK, hr_id FK, job_id FK, channel, click_count, application_count.",To Do
+RECR,17. Database,Create recr_hr_commissions table,,Medium,"UUID PK, hr_id FK, candidate_id FK, job_id FK, gross_salary, commission_rate, commission_amount, status.",To Do
+RECR,18. Components,NestJS Modules (7),,High,"Org Module, Job Module, Application Module, Interview Module, Subscription Module, Review Module, Analytics Module.",To Do
+RECR,18. Components,Services (9),,High,"OrgService, JobService, ApplicationService, InterviewService, EvaluationService, ProfileService, SubscriptionService, ReviewService, InviteService.",To Do
+RECR,18. Components,Controllers (10),,High,"AuthController, OrgController, JobController, ApplicationController, InterviewController, EvaluationController, ProfileController, SubscriptionController, ReviewController, InviteController.",To Do
+RECR,18. Components,Workers/Consumers (8),,Medium,"JobConsumer, ApplicationConsumer, InterviewConsumer, SubscriptionConsumer, ReviewConsumer, NotificationConsumer, FileConsumer, InviteConsumer.",To Do
+RECR,19. Integration,AUTH Module,,High,"Required. User auth, JWT, role management, user registration.",To Do
+RECR,19. Integration,FILE Module,,High,"Required. Resume upload (presigned URLs), file metadata, deletion cleanup.",To Do
+RECR,19. Integration,EMAIL Module,,High,"Required. Invitation emails, application notifications, interview notifications via RabbitMQ.",To Do
+RECR,19. Integration,RabbitMQ Events,,High,"Outbound: user.registered, application.submitted, interview.scheduled, offer.sent, invitation.created. Inbound: file.deleted.",To Do
+RECR,19. Integration,OpenSearch,,Medium,"4 indices: user-events, job-events, application-events, subscription-events. Dashboards for analytics.",To Do
+RECR,19. Integration,AI/LLM Service,,Medium,"Skill extraction from CVs and JDs. LLM + OCR integration.",To Do
+RECR,19. Integration,LOG Module,,Low,"Optional. Audit trail for all recruitment events.",To Do
+RECR,19. Integration,WALLET Module,,Low,"Optional. Payment for job posting, featured jobs, premium subscriptions.",To Do
