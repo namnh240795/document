@@ -1,7 +1,9 @@
 @startuml
 ' UC-20: Gợi ý Ứng viên Phù hợp - Sơ đồ Chuỗi
 skinparam dpi 150
-skinparam defaultFontSize 12
+skinparam defaultFontSize 11
+skinparam nodesep 15
+skinparam ranksep 15
 skinparam sequence {
   ArrowColor #333333
   ActorBorderColor #333333
@@ -15,76 +17,76 @@ title UC-20: Gợi ý Ứng viên Phù hợp
 actor "HR" as HR
 participant "RECR Service" as R
 queue "RabbitMQ" as MQ
-participant "Suggestion\nWorker" as W
-database "DB" as DB
-participant "Notification" as N
+participant "Worker\nGợi ý" as W
+database "PostgreSQL" as DB
+participant "Thông báo" as N
 
-== Job duoc duyet ==
+== Job được duyệt ==
 
 R -> MQ : publish job.approved
 activate MQ
 MQ -> W : consume
 activate W
 
-W -> DB : Lay recr_job_skills
+W -> DB : Lấy recr_job_skills
 activate DB
-DB --> W : Job skills
+DB --> W : Kỹ năng job
 deactivate DB
 
-W -> DB : Loc ung vien\n(skill trung + open_to_work)
+W -> DB : Lọc ứng viên\n(skill trùng + open_to_work)
 activate DB
-DB --> W : Candidates
+DB --> W : Danh sách ứng viên
 deactivate DB
 
-alt Khong co ung vien
-  W --> HR : Khong co goi y
-else Co ung vien
-  W -> W : Tinh diem matching\n(UC-19)
-  W -> DB : Loc nguong >= 70%\n+ Kiem tra tan suat
+alt Không có ứng viên
+  W --> HR : Không có gợi ý
+else Có ứng viên
+  W -> W : Tính điểm matching\n(UC-19)
+  W -> DB : Lọc ngưỡng >= 70%\n+ Kiểm tra tần suất
   activate DB
-  DB --> W : Filtered candidates
+  DB --> W : Ứng viên phù hợp
   deactivate DB
-  W -> DB : Luu recr_job_suggestions\n(status: new)
+  W -> DB : Lưu recr_job_suggestions\n(trạng thái: new)
   activate DB
-  DB --> W : OK
+  DB --> W : Thành công
   deactivate DB
 end
 deactivate W
 
-MQ -> N : Thong bao HR
+MQ -> N : Thông báo HR
 activate N
-N --> HR : "N ung vien phu hop"
+N --> HR : "N ứng viên phù hợp"
 deactivate N
 deactivate MQ
 
-== HR xem goi y ==
+== HR xem gợi ý ==
 
 HR -> R : GET /recr/hr/jobs/:id/suggestions
 activate R
-R -> DB : Lay suggestions
+R -> DB : Lấy danh sách gợi ý
 activate DB
-DB --> R : List
+DB --> R : Dữ liệu
 deactivate DB
-R --> HR : Danh sach goi y
+R --> HR : Danh sách gợi ý
 deactivate R
 
-alt HR gui loi moi
-  HR -> R : PATCH status = contacted
+alt HR gửi lời mời
+  HR -> R : PATCH trạng thái = contacted
   activate R
-  R -> DB : Update
+  R -> DB : Cập nhật
   activate DB
-  DB --> R : OK
+  DB --> R : Thành công
   deactivate DB
-  R --> HR : OK
+  R --> HR : Thành công
   deactivate R
-else HR bo qua
-  HR -> R : PATCH status = dismissed
+else HR bỏ qua
+  HR -> R : PATCH trạng thái = dismissed
   activate R
-  R -> DB : Update
+  R -> DB : Cập nhật
   activate DB
-  DB --> R : OK
+  DB --> R : Thành công
   deactivate DB
-  R --> HR : OK
+  R --> HR : Thành công
   deactivate R
 end
 

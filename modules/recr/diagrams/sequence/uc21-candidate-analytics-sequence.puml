@@ -18,38 +18,38 @@ database "PostgreSQL" as DB
 database "Redis Cache" as Cache
 participant "Export Worker" as W
 
-== Truy cap bao cao ==
+== Truy cập báo cáo ==
 
 User -> R : GET /recr/analytics/candidate-activity\n(filter: time_range, job, department, status)
 activate R
 
-R -> Cache : Kiem tra cache
+R -> Cache : Kiểm tra cache
 activate Cache
 alt Cache hit
-  Cache --> R : Cached data
+  Cache --> R : Dữ liệu đệm
 else Cache miss
   Cache --> R : null
   R -> DB : COUNT candidate_resumes\nWHERE created_at IN range
   activate DB
-  DB --> R : New CV Uploads
+  DB --> R : CV mới tải lên
   deactivate DB
 
   R -> DB : COUNT candidate_resumes\nWHERE updated_at > created_at IN range
   activate DB
-  DB --> R : Updated CVs
+  DB --> R : CV đã cập nhật
   deactivate DB
 
   R -> DB : COUNT applications\nWHERE created_at IN range
   activate DB
-  DB --> R : Total Applications
+  DB --> R : Tổng hồ sơ ứng tuyển
   deactivate DB
 
   R -> DB : COUNT applications\nWHERE status = 'offered'\n/ COUNT all * 100
   activate DB
-  DB --> R : Success Rate
+  DB --> R : Tỷ lệ thành công
   deactivate DB
 
-  R -> Cache : Luu cache (TTL 5 phut)
+  R -> Cache : Lưu cache (TTL 5 phút)
   activate Cache
   Cache --> R : OK
   deactivate Cache
@@ -64,41 +64,41 @@ deactivate R
 User -> R : GET /recr/analytics/export\n(format: xlsx/csv, filter: ...)
 activate R
 
-R -> DB : Query full dataset
+R -> DB : Query toàn bộ dữ liệu
 activate DB
-DB --> R : Raw data
+DB --> R : Dữ liệu thô
 deactivate DB
 
 R -> W : Publish export.requested\n(queue: analytics.export)
 activate W
-W -> W : Generate file\n(max 10,000 rows)
-W -> R : Upload file\nreturn download URL
+W -> W : Tạo file\n(tối đa 10,000 dòng)
+W -> R : Upload file\ntrả về URL tải về
 deactivate W
 
 R --> User : { download_url, filename }
 deactivate R
 
-User -> User : Tai file
+User -> User : Tải file
 
 == Thay đổi filter ==
 
 User -> R : GET /recr/analytics/candidate-activity\n(filter: new_time_range)
 activate R
-R -> Cache : Invalidate cache
-R -> DB : Query voi filter moi
+R -> Cache : Xóa cache
+R -> DB : Query với filter mới
 activate DB
-DB --> R : Updated data
+DB --> R : Dữ liệu mới
 deactivate DB
-R --> User : Refreshed data
+R --> User : Dữ liệu đã làm mới
 deactivate R
 
-== Loi tai du lieu ==
+== Lỗi tải dữ liệu ==
 
-alt Database error
-  R --> User : 500 Internal Error\n"Khong the tai du lieu bao cao"
-  User -> R : Retry request
-else Khong co du lieu
-  R --> User : 200 OK\n{ data: [], message: "Khong co du lieu" }
+alt Lỗi database
+  R --> User : 500 Internal Error\n"Không thể tải dữ liệu báo cáo"
+  User -> R : Thử lại
+else Không có dữ liệu
+  R --> User : 200 OK\n{ data: [], message: "Không có dữ liệu" }
 end
 
 @enduml

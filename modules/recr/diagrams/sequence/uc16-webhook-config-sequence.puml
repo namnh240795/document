@@ -1,7 +1,7 @@
 @startuml
 ' UC-16: Cấu hình Webhook Cá nhân - Sơ đồ Chuỗi
 skinparam dpi 150
-skinparam defaultFontSize 12
+skinparam defaultFontSize 11
 skinparam nodesep 15
 skinparam ranksep 15
 skinparam sequence {
@@ -17,7 +17,7 @@ title UC-16: Cấu hình Webhook Cá nhân
 actor "Người dùng" as User
 participant "RECR Service" as R
 database "PostgreSQL" as DB
-participant "External URL" as Ext
+participant "Đích Webhook" as Ext
 
 == Cấu hình Webhook ==
 
@@ -25,22 +25,22 @@ User -> R : PUT /recr/settings/webhook\n{url, events, is_active}
 activate R
 
 alt URL không hợp lệ
-  R --> User : Lỗi: URL phải HTTPS
+  R --> User : Lỗi: URL phải là HTTPS
 else URL hợp lệ
   R -> Ext : POST webhook.test
   activate Ext
-  alt Endpoint 2xx
-    R -> DB : Lưu cấu hình\n(status: verified)
+  alt Endpoint trả 2xx
+    R -> DB : Lưu cấu hình\n(trạng thái: verified)
     activate DB
-    DB --> R : OK
+    DB --> R : Thành công
     deactivate DB
     R --> User : Thành công\n(Đang hoạt động)
   else Timeout/Lỗi
-    R -> DB : Lưu cấu hình\n(status: unverified)
+    R -> DB : Lưu cấu hình\n(trạng thái: unverified)
     activate DB
-    DB --> R : OK
+    DB --> R : Thành công
     deactivate DB
-    R --> User : Cảnh báo\n(chưa xác minh)
+    R --> User : Cảnh báo\n(Chưa xác minh)
   end
   deactivate Ext
 end
@@ -50,11 +50,11 @@ deactivate R
 
 User -> R : GET /recr/settings/webhook
 activate R
-R -> DB : Truy vấn
+R -> DB : Truy vấn cấu hình
 activate DB
-DB --> R : Config
+DB --> R : Dữ liệu cấu hình
 deactivate DB
-R --> User : Hiển thị config
+R --> User : Hiển thị cấu hình
 deactivate R
 
 @enduml
